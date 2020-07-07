@@ -269,52 +269,7 @@ public class Relation {
 
 	final public String[] getNDGConditions(RelationCommand command) {
 		Construction cons = ra.getConstruction();
-
-		Command ae = new Command(kernel, command.name(), false);
 		String[] ret;
-		try {
-			switch (command) {
-			case AreCongruent:
-			case AreEqual:
-			case AreParallel:
-			case ArePerpendicular:
-				addArguments(ae, ra, rb);
-				break;
-			case IsOnPath:
-				if ((ra instanceof GeoPoint) && (rb instanceof Path)) {
-					addArguments(ae, ra, rb);
-				} else if ((rb instanceof GeoPoint) && (ra instanceof Path)) {
-					addArguments(ae, rb, ra);
-				}
-				break;
-			case AreConcyclic:
-				addArguments(ae, ra, rb, rc, rd);
-				break;
-			case AreCollinear:
-			case AreConcurrent:
-				addArguments(ae, ra, rb, rc);
-				break;
-			case IsTangent:
-				if ((ra instanceof GeoLine) && (rb instanceof GeoConic)) {
-					addArguments(ae, ra, rb);
-				} else if ((ra instanceof GeoConic) && (rb instanceof GeoLine)) {
-					addArguments(ae, rb, ra);
-				}
-				break;
-			case Compare:
-				addArguments(ae, ra, rb);
-				break;
-			}
-		} catch (RuntimeException ex) {
-			ret = new String[1];
-			ret[0] = ""; // on error: undefined (UNKNOWN)
-			return ret;
-		}
-		if (ae.getArgumentNumber() == 0) {
-			ret = new String[1];
-			ret[0] = ""; // undefined (UNKNOWN)
-			return ret;
-		}
 
 		// RealGeom based comparison is a special case because it returns a String
 		if (command == Compare) {
@@ -333,8 +288,14 @@ public class Relation {
 			return ret;
 		}
 
-		Command proveCommand = new Command(kernel, Commands.ProveDetails.name(), false);
-		addArguments(proveCommand, ae, new GeoBoolean(cons, true));
+		ExpressionValue ae = getProvableExpression(command);
+		if (ae == null) {
+			return new String[]{""};
+                     }
+
+		Command proveCommand = buildCommand(Commands.ProveDetails.name(),
+				ae, new GeoBoolean(cons, true));
+
 		GeoElement[] proveResult = kernel.getAlgebraProcessor().processCommand(proveCommand,
 				new EvalInfo(false));
 
@@ -354,8 +315,8 @@ public class Relation {
 			ret = new String[1];
 		}
 		if (list.size() != 0) {
-			Boolean ans = ((GeoBoolean) list.get(0)).getBoolean();
-			if (!((GeoBoolean) list.get(0)).isDefined()) {
+			boolean ans = ((GeoBoolean) list.get(0)).getBoolean();
+			if (!list.get(0).isDefined()) {
 				ret[0] = ""; // undefined (UNKNOWN)
 			} else if (ans) {
 				ret[0] = "1"; // TRUE
@@ -379,10 +340,41 @@ public class Relation {
 		return ret;
 	}
 
-	private static void addArguments(Command ae, ExpressionValue... geos) {
-		for (ExpressionValue geo : geos) {
-			ae.addArgument(geo.wrap());
+	private ExpressionValue getProvableExpression(RelationCommand command) {
+		switch (command) {
+		case AreCongruent:
+		case AreEqual:
+		case AreParallel:
+		case ArePerpendicular:
+			return buildCommand(command.name(), ra, rb);
+		case IsOnPath:
+			if ((ra instanceof GeoPoint) && (rb instanceof Path)) {
+				return new ExpressionNode(kernel, ra, Operation.IS_ELEMENT_OF, rb);
+			} else if ((rb instanceof GeoPoint) && (ra instanceof Path)) {
+				return new ExpressionNode(kernel, rb, Operation.IS_ELEMENT_OF, ra);
+			}
+			break;
+		case AreConcyclic:
+			return buildCommand(command.name(), ra, rb, rc, rd);
+		case AreCollinear:
+		case AreConcurrent:
+			return buildCommand(command.name(), ra, rb, rc);
+		case IsTangent:
+			if ((ra instanceof GeoLine) && (rb instanceof GeoConic)) {
+				return buildCommand(command.name(), ra, rb);
+			} else if ((ra instanceof GeoConic) && (rb instanceof GeoLine)) {
+				return buildCommand(command.name(), rb, ra);
+			}
+			break;
 		}
+		return null;
 	}
 
+	private Command buildCommand(String commandName, ExpressionValue... geos) {
+		Command provable = new Command(kernel, commandName, false);
+		for (ExpressionValue geo : geos) {
+			provable.addArgument(geo.wrap());
+		}
+		return provable;
+	}
 }
