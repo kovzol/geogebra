@@ -16,4 +16,4 @@ jobs:
     - name: Build Classic 5 with Gradle
       run: ./gradlew :desktop:installDist
     - name: Build Classic 6 with Gradle
-      run: ./gradlew :web:draftDeployIntoWar
+      run: ./gradlew :web:deployIntoWar -Pgdraft
