@@ -51,7 +51,8 @@ public class GraphingToolSet {
         EuclidianConstants.MODE_TRANSLATE_BY_VECTOR,
         EuclidianConstants.MODE_DILATE_FROM_POINT,
         EuclidianConstants.MODE_MIRROR_AT_CIRCLE,
-        EuclidianConstants.MODE_RELATION);
+        EuclidianConstants.MODE_RELATION,
+        EuclidianConstants.MODE_DISCOVER);
 
     public static boolean isInGraphingToolSet(int tool) {
         return notAllowedToolsGraphingCalc.contains(tool);

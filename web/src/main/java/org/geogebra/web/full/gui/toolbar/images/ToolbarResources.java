@@ -61,6 +61,8 @@ public interface ToolbarResources {
 
 	ResourcePrototype mode_distance_32();
 
+	ResourcePrototype mode_discover_32();
+
 	ResourcePrototype mode_ellipse3_32();
 
 	ResourcePrototype mode_evaluate_32();

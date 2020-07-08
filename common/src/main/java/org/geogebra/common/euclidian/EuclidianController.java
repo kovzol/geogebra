@@ -142,6 +142,7 @@ import org.geogebra.common.kernel.kernelND.GeoSegmentND;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
 import org.geogebra.common.kernel.kernelND.HasSegments;
 import org.geogebra.common.kernel.matrix.Coords;
+import org.geogebra.common.kernel.prover.AlgoDiscover;
 import org.geogebra.common.kernel.statistics.AlgoFitLineY;
 import org.geogebra.common.kernel.statistics.CmdFitLineY;
 import org.geogebra.common.main.App;
@@ -803,6 +804,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		case EuclidianConstants.MODE_TEXT:
 		case EuclidianConstants.MODE_DELETE:
 		case EuclidianConstants.MODE_RELATION:
+		case EuclidianConstants.MODE_DISCOVER:
 		case EuclidianConstants.MODE_SLIDER:
 		case EuclidianConstants.MODE_SHOW_HIDE_OBJECT:
 		case EuclidianConstants.MODE_SHOW_HIDE_LABEL:
@@ -2736,6 +2738,21 @@ public abstract class EuclidianController implements SpecialPointsListener {
 			GeoElement[] geos = getSelectedGeos();
 			app.showRelation(geos[0], geos[1], selGeos > 2 ? geos[2] : null,
 					selGeos > 3 ? geos[3] : null);
+			return true;
+		}
+		return false;
+	}
+
+	protected final boolean discover(Hits hits, boolean selPreview) {
+		if (hits.isEmpty()) {
+			return false;
+		}
+
+		addSelectedGeo(hits, 1, false, selPreview);
+		int selGeos = selGeos();
+		if (selGeos >= 1) {
+			GeoElement[] geos = getSelectedGeos();
+			AlgoDiscover ad = new AlgoDiscover(kernel.getConstruction(), geos[0]);
 			return true;
 		}
 		return false;
@@ -5199,6 +5216,11 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		// relation query
 		case EuclidianConstants.MODE_RELATION:
 			relation(hits.getTopHits(), selectionPreview);
+			break;
+
+		// relation query
+		case EuclidianConstants.MODE_DISCOVER:
+			discover(hits.getTopHits(), selectionPreview);
 			break;
 
 		// new tangents
@@ -8054,6 +8076,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		case EuclidianConstants.MODE_CREATE_LIST:
 		case EuclidianConstants.MODE_COPY_VISUAL_STYLE:
 		case EuclidianConstants.MODE_RELATION:
+		case EuclidianConstants.MODE_DISCOVER:
 		case EuclidianConstants.MODE_SHOW_HIDE_CHECKBOX:
 		case EuclidianConstants.MODE_BUTTON_ACTION:
 		case EuclidianConstants.MODE_TEXTFIELD_ACTION:

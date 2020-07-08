@@ -809,6 +809,8 @@ public class EuclidianStyleBarStatic {
 				ConstructionDefaults.DEFAULT_POLYGON);
 		defaultGeoMap.put(EuclidianConstants.MODE_RELATION,
 				ConstructionDefaults.DEFAULT_LIST);
+		defaultGeoMap.put(EuclidianConstants.MODE_DISCOVER,
+				ConstructionDefaults.DEFAULT_POINT_COMPLEX);
 
 		defaultGeoMap.put(EuclidianConstants.MODE_MIRROR_AT_LINE,
 				ConstructionDefaults.DEFAULT_NONE);
