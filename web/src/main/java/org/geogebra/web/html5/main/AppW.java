@@ -1819,6 +1819,13 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 		setViewsEnabled();
 
 		getAppletFrame().setApplication(this);
+
+		// Force loading CAS.
+		try {
+			kernel.getGeoGebraCAS().getCurrentCAS().evaluateRaw("1+1");
+		} catch (Throwable t) {
+			Log.error("Cannot initialize CAS.");
+		}
 	}
 
 	/**
