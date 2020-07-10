@@ -221,56 +221,61 @@ public class AlgoCompare extends AlgoElement {
         // Adding benchmarking:
         startTime = UtilFactory.getPrototype().getMillisecondTime();
 
-        if (inputElement1 instanceof GeoSegment) {
-            lhs_var = (processSegment((GeoSegment) inputElement1)).getName();
-            if (htmlMode) {
-                inp1 = inputElement1.getColoredLabel();
-            } else {
-                inp1 = inputElement1.getLabelSimple();
+        try {
+            if (inputElement1 instanceof GeoSegment) {
+                lhs_var = (processSegment((GeoSegment) inputElement1)).getName();
+                if (htmlMode) {
+                    inp1 = inputElement1.getColoredLabel();
+                } else {
+                    inp1 = inputElement1.getLabelSimple();
+                }
             }
-        }
 
-        if (inputElement2 instanceof GeoSegment) {
-            rhs_var = (processSegment((GeoSegment) inputElement2)).getName();
-            if (htmlMode) {
-                inp2 = inputElement2.getColoredLabel();
-            } else {
-                inp2 = inputElement2.getLabelSimple();
+            if (inputElement2 instanceof GeoSegment) {
+                rhs_var = (processSegment((GeoSegment) inputElement2)).getName();
+                if (htmlMode) {
+                    inp2 = inputElement2.getColoredLabel();
+                } else {
+                    inp2 = inputElement2.getLabelSimple();
+                }
             }
-        }
 
-        if (inputElement1 instanceof GeoNumeric) {
-            processExpr((GeoNumeric) inputElement1);
-            lhs_var = "w1";
-            extraPolys.add("-w1+" + rewrite(inputElement1.getDefinition(portableFormat)));
-            extraVars.add("w1");
-            if (htmlMode) {
-                inp1 += inputElement1.getColoredLabel();
-            } else {
-                if (inputElement1.getLabelSimple() != null) {
-                    inp1 += inputElement1.getLabelSimple();
-                }
-                else {
-                    inp1 += "(" + inputElement1.getDefinition(fancyFormat) + ")";
+            if (inputElement1 instanceof GeoNumeric) {
+                processExpr((GeoNumeric) inputElement1);
+                lhs_var = "w1";
+                extraPolys.add("-w1+" + rewrite(inputElement1.getDefinition(portableFormat)));
+                extraVars.add("w1");
+                if (htmlMode) {
+                    inp1 += inputElement1.getColoredLabel();
+                } else {
+                    if (inputElement1.getLabelSimple() != null) {
+                        inp1 += inputElement1.getLabelSimple();
+                    } else {
+                        inp1 += "(" + inputElement1.getDefinition(fancyFormat) + ")";
+                    }
                 }
             }
-        }
 
-        if (inputElement2 instanceof GeoNumeric) {
-            processExpr((GeoNumeric) inputElement2);
-            rhs_var = "w2";
-            extraPolys.add("-w2+" + rewrite(inputElement2.getDefinition(portableFormat)));
-            extraVars.add("w2");
-            if (htmlMode) {
-                inp2 += inputElement2.getColoredLabel();
-            } else {
-                if (inputElement2.getLabelSimple() != null) {
-                    inp2 += inputElement2.getLabelSimple();
-                }
-                else {
-                    inp2 += "(" + inputElement2.getDefinition(fancyFormat) + ")";
+            if (inputElement2 instanceof GeoNumeric) {
+                processExpr((GeoNumeric) inputElement2);
+                rhs_var = "w2";
+                extraPolys.add("-w2+" + rewrite(inputElement2.getDefinition(portableFormat)));
+                extraVars.add("w2");
+                if (htmlMode) {
+                    inp2 += inputElement2.getColoredLabel();
+                } else {
+                    if (inputElement2.getLabelSimple() != null) {
+                        inp2 += inputElement2.getLabelSimple();
+                    } else {
+                        inp2 += "(" + inputElement2.getDefinition(fancyFormat) + ")";
+                    }
                 }
             }
+        } catch (Throwable t) {
+            // Maybe there is something unimplemented.
+            // In such cases we just acknowledge this and return with no result.
+            outputText.setTextString(retval);
+            return;
         }
 
         String rgCommand = "euclideansolver";
@@ -471,7 +476,6 @@ public class AlgoCompare extends AlgoElement {
     }
 
     private PVariable processSegment(GeoSegment s) {
-
         if (rewrites.containsKey(s)) {
             return rewrites.get(s);
         }
