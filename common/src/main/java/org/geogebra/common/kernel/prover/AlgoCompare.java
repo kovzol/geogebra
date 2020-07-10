@@ -130,6 +130,46 @@ public class AlgoCompare extends AlgoElement {
         Log.debug("COMPARISON RESULT IS " + retval);
     }
 
+    /*
+     * Convert Sqrt[...Sqrt[...]...] type expressions to Unicode variants.
+     */
+    String squareRootToUnicode(String in) {
+        String ret;
+        String sqrt = "Sqrt";
+        boolean found;
+        do {
+            found = false;
+            int pos = in.indexOf(sqrt);
+            if (pos >= 0) {
+                found = true;
+                int repl = pos + sqrt.length() + 1;
+                int parens = 1;
+                boolean justdigits = true;
+                while (parens > 0 && repl < in.length()) {
+                    repl++;
+                    if (in.charAt(repl) == '[') {
+                        parens++;
+                    } else if (in.charAt(repl) == ']') {
+                        parens--;
+                    } else if (in.charAt(repl) < '0' || in.charAt(repl) > '9') {
+                        justdigits = false;
+                    }
+                }
+                ret = in.substring(0, pos) + Unicode.SQUARE_ROOT;
+                if (!justdigits) {
+                    ret += "(";
+                }
+                ret += in.substring(pos + sqrt.length() + 1, repl);
+                if (!justdigits) {
+                    ret += ")";
+                }
+                ret += in.substring(repl + 1);
+                in = ret;
+            }
+        } while (found);
+        return in;
+    }
+
     @Override
     public final void compute() {
 
@@ -367,6 +407,7 @@ public class AlgoCompare extends AlgoElement {
                     retval += " " + or + " ";
                 }
 
+                /*
                 String oldResult = "";
                 while (!oldResult.equals(result)) {
                     oldResult = result;
@@ -375,6 +416,8 @@ public class AlgoCompare extends AlgoElement {
                     // So we repeat this step as many times as it is required.
                     result = result.replaceAll("Sqrt\\[(.*?)\\]", Unicode.SQUARE_ROOT + "$1");
                 }
+                */
+                result = squareRootToUnicode(result);
 
                 // Root[1 - #1 - 2*#1^2 + #1^3 & , 2, 0]
                 result = result.replaceAll("Root\\[(.*?) \\& , (.*?), 0\\]", "$2. root of $1");
