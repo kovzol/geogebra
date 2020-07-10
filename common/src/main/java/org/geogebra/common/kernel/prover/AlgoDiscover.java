@@ -941,11 +941,12 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             if (ge instanceof GeoSegment) {
                 GeoPoint p1 = ((GeoSegment) ge).startPoint;
                 GeoPoint p2 = ((GeoSegment) ge).endPoint;
-                GeoPoint ps1 = s.getStartPoint().getGeoPoint();
-                GeoPoint ps2 = s.getEndPoint().getGeoPoint();
-
-                if ((ps1.equals(p1) && ps2.equals(p2)) ||
-                        (ps1.equals(p2) && ps2.equals(p1))) {
+                Point pp1 = cons.getDiscoveryPool().getPoint(p1);
+                Point pp2 = cons.getDiscoveryPool().getPoint(p2);
+                Point pq1 = s.getStartPoint();
+                Point pq2 = s.getEndPoint();
+                if ((pq1.equals(pp1) && pq2.equals(pp2)) ||
+                        (pq1.equals(pp2) && pq2.equals(pp1))) {
                     return (GeoSegment) ge;
                 }
             }
@@ -995,8 +996,12 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             if (ge instanceof GeoSegment) {
                 GeoPoint p1 = ((GeoLine) ge).startPoint;
                 GeoPoint p2 = ((GeoLine) ge).endPoint;
-                if ((s.getStartPoint().equals(p1) && s.getEndPoint().equals(p2)) ||
-                        (s.getStartPoint().equals(p2) && s.getEndPoint().equals(p1))) {
+                Point pp1 = cons.getDiscoveryPool().getPoint(p1);
+                Point pp2 = cons.getDiscoveryPool().getPoint(p2);
+                Point pq1 = s.getStartPoint();
+                Point pq2 = s.getEndPoint();
+                if ((pq1.equals(pp1) && pq2.equals(pp2)) ||
+                        (pq1.equals(pp2) && pq2.equals(pp1))) {
                     return true;
                 }
             }
