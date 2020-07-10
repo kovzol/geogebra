@@ -9,7 +9,7 @@ import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoPoint;
 
 public class Line {
-    private HashSet<GeoPoint> points = new HashSet<GeoPoint>();
+    private HashSet<Point> points = new HashSet<Point>();
     private GeoLine geoLine;
 
     public Boolean getTrivial() {
@@ -29,28 +29,28 @@ public class Line {
 
     private Boolean trivial;
 
-    public Line(GeoPoint p1, GeoPoint p2) {
+    public Line(Point p1, Point p2) {
         points.add(p1);
         points.add(p2);
     }
 
-    public HashSet<GeoPoint> getPoints() {
+    public HashSet<Point> getPoints() {
         return points;
     }
 
     public GeoPoint[] getPoints2() {
         GeoPoint[] ps = new GeoPoint[2];
-        Iterator<GeoPoint> it = points.iterator();
-        ps[0] = it.next();
-        ps[1] = it.next();
+        Iterator<Point> it = points.iterator();
+        ps[0] = it.next().getGeoPoint();
+        ps[1] = it.next().getGeoPoint();
         return ps;
     }
 
-    public void collinear(GeoPoint p) {
+    public void collinear(Point p) {
         points.add(p);
     }
 
-    public void deletePoint(GeoPoint p) {
+    public void deletePoint(Point p) {
         if (!points.contains(p)) {
             return; // do nothing
         }
@@ -60,8 +60,8 @@ public class Line {
     public String toString() {
         String[] labels = new String[points.size()];
         int i = 0;
-        for (GeoPoint p : points) {
-            labels[i] = p.getLabelSimple();
+        for (Point p : points) {
+            labels[i] = p.getGeoPoint().getLabelSimple();
             i++;
         }
         sort(labels);

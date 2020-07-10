@@ -10,22 +10,30 @@ import org.geogebra.common.kernel.prover.Combinations;
 import org.geogebra.common.util.debug.Log;
 
 public class Pool {
+    public ArrayList<Point> points = new ArrayList<>();
     public ArrayList<Line> lines = new ArrayList<>();
     public ArrayList<Circle> circles = new ArrayList<>();
     public ArrayList<ParallelLines> directions = new ArrayList<>();
     public ArrayList<Segment> segments = new ArrayList<>();
     public ArrayList<EqualLongSegments> equalLongSegments = new ArrayList<>();
 
-    public Line getLine(GeoPoint p1, GeoPoint p2) {
+    public Point getPoint(GeoPoint p1) {
+        for (Point p : points) {
+            HashSet<GeoPoint> points = p.getPoints();
+            if (points.contains(p1)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public Line getLine(Point p1, Point p2) {
         if (p1.equals(p2)) {
-            Log.error("getLine() called with p1=p2=" + p1.getLabelSimple());
+            Log.error("getLine() called with p1=p2=" + p1.getGeoPoint().getLabelSimple());
             return null;
         }
-        HashSet<GeoPoint> ps = new HashSet();
-        ps.add(p1);
-        ps.add(p2);
         for (Line l : lines) {
-            HashSet<GeoPoint> points = l.getPoints();
+            HashSet<Point> points = l.getPoints();
             if (points.contains(p1) && points.contains(p2)) {
                 return l;
             }
@@ -33,13 +41,9 @@ public class Pool {
         return null;
     }
 
-    public Circle getCircle(GeoPoint p1, GeoPoint p2, GeoPoint p3) {
-        HashSet<GeoPoint> ps = new HashSet();
-        ps.add(p1);
-        ps.add(p2);
-        ps.add(p3);
+    public Circle getCircle(Point p1, Point p2, Point p3) {
         for (Circle c : circles) {
-            HashSet<GeoPoint> points = c.getPoints();
+            HashSet<Point> points = c.getPoints();
             if (points.contains(p1) && points.contains(p2) && points.contains(p3)) {
                 return c;
             }
@@ -47,9 +51,9 @@ public class Pool {
         return null;
     }
 
-    public Segment getSegment(GeoPoint p1, GeoPoint p2) {
+    public Segment getSegment(Point p1, Point p2) {
         if (p1.equals(p2)) {
-            Log.error("getSegment() called with p1=p2=" + p1.getLabelSimple());
+            Log.error("getSegment() called with p1=p2=" + p1.getGeoPoint().getLabelSimple());
             return null;
         }
         for (Segment s : segments) {
@@ -61,28 +65,46 @@ public class Pool {
         return null;
     }
 
-    public boolean lineExists(GeoPoint p1, GeoPoint p2) {
+    public boolean pointExists(GeoPoint p1) {
+        if (getPoint(p1) == null) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean lineExists(Point p1, Point p2) {
         if (getLine(p1, p2) == null) {
             return false;
         }
         return true;
     }
 
-    public boolean circleExists(GeoPoint p1, GeoPoint p2, GeoPoint p3) {
+    public boolean circleExists(Point p1, Point p2, Point p3) {
         if (getCircle(p1, p2, p3) == null) {
             return false;
         }
         return true;
     }
 
-    public boolean segmentExists(GeoPoint p1, GeoPoint p2) {
+    public boolean segmentExists(Point p1, Point p2) {
         if (getSegment(p1, p2) == null) {
             return false;
         }
         return true;
     }
 
-    public Line addLine(GeoPoint p1, GeoPoint p2) {
+    public Point addPoint(GeoPoint p1) {
+        Point p = getPoint(p1);
+        if (p == null) {
+            Point point = new Point(p1);
+            point.setGeoPoint(p1);
+            points.add(point);
+            return point;
+        }
+        return p;
+    }
+
+    public Line addLine(Point p1, Point p2) {
         if (p1.equals(p2)) {
             return null;
         }
@@ -95,7 +117,7 @@ public class Pool {
         return l;
     }
 
-    public Circle addCircle(GeoPoint p1, GeoPoint p2, GeoPoint p3) {
+    public Circle addCircle(Point p1, Point p2, Point p3) {
         Circle c = getCircle(p1, p2, p3);
         if (c == null) {
             Circle circle = new Circle(p1, p2, p3);
@@ -105,7 +127,7 @@ public class Pool {
         return c;
     }
 
-    public Segment addSegment(GeoPoint p1, GeoPoint p2) {
+    public Segment addSegment(Point p1, Point p2) {
         if (p1.equals(p2)) {
             return null;
         }
@@ -136,7 +158,35 @@ public class Pool {
         return els;
     }
 
-    private void setCollinear(Line l, GeoPoint p) {
+    private void setIdentical(Point p, GeoPoint q) {
+        /* Claim that q is equivalent to the point(s) p.
+         * Consider that A=B and C=D are already identical
+         * and it is stated that A=C by the function call.
+         * Now all points A, B, C and D must
+         * be identical.
+         */
+        if (p.getPoints().contains(q)) {
+            return; // nothing to do
+        }
+        HashSet<GeoPoint> pointlist = (HashSet<GeoPoint>) p.getPoints().clone();
+        HashSet<GeoPoint> pointsToAdd = new HashSet<>();
+        pointsToAdd.add(q);
+        for (GeoPoint pl : pointlist) {
+            Point ps = getPoint(q);
+            if (ps != null && !ps.equals(q)) {
+                for (GeoPoint ep : ps.getPoints()) {
+                    pointsToAdd.add(ep);
+                }
+                points.remove(ps);
+            }
+        }
+        for (GeoPoint pl : pointsToAdd) {
+            p.identical(pl);
+        }
+
+    }
+
+    private void setCollinear(Line l, Point p) {
         /* Claim that p lies on l.
          * Consider that 123 and 345 are already collinear
          * and it is stated that 2 lies on 45 by the function call.
@@ -151,24 +201,24 @@ public class Pool {
         if (l.getPoints().contains(p)) {
             return; // nothing to do
         }
-        HashSet<GeoPoint> pointlist = (HashSet<GeoPoint>) l.getPoints().clone();
-        HashSet<GeoPoint> pointsToAdd = new HashSet<>();
+        HashSet<Point> pointlist = (HashSet<Point>) l.getPoints().clone();
+        HashSet<Point> pointsToAdd = new HashSet<>();
         pointsToAdd.add(p);
-        for (GeoPoint pl : pointlist) {
+        for (Point pl : pointlist) {
             Line el = getLine(pl, p);
             if (el != null && !el.equals(l)) {
-                for (GeoPoint ep : el.getPoints()) {
+                for (Point ep : el.getPoints()) {
                     pointsToAdd.add(ep);
                 }
                 lines.remove(el);
             }
         }
-        for (GeoPoint pl : pointsToAdd) {
+        for (Point pl : pointsToAdd) {
             l.collinear(pl);
         }
     }
 
-    private void setConcylic(Circle c, GeoPoint p) {
+    private void setConcylic(Circle c, Point p) {
         /* Claim that p lies on c.
          * Consider that 1236 and 3456 are already concyclic
          * and it is stated that 2 lies on 3456 by the function call.
@@ -184,27 +234,44 @@ public class Pool {
             return; // nothing to do
         }
         Combinations pairlist = new Combinations(c.getPoints(), 2);
-        HashSet<GeoPoint> pointsToAdd = new HashSet<>();
+        HashSet<Point> pointsToAdd = new HashSet<>();
         pointsToAdd.add(p);
         while (pairlist.hasNext()) {
-            Set<GeoPoint> ppc = pairlist.next();
-            Iterator<GeoPoint> i = ppc.iterator();
-            GeoPoint p1 = i.next();
-            GeoPoint p2 = i.next();
+            Set<Point> ppc = pairlist.next();
+            Iterator<Point> i = ppc.iterator();
+            Point p1 = i.next();
+            Point p2 = i.next();
             Circle ec = getCircle(p1, p2, p);
             if (ec != null && !ec.equals(c)) {
-                for (GeoPoint cp : ec.getPoints()) {
+                for (Point cp : ec.getPoints()) {
                     pointsToAdd.add(cp);
                 }
                 circles.remove(ec);
             }
         }
-        for (GeoPoint pl : pointsToAdd) {
+        for (Point pl : pointsToAdd) {
             c.concyclic(pl);
         }
     }
 
-    public Line addCollinearity(GeoPoint p1, GeoPoint p2, GeoPoint p3) {
+    public Point addIdenticality(GeoPoint p1, GeoPoint p2) {
+        Point p;
+        if (pointExists(p1)) {
+            p = getPoint(p1);
+            setIdentical(p, p2);
+            return p;
+        }
+        if (pointExists(p2)) {
+            p = getPoint(p2);
+            setIdentical(p, p1);
+            return p;
+        }
+        p = addPoint(p1);
+        setIdentical(p, p2);
+        return p;
+    }
+
+    public Line addCollinearity(Point p1, Point p2, Point p3) {
         Line l;
         if (lineExists(p1, p2)) {
             l = getLine(p1, p2);
@@ -226,7 +293,7 @@ public class Pool {
         return l;
     }
 
-    public Circle addConcyclicity(GeoPoint p1, GeoPoint p2, GeoPoint p3, GeoPoint p4) {
+    public Circle addConcyclicity(Point p1, Point p2, Point p3, Point p4) {
         Circle c;
         if (circleExists(p1, p2, p3)) {
             c = getCircle(p1, p2, p3);
@@ -253,7 +320,19 @@ public class Pool {
         return c;
     }
 
-    public boolean areCollinear(GeoPoint p1, GeoPoint p2, GeoPoint p3) {
+    public boolean areIdentical(GeoPoint p1, GeoPoint p2) {
+        Point p = getPoint(p1);
+        Point q = getPoint(p2);
+        if (p == null) {
+            return false;
+        }
+        if (p.equals(q)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean areCollinear(Point p1, Point p2, Point p3) {
         Line l = getLine(p1, p2);
         if (l != null && l.getPoints().contains(p3)) {
             return true;
@@ -261,7 +340,7 @@ public class Pool {
         return false;
     }
 
-    public boolean areConcyclic(GeoPoint p1, GeoPoint p2, GeoPoint p3, GeoPoint p4) {
+    public boolean areConcyclic(Point p1, Point p2, Point p3, Point p4) {
         Circle c = getCircle(p1, p2, p3);
         if (c != null && c.getPoints().contains(p4)) {
             return true;
@@ -366,7 +445,9 @@ public class Pool {
         return els2;
     }
 
-    public void removePoint(GeoPoint p) {
+    public void removePoint(GeoPoint gp) {
+        Point p = getPoint(gp);
+
         ArrayList<Line> oldLines = (ArrayList<Line>) lines.clone();
         for (Line l : oldLines) {
             if (l.getPoints().contains(p)) {
@@ -392,6 +473,9 @@ public class Pool {
                 }
             }
         }
+
+        points.remove(p);
     }
+
 }
 
