@@ -105,6 +105,7 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                 collectIdenticalPoints((GeoPoint) ge, false);
             }
         }
+        detectOrthogonalCollinearities();
         Pool discoveryPool = cons.getDiscoveryPool();
         for (Point pp : discoveryPool.points) {
             if (!p.equals(pp.getGeoPoint())) {
@@ -655,7 +656,6 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                 discoveryPool.circles.size() + " circles, " +
                 discoveryPool.directions.size() + " directions and " +
                 discoveryPool.equalLongSegments.size() + " segments.");
-        detectOrthogonalCollinearities();
         detectProperties((GeoPoint) this.input);
 
         if (cons.getKernel().isSilentMode()) {

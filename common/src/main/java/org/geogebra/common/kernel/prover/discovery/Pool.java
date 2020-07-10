@@ -28,7 +28,7 @@ public class Pool {
     }
 
     public Line getLine(Point p1, Point p2) {
-        if (p1.equals(p2)) {
+        if (p1 != null && p1.equals(p2)) {
             Log.error("getLine() called with p1=p2=" + p1.getGeoPoint().getLabelSimple());
             return null;
         }
@@ -105,7 +105,7 @@ public class Pool {
     }
 
     public Line addLine(Point p1, Point p2) {
-        if (p1.equals(p2)) {
+        if (p1 != null && p1.equals(p2)) {
             return null;
         }
         Line l = getLine(p1, p2);
