@@ -100,11 +100,19 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         for (GeoElement ge : cons.getGeoSetLabelOrder()) {
             ges.add(ge);
         }
+
+        int i = 0;
         for (GeoElement ge : ges) {
             if (ge instanceof GeoPoint && !p.equals(ge)) {
                 collectIdenticalPoints((GeoPoint) ge, false);
+                i++;
             }
         }
+        if (i == 0) {
+            // Only one point exists. No discovery will be done.
+            return;
+        }
+
         detectOrthogonalCollinearities();
         Pool discoveryPool = cons.getDiscoveryPool();
         for (Point pp : discoveryPool.points) {
@@ -735,10 +743,6 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             items++;
         }
 
-        if (items == 0) {
-            return; // no window is shown
-        }
-
         final RelationPane.RelationRow[] rr = new RelationPane.RelationRow[1];
         StringBuilder html = new StringBuilder("<html>");
 
@@ -759,15 +763,20 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                 html.append("<p><p>");
             }
             html.append(directions);
-            // items++;
+            items++;
         }
         if (!drawnSegments.isEmpty()) {
             if (items > 0) {
                 html.append("<p><p>");
             }
             html.append(equalLongSegments);
-            // items++;
+            items++;
         }
+
+        if (items == 0) {
+            html.append("No discovered theorems were found.");
+        }
+
         html.append("</html>");
 
         rr[0] = new RelationPane.RelationRow();
