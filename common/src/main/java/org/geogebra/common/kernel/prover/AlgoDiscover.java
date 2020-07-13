@@ -495,20 +495,25 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
     private void collectEqualLongSegments(Point p0, boolean discover) {
         Pool discoveryPool = cons.getDiscoveryPool();
 
-        HashSet<Point> prevPoints = new HashSet<Point>();
+        HashSet<Point> allPoints = new HashSet<Point>();
         for (Point ge : discoveryPool.points) {
-            if (!ge.equals(p0)) {
-                prevPoints.add(ge);
-            }
+            allPoints.add(ge);
         }
 
-        Combinations segments = new Combinations(prevPoints, 2);
+        Combinations segments = new Combinations(allPoints, 2);
         while (segments.hasNext()) {
             Set<Point> line = segments.next();
             Iterator<Point> i = line.iterator();
             Point p1 = i.next();
             Point p2 = i.next();
             discoveryPool.addSegment(p1, p2);
+        }
+
+        HashSet<Point> prevPoints = new HashSet<Point>();
+        for (Point ge : discoveryPool.points) {
+            if (!ge.equals(p0)) {
+                prevPoints.add(ge);
+            }
         }
 
         HashSet<Segment> allSegments = new HashSet<>();

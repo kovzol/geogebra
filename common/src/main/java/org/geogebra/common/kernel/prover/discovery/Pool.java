@@ -453,6 +453,11 @@ public class Pool {
             if (l.getPoints().contains(p)) {
                 l.deletePoint(p);
                 if (l.getPoints().size() < 3) {
+                    ParallelLines pl = getDirection(l);
+                    pl.deleteParallelLine(l);
+                    if (pl.getLines().size() == 0) {
+                            directions.remove(pl);
+                          }
                     lines.remove(l);
                     if (l.getGeoLine() != null) {
                         l.getGeoLine().remove();
@@ -471,6 +476,23 @@ public class Pool {
                         c.getGeoConic().remove();
                     }
                 }
+            }
+        }
+
+        ArrayList<Segment> oldSegments = (ArrayList<Segment>) segments.clone();
+        for (Segment s : oldSegments) {
+            if (p.getPoints().contains(s.getStartPoint().getGeoPoint()) ||
+                    p.getPoints().contains(s.getEndPoint().getGeoPoint())) {
+                EqualLongSegments els = getEqualLongSegments(s);
+                els.deleteSegment(s);
+                if (els.getSegments().size() == 0) {
+                    equalLongSegments.remove(els);
+                }
+                segments.remove(s);
+                if (s.getGeoSegment() != null) {
+                    s.getGeoSegment().remove();
+                }
+
             }
         }
 

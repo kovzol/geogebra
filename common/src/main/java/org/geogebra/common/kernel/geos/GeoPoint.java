@@ -1882,6 +1882,7 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 			}
 		}
 
+		cons.getDiscoveryPool().removePoint((GeoPoint) this);
 		super.doRemove();
 	}
 

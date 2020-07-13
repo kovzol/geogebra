@@ -50,6 +50,13 @@ public class ParallelLines {
         return lines.contains(l);
     }
 
+    public void deleteParallelLine(Line l) {
+        if (!lines.contains(l)) {
+            return; // do nothing
+        }
+        lines.remove(l);
+    }
+
     public String toString() {
         String[] labels = new String[lines.size()];
         int i = 0;

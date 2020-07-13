@@ -1570,12 +1570,6 @@ public abstract class GeoElement extends ConstructionElement
 			setUndefined();
 			updateRepaint();
 		} else {
-			// update discovery pools
-			if (this instanceof GeoPoint) {
-				cons.getDiscoveryPool().removePoint((GeoPoint) this);
-				// on update (not delete) the same should be done, TODO
-			}
-
 			if (!(app.isApplet() && isLocked())) {
 				remove();
 				kernel.notifyRemoveGroup();

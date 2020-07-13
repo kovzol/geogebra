@@ -38,6 +38,13 @@ public class EqualLongSegments {
         return segments;
     }
 
+    public void deleteSegment(Segment s) {
+        if (!segments.contains(s)) {
+            return; // do nothing
+        }
+        segments.remove(s);
+    }
+
     public void equalLong(Segment s) {
         segments.add(s);
     }
