@@ -1,5 +1,7 @@
 package org.geogebra.common.kernel.prover.discovery;
 
+import static java.util.Arrays.sort;
+
 import java.util.HashSet;
 
 import org.geogebra.common.kernel.geos.GeoPoint;
@@ -45,7 +47,19 @@ public class Point {
 	}
 
 	public String toString() {
-		return geoPoint.getLabelSimple();
+		String[] labels = new String[points.size()];
+		int i = 0;
+		for (GeoPoint p : points) {
+			labels[i] = p.getLabelSimple();
+			i++;
+		}
+		sort(labels);
+		StringBuilder ret = new StringBuilder();
+		for (String l : labels) {
+			ret.append(l + "=");
+		}
+		ret.deleteCharAt(ret.length() - 1);
+		return ret.toString();
 	}
 
 	public GeoPoint getGeoPoint() {

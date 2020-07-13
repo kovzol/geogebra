@@ -677,7 +677,22 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         RelationPane tablePane = cons.getApplication().getFactory().newRelationPane();
         String liStyle = "class=\"RelationTool\"";
 
+        int pointitems = 0;
         int items = 0;
+        // Points
+        StringBuilder points = new StringBuilder("Identical points: ");
+        for (Point p : discoveryPool.points) {
+            if (p.getPoints().size() > 1) {
+                points.append(p.toString());
+                points.append(", ");
+                pointitems = 1;
+                }
+            }
+        if (pointitems > 0) {
+            points.deleteCharAt(points.length() - 1);
+            points.deleteCharAt(points.length() - 1);
+        }
+
         // Lines
         StringBuilder lines = new StringBuilder("Collinear points: ");
         if (!drawnLines.isEmpty()) {
@@ -752,7 +767,15 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         StringBuilder html = new StringBuilder("<html>");
 
         items = 0;
+        if (pointitems > 0) {
+            html.append(points);
+            items++;
+        }
+
         if (!drawnLines.isEmpty()) {
+            if (items > 0) {
+                html.append("<p><p>");
+            }
             html.append(lines);
             items++;
         }
