@@ -168,16 +168,19 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             if (!discoveryPool.areIdentical(p0, p1)) {
                 AlgoAreEqual aac = new AlgoAreEqual(cons, p0, p1);
                 if (aac.getResult().getBoolean()) {
-                    // Conjecture: Collinearity
+                    // Conjecture: Indentical points
                     GeoElement root = new GeoBoolean(cons);
                     root.setParentAlgorithm(aac);
                     AlgoProveDetails ap = new AlgoProveDetails(cons, root);
                     ap.compute();
                     GeoElement[] o = ap.getOutput();
-                    GeoElement truth = ((GeoList) o[0]).get(0);
-                    if (((GeoBoolean) truth).getBoolean()) {
-                        // Theorem: Collinearity
-                        discoveryPool.addIdenticality(p0, p1).setTrivial(false);
+                    GeoList output = (GeoList) o[0];
+                    if (output.size() > 0) {
+                        GeoElement truth = output.get(0);
+                        if (((GeoBoolean) truth).getBoolean()) {
+                            // Theorem: Identical points
+                            discoveryPool.addIdenticality(p0, p1).setTrivial(false);
+                        }
                     }
                     ap.remove();
                 }
@@ -244,10 +247,13 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                     AlgoProveDetails ap = new AlgoProveDetails(cons, root);
                     ap.compute();
                     GeoElement[] o = ap.getOutput();
-                    GeoElement truth = ((GeoList) o[0]).get(0);
-                    if (((GeoBoolean) truth).getBoolean()) {
-                        // Theorem: Collinearity
-                        discoveryPool.addCollinearity(p0, p1, p2).setTrivial(false);
+                    GeoList output = (GeoList) o[0];
+                    if (output.size() > 0) {
+                        GeoElement truth = output.get(0);
+                        if (((GeoBoolean) truth).getBoolean()) {
+                            // Theorem: Collinearity
+                            discoveryPool.addCollinearity(p0, p1, p2).setTrivial(false);
+                        }
                     }
                     ap.remove();
                 }
@@ -341,10 +347,13 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                         AlgoProveDetails ap = new AlgoProveDetails(cons, root);
                         ap.compute();
                         GeoElement[] o = ap.getOutput();
-                        GeoElement truth = ((GeoList) o[0]).get(0);
-                        if (((GeoBoolean) truth).getBoolean()) {
-                            // Theorem: Concyclicity
-                            discoveryPool.addConcyclicity(p0, p1, p2, p3).setTrivial(false);
+                        GeoList output = (GeoList) o[0];
+                        if (output.size() > 0) {
+                            GeoElement truth = output.get(0);
+                            if (((GeoBoolean) truth).getBoolean()) {
+                                // Theorem: Concyclicity
+                                discoveryPool.addConcyclicity(p0, p1, p2, p3).setTrivial(false);
+                            }
                         }
                         ap.remove();
                     }
@@ -441,10 +450,13 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                                 AlgoProveDetails ap = new AlgoProveDetails(cons, root);
                                 ap.compute();
                                 GeoElement[] o = ap.getOutput();
-                                GeoElement truth = ((GeoList) o[0]).get(0);
-                                if (((GeoBoolean) truth).getBoolean()) {
-                                    // Theorem: Parallelism
-                                    discoveryPool.addParallelism(l1, l2).setTrivial(false);
+                                GeoList output = (GeoList) o[0];
+                                if (output.size() > 0) {
+                                    GeoElement truth = output.get(0);
+                                    if (((GeoBoolean) truth).getBoolean()) {
+                                        // Theorem: Parallelism
+                                        discoveryPool.addParallelism(l1, l2).setTrivial(false);
+                                    }
                                 }
                                 ap.remove();
                                 aap.remove();
@@ -566,18 +578,21 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                             AlgoProveDetails ap = new AlgoProveDetails(cons, root);
                             ap.compute();
                             GeoElement[] o = ap.getOutput();
-                            GeoElement truth = ((GeoList) o[0]).get(0);
-                            if (((GeoBoolean) truth).getBoolean()) {
-                                // Theorem: Congruence
-                                discoveryPool.addEquality(s1, s2).setTrivial(false);
+                            GeoList output = (GeoList) o[0];
+                            if (output.size() > 0) {
+                                GeoElement truth = output.get(0);
+                                if (((GeoBoolean) truth).getBoolean()) {
+                                    // Theorem: Congruence
+                                    discoveryPool.addEquality(s1, s2).setTrivial(false);
+                                    }
                                 }
-                                ap.remove();
-                                aac.remove();
+                            ap.remove();
+                            aac.remove();
                             }
-                            gs1.remove();
-                            gs2.remove();
-                            ajps1.remove();
-                            ajps2.remove();
+                        gs1.remove();
+                        gs2.remove();
+                        ajps1.remove();
+                        ajps2.remove();
                         }
                     }
                 }
