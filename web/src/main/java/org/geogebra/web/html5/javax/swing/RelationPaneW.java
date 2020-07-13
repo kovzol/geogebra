@@ -159,4 +159,10 @@ public class RelationPaneW extends GDialogBox
 			buttons[row].setVisible(false);
 		}
 	}
+
+	public void changeRowLeftColumn(int row, String text) {
+		texts[row].clear();
+		HTML htext = new HTML(text);
+		texts[row].add(htext);
+	}
 }

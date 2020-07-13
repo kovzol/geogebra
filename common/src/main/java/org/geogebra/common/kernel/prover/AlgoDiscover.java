@@ -669,13 +669,23 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                 discoveryPool.circles.size() + " circles, " +
                 discoveryPool.directions.size() + " directions and " +
                 discoveryPool.equalLongSegments.size() + " segments.");
+
+        RelationPane tablePane = cons.getApplication().getFactory().newRelationPane();
+        final RelationPane.RelationRow[] rr = new RelationPane.RelationRow[1];
+        rr[0] = new RelationPane.RelationRow();
+        String liStyle = "class=\"RelationTool\"";
+        StringBuilder html = new StringBuilder("<html>Please wait, this may take a while...</html>");
+        rr[0].setInfo(html.toString());
+        tablePane.showDialog("Discovered theorems on point " + input.getLabelSimple(), rr,
+                cons.getApplication());
+        // FIXME: This is not shown on the web, and the "Please wait..." message is not visible
+        // on the desktop, either.
+
         detectProperties((GeoPoint) this.input);
 
         if (cons.getKernel().isSilentMode()) {
             return;
         }
-        RelationPane tablePane = cons.getApplication().getFactory().newRelationPane();
-        String liStyle = "class=\"RelationTool\"";
 
         int pointitems = 0;
         int items = 0;
@@ -763,8 +773,7 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             items++;
         }
 
-        final RelationPane.RelationRow[] rr = new RelationPane.RelationRow[1];
-        StringBuilder html = new StringBuilder("<html>");
+        html = new StringBuilder("<html>");
 
         items = 0;
         if (pointitems > 0) {
@@ -814,8 +823,7 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         cons.getApplication().dispatchEvent(
                 new Event(EventType.RELATION_TOOL, null, rr[0].getInfo()));
 
-        tablePane.showDialog("Discovered theorems on point " + input.getLabelSimple(), rr,
-                cons.getApplication());
+        tablePane.changeRowLeftColumn(0, html.toString());
     }
 
     private GColor nextColor(GeoElement e) {

@@ -240,6 +240,20 @@ public class RelationPaneD implements RelationPane, ActionListener {
 		return ret;
 	}
 
+	public void changeRowLeftColumn(int row, String text) {
+		table.setValueAt(text, row, 0);
+		table.setRowHeight(row, (int) (ROWHEIGHT * (countLines(text))
+				- 2 * (ROWMARGIN + 1)));
+		table.repaint();
+		frame.repaint(3,0,0,60,60);
+
+		frame.pack();
+		frame.paint(frame.getGraphics());
+		frame.getContentPane().repaint();
+		frame.getContentPane().repaint(10);
+		frame.revalidate();
+	}
+
     /**
      * Update UI after More button clicked
      *

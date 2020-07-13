@@ -67,4 +67,6 @@ public interface RelationPane {
 	public abstract void showDialog(String title, RelationRow[] relations,
 			App app);
 
+	public abstract void changeRowLeftColumn(int row, String text);
+
 }
