@@ -922,8 +922,10 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             if (ge instanceof GeoLine && !(ge instanceof GeoSegment)) {
                 GeoPoint p1 = ((GeoLine) ge).startPoint;
                 GeoPoint p2 = ((GeoLine) ge).endPoint;
+                Point pp1 = cons.getDiscoveryPool().getPoint(p1);
+                Point pp2 = cons.getDiscoveryPool().getPoint(p2);
                 HashSet<Point> points = l.getPoints();
-                if (points.contains(p1) && points.contains(p2)) {
+                if (points.contains(pp1) && points.contains(pp2)) {
                     return true;
                 }
             }
@@ -937,7 +939,9 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                 GeoPoint p1 = ((GeoLine) ge).startPoint;
                 GeoPoint p2 = ((GeoLine) ge).endPoint;
                 HashSet<Point> points = l.getPoints();
-                if (points.contains(p1) && points.contains(p2)) {
+                Point pp1 = cons.getDiscoveryPool().getPoint(p1);
+                Point pp2 = cons.getDiscoveryPool().getPoint(p2);
+                if (points.contains(pp1) && points.contains(pp2)) {
                     return (GeoLine) ge;
                 }
             }
@@ -971,8 +975,11 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                     GeoPoint p1 = (GeoPoint) cpoints.get(0);
                     GeoPoint p2 = (GeoPoint) cpoints.get(1);
                     GeoPoint p3 = (GeoPoint) cpoints.get(2);
+                    Point pp1 = cons.getDiscoveryPool().getPoint(p1);
+                    Point pp2 = cons.getDiscoveryPool().getPoint(p2);
+                    Point pp3 = cons.getDiscoveryPool().getPoint(p3);
                     HashSet<Point> points = c.getPoints();
-                    if (points.contains(p1) && points.contains(p2) && points.contains(p3)) {
+                    if (points.contains(pp1) && points.contains(pp2) && points.contains(pp3)) {
                         return true;
                     }
                 }
@@ -990,8 +997,11 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                     GeoPoint p1 = (GeoPoint) cpoints.get(0);
                     GeoPoint p2 = (GeoPoint) cpoints.get(1);
                     GeoPoint p3 = (GeoPoint) cpoints.get(2);
+                    Point pp1 = cons.getDiscoveryPool().getPoint(p1);
+                    Point pp2 = cons.getDiscoveryPool().getPoint(p2);
+                    Point pp3 = cons.getDiscoveryPool().getPoint(p3);
                     HashSet<Point> points = c.getPoints();
-                    if (points.contains(p1) && points.contains(p2) && points.contains(p3)) {
+                    if (points.contains(pp1) && points.contains(pp2) && points.contains(pp3)) {
                         return (GeoConic) ge;
                     }
                 }
