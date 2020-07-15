@@ -883,7 +883,7 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             gl.setEuclidianVisible(true);
             gl.setLineType(EuclidianStyleConstants.LINE_TYPE_FULL);
             gl.setLineThickness(2);
-            gl.setLabelVisible(true);
+            gl.setLabelVisible(false);
             gl.setEuclidianVisible(true);
             gl.setLineType(EuclidianStyleConstants.LINE_TYPE_FULL);
             gl.updateVisualStyle(GProperty.COMBINED);
@@ -929,7 +929,7 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             gs.setEuclidianVisible(true);
             gs.setLineType(EuclidianStyleConstants.LINE_TYPE_FULL);
             gs.setLineThickness(2);
-            gs.setLabelVisible(true);
+            gs.setLabelVisible(false);
             gs.setEuclidianVisible(true);
             gs.setLineType(EuclidianStyleConstants.LINE_TYPE_FULL);
             gs.updateVisualStyle(GProperty.COMBINED);
@@ -949,7 +949,7 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         }
         l.setEuclidianVisible(true);
         l.setLineType(EuclidianStyleConstants.LINE_TYPE_DASHED_LONG);
-        l.setLabelVisible(true);
+        l.setLabelVisible(false);
         l.updateVisualStyle(GProperty.COMBINED); // visibility and style
         cons.setSuppressLabelCreation(oldMacroMode);
         return l;
@@ -964,7 +964,7 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         }
         circle.setEuclidianVisible(true);
         circle.setLineType(EuclidianStyleConstants.LINE_TYPE_DASHED_LONG);
-        circle.setLabelVisible(true);
+        circle.setLabelVisible(false);
         circle.updateVisualStyle(GProperty.COMBINED); // visibility and style
         cons.setSuppressLabelCreation(oldMacroMode);
         return circle;
