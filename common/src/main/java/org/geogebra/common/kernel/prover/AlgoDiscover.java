@@ -677,6 +677,9 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
     }
 
     public final void initialCompute() {
+        if (!(this.input instanceof GeoPoint)) {
+            return; // not yet implemented
+        }
         Pool discoveryPool = cons.getDiscoveryPool();
         Log.debug("The discovery pool contains " +
                 discoveryPool.points.size() + " points, " +
