@@ -688,19 +688,21 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         RelationPane tablePane = cons.getApplication().getFactory().newRelationPane();
         final RelationPane.RelationRow[] rr = new RelationPane.RelationRow[1];
         rr[0] = new RelationPane.RelationRow();
-        String liStyle = "class=\"RelationTool\"";
-        StringBuilder html = new StringBuilder("<html>Please wait, this may take a while...</html>");
+        StringBuilder html = new StringBuilder("<html>");
         rr[0].setInfo(html.toString());
-        tablePane.showDialog("Discovered theorems on point " + input.getLabelSimple(), rr,
-                cons.getApplication());
-        // FIXME: This is not shown on the web, and the "Please wait..." message is not visible
-        // on the desktop, either.
+        if (!cons.getKernel().isSilentMode()) {
+            tablePane.showDialog("Discovered theorems on point " + input.getLabelSimple(), rr,
+                    cons.getApplication());
+            // FIXME: This is not shown on the web.
+        }
 
         detectProperties((GeoPoint) this.input);
 
         if (cons.getKernel().isSilentMode()) {
             return;
         }
+
+        String liStyle = "class=\"RelationTool\"";
 
         int pointitems = 0;
         int items = 0;
