@@ -447,6 +447,9 @@ public class Pool {
 
     public void removePoint(GeoPoint gp) {
         Point p = getPoint(gp);
+        if (p == null) {
+            return;
+        }
 
         ArrayList<Line> oldLines = (ArrayList<Line>) lines.clone();
         for (Line l : oldLines) {
