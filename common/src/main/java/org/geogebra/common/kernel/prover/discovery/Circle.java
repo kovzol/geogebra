@@ -61,20 +61,25 @@ public class Circle {
 
     // Literally the same as Line.toString()
     public String toString() {
-        String[] labels = new String[points.size()];
+        GeoPoint[] geoPoints = new GeoPoint[points.size()];
         int i = 0;
         for (Point p : points) {
-            labels[i] = p.getGeoPoint().getLabelSimple();
+            geoPoints[i] = p.getGeoPoint();
             i++;
         }
-        sort(labels);
+        sort(geoPoints);
         String ret = "";
-        for (String l : labels) {
-            ret += l;
+
+        for (GeoPoint gp : geoPoints) {
+            String label = gp.getColoredLabel();
+            label = label.replaceAll("\\<font color[^>]*>","");
+            // label = label.replace("</font>","");
+            // FIXME: There is a remaining </font> that might be removed. But not both!
+            ret += label;
+            i++;
         }
         return ret;
     }
-
 
     public GeoConic getGeoConic() {
         return geoConic;

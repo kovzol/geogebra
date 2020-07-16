@@ -47,16 +47,16 @@ public class Point {
 	}
 
 	public String toString() {
-		String[] labels = new String[points.size()];
+		GeoPoint[] geoPoints = new GeoPoint[points.size()];
 		int i = 0;
 		for (GeoPoint p : points) {
-			labels[i] = p.getLabelSimple();
+			geoPoints[i] = p;
 			i++;
 		}
-		sort(labels);
+		sort(geoPoints);
 		StringBuilder ret = new StringBuilder();
-		for (String l : labels) {
-			ret.append(l + "=");
+		for (GeoPoint gp : geoPoints) {
+			ret.append(gp.getColoredLabel() + "=");
 		}
 		ret.deleteCharAt(ret.length() - 1);
 		return ret.toString();

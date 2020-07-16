@@ -13,9 +13,10 @@ public class Segment {
     }
 
     public String toString() {
-        String p1 = startPoint.getGeoPoint().getLabelSimple();
-        String p2 = endPoint.getGeoPoint().getLabelSimple();
-        if (p1.compareTo(p2) > 0) {
+        String p1 = startPoint.getGeoPoint().getColoredLabel().replaceAll("\\<font color[^>]*>","");
+        String p2 = endPoint.getGeoPoint().getColoredLabel().replaceAll("\\<font color[^>]*>","");
+        // FIXME: There is a remaining </font> that might be removed. But not both!
+        if (startPoint.toString().compareTo(endPoint.toString()) > 0) {
             // swap them if the alphabetic order is wrong
             String p = p1;
             p1 = p2;
