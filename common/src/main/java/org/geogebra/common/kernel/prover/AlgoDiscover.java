@@ -931,7 +931,7 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             }
             gs.setEuclidianVisible(true);
             gs.setLineType(EuclidianStyleConstants.LINE_TYPE_FULL);
-            gs.setLineThickness(2);
+            gs.setLineThickness(3);
             gs.setLabelVisible(false);
             gs.setEuclidianVisible(true);
             gs.setLineType(EuclidianStyleConstants.LINE_TYPE_FULL);
