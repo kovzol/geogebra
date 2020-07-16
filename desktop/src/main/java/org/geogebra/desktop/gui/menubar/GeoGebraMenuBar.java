@@ -32,6 +32,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
 import org.geogebra.common.GeoGebraConstants;
+import org.geogebra.common.cas.realgeom.RealGeomWebService;
 import org.geogebra.common.cas.singularws.SingularWebService;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
@@ -552,6 +553,7 @@ public class GeoGebraMenuBar extends JMenuBar implements EventRenderable {
 		final LocalizationD loc = app.getLocalization();
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><b>");
+		sb.append("<font color=red>GeoGebra Discovery</font></b> (experimental version of GeoGebra), based on<br><b>");
 		appendVersion(sb, app);
 		sb.append("</b>  (");
 		sb.append("Java ");
@@ -567,8 +569,15 @@ public class GeoGebraMenuBar extends JMenuBar implements EventRenderable {
 
 		if (singularWS != null
 				&& (v = singularWS.getSingularVersionString()) != null) {
-			sb.append(",<br>" + v);
+			sb.append(",<br>singularws=" + v);
 		}
+
+		RealGeomWebService realGeomWS = app.getRealGeomWS();
+		if (realGeomWS != null
+				&& (v = realGeomWS.getConnectionSite()) != null) {
+			sb.append(",<br>realgeomws=" + v);
+		}
+
 		sb.append(")<br>");
 
 		sb.append(GeoGebraConstants.BUILD_DATE);
