@@ -95,7 +95,7 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
      * Build the whole database of properties,
      * including all points in the construction list.
      */
-    private void detectProperties(GeoPoint p) {
+    private boolean detectProperties(GeoPoint p) {
         HashSet<GeoElement> ges = new HashSet<>();
         for (GeoElement ge : cons.getGeoSetLabelOrder()) {
             ges.add(ge);
@@ -104,13 +104,15 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         int i = 0;
         for (GeoElement ge : ges) {
             if (ge instanceof GeoPoint && !p.equals(ge)) {
-                collectIdenticalPoints((GeoPoint) ge, false);
+                if (!collectIdenticalPoints((GeoPoint) ge, false)) {
+                    return false;
+                }
                 i++;
             }
         }
         if (i == 0) {
             // Only one point exists. No discovery will be done.
-            return;
+            return false;
         }
 
         detectOrthogonalCollinearities();
@@ -132,13 +134,14 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         }
         collectParallelisms(discoveryPool.getPoint(p), true);
         collectEqualLongSegments(discoveryPool.getPoint(p), true);
+        return true;
     }
 
     /*
      * Extend the database of identical points by
      * collecting all of them for a given input.
      */
-    private void collectIdenticalPoints(GeoPoint p0, boolean discover) {
+    private boolean collectIdenticalPoints(GeoPoint p0, boolean discover) {
         Pool discoveryPool = cons.getDiscoveryPool();
 
         HashSet<GeoPoint> prevPoints = new HashSet<GeoPoint>();
@@ -181,6 +184,10 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                             // Theorem: Identical points
                             discoveryPool.addIdenticality(p0, p1).setTrivial(false);
                         }
+                    } else {
+                        // Here we don't know anything about the equality of the points.
+                        // So we need to say goodbye to be on the safe side and exit Discover.
+                        return false;
                     }
                     ap.remove();
                 }
@@ -188,9 +195,7 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             }
         }
 
-        if (p0.getKernel().isSilentMode()) {
-            return;
-        }
+        return true;
 
     }
 
@@ -698,8 +703,11 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
                     cons.getApplication());
             // FIXME: This is not shown on the web.
         }
-
-        detectProperties((GeoPoint) this.input);
+        if (!detectProperties((GeoPoint) this.input))  {
+            tablePane.changeRowLeftColumn(0, "<html>The construction contains unsupported steps.<br>" +
+                    "Please redraw the figure in a different way.");
+            return;
+            }
 
         if (cons.getKernel().isSilentMode()) {
             return;
