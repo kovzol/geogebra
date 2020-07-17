@@ -169,28 +169,26 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         while (pointPairs.hasNext()) {
             GeoPoint p1 = pointPairs.next();
             if (!discoveryPool.areIdentical(p0, p1)) {
+                // Conjecture: Indentical points (always, no numerical check is done!)
                 AlgoAreEqual aac = new AlgoAreEqual(cons, p0, p1);
-                if (aac.getResult().getBoolean()) {
-                    // Conjecture: Indentical points
-                    GeoElement root = new GeoBoolean(cons);
-                    root.setParentAlgorithm(aac);
-                    AlgoProveDetails ap = new AlgoProveDetails(cons, root);
-                    ap.compute();
-                    GeoElement[] o = ap.getOutput();
-                    GeoList output = (GeoList) o[0];
-                    if (output.size() > 0) {
-                        GeoElement truth = output.get(0);
-                        if (((GeoBoolean) truth).getBoolean()) {
-                            // Theorem: Identical points
-                            discoveryPool.addIdenticality(p0, p1).setTrivial(false);
-                        }
-                    } else {
-                        // Here we don't know anything about the equality of the points.
-                        // So we need to say goodbye to be on the safe side and exit Discover.
-                        return false;
+                GeoElement root = new GeoBoolean(cons);
+                root.setParentAlgorithm(aac);
+                AlgoProveDetails ap = new AlgoProveDetails(cons, root);
+                ap.compute();
+                GeoElement[] o = ap.getOutput();
+                GeoList output = (GeoList) o[0];
+                if (output.size() > 0) {
+                    GeoElement truth = output.get(0);
+                    if (((GeoBoolean) truth).getBoolean()) {
+                        // Theorem: Identical points
+                        discoveryPool.addIdenticality(p0, p1).setTrivial(false);
                     }
-                    ap.remove();
+                } else {
+                    // Here we don't know anything about the equality of the points.
+                    // So we need to say goodbye to be on the safe side and exit Discover.
+                    return false;
                 }
+                ap.remove();
                 aac.remove();
             }
         }
