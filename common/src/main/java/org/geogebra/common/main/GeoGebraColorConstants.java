@@ -157,8 +157,19 @@ public class GeoGebraColorConstants {
 	/** GEOGEBRA_OBJECT_PINK */
 	public static final GColor GEOGEBRA_OBJECT_PINK = GColor.newColor(216, 27,
 			96);
+	/* Further colors for Discover. */
+	public static final GColor DISCOVER_VIOLET = GColor.newColor(0xb2, 0,
+			0xed);
+	public static final GColor DISCOVER_GOLD = GColor.newColor(0xf9, 0xa6,
+			0x02);
+	public static final GColor DISCOVER_DENIM = GColor.newColor(0x13, 0x1e,
+			0x3a);
+	public static final GColor DISCOVER_FOREST = GColor.newColor(0x0b, 0x66,
+			0x23);
+	public static final GColor DISCOVER_CEDAR = GColor.newColor(0x4b, 0x3a,
+			0x26);
 
-    /**
+	/**
      * Accent color for GeoGebra
      */
     public static final GColor GEOGEBRA_ACCENT = GColor.newColor(101, 87, 210);
