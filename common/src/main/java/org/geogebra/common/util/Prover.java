@@ -397,7 +397,9 @@ public abstract class Prover {
 		// Botana's prover is also fast for general problems.
 		proveAutoOrder.add(ProverEngine.BOTANAS_PROVER);
 		// Wu may be a bit slower.
-		proveAutoOrder.add(ProverEngine.OPENGEOPROVER_WU);
+		// proveAutoOrder.add(ProverEngine.OPENGEOPROVER_WU);
+		// There are some problems with the communication between GeoGebra and OGP,
+		// so this is disabled for now.
 		// Area method is not polished yet, thus it's disabled:
 		// proveAutoOrder.add(ProverEngine.OPENGEOPROVER_AREA);
 
@@ -407,7 +409,9 @@ public abstract class Prover {
 		// the shortest conditions, best for educational use.
 		proveDetailsAutoOrder.add(ProverEngine.BOTANAS_PROVER);
 		// Wu's method does the most general good job.
-		proveDetailsAutoOrder.add(ProverEngine.OPENGEOPROVER_WU);
+		// proveDetailsAutoOrder.add(ProverEngine.OPENGEOPROVER_WU);
+		// There are some problems with the communication between GeoGebra and OGP,
+		// so this is disabled for now.
 		// Recio does not give NDGs:
 		// proveDetailsAutoOrder.add(ProverEngine.RECIOS_PROVER);
 		// Area method is buggy at the moment, needs Damien's fixes.
