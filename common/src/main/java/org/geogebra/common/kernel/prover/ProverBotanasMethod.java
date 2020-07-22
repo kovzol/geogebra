@@ -819,8 +819,7 @@ public class ProverBotanasMethod {
 						 * affected.
 						 */
 						if (algo instanceof AlgoPointOnPath
-								&& algo.input[0] instanceof GeoLine
-								&& proverSettings.transcext) {
+								&& algo.input[0] instanceof GeoLine) {
 							maxFixcoords = 2;
 						}
 
