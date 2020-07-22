@@ -72,9 +72,7 @@ public class Circle {
 
         for (GeoPoint gp : geoPoints) {
             String label = gp.getColoredLabel();
-            label = label.replaceAll("\\<font color[^>]*>","");
-            // label = label.replace("</font>","");
-            // FIXME: There is a remaining </font> that might be removed. But not both!
+            label = label.replaceAll("\\<font color[^>]*>(.*?)\\</font>","$1");
             ret += label;
             i++;
         }
