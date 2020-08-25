@@ -19,7 +19,7 @@ describe('Discovery in regular polygons', () => {
         }
     });
 
-    it("The sides are of a square are of equal length", () => {
+    it("The sides and the diagonals of a square are of equal length", () => {
         cy.writeInAVInput("p=Polygon(A,B,4)\n");
         cy.wait(200);
         cy.window().then((win) => {
@@ -27,6 +27,21 @@ describe('Discovery in regular polygons', () => {
             cy.get(".RelationTool").contains("AB = AD = BC = CD");
             cy.get(".RelationTool").contains("AC = BD");
         }
+    });
+
+    it("The sides and the diagonals of a square are of equal length (by typing)", () => {
+        cy.writeInAVInput("p=Polygon(A,B,4)\n");
+        cy.wait(200);
+        cy.writeInAVInput("Discover(B)\n");
+        cy.get(".RelationTool").contains("AB = AD = BC = CD");
+        cy.get(".RelationTool").contains("AC = BD");
+    });
+
+    it("The diagonals of a regular pentagon are of equal length (by typing)", () => {
+        cy.writeInAVInput("p=Polygon(A,B,5)\n");
+        cy.wait(200);
+        cy.writeInAVInput("Discover(B)\n");
+        cy.get(".RelationTool").contains("AC = AD = BD = BE = CE");
     });
 
 });
