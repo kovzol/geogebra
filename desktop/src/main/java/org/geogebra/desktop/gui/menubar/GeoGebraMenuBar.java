@@ -574,7 +574,8 @@ public class GeoGebraMenuBar extends JMenuBar implements EventRenderable {
 
 		RealGeomWebService realGeomWS = app.getRealGeomWS();
 		if (realGeomWS != null
-				&& (v = realGeomWS.getConnectionSite()) != null) {
+				&& (v = realGeomWS.getConnectionSite()) != null
+		        && (realGeomWS.isAvailable())) {
 			sb.append(",<br>realgeomws=" + v);
 		}
 
