@@ -44,4 +44,17 @@ describe('Discovery in regular polygons', () => {
         cy.get(".RelationTool").contains("AC = AD = BD = BE = CE");
     });
 
+    it("The diagonals of a regular pentagon are parallel to a given side (by typing)", () => {
+        cy.writeInAVInput("p=Polygon(A,B,5)\n");
+        cy.wait(200);
+        cy.writeInAVInput("Discover(B)\n");
+        cy.get(".RelationTool").should(($div) => {
+           const text = $div.text();
+           expect(text).to.include("AD ∥ BC");
+           expect(text).to.include("AE ∥ BD");
+           expect(text).to.include("BE ∥ CD");
+           expect(text).to.include("AB ∥ CE");
+           });
+    });
+
 });
