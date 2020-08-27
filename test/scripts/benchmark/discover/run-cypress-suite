@@ -1,4 +1,14 @@
 #!/bin/sh
+# We assume that web3d has already been compiled.
+set -e
 cd ../../../../uitest
+rm -fr content
+mkdir content
+cp ../web/war/classic.html content/index.html
+cp -a ../web/war/web3d content/web3d
 npm install
-CYPRESS_baseUrl=http://autgeo.online/geogebra-discovery/ npx cypress run --headed --spec cypress/integration/ART/Discover.spec.js
+npx http-server -p 8888 content &
+export HTTP_SERVER_PID=$!
+while ! nc -z localhost 8888 && kill -0 $HTTP_SERVER_PID ; do sleep 1; echo -n "."; done
+npx cypress run $* --spec cypress/integration/ART/Discover.spec.js
+kill $HTTP_SERVER_PID

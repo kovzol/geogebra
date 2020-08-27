@@ -1,4 +1,2 @@
 #!/bin/sh
-cd ../../../../uitest
-npm install
-CYPRESS_baseUrl=http://autgeo.online/geogebra-discovery/ npx cypress run --spec cypress/integration/ART/Discover.spec.js
+./run-cypress-suite
