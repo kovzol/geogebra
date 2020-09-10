@@ -154,7 +154,7 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
            const text = $div.text();
            expect(text).to.include("Identical points: G=H=I, J=K=L, P=Q=R");
            expect(text).to.include("Collinear points: GJQ");
-           expect(text).to.include("Concyclyc points: BDFQ, AEFQ, CDEQ");
+           expect(text).to.include("Concyclic points: BDFQ, AEFQ, CDEQ");
            });
     });
 
