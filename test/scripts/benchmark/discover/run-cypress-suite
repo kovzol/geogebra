@@ -10,5 +10,5 @@ npm install
 npx http-server -p 8888 content &
 export HTTP_SERVER_PID=$!
 while ! nc -z localhost 8888 && kill -0 $HTTP_SERVER_PID ; do sleep 1; echo -n "."; done
-npx cypress run $* --spec cypress/integration/ART/Discover.spec.js
+npx cypress run $* --spec 'cypress/integration/ART/Discover*.spec.js'
 kill $HTTP_SERVER_PID
