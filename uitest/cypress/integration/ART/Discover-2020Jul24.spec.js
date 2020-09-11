@@ -99,17 +99,17 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.wait(200);
         cy.writeInAVInput("AB=Line(A,B)\n");
         cy.wait(200);
-        cy.writeInAVInput("M=PerpendicularLine(A,BC)\n");
+        cy.writeInAVInput("AM=PerpendicularLine(A,BC)\n");
         cy.wait(200);
-        cy.writeInAVInput("N=PerpendicularLine(B,AC)\n");
+        cy.writeInAVInput("BN=PerpendicularLine(B,AC)\n");
         cy.wait(200);
-        cy.writeInAVInput("O=PerpendicularLine(C,AB)\n");
+        cy.writeInAVInput("CO=PerpendicularLine(C,AB)\n");
         cy.wait(200);
-        cy.writeInAVInput("AM=Line(A,M)\n");
+        cy.writeInAVInput("M=Intersect(AM,BC)\n");
         cy.wait(200);
-        cy.writeInAVInput("BN=Line(B,N)\n");
+        cy.writeInAVInput("N=Intersect(BN,AC)\n");
         cy.wait(200);
-        cy.writeInAVInput("CO=Line(C,O)\n");
+        cy.writeInAVInput("O=Intersect(CO,AB)\n");
         cy.wait(200);
         cy.writeInAVInput("G=Intersect(AM,BN)\n");
         cy.wait(200);
@@ -145,9 +145,9 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
-           expect(text).to.include("AG ∥ DQ");
-           expect(text).to.include("BG ∥ EQ");
-           expect(text).to.include("CG ∥ FQ");
+           expect(text).to.include("AMG ∥ DQ");
+           expect(text).to.include("BNG ∥ EQ");
+           expect(text).to.include("COG ∥ FQ");
            expect(text).to.include("AQ = BQ = CQ");
            });
         cy.get(".gwt-HTML").should(($div) => {
@@ -157,5 +157,74 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
            expect(text).to.include("Concyclic points: BDFQ, AEFQ, CDEQ");
            });
     });
+
+    it("Fig 12-13 (Nine-point circle)", () => {
+        cy.writeInAVInput("A=(-4,0)\n");
+        cy.wait(200);
+        cy.writeInAVInput("B=(-1,0)\n");
+        cy.wait(200);
+        cy.writeInAVInput("C=(-2,3)\n");
+        cy.wait(200);
+        cy.writeInAVInput("D=Midpoint(B,C)\n");
+        cy.wait(200);
+        cy.writeInAVInput("E=Midpoint(A,C)\n");
+        cy.wait(200);
+        cy.writeInAVInput("F=Midpoint(A,B)\n");
+        cy.wait(200);
+        cy.writeInAVInput("BC=Line(B,C)\n");
+        cy.wait(200);
+        cy.writeInAVInput("AC=Line(A,C)\n");
+        cy.wait(200);
+        cy.writeInAVInput("AB=Line(A,B)\n");
+        cy.wait(200);
+        cy.writeInAVInput("AM=PerpendicularLine(A,BC)\n");
+        cy.wait(200);
+        cy.writeInAVInput("BN=PerpendicularLine(B,AC)\n");
+        cy.wait(200);
+        cy.writeInAVInput("CO=PerpendicularLine(C,AB)\n");
+        cy.wait(200);
+        cy.writeInAVInput("M=Intersect(AM,BC)\n");
+        cy.wait(200);
+        cy.writeInAVInput("N=Intersect(BN,AC)\n");
+        cy.wait(200);
+        cy.writeInAVInput("O=Intersect(CO,AB)\n");
+        cy.wait(200);
+        cy.writeInAVInput("G=Intersect(AM,BN)\n");
+        cy.wait(200);
+        cy.writeInAVInput("H=Intersect(BN,CO)\n");
+        cy.wait(200);
+        cy.writeInAVInput("I=Intersect(CO,AM)\n");
+        cy.wait(200);
+        cy.writeInAVInput("AD=Line(A,D)\n");
+        cy.wait(200);
+        cy.writeInAVInput("BE=Line(B,E)\n");
+        cy.wait(200);
+        cy.writeInAVInput("CF=Line(C,F)\n");
+        cy.wait(200);
+        cy.writeInAVInput("J=Midpoint(A,G)\n");
+        cy.wait(200);
+        cy.writeInAVInput("K=Midpoint(B,G)\n");
+        cy.wait(200);
+        cy.writeInAVInput("L=Midpoint(C,G)\n");
+        cy.wait(200);
+        cy.writeInAVInput("Discover(D)\n");
+        cy.wait(200);
+        cy.get(".RelationTool").should(($div) => {
+           const text = $div.text();
+           expect(text).to.include("ACEN ∥ DF ∥ JL");
+           expect(text).to.include("ABFO ∥ DE ∥ JK");
+           expect(text).to.include("COGL ∥ DK ∥ EJ");
+           expect(text).to.include("BNGK ∥ DL ∥ FJ");
+           expect(text).to.include("BCDM ∥ EF ∥ KL");
+           expect(text).to.include("AF = BF = DE = FM = FN = JK");
+           expect(text).to.include("DJ = EK = FL");
+           });
+        cy.get(".gwt-HTML").should(($div) => {
+           const text = $div.text();
+           expect(text).to.include("Identical points: G=H=I");
+           expect(text).to.include("Concyclic points: DEFMNOJKL"); // fix order
+           });
+    });
+
 
 });
