@@ -226,5 +226,93 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
            });
     });
 
+    // This times out on web, but works well on desktop.
+    it("Fig 14-15 (IMO 2010 problem)", () => {
+        cy.writeInAVInput("A=(-4,0)\n");
+        cy.wait(200);
+        cy.writeInAVInput("B=(-1,0)\n");
+        cy.wait(200);
+        cy.writeInAVInput("C=(-3,3)\n");
+        cy.wait(200);
+        cy.writeInAVInput("BC=Line(B,C)\n");
+        cy.wait(200);
+        cy.writeInAVInput("AC=Line(A,C)\n");
+        cy.wait(200);
+        cy.writeInAVInput("AB=Line(A,B)\n");
+        cy.wait(200);
+        cy.writeInAVInput("AD=PerpendicularLine(A,BC)\n");
+        cy.wait(200);
+        cy.writeInAVInput("BE=PerpendicularLine(B,AC)\n");
+        cy.wait(200);
+        cy.writeInAVInput("CF=PerpendicularLine(C,AB)\n");
+        cy.wait(200);
+        cy.writeInAVInput("D=Intersect(AD,BC)\n");
+        cy.wait(200);
+        cy.writeInAVInput("E=Intersect(BE,AC)\n");
+        cy.wait(200);
+        cy.writeInAVInput("F=Intersect(CF,AB)\n");
+        cy.wait(200);
+        cy.writeInAVInput("cABC=Circle(A,B,C)\n");
+        cy.wait(200);
+        cy.writeInAVInput("P=Intersect(cABC,Line(E,F),2)\n");
+        cy.wait(200);
+        cy.writeInAVInput("Q=Intersect(Line(B,P),Line(D,F))\n");
+        cy.wait(200);
+        cy.writeInAVInput("Discover(Q)\n");
+        cy.wait(200);
+        cy.get(".RelationTool").should(($div) => {
+           const text = $div.text();
+           expect(text).to.include("DP ∥ EQ");
+           expect(text).to.include("AP = EQ");
+           });
+        cy.get(".gwt-HTML").should(($div) => {
+           const text = $div.text();
+           expect(text).to.include("Concyclic points: AFPQ, CDPQ");
+           });
+    });
+
+    // This times out on web, but works on desktop with increased prover timeout setting.
+    it("Fig 16-17 (Pappus)", () => {
+        cy.writeInAVInput("A=(-4,3)\n");
+        cy.wait(200);
+        cy.writeInAVInput("B=(-1,3)\n");
+        cy.wait(200);
+        cy.writeInAVInput("AB=Line(A,B)\n");
+        cy.wait(200);
+        cy.writeInAVInput("E=Point(AB)\n");
+        cy.wait(200);
+        cy.writeInAVInput("C=(-4,0)\n");
+        cy.wait(200);
+        cy.writeInAVInput("D=(-1,0)\n");
+        cy.wait(200);
+        cy.writeInAVInput("CD=Line(C,D)\n");
+        cy.wait(200);
+        cy.writeInAVInput("F=Point(CD)\n");
+        cy.wait(200);
+        cy.writeInAVInput("AD=Line(A,D)\n");
+        cy.wait(200);
+        cy.writeInAVInput("AF=Line(A,F)\n");
+        cy.wait(200);
+        cy.writeInAVInput("BC=Line(B,C)\n");
+        cy.wait(200);
+        cy.writeInAVInput("BF=Line(B,F)\n");
+        cy.wait(200);
+        cy.writeInAVInput("CE=Line(C,E)\n");
+        cy.wait(200);
+        cy.writeInAVInput("DE=Line(D,E)\n");
+        cy.wait(200);
+        cy.writeInAVInput("G=Intersect(AD,BC)\n");
+        cy.wait(200);
+        cy.writeInAVInput("H=Intersect(AF,CE)\n");
+        cy.wait(200);
+        cy.writeInAVInput("I=Intersect(BF,DE)\n");
+        cy.wait(200);
+        cy.writeInAVInput("Discover(G)\n");
+        cy.wait(200);
+        cy.get(".gwt-HTML").should(($div) => {
+           const text = $div.text();
+           expect(text).to.include("Collinear points: GHI");
+           });
+    });
 
 });
