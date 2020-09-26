@@ -336,6 +336,8 @@ public class AlgoAngularBisectorLines extends AlgoElement
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
+		// Note: this is definitely slower than AlgoAngularBisectorPoints
+		// and may be incorrect. FIXME
 		if (botanaPolynomials != null) {
 			return botanaPolynomials;
 		}
