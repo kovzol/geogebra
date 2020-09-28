@@ -795,6 +795,9 @@ public class GGWToolBar extends Composite
 		case EuclidianConstants.MODE_DISCOVER:
 			return resourceBundle.mode_discover_32();
 
+		case EuclidianConstants.MODE_INCIRCLE_CENTER:
+			return resourceBundle.mode_incircle_center_32();
+
 		case EuclidianConstants.MODE_RIGID_POLYGON:
 			return resourceBundle.mode_rigidpolygon_32();
 

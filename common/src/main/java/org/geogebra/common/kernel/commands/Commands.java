@@ -369,6 +369,8 @@ public enum Commands implements CommandsConstants,
 
 	Incircle(TABLE_CONIC),
 
+	IncircleCenter(TABLE_CONIC),
+
 	Semicircle(TABLE_CONIC),
 
 	FirstAxisLength(TABLE_CONIC),

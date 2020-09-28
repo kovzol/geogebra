@@ -441,6 +441,7 @@ public abstract class CommandDispatcher {
 			case Ordinal:
 			case Parameter:
 			case Incircle:
+			case IncircleCenter:
 			case SelectedElement:
 			case SelectedIndex:
 			case Unique:

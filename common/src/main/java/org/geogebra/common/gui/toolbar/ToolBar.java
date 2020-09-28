@@ -23,7 +23,7 @@ public class ToolBar {
 	static private final String[][] DEFAULT_TOOLBAR_PRE_5_0_280 = {
 			{ "0", "0 39" }, { "1 501 67 5 19 72", "1 501 67 5 19 72 75 76" },
 			{ "2 15 45 18 65 7 37" }, { "4 3 8 9 13 44 58 47" },
-			{ "16 51 64 70" }, { "10 34 53 11 24 20 22 21 23" },
+			{ "16 51 64 70" }, { "10 34 53 11 142 24 20 22 21 23" },
 			{ "55 56 57 12" }, { "36 46 38 49 50 71" }, { "30 29 54 32 31 33" },
 			{ "17 26 62 73 14 68", "17 26 62 14 141 66 68",
 					"17 26 62 73 14 66 68" },
@@ -188,6 +188,8 @@ public class ToolBar {
 		sb.append(EuclidianConstants.MODE_COMPASSES);
 		sb.append(" ");
 		sb.append(EuclidianConstants.MODE_CIRCLE_THREE_POINTS);
+		sb.append(" ");
+		sb.append(EuclidianConstants.MODE_INCIRCLE_CENTER);
 		sb.append(" , ");
 		sb.append(EuclidianConstants.MODE_SEMICIRCLE);
 		sb.append("  ");

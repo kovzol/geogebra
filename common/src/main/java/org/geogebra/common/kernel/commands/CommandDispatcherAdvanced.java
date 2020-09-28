@@ -39,6 +39,7 @@ import org.geogebra.common.kernel.advanced.CmdIdentity;
 import org.geogebra.common.kernel.advanced.CmdImplicitPoly;
 import org.geogebra.common.kernel.advanced.CmdImplicitSurface;
 import org.geogebra.common.kernel.advanced.CmdIncircle;
+import org.geogebra.common.kernel.advanced.CmdIncircleCenter;
 import org.geogebra.common.kernel.advanced.CmdIndexOf;
 import org.geogebra.common.kernel.advanced.CmdInsert;
 import org.geogebra.common.kernel.advanced.CmdIntersectPath;
@@ -167,6 +168,8 @@ public class CommandDispatcherAdvanced implements CommandDispatcherInterface {
 			return new CmdParameter(kernel);
 		case Incircle:
 			return new CmdIncircle(kernel);
+		case IncircleCenter:
+			return new CmdIncircleCenter(kernel);
 		case SelectedElement:
 			return new CmdSelectedElement(kernel);
 		case SelectedIndex:
