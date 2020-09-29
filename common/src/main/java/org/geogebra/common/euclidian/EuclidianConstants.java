@@ -259,6 +259,9 @@ public final class EuclidianConstants {
 	/** Incircle center */
 	public static final int MODE_INCIRCLE_CENTER = 142;
 
+	/** Incircle */
+	public static final int MODE_INCIRCLE = 143;
+
 	/** Point on Object */
 	public static final int MODE_POINT_ON_OBJECT = 501;
 
@@ -673,6 +676,9 @@ public final class EuclidianConstants {
 
 		case EuclidianConstants.MODE_INCIRCLE_CENTER:
 			return "IncircleCenter";
+
+		case EuclidianConstants.MODE_INCIRCLE:
+			return "Incircle";
 
 		case EuclidianConstants.MODE_TRANSLATEVIEW:
 			return "TranslateView";

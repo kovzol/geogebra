@@ -16,6 +16,7 @@ import org.geogebra.common.kernel.TransformMirror;
 import org.geogebra.common.kernel.TransformRotate;
 import org.geogebra.common.kernel.TransformTranslate;
 import org.geogebra.common.kernel.advanced.AlgoCentroidPolygon;
+import org.geogebra.common.kernel.advanced.AlgoIncircle;
 import org.geogebra.common.kernel.advanced.AlgoIncircleCenter;
 import org.geogebra.common.kernel.arithmetic.Function;
 import org.geogebra.common.kernel.commands.EvalInfo;
@@ -3545,6 +3546,15 @@ public class AlgoDispatcher {
 		GeoPointND incenter = algo.getIncenter();
 		incenter.setLabel(label);
 		return incenter.toGeoElement();
+	}
+
+	public GeoElement incircle(String label, GeoPoint A, GeoPoint B,
+			GeoPoint C) {
+		AlgoIncircle algo = new AlgoIncircle(cons, A,
+				B, C);
+		GeoConicND incircle = algo.getCircle();
+		incircle.setLabel(label);
+		return incircle.toGeoElement();
 	}
 
 }

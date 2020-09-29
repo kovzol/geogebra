@@ -806,6 +806,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		case EuclidianConstants.MODE_RELATION:
 		case EuclidianConstants.MODE_DISCOVER:
 		case EuclidianConstants.MODE_INCIRCLE_CENTER:
+		case EuclidianConstants.MODE_INCIRCLE:
 		case EuclidianConstants.MODE_SLIDER:
 		case EuclidianConstants.MODE_SHOW_HIDE_OBJECT:
 		case EuclidianConstants.MODE_SHOW_HIDE_LABEL:
@@ -2695,6 +2696,11 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		case EuclidianConstants.MODE_INCIRCLE_CENTER:
 			ret[0] = getAlgoDispatcher().incircleCenter(null, (GeoPoint) points[0],
 						(GeoPoint) points[1], (GeoPoint) points[2]);
+			break;
+
+		case EuclidianConstants.MODE_INCIRCLE:
+			ret[0] = getAlgoDispatcher().incircle(null, (GeoPoint) points[0],
+					(GeoPoint) points[1], (GeoPoint) points[2]);
 			break;
 
 		case EuclidianConstants.MODE_ELLIPSE_THREE_POINTS:
@@ -5206,6 +5212,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		// new circle (3 points)
 		case EuclidianConstants.MODE_CIRCLE_THREE_POINTS:
 		case EuclidianConstants.MODE_INCIRCLE_CENTER:
+		case EuclidianConstants.MODE_INCIRCLE:
 		case EuclidianConstants.MODE_ELLIPSE_THREE_POINTS:
 		case EuclidianConstants.MODE_HYPERBOLA_THREE_POINTS:
 		case EuclidianConstants.MODE_CIRCLE_ARC_THREE_POINTS:
@@ -8085,6 +8092,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		case EuclidianConstants.MODE_RELATION:
 		case EuclidianConstants.MODE_DISCOVER:
 		case EuclidianConstants.MODE_INCIRCLE_CENTER:
+		case EuclidianConstants.MODE_INCIRCLE:
 		case EuclidianConstants.MODE_SHOW_HIDE_CHECKBOX:
 		case EuclidianConstants.MODE_BUTTON_ACTION:
 		case EuclidianConstants.MODE_TEXTFIELD_ACTION:
@@ -8979,6 +8987,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		case EuclidianConstants.MODE_CIRCLE_POINT_RADIUS:
 		case EuclidianConstants.MODE_CIRCLE_THREE_POINTS:
 		case EuclidianConstants.MODE_INCIRCLE_CENTER:
+		case EuclidianConstants.MODE_INCIRCLE:
 		case EuclidianConstants.MODE_ELLIPSE_THREE_POINTS:
 		case EuclidianConstants.MODE_HYPERBOLA_THREE_POINTS:
 		case EuclidianConstants.MODE_CIRCLE_ARC_THREE_POINTS:
@@ -10895,6 +10904,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		case EuclidianConstants.MODE_CIRCLE_TWO_POINTS:
 		case EuclidianConstants.MODE_CIRCLE_THREE_POINTS:
 		case EuclidianConstants.MODE_INCIRCLE_CENTER:
+		case EuclidianConstants.MODE_INCIRCLE:
 		case EuclidianConstants.MODE_ELLIPSE_THREE_POINTS:
 		case EuclidianConstants.MODE_HYPERBOLA_THREE_POINTS:
 		case EuclidianConstants.MODE_CONIC_FIVE_POINTS:
@@ -11776,17 +11786,8 @@ public abstract class EuclidianController implements SpecialPointsListener {
 
 		switch (this.mode) {
 		case EuclidianConstants.MODE_CIRCLE_THREE_POINTS:
-			this.pen = new EuclidianPenFreehand(app, view);
-			((EuclidianPenFreehand) pen)
-					.setExpected(ShapeType.circleThreePoints);
-
-			// the point will be deleted if no circle can be built, therefore
-			// make sure that only a newly created point is set
-			point = (this.pointCreated != null)
-					&& movedGeoPoint instanceof GeoPoint
-							? (GeoPoint) movedGeoPoint : null;
-			break;
 		case EuclidianConstants.MODE_INCIRCLE_CENTER:
+		case EuclidianConstants.MODE_INCIRCLE:
 			this.pen = new EuclidianPenFreehand(app, view);
 			((EuclidianPenFreehand) pen)
 					.setExpected(ShapeType.circleThreePoints);

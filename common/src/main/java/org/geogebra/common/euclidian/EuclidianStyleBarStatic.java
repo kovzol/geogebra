@@ -777,6 +777,8 @@ public class EuclidianStyleBarStatic {
 				ConstructionDefaults.DEFAULT_CONIC);
 		defaultGeoMap.put(EuclidianConstants.MODE_INCIRCLE_CENTER,
 				ConstructionDefaults.DEFAULT_CONIC);
+		defaultGeoMap.put(EuclidianConstants.MODE_INCIRCLE,
+				ConstructionDefaults.DEFAULT_CONIC);
 		defaultGeoMap.put(EuclidianConstants.MODE_SEMICIRCLE,
 				ConstructionDefaults.DEFAULT_CONIC);
 		defaultGeoMap.put(EuclidianConstants.MODE_CIRCLE_ARC_THREE_POINTS,

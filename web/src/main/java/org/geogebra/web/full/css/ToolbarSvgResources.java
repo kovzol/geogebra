@@ -237,6 +237,10 @@ public interface ToolbarSvgResources extends ClientBundle, ToolbarResources {
 	@Override
 	SVGResource mode_incircle_center_32();
 
+	@Source("org/geogebra/common/icons/svg/web/toolIcons/mode_incircle.svg")
+	@Override
+	SVGResource mode_incircle_32();
+
 	@Source("org/geogebra/common/icons/svg/web/toolIcons/mode_rigidpolygon.svg")
 	@Override
 	SVGResource mode_rigidpolygon_32();

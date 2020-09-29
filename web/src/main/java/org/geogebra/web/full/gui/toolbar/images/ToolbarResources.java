@@ -87,6 +87,8 @@ public interface ToolbarResources {
 
 	ResourcePrototype mode_incircle_center_32();
 
+	ResourcePrototype mode_incircle_32();
+
 	ResourcePrototype mode_integral_32();
 
 	ResourcePrototype mode_intersect_32();
