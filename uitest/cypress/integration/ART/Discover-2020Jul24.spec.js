@@ -263,7 +263,7 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
            expect(text).to.include("DP ∥ EQ");
-           expect(text).to.include("AP = EQ");
+           expect(text).to.include("AP = AQ");
            });
         cy.get(".gwt-HTML").should(($div) => {
            const text = $div.text();
