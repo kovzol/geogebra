@@ -799,7 +799,7 @@ public class GGWToolBar extends Composite
 			return resourceBundle.mode_incircle_center_32();
 
 		case EuclidianConstants.MODE_INCIRCLE:
-			return resourceBundle.mode_incircle_center_32();
+			return resourceBundle.mode_incircle_32();
 
 		case EuclidianConstants.MODE_RIGID_POLYGON:
 			return resourceBundle.mode_rigidpolygon_32();
