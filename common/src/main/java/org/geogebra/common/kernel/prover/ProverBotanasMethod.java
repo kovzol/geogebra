@@ -929,7 +929,7 @@ public class ProverBotanasMethod {
 						giacOutput4 = cas.getCurrentCAS()
 								.evaluateRaw(strForGiac4);
 					} catch (Throwable t) {
-						Log.debug("Problem on running Giac (maybe uninitialized?)");
+						Log.debug("Problem on running Giac");
 						result = ProofResult.UNKNOWN;
 						return;
 					}

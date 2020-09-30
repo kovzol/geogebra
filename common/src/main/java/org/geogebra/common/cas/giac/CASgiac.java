@@ -309,7 +309,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		/**
 		 * Decide if a polynomial, which is a sum internally in Giac, is linear or not.
 		 */
-		IS_LINEAR_SUM("isLinearSum", "isLinearSum(poly):=begin local degrees, vars, ii, ss; vars:=lvar(poly); ii:=1; ss:=size(poly); while (ii<ss) do degrees:=degree(poly[ii], vars); if (sum(degrees)>1) begin return false; end; ii:=ii+1; od; return true; end"),
+		IS_LINEAR_SUM("isLinearSum", "isLinearSum(poly):=begin local degs, vars, ii, ss; vars:=lvar(poly); ii:=1; ss:=size(poly); while (ii<ss) do degrees:=degree(poly[ii], vars); if (sum(degs)>1) begin return false; end; ii:=ii+1; od; return true; end"),
 		/**
 		 * Decide if a polynomial is linear or not. The way it is done is hacky and incomplete. FIXME.
 		 */
@@ -331,10 +331,10 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * 
 		 * Used internally.
 		 */
-		JACOBI_PREPARE("jacobiPrepare", "jacobiPrepare(polys,excludevars):=begin local ii, degrees, pos, vars, linvar, p, keep, c;" +
+		JACOBI_PREPARE("jacobiPrepare", "jacobiPrepare(polys,excludevars):=begin local ii, degs, pos, vars, linvar, p, keep, c;" +
 				"keep:=[]; vars:=lvar(polys); print(\"input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\"); c:=1; " +
-				"while (c<size(lvar(polys))) do ii:=0; while (ii<size(polys)-1) do degrees:=degree(polys[ii],vars); if ((sum(degrees)=c) and (isLinear(polys[ii]))) begin " +
-				"pos:=find(1,degrees); if (size(pos)=c) begin p:=0; linvar:=vars[pos[p]]; while(is_element(linvar,excludevars) and c>1 and p<size(pos)-1) begin p:=p+1; linvar:=vars[pos[p]]; end;" +
+				"while (c<size(lvar(polys))) do ii:=0; while (ii<size(polys)-1) do degs:=degree(polys[ii],vars); if ((sum(degs)=c) and (isLinear(polys[ii]))) begin " +
+				"pos:=find(1,degs); if (size(pos)=c) begin p:=0; linvar:=vars[pos[p]]; while(is_element(linvar,excludevars) and c>1 and p<size(pos)-1) begin p:=p+1; linvar:=vars[pos[p]]; end;" +
 				" if (!is_element(linvar,excludevars) or c<2) begin if (is_element(linvar,excludevars)) begin keep:=append(keep,polys[ii]); end;" +
 				" substval:=op(solve(polys[ii]=0,linvar)[0])[1]; polys:=remove(0,expand(subs(polys,[linvar],[substval]))); vars:=lvar(polys); ii:=-1; end; end; end;" +
 				" ii:=ii+1; od; c:=c+1; od; polys:=flatten(append(polys,keep)); vars:=lvar(polys); print(\"output: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");  return polys; end"),
