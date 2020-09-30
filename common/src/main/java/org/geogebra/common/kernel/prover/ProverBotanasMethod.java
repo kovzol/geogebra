@@ -14,6 +14,7 @@ import java.util.TreeSet;
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.cas.singularws.SingularWebService;
 import org.geogebra.common.factories.UtilFactory;
+import org.geogebra.common.kernel.CASGenericInterface;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.advanced.AlgoDynamicCoordinates;
@@ -551,9 +552,17 @@ public class ProverBotanasMethod {
 
 		public AlgebraicStatement(GeoElement statement, GeoElement movingPoint,
 								  Prover prover) {
-			if (statement.kernel.getGeoGebraCAS().getCurrentCAS().isLoaded()) {
-				algebraicTranslation(statement, movingPoint, prover);
+			CASGenericInterface c = statement.kernel.getGeoGebraCAS().getCurrentCAS();
+			if (c.isLoaded()) {
+				Log.debug("GeoGebra thinks Giac is loaded.");
+				if (c.evaluateCAS("1+1").equals("2")) {
+					algebraicTranslation(statement, movingPoint, prover);
+					return;
+				}
+				Log.debug("But 1+1=2 seems to be problematic.");
+				result = ProofResult.PROCESSING;
 			} else {
+				Log.debug("GeoGebra thinks Giac is not loaded yet.");
 				result = ProofResult.PROCESSING;
 			}
 		}
