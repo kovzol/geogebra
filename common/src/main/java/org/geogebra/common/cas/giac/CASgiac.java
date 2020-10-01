@@ -309,7 +309,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		/**
 		 * Decide if a polynomial, which is a sum internally in Giac, is linear or not.
 		 */
-		IS_LINEAR_SUM("isLinearSum", "isLinearSum(poly):=begin local degs, vars, ii, ss; vars:=lvar(poly); ii:=1; ss:=size(poly); while (ii<ss) do degrees:=degree(poly[ii], vars); if (sum(degs)>1) begin return false; end; ii:=ii+1; od; return true; end"),
+		IS_LINEAR_SUM("isLinearSum", "isLinearSum(poly):=begin local degs, vars, ii, ss; vars:=lvar(poly); ii:=1; ss:=size(poly); while (ii<ss) do degs:=degree(poly[ii], vars); if (sum(degs)>1) begin return false; end; ii:=ii+1; od; return true; end"),
 		/**
 		 * Decide if a polynomial is linear or not. The way it is done is hacky and incomplete. FIXME.
 		 */
