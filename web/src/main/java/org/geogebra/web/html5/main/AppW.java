@@ -944,13 +944,14 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 	 *            currently open file
 	 */
 	public void setCurrentFile(GgbFile file) {
+		// Maybe this is not the best place for the re-init. FIXME
+		getKernel().getConstruction().initDiscoveryPool();
+
 		if (currentFile == file) {
 			return;
 		}
 
 		currentFile = file;
-        // Maybe this is not the best place for the re-init. FIXME
-        getKernel().getConstruction().initDiscoveryPool();
 	}
 
 	@Override

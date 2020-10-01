@@ -1378,6 +1378,10 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	}
 
 	public void setCurrentFile(File file) {
+
+		// Maybe this is not the best place for the re-init. FIXME
+		getKernel().getConstruction().initDiscoveryPool();
+
 		if (currentFile == file) {
 			return;
 		}
@@ -1393,8 +1397,6 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			getGuiManager().updateMenuWindow();
 		}
 
-        // Maybe this is not the best place for the re-init. FIXME
-        getKernel().getConstruction().initDiscoveryPool();
 	}
 
 	public static void addToFileList(File file) {
@@ -1450,6 +1452,8 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		// reload the saved/(default) preferences
 		GeoGebraPreferencesD.getPref().loadXMLPreferences(this);
 		resetUniqueId();
+
+
 	}
 
 	private void resetAllToolbars() {

@@ -251,6 +251,7 @@ public class Construction {
 		geoTable = new HashMap<>(200);
 		initGeoTables();
 		groups = new ArrayList<>();
+		initDiscoveryPool();
 	}
 
 	/**
