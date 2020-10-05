@@ -38,6 +38,7 @@ import org.geogebra.common.kernel.prover.discovery.ParallelLines;
 import org.geogebra.common.kernel.prover.discovery.Point;
 import org.geogebra.common.kernel.prover.discovery.Pool;
 import org.geogebra.common.kernel.prover.discovery.Segment;
+import org.geogebra.common.main.Localization;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.plugin.Event;
 import org.geogebra.common.plugin.EventType;
@@ -696,14 +697,19 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         rr[0] = new RelationPane.RelationRow();
         StringBuilder html = new StringBuilder("<html>");
         rr[0].setInfo(html.toString());
+        Localization loc = input.getConstruction().getApplication().getLocalization();
         if (!cons.getKernel().isSilentMode()) {
-            tablePane.showDialog("Discovered theorems on point " + input.getLabelSimple(), rr,
+            String discoveredTheoremsOnPointA = loc.getPlainDefault("DiscoveredTheoremsOnPointA",
+                    "Discovered thereoms on point %0", input.getLabelSimple());
+            tablePane.showDialog(discoveredTheoremsOnPointA, rr,
                     cons.getApplication());
             // FIXME: This is not shown on the web.
         }
         if (!detectProperties((GeoPoint) this.input))  {
-            tablePane.changeRowLeftColumn(0, "<html>The construction contains unsupported steps.<br>" +
-                    "Please redraw the figure in a different way.");
+            String msg1 = loc.getMenuDefault("UnsupportedSteps", "The construction contains unsupported steps.");
+            String msg2 = loc.getMenuDefault("RedrawDifferently","Please redraw the figure in a different way.");
+            tablePane.changeRowLeftColumn(0, "<html>" + msg1 + "<br>" +
+                    msg2 + "</html>");
             return;
             }
 
@@ -716,7 +722,7 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         int pointitems = 0;
         int items = 0;
         // Points
-        StringBuilder points = new StringBuilder("Identical points: ");
+        StringBuilder points = new StringBuilder();
         for (Point p : discoveryPool.points) {
             if (p.getPoints().size() > 1) {
                 points.append(p.toString());
@@ -728,9 +734,11 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             points.deleteCharAt(points.length() - 1);
             points.deleteCharAt(points.length() - 1);
         }
+        points = new StringBuilder(loc.getPlainDefault("IdenticalPointsA",
+                "Identical points: %0", points.toString()));
 
         // Lines
-        StringBuilder lines = new StringBuilder("Collinear points: ");
+        StringBuilder lines = new StringBuilder();
         if (!drawnLines.isEmpty()) {
             for (Line l : drawnLines) {
                 GeoLine gl = l.getGeoLine();
@@ -746,9 +754,11 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             lines.deleteCharAt(lines.length() - 1);
             items++;
         }
+        lines = new StringBuilder(loc.getPlainDefault("CollinearPointsA",
+                "Collinear points: %0", lines.toString()));
 
         // Circles
-        StringBuilder circles = new StringBuilder("Concyclic points: ");
+        StringBuilder circles = new StringBuilder();
         if (!drawnCircles.isEmpty()) {
             for (Circle c : drawnCircles) {
                 GeoConic gc = c.getGeoConic();
@@ -764,10 +774,13 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             circles.deleteCharAt(circles.length() - 1);
             items++;
         }
+        circles = new StringBuilder(loc.getPlainDefault("ConcyclicPointsA" ,
+                "Concyclic points: %0", circles.toString()));
 
         // Parallel lines
-        StringBuilder directions = new StringBuilder("Sets of parallel lines: <ul>");
+        StringBuilder directions = new StringBuilder();
         if (!drawnDirections.isEmpty()) {
+            directions.append("<ul>");
             for (ParallelLines pl : drawnDirections) {
                 GColor c = pl.getColor();
                 directions.append("<li " + liStyle + ">");
@@ -781,10 +794,13 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             directions.append("</ul>");
             items++;
         }
+        directions = new StringBuilder(loc.getPlainDefault("SetsOfParallelLinesA",
+                "Sets of parallel lines: %0", directions.toString()));
 
         // Equal long segments
-        StringBuilder equalLongSegments = new StringBuilder("Congruent segments: <ul>");
+        StringBuilder equalLongSegments = new StringBuilder();
         if (!drawnSegments.isEmpty()) {
+            equalLongSegments.append("<ul>");
             for (EqualLongSegments els : drawnSegments) {
                 GColor c = els.getColor();
                 equalLongSegments.append("<li " + liStyle + ">");
@@ -798,6 +814,8 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
             equalLongSegments.append("</ul>");
             items++;
         }
+        equalLongSegments = new StringBuilder(loc.getPlainDefault("CongruentSegmentsA",
+                "Congruent segments: %0", equalLongSegments.toString()));
 
         html = new StringBuilder("<html>");
 
