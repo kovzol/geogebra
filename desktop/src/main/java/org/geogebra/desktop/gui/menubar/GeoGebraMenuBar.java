@@ -553,7 +553,10 @@ public class GeoGebraMenuBar extends JMenuBar implements EventRenderable {
 		final LocalizationD loc = app.getLocalization();
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><b>");
-		sb.append("<font color=red>GeoGebra Discovery</font></b> (experimental version of GeoGebra), based on<br><b>");
+		sb.append("<font color=red>GeoGebra Discovery</font> " +
+				"<font color=blue>" +
+				GeoGebraConstants.DISCOVERY_VERSION +
+				"</font></b> (experimental version of GeoGebra), based on<br><b>");
 		appendVersion(sb, app);
 		sb.append("</b>  (");
 		sb.append("Java ");

@@ -20,6 +20,8 @@ public class ShowLicenseAction extends DefaultMenuAction<Void> {
 	public void execute(Void item, AppWFull app) {
 		app.getFileManager()
 				.open(app.getVendorSettings().getLicenseURL() + "&version="
+						+ "GeoGebra Discovery " + GeoGebraConstants.DISCOVERY_VERSION
+						+ ", based on GeoGebra "
 						+ app.getVersionString() + "&date="
 						+ GeoGebraConstants.BUILD_DATE, ABOUT_WINDOW_PARAMS);
 	}
