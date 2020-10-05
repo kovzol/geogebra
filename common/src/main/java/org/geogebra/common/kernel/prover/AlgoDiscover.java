@@ -855,7 +855,8 @@ public class AlgoDiscover extends AlgoElement implements UsesCAS {
         }
 
         if (items == 0) {
-            html.append("No discovered theorems were found.");
+            String msg = loc.getMenuDefault("NoTheoremsFound", "No discovered theorems were found.");
+            html.append(msg);
         }
 
         html.append("</html>");
