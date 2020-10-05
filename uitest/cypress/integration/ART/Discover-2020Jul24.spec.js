@@ -267,7 +267,9 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
            });
         cy.get(".gwt-HTML").should(($div) => {
            const text = $div.text();
-           expect(text).to.include("Concyclic points: AFPQ, CDPQ");
+           // expect(text).to.include("Concyclic points: AFPQ, CDPQ");
+           expect(text).to.include("AFPQ");
+           expect(text).to.include("CDPQ");
            });
     });
 
