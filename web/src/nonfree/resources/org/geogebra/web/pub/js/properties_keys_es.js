@@ -1676,7 +1676,7 @@ __GGB__keysVar["es"].menu = {
     "Discard": "Descartar",
     "Discover": "Descubre",
     "Discover.Help": "Selecciona punto",
-    "DiscoveredTheoremsOnPointA": "Descubrió teoremas en el punto %0",
+    "DiscoveredTheoremsOnPointA": "Teoremas descubiertos con el punto %0",
     "Discrete": "Discreta",
     "Display": "Muestra",
     "DisplayPointSymbol": "Mostrar  el s\xedmbolo para puntos",
