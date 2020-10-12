@@ -410,12 +410,21 @@ public class AlgoAngularBisectorLines extends AlgoElement
 				vA[1] = varsLg[1];
 				vB[0] = varsLh[0];
 				vB[1] = varsLh[1];
-				// FIXME: In some exotic cases this may not work.
+				// In some exotic cases the above may not work.
 				// If g=AB, h=CD, and C is lying on AB, then selecting C for the
 				// representative of h is the wrong choice. To avoid this we
-				// should check if there is numerical collinearity between ABC.
-				// (Now a workaround is to change the role of D and C manually
+				// should check if there is numerical collinearity between ABC:
+				// (A former workaround is to change the role of D and C manually
 				// in the construction.)
+				if (GeoPoint.collinearND(g.startPoint, g.endPoint, h.startPoint)) {
+					vB[0] = varsLh[2];
+					vB[1] = varsLh[3];
+				} else { // and vice versa
+					if (GeoPoint.collinearND(h.startPoint, h.endPoint, g.startPoint)) {
+						vA[0] = varsLg[2];
+						vA[1] = varsLg[3];
+					}
+				}
 			}
 
 			if (varsLg != null && B != null && varsLh != null) {
