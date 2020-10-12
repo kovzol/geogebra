@@ -4,7 +4,6 @@ import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.commands.CommandProcessor;
 import org.geogebra.common.kernel.geos.GeoElement;
-import org.geogebra.common.kernel.prover.AlgoDiscover;
 import org.geogebra.common.main.MyError;
 
 /**
@@ -32,10 +31,8 @@ public class CmdDiscover extends CommandProcessor {
             case 1:
                 if (arg[0] instanceof GeoElement) {
 
-                    AlgoDiscover algo = new AlgoDiscover(cons, arg[0]);
-
-                    GeoElement[] ret = algo.getOutput();
-                    return ret;
+                    app.showDiscover(arg[0]);
+                    return arg;
                 }
                 throw argErr(c, arg[0]);
 

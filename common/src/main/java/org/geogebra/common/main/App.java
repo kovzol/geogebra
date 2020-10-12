@@ -70,6 +70,7 @@ import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.ModeSetter;
 import org.geogebra.common.kernel.Relation;
+import org.geogebra.common.kernel.Discover;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.View;
 import org.geogebra.common.kernel.commands.CommandDispatcher;
@@ -3220,6 +3221,10 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	public void showRelation(final GeoElement ra, final GeoElement rb,
                              final GeoElement rc, final GeoElement rd) {
         new Relation(this, ra, rb, rc, rd).showDialog();
+	}
+
+	public void showDiscover(final GeoElement d) {
+		new Discover(this, d).showDialog();
 	}
 
 	public GeoElement getGeoForCopyStyle() {

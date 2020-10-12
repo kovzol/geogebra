@@ -142,7 +142,6 @@ import org.geogebra.common.kernel.kernelND.GeoSegmentND;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
 import org.geogebra.common.kernel.kernelND.HasSegments;
 import org.geogebra.common.kernel.matrix.Coords;
-import org.geogebra.common.kernel.prover.AlgoDiscover;
 import org.geogebra.common.kernel.statistics.AlgoFitLineY;
 import org.geogebra.common.kernel.statistics.CmdFitLineY;
 import org.geogebra.common.main.App;
@@ -2764,7 +2763,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		int selGeos = selGeos();
 		if (selGeos >= 1) {
 			GeoElement[] geos = getSelectedGeos();
-			AlgoDiscover ad = new AlgoDiscover(kernel.getConstruction(), geos[0]);
+			app.showDiscover(geos[0]);
 			return true;
 		}
 		return false;
