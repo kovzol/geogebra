@@ -167,12 +167,22 @@ public class ProverD extends Prover {
 					j++;
 				}
 				if ("IsOnCircle".equals(ndgCommand)) {
-					ndgCommand = "IsIsoscelesTriangle";
+					// ndgCommand = "IsIsoscelesTriangle";
 					// IsOnCircle[A,B,C]: AB==AC
 					// IsIsoscelesTriangle[A,B,C]: AB==BC
-					GeoElement swap = geos[1];
-					geos[1] = geos[0];
-					geos[0] = swap;
+					// GeoElement swap = geos[1];
+					// geos[1] = geos[0];
+					// geos[0] = swap;
+					ndgCommand = "AreCongruent";
+					GeoElement g0 = geos[1];
+					GeoElement g1 = geos[0];
+					GeoElement g2 = geos[0];
+					GeoElement g3 = geos[2];
+					geos = new GeoElement[4];
+					geos[0] = g0;
+					geos[1] = g1;
+					geos[2] = g2;
+					geos[3] = g3;
 				}
 				ndg.setCondition(ndgCommand);
 				ndg.setGeos(geos);
