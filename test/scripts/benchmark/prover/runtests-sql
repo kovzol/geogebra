@@ -310,7 +310,8 @@ for i in `find -name '*.ggb' | sort`; do
      RESULT=`tac $LOGFILE | grep "OUTPUT for Prove:" | head -1 | sed 's/\(.*\) = \(.*\)/\2/'`
     grep --silent "OUTPUT for ProveDetails:" $LOGFILE && \
      RESULT=`tac $LOGFILE | grep "OUTPUT for ProveDetails:" | head -1 | perl -pe 's/(.*?) = (.*)/\2/' |\
-     sed s/{//g | sed s/}//g`
+     sed s/{//g | sed s/}//g | sed s/*/·/g`
+    RESULT
     RESULT=`echo $RESULT | sed s/\"//g`
     # FIXME in GeoGebra.
     fi
