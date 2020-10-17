@@ -32,6 +32,7 @@ import org.geogebra.common.kernel.prover.AlgoAreConcyclic;
 import org.geogebra.common.kernel.prover.AlgoAreCongruent;
 import org.geogebra.common.kernel.prover.AlgoAreEqual;
 import org.geogebra.common.kernel.prover.AlgoAreParallel;
+import org.geogebra.common.kernel.prover.AlgoArePerpendicular;
 import org.geogebra.common.kernel.prover.AlgoProveDetails;
 import org.geogebra.common.kernel.prover.Combinations;
 import org.geogebra.common.kernel.prover.discovery.Circle;
@@ -109,6 +110,7 @@ public class Discover {
 		}
 		collectParallelisms(discoveryPool.getPoint(p), true);
 		collectEqualLongSegments(discoveryPool.getPoint(p), true);
+		collectPerpendicularDirections(discoveryPool.getPoint(p), true);
 		return true;
 	}
 
@@ -611,6 +613,96 @@ public class Discover {
 				if (showIt) {
 					els.setColor(addOutputSegments(segmentsDrawn, segmentsToDraw));
 					drawnSegments.add(els);
+				}
+			}
+		}
+	}
+
+	/*
+	 * Extend the database by
+	 * collecting all perpendicular directions for a given input.
+	 */
+	private void collectPerpendicularDirections(Point p0, boolean discover) {
+		Pool discoveryPool = cons.getDiscoveryPool();
+		HashSet<ParallelLines> paired = new HashSet<>();
+
+		// We want to visit each set of parallel lines only once.
+		HashSet<ParallelLines> visited1 = new HashSet<>();
+		for (Line l1 : discoveryPool.lines) {
+			boolean found = false;
+			ParallelLines pl1 = discoveryPool.getDirection(l1);
+			if (pl1 == null || (!visited1.contains(pl1) && !paired.contains(pl1))) {
+				if (pl1 != null) {
+					visited1.add(pl1);
+				}
+				HashSet<ParallelLines> visited2 = new HashSet<>();
+				for (Line l2 : discoveryPool.lines) {
+					if (!found) {
+						ParallelLines pl2 = discoveryPool.getDirection(l2);
+						if (pl2 == null || (!visited2.contains(pl2) && !paired.contains(pl2))) {
+							if (pl2 != null) {
+								visited2.add(pl2);
+							}
+							if (!l1.equals(l2) ||
+									(pl1 != null && pl2 != null &&
+											!pl1.equals(pl2) && !paired.contains(pl2))) {
+								GeoLine gl1 = l1.getGeoLine();
+								if (gl1 == null) {
+									GeoPoint[] gp = l1.getPoints2();
+									AlgoJoinPoints ajp =
+											new AlgoJoinPoints(cons, null, gp[0], gp[1]);
+									gl1 = ajp.getLine();
+								}
+								GeoLine gl2 = l2.getGeoLine();
+								if (gl2 == null) {
+									GeoPoint[] gp = l2.getPoints2();
+									AlgoJoinPoints ajp =
+											new AlgoJoinPoints(cons, null, gp[0], gp[1]);
+									gl2 = ajp.getLine();
+								}
+
+								AlgoArePerpendicular aap = new AlgoArePerpendicular(cons, gl1, gl2);
+								GeoElement root = new GeoBoolean(cons);
+								root.setParentAlgorithm(aap);
+								AlgoProveDetails ap = new AlgoProveDetails(cons, root);
+								ap.compute();
+								GeoElement[] o = ap.getOutput();
+								GeoList output = (GeoList) o[0];
+								if (output.size() > 0) {
+									GeoElement truth = output.get(0);
+									if (((GeoBoolean) truth).getBoolean()) {
+										// Theorem: Perpendicularity
+										if (pl1 == null) {
+											pl1 = discoveryPool.addDirection(l1);
+											visited1.add(pl1);
+										}
+										if (pl2 == null) {
+											pl2 = discoveryPool.addDirection(l2);
+											visited1.add(pl2);
+											visited2.add(pl2);
+										}
+										discoveryPool.addPerpendicularity(pl1, pl2)
+												.setTrivial(false);
+										paired.add(pl1);
+										paired.add(pl2);
+										found = true;
+									}
+								}
+								ap.remove();
+								aap.remove();
+								gl1.remove();
+								gl2.remove();
+							}
+						}
+					}
+				}
+				if (!found) {
+					// There is no orthogonal direction found according to pl1.
+					if (pl1 == null) {
+						pl1 = discoveryPool.addDirection(l1);
+						visited1.add(pl1);
+					}
+					discoveryPool.addPerpendicularity(pl1);
 				}
 			}
 		}

@@ -16,6 +16,7 @@ public class Pool {
     public ArrayList<ParallelLines> directions = new ArrayList<>();
     public ArrayList<Segment> segments = new ArrayList<>();
     public ArrayList<EqualLongSegments> equalLongSegments = new ArrayList<>();
+    public ArrayList<OrthogonalParallelLines> orthogonalParallelLines = new ArrayList<>();
 
     public Point getPoint(GeoPoint p1) {
         for (Point p : points) {
@@ -143,8 +144,8 @@ public class Pool {
     public ParallelLines addDirection(Line l) {
         ParallelLines pl = getDirection(l);
         if (pl == null) {
-            ParallelLines parallelLine = new ParallelLines(l);
-            directions.add(parallelLine);
+            pl = new ParallelLines(l);
+            directions.add(pl);
         }
         return pl;
     }
@@ -399,8 +400,9 @@ public class Pool {
         ParallelLines dir1 = getDirection(l1);
         ParallelLines dir2 = getDirection(l2);
         if (dir1 == null && dir2 == null) {
-            directions.add(new ParallelLines(l1, l2));
-            return dir1;
+            ParallelLines dir = new ParallelLines(l1, l2);
+            directions.add(dir);
+            return dir;
         }
         if (dir1 != null && dir2 == null) {
             dir1.parallel(l2);
@@ -408,7 +410,7 @@ public class Pool {
         }
         if (dir1 == null && dir2 != null) {
             dir2.parallel(l1);
-            return dir1;
+            return dir2;
         }
         // Unifying the two directions as one:
         for (Line l : dir1.getLines()) {
@@ -416,6 +418,24 @@ public class Pool {
         }
         directions.remove(dir1);
         return dir2;
+    }
+
+    public OrthogonalParallelLines addPerpendicularity(ParallelLines d) {
+        OrthogonalParallelLines opl = new OrthogonalParallelLines(d);
+        orthogonalParallelLines.add(opl);
+        return opl;
+    }
+
+    public OrthogonalParallelLines addPerpendicularity(ParallelLines d1, ParallelLines d2) {
+        for (OrthogonalParallelLines opl : orthogonalParallelLines) {
+            if (opl.getFirstParallelLines().equals(d1)) {
+                opl.orthogonal(d2);
+                return opl;
+            }
+        }
+        OrthogonalParallelLines opl = new OrthogonalParallelLines(d1, d2);
+        orthogonalParallelLines.add(opl);
+        return opl;
     }
 
     /* s1 != s2 */
