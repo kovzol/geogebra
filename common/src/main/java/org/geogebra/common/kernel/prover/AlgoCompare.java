@@ -397,6 +397,11 @@ public class AlgoCompare extends AlgoElement {
             rgResult = "";
         }
 
+        if ("GIAC ERROR".equals(rgResult)) {
+            Log.debug("Giac error in RealGeom");
+            rgResult = "";
+        }
+
         if (rgResult != null && !rgResult.equals("")) {
             // If there was some useful result in RealGeom, then use it and forget the previous results from Giac.
             retval = "";
