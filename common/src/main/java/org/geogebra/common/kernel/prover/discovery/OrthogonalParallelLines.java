@@ -27,6 +27,10 @@ public class OrthogonalParallelLines {
 		return pl1;
 	}
 
+	public ParallelLines getOrthogonalParallelLines() {
+		return pl2;
+	}
+
 	public void setTrivial(Boolean trivial) {
 		this.trivial = trivial;
 	}
@@ -48,7 +52,7 @@ public class OrthogonalParallelLines {
 		if (pl2 == null) {
 			return pl1.toString();
 		}
-		return pl1.toString() + Unicode.PERPENDICULAR + pl2.toString();
+		return pl1.toString() + " " + Unicode.PERPENDICULAR + " " + pl2.toString();
 	}
 
 	public void setColor(GColor c) {

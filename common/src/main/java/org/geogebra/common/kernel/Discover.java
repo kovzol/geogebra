@@ -38,6 +38,7 @@ import org.geogebra.common.kernel.prover.Combinations;
 import org.geogebra.common.kernel.prover.discovery.Circle;
 import org.geogebra.common.kernel.prover.discovery.EqualLongSegments;
 import org.geogebra.common.kernel.prover.discovery.Line;
+import org.geogebra.common.kernel.prover.discovery.OrthogonalParallelLines;
 import org.geogebra.common.kernel.prover.discovery.ParallelLines;
 import org.geogebra.common.kernel.prover.discovery.Point;
 import org.geogebra.common.kernel.prover.discovery.Pool;
@@ -458,6 +459,7 @@ public class Discover {
 				return;
 			}
 
+			/*
 			// Third round: Draw all lines from the discovery pool
 			// (those that are not yet drawn):
 			for (ParallelLines pl : discoveryPool.directions) {
@@ -476,11 +478,13 @@ public class Discover {
 						}
 					}
 					if (showIt) {
-						pl.setColor(addOutputLines(linesDrawn, linesToDraw));
+						pl.setColor(addOutputLines(linesDrawn, linesToDraw, null));
 						drawnDirections.add(pl);
 					}
 				}
+
 			}
+			 */
 		}
 	}
 
@@ -697,17 +701,46 @@ public class Discover {
 					}
 				}
 				if (!found) {
-					// There is no orthogonal direction found according to pl1.
-					if (pl1 == null) {
-						pl1 = discoveryPool.addDirection(l1);
-						visited1.add(pl1);
+					// There is no orthogonal direction found according to pl1,
+					// but this a set of parallel lines---then this should be plotted.
+					if (pl1 != null && pl1.getLines().size() > 1) {
+						discoveryPool.addPerpendicularity(pl1);
 					}
-					discoveryPool.addPerpendicularity(pl1);
+					// Otherwise (including if this is just a single line) no action is taken.
 				}
 			}
 		}
-	}
 
+		// Second round: Draw all lines from the discovery pool:
+		for (OrthogonalParallelLines opl : discoveryPool.orthogonalParallelLines) {
+			HashSet<Line> linesDrawn = new HashSet<>();
+			HashSet<Line> linesToDraw = new HashSet<>();
+			ParallelLines pl1 = opl.getFirstParallelLines();
+			for (Line l : pl1.getLines()) {
+				if (alreadyDrawn(l)) {
+					linesDrawn.add(l);
+				} else {
+					linesToDraw.add(l);
+				}
+			}
+			ParallelLines pl2 = opl.getOrthogonalParallelLines();
+			if (pl2 != null) {
+				for (Line l : pl2.getLines()) {
+					if (alreadyDrawn(l)) {
+						linesDrawn.add(l);
+					} else {
+						linesToDraw.add(l);
+					}
+				}
+			}
+			GColor color = addOutputLines(linesDrawn, linesToDraw);
+			pl1.setColor(color);
+			if (pl2 != null) {
+				pl2.setColor(color);
+			}
+			opl.setColor(color);
+		}
+	}
 
 	private boolean are3Collinear(Point pA, Point pB, Point pC, Point pD) {
 		GeoPoint A, B, C, D;
@@ -860,25 +893,25 @@ public class Discover {
 		circles = new StringBuilder(loc.getPlainDefault("ConcyclicPointsA",
 				"Concyclic points: %0", circles.toString()));
 
-		// Parallel lines
+		// Parallel and perpendicular lines
 		StringBuilder directions = new StringBuilder();
-		if (!drawnDirections.isEmpty()) {
+		if (!discoveryPool.orthogonalParallelLines.isEmpty()) {
 			directions.append("<ul>");
-			for (ParallelLines pl : drawnDirections) {
-				GColor c = pl.getColor();
+			for (OrthogonalParallelLines opl : discoveryPool.orthogonalParallelLines) {
+				GColor c = opl.getColor();
 				directions.append("<li " + liStyle + ">");
 				if (c != null) {
 					String color = StringUtil.toHexString(c);
-					directions.append("<font color=\"" + color + "\">" + pl.toString() + "</font>");
+					directions.append("<font color=\"" + color + "\">" + opl.toString() + "</font>");
 				} else {
-					directions.append(pl.toString());
+					directions.append(opl.toString());
 				}
 			}
 			directions.append("</ul>");
 			items++;
 		}
-		directions = new StringBuilder(loc.getPlainDefault("SetsOfParallelLinesA",
-				"Sets of parallel lines: %0", directions.toString()));
+		directions = new StringBuilder(loc.getPlainDefault("SetsOfParallelAndPerpendicularLinesA",
+				"Sets of parallel and perpendicular lines: %0", directions.toString()));
 
 		// Equal long segments
 		StringBuilder equalLongSegments = new StringBuilder();
@@ -923,7 +956,7 @@ public class Discover {
 			html.append(circles);
 			items++;
 		}
-		if (!drawnDirections.isEmpty()) {
+		if (!discoveryPool.orthogonalParallelLines.isEmpty()) {
 			if (items > 0) {
 				html.append("<p><p>");
 			}
@@ -1052,7 +1085,6 @@ public class Discover {
 		return color;
 	}
 
-
 	GeoLine addOutputLine(GeoPoint A, GeoPoint B) {
 		boolean oldMacroMode = cons.isSuppressLabelsActive();
 		AlgoJoinPoints ajp = new AlgoJoinPoints(cons, null, A, B);
@@ -1094,6 +1126,9 @@ public class Discover {
 				if (points.contains(pp1) && points.contains(pp2)) {
 					return true;
 				}
+				// FIXME: There are some other cases---they should be covered here.
+				// E.g. A line joining A and B can be created as an orthogonal line
+				// to a line that contains A, and finally B is put on this line.
 			}
 		}
 		return false;

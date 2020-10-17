@@ -2714,7 +2714,7 @@ __GGB__keysVar["es"].menu = {
     "Separator": "Separador",
     "Serif": "Serif",
     "SetClasssesManually": "Definici\xf3n manual de clases",
-    "SetsOfParallelLinesA": "Líneas paralelas: %0",
+    "SetsOfParallelAndPerpendicularLinesA": "Líneas paralelas y perpendiculares: %0",
     "SetToCurrentLocation": "En ubicaci\xf3n actual",
     "Settings": "Configuraci\xf3n",
     "Settings.ResetDefault": "Cofiguraci\xf3n por defecto",

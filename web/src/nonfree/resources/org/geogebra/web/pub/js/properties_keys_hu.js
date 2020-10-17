@@ -2714,7 +2714,7 @@ __GGB__keysVar["hu"].menu = {
     "Separator": "Szepar\xe1tor",
     "Serif": "Serif",
     "SetClasssesManually": "Oszt\xe1lyok be\xe1ll\xedt\xe1sa manu\xe1lisan",
-    "SetsOfParallelLinesA": "Párhuzamos egyenesek: %0",
+    "SetsOfParallelAndPerpendicularLinesA": "Párhuzamos és merőleges egyenesek: %0",
     "SetToCurrentLocation": "Aktu\xe1lis lap be\xe1ll\xedt\xe1sa",
     "Settings": "Be\xe1ll\xedt\xe1sok",
     "Settings.ResetDefault": "Alapbe\xe1ll\xedt\xe1sok vissza\xe1ll\xedt\xe1sa",
