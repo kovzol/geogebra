@@ -488,6 +488,8 @@ public class Pool {
                 }
             }
         }
+        // TODO: Maybe this is an overkill, but it should work:
+        orthogonalParallelLines.clear();
 
         ArrayList<Circle> oldCircles = (ArrayList<Circle>) circles.clone();
         for (Circle c : oldCircles) {
