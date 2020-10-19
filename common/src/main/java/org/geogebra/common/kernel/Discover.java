@@ -628,6 +628,11 @@ public class Discover {
 	 */
 	private void collectPerpendicularDirections(Point p0, boolean discover) {
 		Pool discoveryPool = cons.getDiscoveryPool();
+
+		// This is an overkill, but it should work:
+		discoveryPool.orthogonalParallelLines.clear();
+		// TODO: Do not clear it, just update it in the next steps!
+
 		HashSet<ParallelLines> paired = new HashSet<>();
 
 		// We want to visit each set of parallel lines only once.
