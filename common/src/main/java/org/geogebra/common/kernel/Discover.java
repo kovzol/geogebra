@@ -61,6 +61,9 @@ public class Discover {
 	private HashSet<Circle> drawnCircles = new HashSet<>();
 	private HashSet<ParallelLines> drawnDirections = new HashSet<>();
 	private HashSet<EqualLongSegments> drawnSegments = new HashSet<>();
+	private String problemString = null;
+	private String problemStringDefault = null;
+	private String[] problemParams;
 
 	public Discover(final App app, final GeoElement d) {
 		this.kernel = app.getKernel();
@@ -164,6 +167,11 @@ public class Discover {
 				} else {
 					// Here we don't know anything about the equality of the points.
 					// So we need to say goodbye to be on the safe side and exit Discover.
+					problemString = "CannotDecideEqualityofPointsAB";
+					problemStringDefault = "Cannot decide equality of points %0 and %1.";
+					problemParams = new String[2];
+					problemParams[0] = p0.getLabelSimple();
+					problemParams[1] = p1.getLabelSimple();
 					return false;
 				}
 				ap.remove();
@@ -819,7 +827,7 @@ public class Discover {
 		Localization loc = input.getConstruction().getApplication().getLocalization();
 		if (!cons.getKernel().isSilentMode()) {
 			String discoveredTheoremsOnPointA = loc.getPlainDefault("DiscoveredTheoremsOnPointA",
-					"Discovered thereoms on point %0", input.getLabelSimple());
+					"Discovered theorems on point %0", input.getLabelSimple());
 			tablePane.showDialog(discoveredTheoremsOnPointA, rr,
 					cons.getApplication());
 			// FIXME: This is not shown on the web.
@@ -827,9 +835,13 @@ public class Discover {
 		if (!detectProperties((GeoPoint) this.input)) {
 			String msg1 = loc.getMenuDefault("UnsupportedSteps",
 					"The construction contains unsupported steps.");
+			String prb = "";
+			if (problemString != null) {
+				prb = loc.getPlainDefault(problemString, problemStringDefault, problemParams);
+			}
 			String msg2 = loc.getMenuDefault("RedrawDifferently",
 					"Please redraw the figure in a different way.");
-			tablePane.changeRowLeftColumn(0, "<html>" + msg1 + "<br>" +
+			tablePane.changeRowLeftColumn(0, "<html>" + msg1 + "<br>" + prb + "<br>" +
 					msg2 + "</html>");
 			return;
 		}
