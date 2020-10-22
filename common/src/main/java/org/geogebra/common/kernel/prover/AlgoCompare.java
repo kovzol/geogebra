@@ -282,6 +282,18 @@ public class AlgoCompare extends AlgoElement {
         StringBuilder rgParameters = new StringBuilder();
         rgParameters.append("lhs=" + lhs_var + "&" + "rhs=" + rhs_var + "&")
                 .append("polys=");
+
+        /* Force some non-degeneracies. */
+        PPolynomial[] nonDegPolys;
+        try {
+            nonDegPolys = ProverBotanasMethod.create3FreePointsNeverCollinearNDG(p);
+        } catch (Exception e) {
+            return;
+        }
+        for (PPolynomial ndp : nonDegPolys) {
+            as.addPolynomial(ndp);
+        }
+
         as.computeStrings();
         rgParameters.append(as.getPolys());
         for (String po : extraPolys) {
@@ -313,7 +325,10 @@ public class AlgoCompare extends AlgoElement {
         for (String po : extraPolys) {
             gc.append(",").append(po);
         }
-        gc.append(",").append(rhs_var).append("*m-(").append(lhs_var).append(")],[");
+        gc.append(",(").append(rhs_var).append(")*m-(").append(lhs_var).append(")");
+        // Assume that the rhs_var is non-zero (because of non-degeneracy):
+        gc.append(",(").append(rhs_var).append(")*n-1");
+        gc.append("],[");
 
         StringBuilder varsubst = new StringBuilder();
         int i = 0;
@@ -334,7 +349,10 @@ public class AlgoCompare extends AlgoElement {
         String or = loc.getMenu("Symbol.Or").toLowerCase();
 
         gc.append(varsubst).append("]),[");
-        gc.append(vars).append("])[0],m)][1]");
+        gc.append(vars);
+        // Add non-degeneracy nonce variable:
+        gc.append(",n");
+        gc.append("])[0],m)][1]");
         GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
         boolean useGiac = RealGeomWSSettings.isUseGiacElimination();
         boolean useRealGeom = false;
@@ -394,6 +412,11 @@ public class AlgoCompare extends AlgoElement {
 
         if ("$Aborted".equals(rgResult)) {
             Log.debug("Timeout in RealGeom");
+            rgResult = "";
+        }
+
+        if ("$Failed".equals(rgResult)) {
+            Log.debug("Computation issue in RealGeom");
             rgResult = "";
         }
 
