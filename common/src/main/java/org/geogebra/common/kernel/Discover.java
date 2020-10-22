@@ -145,37 +145,47 @@ public class Discover {
 			}
 		}
 
+		// TODO: Setting this value should be done dynamically: If the two points
+		// on the screen are visually not identical, then we accept this numerical result
+		// and do not start the symbolic check.
+		double DISTANCE_THRESHOLD = 0.000001;
+
 		// Second round.
 		pointPairs = prevPoints.iterator();
 		while (pointPairs.hasNext()) {
 			GeoPoint p1 = pointPairs.next();
 			if (!discoveryPool.areIdentical(p0, p1)) {
-				// Conjecture: Indentical points (always, no numerical check is done!)
-				AlgoAreEqual aac = new AlgoAreEqual(cons, p0, p1);
-				GeoElement root = new GeoBoolean(cons);
-				root.setParentAlgorithm(aac);
-				AlgoProveDetails ap = new AlgoProveDetails(cons, root);
-				ap.compute();
-				GeoElement[] o = ap.getOutput();
-				GeoList output = (GeoList) o[0];
-				if (output.size() > 0) {
-					GeoElement truth = output.get(0);
-					if (((GeoBoolean) truth).getBoolean()) {
-						// Theorem: Identical points
-						discoveryPool.addIdenticality(p0, p1).setTrivial(false);
+				// First we compute numerical distance.
+				AlgoJoinPointsSegment ajps = new AlgoJoinPointsSegment(cons, null, p0, p1);
+				if (ajps.getSegment().getLength() < DISTANCE_THRESHOLD) {
+					// Conjecture: Indentical points (always, no numerical check is done!)
+					AlgoAreEqual aac = new AlgoAreEqual(cons, p0, p1);
+					GeoElement root = new GeoBoolean(cons);
+					root.setParentAlgorithm(aac);
+					AlgoProveDetails ap = new AlgoProveDetails(cons, root);
+					ap.compute();
+					GeoElement[] o = ap.getOutput();
+					GeoList output = (GeoList) o[0];
+					if (output.size() > 0) {
+						GeoElement truth = output.get(0);
+						if (((GeoBoolean) truth).getBoolean()) {
+							// Theorem: Identical points
+							discoveryPool.addIdenticality(p0, p1).setTrivial(false);
+						}
+					} else {
+						// Here we don't know anything about the equality of the points.
+						// So we need to say goodbye to be on the safe side and exit Discover.
+						problemString = "CannotDecideEqualityofPointsAB";
+						problemStringDefault = "Cannot decide equality of points %0 and %1.";
+						problemParams = new String[2];
+						problemParams[0] = p0.getLabelSimple();
+						problemParams[1] = p1.getLabelSimple();
+						return false;
 					}
-				} else {
-					// Here we don't know anything about the equality of the points.
-					// So we need to say goodbye to be on the safe side and exit Discover.
-					problemString = "CannotDecideEqualityofPointsAB";
-					problemStringDefault = "Cannot decide equality of points %0 and %1.";
-					problemParams = new String[2];
-					problemParams[0] = p0.getLabelSimple();
-					problemParams[1] = p1.getLabelSimple();
-					return false;
+					ap.remove();
+					aac.remove();
 				}
-				ap.remove();
-				aac.remove();
+				ajps.remove();
 			}
 		}
 
@@ -663,12 +673,15 @@ public class Discover {
 							if (!l1.equals(l2) ||
 									(pl1 != null && pl2 != null &&
 											!pl1.equals(pl2) && !paired.contains(pl2))) {
+								boolean gl1_added = false;
+								boolean gl2_added = false;
 								GeoLine gl1 = l1.getGeoLine();
 								if (gl1 == null) {
 									GeoPoint[] gp = l1.getPoints2();
 									AlgoJoinPoints ajp =
 											new AlgoJoinPoints(cons, null, gp[0], gp[1]);
 									gl1 = ajp.getLine();
+									gl1_added = true;
 								}
 								GeoLine gl2 = l2.getGeoLine();
 								if (gl2 == null) {
@@ -676,39 +689,47 @@ public class Discover {
 									AlgoJoinPoints ajp =
 											new AlgoJoinPoints(cons, null, gp[0], gp[1]);
 									gl2 = ajp.getLine();
+									gl2_added = true;
 								}
-
-								AlgoArePerpendicular aap = new AlgoArePerpendicular(cons, gl1, gl2);
-								GeoElement root = new GeoBoolean(cons);
-								root.setParentAlgorithm(aap);
-								AlgoProveDetails ap = new AlgoProveDetails(cons, root);
-								ap.compute();
-								GeoElement[] o = ap.getOutput();
-								GeoList output = (GeoList) o[0];
-								if (output.size() > 0) {
-									GeoElement truth = output.get(0);
-									if (((GeoBoolean) truth).getBoolean()) {
-										// Theorem: Perpendicularity
-										if (pl1 == null) {
-											pl1 = discoveryPool.addDirection(l1);
-											visited1.add(pl1);
+								// First do a numerical check.
+								if (gl1.isPerpendicular(gl2)) {
+									AlgoArePerpendicular aap =
+											new AlgoArePerpendicular(cons, gl1, gl2);
+									GeoElement root = new GeoBoolean(cons);
+									root.setParentAlgorithm(aap);
+									AlgoProveDetails ap = new AlgoProveDetails(cons, root);
+									ap.compute();
+									GeoElement[] o = ap.getOutput();
+									GeoList output = (GeoList) o[0];
+									if (output.size() > 0) {
+										GeoElement truth = output.get(0);
+										if (((GeoBoolean) truth).getBoolean()) {
+											// Theorem: Perpendicularity
+											if (pl1 == null) {
+												pl1 = discoveryPool.addDirection(l1);
+												visited1.add(pl1);
+											}
+											if (pl2 == null) {
+												pl2 = discoveryPool.addDirection(l2);
+												visited1.add(pl2);
+												visited2.add(pl2);
+											}
+											discoveryPool.addPerpendicularity(pl1, pl2)
+													.setTrivial(false);
+											paired.add(pl1);
+											paired.add(pl2);
+											found = true;
 										}
-										if (pl2 == null) {
-											pl2 = discoveryPool.addDirection(l2);
-											visited1.add(pl2);
-											visited2.add(pl2);
-										}
-										discoveryPool.addPerpendicularity(pl1, pl2)
-												.setTrivial(false);
-										paired.add(pl1);
-										paired.add(pl2);
-										found = true;
 									}
+									ap.remove();
+									aap.remove();
 								}
-								ap.remove();
-								aap.remove();
-								gl1.remove();
-								gl2.remove();
+								if (gl1_added) {
+									gl1.remove();
+								}
+								if (gl2_added) {
+									gl2.remove();
+								}
 							}
 						}
 					}
