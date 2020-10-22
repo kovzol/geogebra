@@ -39,12 +39,29 @@ public class Line {
         return points;
     }
 
+    // Here we prefer the first two points that were created.
+    // Reason: they are more probably uniquely defined and the chance
+    // of selecting a point that leads to a component-like object
+    // is smaller. Also, this ensures deterministic output.
     public GeoPoint[] getPoints2() {
+        GeoPoint[] ps0 = new GeoPoint[points.size()];
+        Iterator<Point> it = points.iterator();
+        int i = 0;
+        while (it.hasNext()) {
+            ps0[i] = it.next().getGeoPoint();
+            i++;
+        }
+        sort(ps0);
         GeoPoint[] ps = new GeoPoint[2];
+        ps[0] = ps0[0];
+        ps[1] = ps0[1];
+        return ps;
+        /*
         Iterator<Point> it = points.iterator();
         ps[0] = it.next().getGeoPoint();
         ps[1] = it.next().getGeoPoint();
         return ps;
+         */
     }
 
     public void collinear(Point p) {
