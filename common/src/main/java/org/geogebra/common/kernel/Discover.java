@@ -162,7 +162,7 @@ public class Discover {
 					AlgoAreEqual aac = new AlgoAreEqual(cons, p0, p1);
 					GeoElement root = new GeoBoolean(cons);
 					root.setParentAlgorithm(aac);
-					AlgoProveDetails ap = new AlgoProveDetails(cons, root);
+					AlgoProveDetails ap = new AlgoProveDetails(cons, root, false, true);
 					ap.compute();
 					GeoElement[] o = ap.getOutput();
 					GeoList output = (GeoList) o[0];
@@ -245,7 +245,7 @@ public class Discover {
 					// Conjecture: Collinearity
 					GeoElement root = new GeoBoolean(cons);
 					root.setParentAlgorithm(aac);
-					AlgoProveDetails ap = new AlgoProveDetails(cons, root);
+					AlgoProveDetails ap = new AlgoProveDetails(cons, root, false, true);
 					ap.compute();
 					GeoElement[] o = ap.getOutput();
 					GeoList output = (GeoList) o[0];
@@ -340,7 +340,7 @@ public class Discover {
 						// Conjecture: Concyclicity
 						GeoElement root = new GeoBoolean(cons);
 						root.setParentAlgorithm(aac);
-						AlgoProveDetails ap = new AlgoProveDetails(cons, root);
+						AlgoProveDetails ap = new AlgoProveDetails(cons, root, false, true);
 						ap.compute();
 						GeoElement[] o = ap.getOutput();
 						GeoList output = (GeoList) o[0];
@@ -359,13 +359,26 @@ public class Discover {
 
 			// Third round: Draw circles from the discovery pool
 			// (those that are not yet drawn):
+			HashSet<GColor> colors = new HashSet<>();
+			for (Circle c: discoveryPool.circles) {
+				if (alreadyDrawn(c)) {
+					GeoConic drawn = getAlreadyDrawn(c);
+					GColor color = drawn.getObjectColor();
+					if (color != null) {
+						colors.add(color);
+						c.setGeoConic(drawn); // update data
+					}
+				}
+			}
 			for (Circle c : discoveryPool.circles) {
 				if (c.isTheorem()) {
 					if (c.getPoints().contains(p0)) {
 						if (!alreadyDrawn(c)) {
 							GeoPoint[] threepoints = c.getPoints3();
 							c.setGeoConic(addOutputCircle(threepoints[0], threepoints[1],
-									threepoints[2]));
+									threepoints[2], colors));
+							GColor color = c.getGeoConic().getObjectColor();
+							colors.add(color);
 						}
 						drawnCircles.add(c);
 					}
@@ -442,7 +455,7 @@ public class Discover {
 								AlgoAreParallel aap = new AlgoAreParallel(cons, gl1, gl2);
 								GeoElement root = new GeoBoolean(cons);
 								root.setParentAlgorithm(aap);
-								AlgoProveDetails ap = new AlgoProveDetails(cons, root);
+								AlgoProveDetails ap = new AlgoProveDetails(cons, root, false, true);
 								ap.compute();
 								GeoElement[] o = ap.getOutput();
 								GeoList output = (GeoList) o[0];
@@ -576,7 +589,7 @@ public class Discover {
 							AlgoAreCongruent aac = new AlgoAreCongruent(cons, gs1, gs2);
 							GeoElement root = new GeoBoolean(cons);
 							root.setParentAlgorithm(aac);
-							AlgoProveDetails ap = new AlgoProveDetails(cons, root);
+							AlgoProveDetails ap = new AlgoProveDetails(cons, root, false, true);
 							ap.compute();
 							GeoElement[] o = ap.getOutput();
 							GeoList output = (GeoList) o[0];
@@ -681,7 +694,7 @@ public class Discover {
 											new AlgoArePerpendicular(cons, gl1, gl2);
 									GeoElement root = new GeoBoolean(cons);
 									root.setParentAlgorithm(aap);
-									AlgoProveDetails ap = new AlgoProveDetails(cons, root);
+									AlgoProveDetails ap = new AlgoProveDetails(cons, root, false, true);
 									ap.compute();
 									GeoElement[] o = ap.getOutput();
 									GeoList output = (GeoList) o[0];
@@ -1042,8 +1055,10 @@ public class Discover {
 		allLines.addAll(toDraw);
 		for (Line l : allLines) {
 			GeoLine gl;
+			boolean existed = false;
 			if (drawn.contains(l)) {
 				gl = getAlreadyDrawn(l);
+				existed = true;
 			} else {
 				GeoPoint[] ps = l.getPoints2();
 				AlgoJoinPoints ajp = new AlgoJoinPoints(cons, null, ps[0], ps[1]);
@@ -1053,11 +1068,12 @@ public class Discover {
 				gl.setObjColor(color);
 			}
 			gl.setEuclidianVisible(true);
-			gl.setLineType(EuclidianStyleConstants.LINE_TYPE_FULL);
-			gl.setLineThickness(2);
-			gl.setLabelVisible(false);
+			if (!existed) {
+				gl.setLineType(EuclidianStyleConstants.LINE_TYPE_FULL);
+				gl.setLineThickness(2);
+				gl.setLabelVisible(false);
+			}
 			gl.setEuclidianVisible(true);
-			gl.setLineType(EuclidianStyleConstants.LINE_TYPE_FULL);
 			gl.updateVisualStyle(GProperty.COMBINED);
 			cons.setSuppressLabelCreation(oldMacroMode);
 			ret.add(gl);
@@ -1122,11 +1138,15 @@ public class Discover {
 		return l;
 	}
 
-	GeoConic addOutputCircle(GeoPoint A, GeoPoint B, GeoPoint C) {
+	GeoConic addOutputCircle(GeoPoint A, GeoPoint B, GeoPoint C, HashSet<GColor> colors) {
 		boolean oldMacroMode = cons.isSuppressLabelsActive();
 		AlgoCircleThreePoints actp = new AlgoCircleThreePoints(cons, null, A, B, C);
 		GeoConic circle = (GeoConic) actp.getCircle();
-		circle.setObjColor(nextColor(circle));
+		GColor color;
+		do {
+			circle.setObjColor(nextColor(circle));
+			color = circle.getObjectColor();
+		} while (colors.contains(color));
 		circle.setEuclidianVisible(true);
 		circle.setLineType(EuclidianStyleConstants.LINE_TYPE_DASHED_LONG);
 		circle.setLabelVisible(false);

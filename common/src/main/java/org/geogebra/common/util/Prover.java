@@ -228,6 +228,11 @@ public abstract class Prover {
 			this.geos = object;
 		}
 
+		/**
+		 * Should this condition be used in the Discover command?
+		 */
+		static boolean discovery = false;
+
 		@Override
 		public int hashCode() {
 			int result = condition.hashCode();
@@ -280,10 +285,15 @@ public abstract class Prover {
 			cons.setSuppressLabelCreation(false);
 			AlgoJoinPoints ajp = new AlgoJoinPoints(cons, null, P1, P2);
 			GeoLine line = ajp.getLine();
-			line.setEuclidianVisible(true);
-			line.setLineType(EuclidianStyleConstants.LINE_TYPE_DASHED_LONG);
-			line.setLabelVisible(true);
-			line.updateVisualStyle(GProperty.COMBINED); // visibility and style
+			if (!discovery) {
+				line.setEuclidianVisible(true);
+				line.setLineType(EuclidianStyleConstants.LINE_TYPE_DASHED_LONG);
+				line.setLabelVisible(true);
+				line.updateVisualStyle(GProperty.COMBINED); // visibility and style
+			} else {
+				line.setEuclidianVisible(false);
+			}
+
 			cons.setSuppressLabelCreation(oldMacroMode);
 			return line;
 		}
@@ -314,10 +324,15 @@ public abstract class Prover {
 			AlgoJoinPointsSegment ajp = new AlgoJoinPointsSegment(cons, null,
 					P1, P2);
 			GeoSegment segment = ajp.getSegment();
-			segment.setEuclidianVisible(true);
-			segment.setLineType(EuclidianStyleConstants.LINE_TYPE_DASHED_LONG);
-			segment.setLabelVisible(true);
-			segment.updateVisualStyle(GProperty.COMBINED);
+			if (!discovery) {
+				segment.setEuclidianVisible(true);
+				segment.setLineType(EuclidianStyleConstants.LINE_TYPE_DASHED_LONG);
+				segment.setLabelVisible(true);
+				segment.updateVisualStyle(GProperty.COMBINED);
+			} else {
+				segment.setEuclidianVisible(false);
+				segment.updateVisualStyle(GProperty.COMBINED);
+			}
 			cons.setSuppressLabelCreation(oldMacroMode);
 			return segment;
 		}
@@ -338,7 +353,8 @@ public abstract class Prover {
 		 * @param cons
 		 *            the current construction
 		 */
-		public void rewrite(Construction cons) {
+		public void rewrite(Construction cons, boolean d) {
+			discovery = d;
 			String cond = this.getCondition();
 			if ("AreCollinear".equals(cond)) {
 				sortGeos();

@@ -48,6 +48,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	private GeoElement root; // input
 	private GeoList list; // output
 	private boolean relTool = false;
+	private boolean discovery = false;
 	private String inputFingerprint;
 
 	/**
@@ -60,12 +61,16 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	 * @param relationTool
 	 *            true if output should be given for Relation Tool (which is
 	 *            more readable)
+	 * @param discovery
+	 *            true if output should be given for Discover (where we don't need
+	 *            fancy new objects---they are maintained by Discover)
 	 */
 	public AlgoProveDetails(Construction cons, GeoElement root,
-			boolean relationTool) {
+			boolean relationTool, boolean discovery) {
 		super(cons);
 		this.root = root;
 		this.relTool = relationTool;
+		this.discovery = discovery;
 
 		list = new GeoList(cons);
 		setInputOutput(); // for AlgoElement
@@ -73,6 +78,10 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 		// compute value of dependent number
 		initialCompute();
 		compute();
+	}
+
+	public AlgoProveDetails(Construction cons, GeoElement root, boolean relTool) {
+		this(cons, root, false, false);
 	}
 
 	/**
@@ -193,7 +202,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 					NDGCondition ndgc = it.next();
 					// Do not print unnecessary conditions:
 					if (ndgc.getReadability() > 0) {
-						ndgc.rewrite(cons);
+						ndgc.rewrite(cons, discovery);
 						StringBuilder s = null;
 
 						if (relTool) {
