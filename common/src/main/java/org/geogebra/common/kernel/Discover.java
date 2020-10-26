@@ -262,10 +262,6 @@ public class Discover {
 			}
 		}
 
-		if (p0.getGeoPoint().getKernel().isSilentMode()) {
-			return;
-		}
-
 		if (discover) {
 			// Third round: Draw lines from the discovery pool
 			// (those that are not yet drawn):
@@ -359,10 +355,6 @@ public class Discover {
 					}
 					aac.remove();
 				}
-			}
-
-			if (p0.getGeoPoint().getKernel().isSilentMode()) {
-				return;
 			}
 
 			// Third round: Draw circles from the discovery pool
@@ -471,10 +463,6 @@ public class Discover {
 						}
 					}
 				}
-			}
-
-			if (p0.getGeoPoint().getKernel().isSilentMode()) {
-				return;
 			}
 
 			/*
@@ -611,10 +599,6 @@ public class Discover {
 			}
 		}
 
-		if (p0.getGeoPoint().getKernel().isSilentMode()) {
-			return;
-		}
-
 		// Third round: Draw all lines from the discovery pool
 		// (those that are not yet drawn):
 		for (EqualLongSegments els : discoveryPool.equalLongSegments) {
@@ -746,6 +730,7 @@ public class Discover {
 		}
 
 		// Second round: Draw all lines from the discovery pool:
+		HashSet<GColor> colors = new HashSet<>();
 		for (OrthogonalParallelLines opl : discoveryPool.orthogonalParallelLines) {
 			HashSet<Line> linesDrawn = new HashSet<>();
 			HashSet<Line> linesToDraw = new HashSet<>();
@@ -767,7 +752,8 @@ public class Discover {
 					}
 				}
 			}
-			GColor color = addOutputLines(linesDrawn, linesToDraw);
+			GColor color = addOutputLines(linesDrawn, linesToDraw, colors);
+			colors.add(color);
 			pl1.setColor(color);
 			if (pl2 != null) {
 				pl2.setColor(color);
@@ -829,6 +815,11 @@ public class Discover {
 	}
 
 	public void showDialog() {
+		// TODO: Control this before calling this method.
+		if (kernel.isSilentMode()) {
+			return;
+		}
+
 		if (!(this.input instanceof GeoPoint)) {
 			return; // not yet implemented
 		}
@@ -846,13 +837,13 @@ public class Discover {
 		StringBuilder html = new StringBuilder("<html>");
 		rr[0].setInfo(html.toString());
 		Localization loc = input.getConstruction().getApplication().getLocalization();
-		if (!cons.getKernel().isSilentMode()) {
-			String discoveredTheoremsOnPointA = loc.getPlainDefault("DiscoveredTheoremsOnPointA",
-					"Discovered theorems on point %0", input.getLabelSimple());
-			tablePane.showDialog(discoveredTheoremsOnPointA, rr,
-					cons.getApplication());
-			// FIXME: This is not shown on the web.
-		}
+
+		String discoveredTheoremsOnPointA = loc.getPlainDefault("DiscoveredTheoremsOnPointA",
+				"Discovered theorems on point %0", input.getLabelSimple());
+		tablePane.showDialog(discoveredTheoremsOnPointA, rr,
+				cons.getApplication());
+		// FIXME: This is not shown on the web.
+
 		if (!detectProperties((GeoPoint) this.input)) {
 			String msg1 = loc.getMenuDefault("UnsupportedSteps",
 					"The construction contains unsupported steps.");
@@ -864,10 +855,6 @@ public class Discover {
 					"Please redraw the figure in a different way.");
 			tablePane.changeRowLeftColumn(0, "<html>" + msg1 + "<br>" + prb + "<br>" +
 					msg2 + "</html>");
-			return;
-		}
-
-		if (cons.getKernel().isSilentMode()) {
 			return;
 		}
 
@@ -1032,7 +1019,7 @@ public class Discover {
 				.getNext(true);
 	}
 
-	GColor addOutputLines(HashSet<Line> drawn, HashSet<Line> toDraw) {
+	GColor addOutputLines(HashSet<Line> drawn, HashSet<Line> toDraw, HashSet<GColor> colors) {
 		ArrayList<GeoLine> ret = new ArrayList<>();
 		GColor color = null;
 		if (!drawn.isEmpty()) {
@@ -1040,13 +1027,14 @@ public class Discover {
 			Line l1 = it.next();
 			GeoLine gl1 = getAlreadyDrawn(l1);
 			color = gl1.getAlgebraColor();
-		} else {
-			if (!cons.getKernel().isSilentMode()) {
-				Iterator<Line> it = toDraw.iterator();
-				Line l1 = it.next();
-				GeoPoint p = l1.getPoints2()[0];
-				color = nextColor((GeoElement) p);
+			if (colors.contains(color)) {
+				color = nextColor(gl1);
 			}
+		} else {
+			Iterator<Line> it = toDraw.iterator();
+			Line l1 = it.next();
+			GeoPoint p = l1.getPoints2()[0];
+			color = nextColor(p);
 		}
 		boolean oldMacroMode = cons.isSuppressLabelsActive();
 		HashSet<Line> allLines = new HashSet<>();
@@ -1086,12 +1074,10 @@ public class Discover {
 			GeoSegment gs1 = getAlreadyDrawn(s1);
 			color = gs1.getAlgebraColor();
 		} else {
-			if (!cons.getKernel().isSilentMode()) {
-				Iterator<Segment> it = toDraw.iterator();
-				Segment s1 = it.next();
-				GeoPoint p = s1.getStartPoint().getGeoPoint();
-				color = nextColor((GeoElement) p);
-			}
+			Iterator<Segment> it = toDraw.iterator();
+			Segment s1 = it.next();
+			GeoPoint p = s1.getStartPoint().getGeoPoint();
+			color = nextColor((GeoElement) p);
 		}
 		boolean oldMacroMode = cons.isSuppressLabelsActive();
 		HashSet<Segment> allSegments = new HashSet<>();
@@ -1127,9 +1113,7 @@ public class Discover {
 		boolean oldMacroMode = cons.isSuppressLabelsActive();
 		AlgoJoinPoints ajp = new AlgoJoinPoints(cons, null, A, B);
 		GeoLine l = ajp.getLine();
-		if (!A.getKernel().isSilentMode()) {
-			l.setObjColor(nextColor(l));
-		}
+		l.setObjColor(nextColor(l));
 		l.setEuclidianVisible(true);
 		l.setLineType(EuclidianStyleConstants.LINE_TYPE_DASHED_LONG);
 		l.setLabelVisible(false);
@@ -1142,9 +1126,7 @@ public class Discover {
 		boolean oldMacroMode = cons.isSuppressLabelsActive();
 		AlgoCircleThreePoints actp = new AlgoCircleThreePoints(cons, null, A, B, C);
 		GeoConic circle = (GeoConic) actp.getCircle();
-		if (!A.getKernel().isSilentMode()) {
-			circle.setObjColor(nextColor(circle));
-		}
+		circle.setObjColor(nextColor(circle));
 		circle.setEuclidianVisible(true);
 		circle.setLineType(EuclidianStyleConstants.LINE_TYPE_DASHED_LONG);
 		circle.setLabelVisible(false);
