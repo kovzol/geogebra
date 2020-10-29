@@ -116,7 +116,8 @@ public class AlgoCompare extends AlgoElement {
     SortedMap<GeoSegment, PVariable> rewrites;
     SortedMap<GeoSegment, PVariable> rewritesSorted;
     class Distance {
-        GeoPoint startPoint, endPoint;
+        public GeoPoint startPoint, endPoint;
+        public boolean extra = false;
         Distance (GeoPoint s, GeoPoint e) {
             startPoint = s;
             endPoint = e;
@@ -154,6 +155,17 @@ public class AlgoCompare extends AlgoElement {
          */
         Log.debug("Benchmarking: " + elapsedTime + " ms");
         Log.debug("COMPARISON RESULT IS " + retval);
+    }
+
+    void removeExtraDistances() {
+        Iterator<Distance> it = distances.keySet().iterator();
+        while (it.hasNext()) {
+            Distance d = it.next();
+            if (d.extra) {
+                GeoSegment gs = cons.getSegmentFromAlgoList(d.startPoint, d.endPoint);
+                gs.remove();
+            }
+        }
     }
 
     /*
@@ -297,9 +309,11 @@ public class AlgoCompare extends AlgoElement {
                     }
                 }
             }
+            removeExtraDistances();
         } catch (Throwable t) {
             // Maybe there is something unimplemented.
             // In such cases we just acknowledge this and return with no result.
+            removeExtraDistances();
             outputText.setTextString(retval);
             return;
         }
@@ -582,6 +596,7 @@ public class AlgoCompare extends AlgoElement {
                 AlgoJoinPointsSegment ajps =
                         new AlgoJoinPointsSegment(cons, null, startPoint, endPoint);
                 gs = ajps.getSegment();
+                d.extra = true;
             }
             distances.put(d, gs);
             return gs;
