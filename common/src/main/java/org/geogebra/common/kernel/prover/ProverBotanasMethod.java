@@ -688,7 +688,9 @@ public class ProverBotanasMethod {
 			it = predecessors.iterator();
 			while (it.hasNext()) {
 				GeoElement geo = it.next();
-				if (geo instanceof SymbolicParametersBotanaAlgo) {
+				if (geo.equals(numerical)) {
+					Log.debug("Using " + geo + " as a numerical object, not considering its symbolic counterpart");
+				} else if (geo instanceof SymbolicParametersBotanaAlgo) {
 					try {
 						if (geo instanceof GeoLine
 								&& ((GeoLine) geo).hasFixedSlope()
@@ -1347,14 +1349,14 @@ public class ProverBotanasMethod {
 			if (result != null) {
 				return;
 			}
+			if (prover.getProverEngine() == ProverEngine.LOCUS_EXPLICIT) {
+				return;
+			}
 			try {
 				updateBotanaVarsInv(statement);
 			} catch (NoSymbolicParametersException e) {
 				Log.debug("Botana vars cannot be inverted");
 				result = ProofResult.UNKNOWN;
-				return;
-			}
-			if (prover.getProverEngine() == ProverEngine.LOCUS_EXPLICIT) {
 				return;
 			}
 			setThesis();

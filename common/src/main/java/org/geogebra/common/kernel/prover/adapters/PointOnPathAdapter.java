@@ -130,8 +130,16 @@ public class PointOnPathAdapter extends ProverAdapter {
 
 			}
 		}
-
-		throw new NoSymbolicParametersException();
+		// In the general case set up two dummy variables. They will be used
+		// by the numerical substitution later in the prover.
+		if (botanaVars != null) {
+			return null;
+		}
+		botanaVars = new PVariable[2];
+		botanaVars[0] = new PVariable(kernel);
+		botanaVars[1] = new PVariable(kernel);
+		return null;
+		// throw new NoSymbolicParametersException();
 	}
 
 }
