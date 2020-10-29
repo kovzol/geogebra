@@ -62,6 +62,11 @@ public class PointOnPathAdapter extends ProverAdapter {
 				}
 				PVariable[] vparabola = ((SymbolicParametersBotanaAlgo) path)
 						.getBotanaVars(path);
+				if (vparabola == null) {
+					fallback(kernel);
+					return null;
+				}
+
 				botanaPolynomials = new PPolynomial[3];
 
 				// FP = PT
@@ -130,16 +135,20 @@ public class PointOnPathAdapter extends ProverAdapter {
 
 			}
 		}
+		fallback(kernel);
+		return null;
+		// throw new NoSymbolicParametersException();
+	}
+
+	void fallback(Kernel kernel) {
 		// In the general case set up two dummy variables. They will be used
 		// by the numerical substitution later in the prover.
 		if (botanaVars != null) {
-			return null;
+			return;
 		}
 		botanaVars = new PVariable[2];
 		botanaVars[0] = new PVariable(kernel);
 		botanaVars[1] = new PVariable(kernel);
-		return null;
-		// throw new NoSymbolicParametersException();
 	}
 
 }
