@@ -5,6 +5,7 @@ import static org.geogebra.common.kernel.prover.ProverBotanasMethod.AlgebraicSta
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
@@ -16,11 +17,14 @@ import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoDependentNumber;
+import org.geogebra.common.kernel.algos.AlgoDistancePoints;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoBoolean;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
@@ -111,6 +115,28 @@ public class AlgoCompare extends AlgoElement {
     AlgebraicStatement as;
     SortedMap<GeoSegment, PVariable> rewrites;
     SortedMap<GeoSegment, PVariable> rewritesSorted;
+    class Distance {
+        GeoPoint startPoint, endPoint;
+        Distance (GeoPoint s, GeoPoint e) {
+            startPoint = s;
+            endPoint = e;
+        }
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Distance)) return false;
+            Distance d = (Distance) o;
+            return startPoint == d.startPoint && endPoint == d.endPoint;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = startPoint.hashCode();
+            result = 1000 * result + endPoint.hashCode();
+            return result;
+        }
+    }
+    HashMap<Distance, GeoSegment> distances = new HashMap<>();
 
     StringTemplate portableFormat = StringTemplate.casCopyTemplate;
     StringTemplate fancyFormat = StringTemplate.algebraTemplate;
@@ -243,7 +269,7 @@ public class AlgoCompare extends AlgoElement {
             if (inputElement1 instanceof GeoNumeric) {
                 processExpr((GeoNumeric) inputElement1);
                 lhs_var = "w1";
-                extraPolys.add("-w1+" + rewrite(inputElement1.getDefinition(portableFormat)));
+                extraPolys.add("-w1+" + rewrite((GeoNumeric) inputElement1));
                 extraVars.add("w1");
                 if (htmlMode) {
                     inp1 += inputElement1.getColoredLabel();
@@ -259,7 +285,7 @@ public class AlgoCompare extends AlgoElement {
             if (inputElement2 instanceof GeoNumeric) {
                 processExpr((GeoNumeric) inputElement2);
                 rhs_var = "w2";
-                extraPolys.add("-w2+" + rewrite(inputElement2.getDefinition(portableFormat)));
+                extraPolys.add("-w2+" + rewrite((GeoNumeric) inputElement2));
                 extraVars.add("w2");
                 if (htmlMode) {
                     inp2 += inputElement2.getColoredLabel();
@@ -537,6 +563,32 @@ public class AlgoCompare extends AlgoElement {
         return var;
     }
 
+    private GeoSegment getGeoSegment(GeoNumeric n) {
+        AlgoElement ae = n.getParentAlgorithm();
+        if (ae instanceof AlgoDistancePoints) {
+            GeoPoint startPoint = (GeoPoint) ae.getInput(0);
+            GeoPoint endPoint = (GeoPoint) ae.getInput(1);
+            if (startPoint.getLabelSimple().compareTo(endPoint.getLabelSimple()) > 0) {
+                GeoPoint swap = startPoint;
+                startPoint = endPoint;
+                endPoint = swap;
+            }
+            Distance d = new Distance(startPoint, endPoint);
+            if (distances.containsKey(d)) {
+                return distances.get(d);
+            }
+            GeoSegment gs = cons.getSegmentFromAlgoList(startPoint, endPoint);
+            if (gs == null) {
+                AlgoJoinPointsSegment ajps =
+                        new AlgoJoinPointsSegment(cons, null, startPoint, endPoint);
+                gs = ajps.getSegment();
+            }
+            distances.put(d, gs);
+            return gs;
+        }
+        return null;
+    }
+
     private void processExpr(GeoNumeric n) {
         AlgoElement ae = n.getParentAlgorithm();
         if (ae instanceof AlgoDependentNumber) {
@@ -548,6 +600,9 @@ public class AlgoCompare extends AlgoElement {
                 }
                 PVariable v = processSegment((GeoSegment) ge);
             }
+        }
+        if (ae instanceof AlgoDistancePoints) {
+            PVariable v = processSegment(getGeoSegment(n));
         }
     }
 
@@ -563,7 +618,14 @@ public class AlgoCompare extends AlgoElement {
         }
     };
 
-    private String rewrite(String exp) {
+    private String rewrite(GeoNumeric n) {
+        AlgoElement ae = n.getParentAlgorithm();
+        String exp;
+        if (ae instanceof AlgoDistancePoints) {
+            exp = getGeoSegment(n).getLabel(portableFormat);
+        } else {
+            exp = n.getDefinition(portableFormat);
+        }
         // https://stackoverflow.com/questions/1326682/java-replacing-multiple-different-substring-in-a-string-at-once-or-in-the-most
         Iterator it = rewritesSorted.entrySet().iterator();
         while (it.hasNext()) {
@@ -575,5 +637,4 @@ public class AlgoCompare extends AlgoElement {
         exp = exp.replace(" ", "");
         return exp;
     }
-
 }
