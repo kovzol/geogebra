@@ -868,11 +868,6 @@ public class ProverBotanasMethod {
 									useThisPoly = false;
 								}
 							}
-							if (geo.equals(numerical)) {
-								// don't create the symbolic equation for a
-								// numerically used object
-								useThisPoly = false;
-							}
 							if (numerical == null) {
 								// there is no numerical object,
 								// so we still use this poly
