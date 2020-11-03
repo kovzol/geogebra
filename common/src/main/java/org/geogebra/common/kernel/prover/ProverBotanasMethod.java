@@ -622,6 +622,39 @@ public class ProverBotanasMethod {
 			Log.trace("gbt vars = " + elimVars + "," + freeVars);
 		}
 
+		/*
+		 * Do a breadth first search from the statement (s)
+		 * back towards its predecessors. Do not continue
+		 * traversing when the numerical object (n) is reached.
+		 * The visited objects will be kept. This does not
+		 * include the numerical object.
+		 */
+		private HashSet<GeoElement> keptElements (GeoElement n, GeoElement s) {
+			HashSet<GeoElement> keptElements = new HashSet<>();
+			HashSet<GeoElement> toProcess = new HashSet<>();
+			toProcess.add(s);
+
+			while (!toProcess.isEmpty()) {
+				keptElements.addAll(toProcess);
+				Iterator<GeoElement> it = toProcess.iterator();
+				HashSet<GeoElement> toFurtherProcess = new HashSet<>();
+				while (it.hasNext()) {
+					GeoElement processed = it.next();
+					AlgoElement aeProcessed = processed.getParentAlgorithm();
+					if (aeProcessed != null) {
+						GeoElement[] processedInputs = aeProcessed.getInput();
+						for (GeoElement input : processedInputs) {
+							if (!input.equals(n)) {
+								toFurtherProcess.add(input);
+							}
+						}
+					}
+				}
+				toProcess = toFurtherProcess;
+			}
+			return keptElements;
+		}
+
 		private void setHypotheses(GeoElement movingPoint) {
 			polynomials = new HashSet<>();
 
@@ -684,6 +717,15 @@ public class ProverBotanasMethod {
 					predecessors.add(geo);
 				}
 			}
+
+			/*
+			 * All such predecessors of the statement object that are predecessors
+			 * of only the numerical object can be safely ignored.
+			 */
+			if (numerical != null) {
+				predecessors.retainAll(keptElements(numerical, geoStatement));
+			}
+
 			ProverSettings proverSettings = ProverSettings.get();
 			it = predecessors.iterator();
 			while (it.hasNext()) {
