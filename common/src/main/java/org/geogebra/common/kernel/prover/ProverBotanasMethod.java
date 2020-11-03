@@ -16,6 +16,7 @@ import org.geogebra.common.cas.singularws.SingularWebService;
 import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.kernel.CASGenericInterface;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.advanced.AlgoDynamicCoordinates;
 import org.geogebra.common.kernel.algos.AlgoAngularBisectorPoints;
@@ -33,6 +34,7 @@ import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.MyList;
 import org.geogebra.common.kernel.arithmetic.ValidExpression;
 import org.geogebra.common.kernel.geos.GeoAngle;
+import org.geogebra.common.kernel.geos.GeoAxis;
 import org.geogebra.common.kernel.geos.GeoBoolean;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
@@ -725,6 +727,27 @@ public class ProverBotanasMethod {
 			if (numerical != null) {
 				predecessors.retainAll(keptElements(numerical, geoStatement));
 			}
+
+			/*
+			// Re-add axes and points on the axes:
+			it = allPredecessors.iterator();
+			while (it.hasNext()) {
+				GeoElement geo = it.next();
+				// add axis
+				if (geo instanceof GeoLine && ((GeoLine) geo).hasFixedSlope()) {
+					predecessors.add(geo);
+				} else {
+					// add point on axis
+					AlgoElement algo = geo.getParentAlgorithm();
+					if (algo instanceof AlgoPointOnPath) {
+						Path path = ((AlgoPointOnPath) algo).getPath();
+						if (path instanceof GeoAxis) {
+							predecessors.add(geo);
+						}
+					}
+				}
+			}
+			*/
 
 			ProverSettings proverSettings = ProverSettings.get();
 			it = predecessors.iterator();
