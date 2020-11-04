@@ -2117,13 +2117,25 @@ public class ProverBotanasMethod {
 						((GeoLine) ae.input[0]).getDirection(dir);
 						if (dir[0] == 0.0) {
 							/* vertical */
-							as.freeVariables.remove(vars[0]);
-							as.freeVariables.add(vars[1]);
+							if (vars != null) {
+								as.freeVariables.remove(vars[0]);
+								as.freeVariables.add(vars[1]);
+							} else {
+								// If vars == null, don't try to create
+								// any other objects that depend on it:
+								createY = false;
+							}
 							createX = false;
 						} else {
 							/* horizontal */
-							as.freeVariables.add(vars[0]);
-							as.freeVariables.remove(vars[1]);
+							if (vars != null) {
+								as.freeVariables.add(vars[0]);
+								as.freeVariables.remove(vars[1]);
+							} else {
+								// If vars == null, don't try to create
+								// any other objects that depend on it:
+								createX = false;
+							}
 							createY = false;
 						}
 					} else {
