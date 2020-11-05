@@ -10,7 +10,8 @@ HTML=html/all.html
 TEX=html/all.tex
 CSV=none
 # Don't use this, it is just an example:
-MYCOLUMNS="DesktopInternal DesktopGrobcov Web Node Wasm"
+#MYCOLUMNS="DesktopInternal DesktopGrobcov Web Node Wasm"
+MYCOLUMNS="DesktopInternal DesktopGrobcov Web"
 TESTGGBURLBASE_GGBDIR=http://dev.geogebra.org/trac/browser/trunk/geogebra/test/scripts/benchmark/art-plotter
 GEOGEBRAWEB_URL1=http://www.autgeo.online/geogebra-discovery/?filename=https://dev.geogebra.org/trac/export
 GEOGEBRAWEB_URL2=trunk/geogebra/test/scripts/benchmark/art-plotter
