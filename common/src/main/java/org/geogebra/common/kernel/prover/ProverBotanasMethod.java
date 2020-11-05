@@ -688,9 +688,10 @@ public class ProverBotanasMethod {
 				numerical = (GeoElement) numAlgo.getInput(0);
 
 				/*
-				 * Normally we don't want to use the numerical formula for
+				 * Formerly we did not want to use the numerical formula for
 				 * linear objects. Now we still compute the numerical formula
-				 * for most of the cases.
+				 * for most of the cases to avoid contradictions between
+				 * approximated values and exact symbolic values.
 				 */
 				if (numerical instanceof GeoSegment
 						|| numerical instanceof GeoConicPart) {
@@ -717,6 +718,21 @@ public class ProverBotanasMethod {
 						&& (algo instanceof AlgoDependentNumber
 						|| algo == null))) {
 					predecessors.add(geo);
+				}
+
+				/*
+				 * No object may be numerical if it is later referenced
+				 * in another object by a non-point-on-path way.
+				 */
+				if (algo != null) {
+					GeoElement[] inputs = algo.getInput();
+					for (GeoElement input : inputs) {
+						if (numerical != null &&
+								numerical.equals(input) && !(algo instanceof AlgoPointOnPath)) {
+							// Forbid numerical computation in this case:
+							numerical = null;
+						}
+					}
 				}
 			}
 
@@ -1395,7 +1411,7 @@ public class ProverBotanasMethod {
 		}
 
 		private void algebraicTranslation(GeoElement statement,
-										  GeoElement numerical, Prover prover) {
+										  GeoElement movingPoint, Prover prover) {
 			ProverSettings proverSettings = ProverSettings.get();
 			geoStatement = statement;
 			geoProver = prover;
@@ -1405,7 +1421,7 @@ public class ProverBotanasMethod {
 			 * redundant, it would be enough to set the prover here.
 			 */
 			prover.setStatement(statement);
-			setHypotheses(numerical);
+			setHypotheses(movingPoint);
 			if (result != null) {
 				return;
 			}
@@ -2079,7 +2095,8 @@ public class ProverBotanasMethod {
 			}
 
 			if (autoNdg && condition
-					&& moverDirectDependencies.contains(freePoint)) {
+					&& moverDirectDependencies.contains(freePoint)
+					&& vars != null) {
 				/* add non-degeneracy condition for the points to be avoided (Pech's idea) */
 				PPolynomial v = new PPolynomial(new PVariable(k));
 				PPolynomial ndg = PPolynomial.sqrDistance(moverVars[0], moverVars[1], vars[0], vars[1]).multiply(v).
