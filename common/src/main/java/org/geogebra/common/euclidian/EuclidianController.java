@@ -2809,13 +2809,11 @@ public abstract class EuclidianController implements SpecialPointsListener {
 
 		// points needed
 		addSelectedPoint(hits, 2, false, selPreview);
-		addSelectedNumeric(hits, 1, false, selPreview);
 
 		if (selPoints() == 2) {
 			// fetch the two selected points
 			GeoPointND[] points = getSelectedPointsND();
 			GeoElement locus;
-
 
 			if (points[0].getPath() == null) {
 				locus = companion.locusequation(points[0], points[1]);
@@ -2824,6 +2822,31 @@ public abstract class EuclidianController implements SpecialPointsListener {
 			}
 
 			return new GeoElement[] {locus};
+		}
+
+		return null;
+	}
+
+	protected final GeoElement[] envelope(Hits hits, boolean selPreview) {
+		if (hits.isEmpty()) {
+			return null;
+		}
+
+		// points needed
+		addSelectedGeo(hits, 2, false, selPreview);
+
+		if (selGeos() == 2) {
+			// fetch the two selected objects
+			GeoElement[] geos = getSelectedGeos();
+			GeoElement envelope;
+			if (geos[0] instanceof Path && geos[1] instanceof GeoPoint) {
+				envelope = companion.envelope(geos[0], geos[1]);
+				return new GeoElement[] {envelope};
+			}
+			if (geos[1] instanceof Path && geos[0] instanceof GeoPoint) {
+				envelope = companion.envelope(geos[1], geos[0]);
+				return new GeoElement[] {envelope};
+			}
 		}
 
 		return null;
@@ -5237,6 +5260,10 @@ public abstract class EuclidianController implements SpecialPointsListener {
 
 		case EuclidianConstants.MODE_LOCUS_EQUATION:
 			ret = locusequation(hits, selectionPreview);
+			break;
+
+		case EuclidianConstants.MODE_ENVELOPE:
+			ret = envelope(hits, selectionPreview);
 			break;
 
 		// new circle (3 points)
@@ -9469,8 +9496,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 
 	private boolean sliderHittingMode() {
 		return mode == EuclidianConstants.MODE_SLIDER
-				|| mode == EuclidianConstants.MODE_LOCUS
-				|| mode == EuclidianConstants.MODE_LOCUS_EQUATION;
+				|| mode == EuclidianConstants.MODE_LOCUS;
 	}
 
 	/**

@@ -170,6 +170,8 @@ public class ToolBar {
 		sb.append(EuclidianConstants.MODE_LOCUS);
 		sb.append(" ");
 		sb.append(EuclidianConstants.MODE_LOCUS_EQUATION);
+		sb.append(" ");
+		sb.append(EuclidianConstants.MODE_ENVELOPE);
 
 		// polygon
 		sb.append(" | ");
@@ -626,6 +628,8 @@ public class ToolBar {
 		sb.append(EuclidianConstants.MODE_LOCUS);
 		sb.append(" ");
 		sb.append(EuclidianConstants.MODE_LOCUS_EQUATION);
+		sb.append(" ");
+		sb.append(EuclidianConstants.MODE_ENVELOPE);
 		sb.append(" | ");
 
 		// polygons

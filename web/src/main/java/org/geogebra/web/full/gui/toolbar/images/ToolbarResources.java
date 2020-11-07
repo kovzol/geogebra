@@ -105,6 +105,8 @@ public interface ToolbarResources {
 
 	ResourcePrototype mode_locusequation_32();
 
+	ResourcePrototype mode_envelope_32();
+
 	ResourcePrototype mode_maxcells_32();
 
 	ResourcePrototype mode_meancells_32();

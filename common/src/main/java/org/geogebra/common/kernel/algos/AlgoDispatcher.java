@@ -61,6 +61,7 @@ import org.geogebra.common.kernel.kernelND.GeoLineND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
 import org.geogebra.common.kernel.matrix.Coords;
+import org.geogebra.common.kernel.prover.AlgoEnvelope;
 import org.geogebra.common.kernel.prover.AlgoLocusEquation;
 import org.geogebra.common.main.MyError;
 import org.geogebra.common.util.debug.Log;
@@ -1701,12 +1702,27 @@ public class AlgoDispatcher {
 			return null;
 		}
 		AlgoLocusEquation ale = new AlgoLocusEquation(cons, (GeoPoint) Q, (GeoPoint) P);
-		// ale.getPoly().isSetEuclidianVisible();
-		// return (GeoElement) ale.getPoly();
 		ale.getPoly().setLabel(null);
 		return (GeoElement) ale.getPoly().toGeoElement();
-
 	}
+
+	/**
+	 * envelope for q dependent on P. Note: P must be a point on a path.
+	 *
+	 * @param label
+	 *            output label
+	 * @param q
+	 *            curve
+	 * @param P
+	 *            moving point
+	 * @return locus
+	 */
+	final public GeoElement envelope(String label, GeoElement q, GeoElement P) {
+		AlgoEnvelope ale = new AlgoEnvelope(cons, (Path) q, (GeoPoint) P);
+		ale.getPoly().setLabel(null);
+		return (GeoElement) ale.getPoly().toGeoElement();
+	}
+
 
 
 	/**

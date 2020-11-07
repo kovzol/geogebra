@@ -152,6 +152,8 @@ public final class EuclidianConstants {
 	public static final int MODE_LOCUS = 47;
 	/** Locus equation */
 	public static final int MODE_LOCUS_EQUATION = 147;
+	/** Envelope */
+	public static final int MODE_ENVELOPE = 148;
 
 	/** Macro */
 	public static final int MODE_MACRO = 48;
@@ -776,6 +778,9 @@ public final class EuclidianConstants {
 
 		case EuclidianConstants.MODE_LOCUS_EQUATION:
 			return "LocusEquation.Tool";
+
+		case EuclidianConstants.MODE_ENVELOPE:
+			return "Envelope.Tool";
 
 		case EuclidianConstants.MODE_AREA:
 			return "Area";

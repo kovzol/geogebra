@@ -104,7 +104,6 @@ public class Graphing3DToolCollectionFactory extends AbstractToolCollectionFacto
                 EuclidianConstants.MODE_PARABOLA,
                 EuclidianConstants.MODE_HYPERBOLA_THREE_POINTS,
                 EuclidianConstants.MODE_LOCUS,
-                EuclidianConstants.MODE_LOCUS_EQUATION,
                 EuclidianConstants.MODE_INTERSECTION_CURVE);
 
         impl.addCategory(ToolCategory.TRANSFORM,
