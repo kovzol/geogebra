@@ -875,6 +875,19 @@ public class EuclidianControllerCompanion {
 	}
 
 	/**
+	 *
+	 * @param a
+	 *            dependent point
+	 * @param b
+	 *            point on path
+	 * @return locus
+	 */
+	protected GeoElement locusequation(GeoPointND a, GeoPointND b) {
+		return ec.getAlgoDispatcher().locusequation(null, a, b);
+	}
+
+
+	/**
 	 * set coords of the point to mouse loc
 	 * 
 	 * @param loc

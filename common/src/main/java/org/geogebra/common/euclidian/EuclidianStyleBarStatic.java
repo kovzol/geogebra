@@ -755,6 +755,8 @@ public class EuclidianStyleBarStatic {
 				ConstructionDefaults.DEFAULT_LIST);
 		defaultGeoMap.put(EuclidianConstants.MODE_LOCUS,
 				ConstructionDefaults.DEFAULT_LOCUS);
+		defaultGeoMap.put(EuclidianConstants.MODE_LOCUS_EQUATION,
+				ConstructionDefaults.DEFAULT_LOCUS);
 
 		defaultGeoMap.put(EuclidianConstants.MODE_POLYGON,
 				ConstructionDefaults.DEFAULT_POLYGON);

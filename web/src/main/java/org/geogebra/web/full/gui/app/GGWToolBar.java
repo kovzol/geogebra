@@ -707,6 +707,9 @@ public class GGWToolBar extends Composite
 		case EuclidianConstants.MODE_LOCUS:
 			return resourceBundle.mode_locus_32();
 
+		case EuclidianConstants.MODE_LOCUS_EQUATION:
+			return resourceBundle.mode_locus_32();
+
 		case EuclidianConstants.MODE_SPREADSHEET_MAX:
 			return resourceBundle.mode_maxcells_32();
 

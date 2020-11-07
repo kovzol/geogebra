@@ -22,6 +22,7 @@ public class GraphingToolSet {
         EuclidianConstants.MODE_ANGULAR_BISECTOR,
         EuclidianConstants.MODE_TANGENTS,
         EuclidianConstants.MODE_LOCUS,
+        EuclidianConstants.MODE_LOCUS_EQUATION,
         EuclidianConstants.MODE_SEGMENT_FIXED,
         EuclidianConstants.MODE_POLAR_DIAMETER,
         EuclidianConstants.MODE_POLYLINE,

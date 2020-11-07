@@ -2802,6 +2802,33 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		return null;
 	}
 
+	protected final GeoElement[] locusequation(Hits hits, boolean selPreview) {
+		if (hits.isEmpty()) {
+			return null;
+		}
+
+		// points needed
+		addSelectedPoint(hits, 2, false, selPreview);
+		addSelectedNumeric(hits, 1, false, selPreview);
+
+		if (selPoints() == 2) {
+			// fetch the two selected points
+			GeoPointND[] points = getSelectedPointsND();
+			GeoElement locus;
+
+
+			if (points[0].getPath() == null) {
+				locus = companion.locusequation(points[0], points[1]);
+			} else {
+				locus = companion.locusequation(points[1], points[0]);
+			}
+
+			return new GeoElement[] {locus};
+		}
+
+		return null;
+	}
+
 	protected final GeoElement[] conic5(Hits hits, boolean selPreview) {
 		if (hits.isEmpty()) {
 			return null;
@@ -5206,6 +5233,10 @@ public abstract class EuclidianController implements SpecialPointsListener {
 
 		case EuclidianConstants.MODE_LOCUS:
 			ret = locus(hits, selectionPreview);
+			break;
+
+		case EuclidianConstants.MODE_LOCUS_EQUATION:
+			ret = locusequation(hits, selectionPreview);
 			break;
 
 		// new circle (3 points)
@@ -9438,7 +9469,8 @@ public abstract class EuclidianController implements SpecialPointsListener {
 
 	private boolean sliderHittingMode() {
 		return mode == EuclidianConstants.MODE_SLIDER
-				|| mode == EuclidianConstants.MODE_LOCUS;
+				|| mode == EuclidianConstants.MODE_LOCUS
+				|| mode == EuclidianConstants.MODE_LOCUS_EQUATION;
 	}
 
 	/**

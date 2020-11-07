@@ -106,6 +106,8 @@ public class SuiteToolCollectionFactory extends AbstractToolCollectionFactory {
 
         impl.extendCategory(ToolCategory.CONSTRUCT,
                 EuclidianConstants.MODE_LOCUS);
+        impl.extendCategory(ToolCategory.CONSTRUCT,
+                EuclidianConstants.MODE_LOCUS_EQUATION);
 
         impl.extendCategory(ToolCategory.LINES,
                 EuclidianConstants.MODE_SEGMENT_FIXED,

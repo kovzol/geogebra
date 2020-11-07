@@ -145,6 +145,10 @@ public interface ToolbarSvgResources extends ClientBundle, ToolbarResources {
 	@Override
 	SVGResource mode_locus_32();
 
+	@Source("org/geogebra/common/icons/svg/web/toolIcons/mode_locusequation.svg")
+	@Override
+	SVGResource mode_locusequation_32();
+
 	@Source("org/geogebra/common/icons/svg/web/toolIcons/mode_midpoint.svg")
 	@Override
 	SVGResource mode_midpoint_32();

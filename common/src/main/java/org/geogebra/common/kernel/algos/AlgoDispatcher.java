@@ -61,6 +61,7 @@ import org.geogebra.common.kernel.kernelND.GeoLineND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
 import org.geogebra.common.kernel.matrix.Coords;
+import org.geogebra.common.kernel.prover.AlgoLocusEquation;
 import org.geogebra.common.main.MyError;
 import org.geogebra.common.util.debug.Log;
 
@@ -1683,6 +1684,30 @@ public class AlgoDispatcher {
 		}
 		return new AlgoLocus(cons, label, Q, P).getLocus();
 	}
+
+	/**
+	 * locusequation for Q dependent on P. Note: P must be a point on a path.
+	 *
+	 * @param label
+	 *            output label
+	 * @param Q
+	 *            locus point
+	 * @param P
+	 *            moving point
+	 * @return locus
+	 */
+	final public GeoElement locusequation(String label, GeoPointND Q, GeoPointND P) {
+		if (!locusCheck(P, Q)) {
+			return null;
+		}
+		AlgoLocusEquation ale = new AlgoLocusEquation(cons, (GeoPoint) Q, (GeoPoint) P);
+		// ale.getPoly().isSetEuclidianVisible();
+		// return (GeoElement) ale.getPoly();
+		ale.getPoly().setLabel(null);
+		return (GeoElement) ale.getPoly().toGeoElement();
+
+	}
+
 
 	/**
 	 * @param P
