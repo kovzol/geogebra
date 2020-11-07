@@ -223,9 +223,6 @@ public class AlgoEnvelope extends AlgoElement implements UsesCAS {
 	 * 
 	 */
 	public void computeEnvelope() {
-		if (kernel.isSilentMode()) {
-			return;
-		}
 		double startTime = UtilFactory.getPrototype().getMillisecondTime();
 		String result = null;
 		try {
