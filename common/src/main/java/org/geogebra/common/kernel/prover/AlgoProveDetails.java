@@ -81,7 +81,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	}
 
 	public AlgoProveDetails(Construction cons, GeoElement root, boolean relTool) {
-		this(cons, root, false, false);
+		this(cons, root, relTool, false);
 	}
 
 	/**
