@@ -1,6 +1,7 @@
 package org.geogebra.common.kernel.commands;
 
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.advanced.CmdCompose;
 import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
 import org.geogebra.common.main.Feature;
 import org.geogebra.common.plugin.Operation;
@@ -197,6 +198,8 @@ public class CommandDispatcherBasic implements CommandDispatcherInterface {
 			return new CmdRotate(kernel);
 		case Translate:
 			return new CmdTranslate(kernel);
+		case Compose:
+			return new CmdCompose(kernel);
 		case Shear:
 			return new CmdShear(kernel);
 		case Stretch:
