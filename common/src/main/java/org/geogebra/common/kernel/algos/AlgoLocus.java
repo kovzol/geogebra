@@ -13,6 +13,7 @@ the Free Software Foundation.
 package org.geogebra.common.kernel.algos;
 
 import org.geogebra.common.awt.GRectangle2D;
+import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.factories.AwtFactory;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
@@ -166,6 +167,12 @@ public class AlgoLocus extends AlgoLocusND<MyPoint> {
 	@Override
 	protected MyPoint newCache() {
 		return new MyPoint();
+	}
+
+
+	@Override
+	public int getRelatedModeID() {
+		return EuclidianConstants.MODE_LOCUS;
 	}
 
 }

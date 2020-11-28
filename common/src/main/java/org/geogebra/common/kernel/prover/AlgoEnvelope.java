@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.cas.giac.CASgiac.CustomFunctions;
 import org.geogebra.common.cas.singularws.SingularWebService;
+import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
@@ -428,6 +429,11 @@ public class AlgoEnvelope extends AlgoElement implements UsesCAS {
 			Log.error("Error on running Giac code");
 			return null;
 		}
+	}
+
+	@Override
+	public int getRelatedModeID() {
+		return EuclidianConstants.MODE_ENVELOPE;
 	}
 
 }
