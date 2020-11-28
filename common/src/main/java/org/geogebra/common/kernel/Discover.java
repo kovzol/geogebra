@@ -83,7 +83,7 @@ public class Discover {
 
 		int i = 0;
 		for (GeoElement ge : ges) {
-			if (ge instanceof GeoPoint && !p.equals(ge)) {
+			if (ge instanceof GeoPoint && !p.equals(ge) && ge.isEuclidianVisible()) {
 				if (!collectIdenticalPoints((GeoPoint) ge, false)) {
 					return false;
 				}
@@ -127,7 +127,7 @@ public class Discover {
 
 		HashSet<GeoPoint> prevPoints = new HashSet<GeoPoint>();
 		for (GeoElement ge : cons.getGeoSetLabelOrder()) {
-			if (ge instanceof GeoPoint && !ge.equals(p0)) {
+			if (ge instanceof GeoPoint && !ge.equals(p0) && ge.isEuclidianVisible()) {
 				prevPoints.add((GeoPoint) ge);
 			}
 		}
