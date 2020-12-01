@@ -1,7 +1,7 @@
 describe('Usages of the Discover command to find perpendicular lines (taken from https://matek.hu/zoltan/blog-20201019.php)', () => {
     beforeEach(() => {
         cy.visit('index.html');
-        cy.get("body.application");
+        cy.get("body.application").click(10,10);
         cy.window().then((win) => {
             var result = win.ggbApplet.evalCommandCAS("1+1");
             });
