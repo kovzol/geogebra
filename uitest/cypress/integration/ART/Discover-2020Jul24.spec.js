@@ -230,7 +230,7 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
            });
     });
 
-    // This times out on web, but works well on desktop.
+    // This formerly timed out on web, but works well on desktop.
     it("Fig 14-15 (IMO 2010 problem)", () => {
         cy.writeInAVInput("A=(-4,0)\n");
         cy.wait(200);
@@ -277,7 +277,7 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
            });
     });
 
-    // This times out on web, but works on desktop with increased prover timeout setting.
+    // This timed out on web formerly, but works on desktop with increased prover timeout setting.
     it("Fig 16-17 (Pappus)", () => {
         cy.writeInAVInput("A=(-4,3)\n");
         cy.wait(200);
