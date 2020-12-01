@@ -23,6 +23,8 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.wait(200);
         cy.writeInAVInput("Discover(B)\n");
         cy.wait(200);
+        cy.writeInAVInput("\n");
+        cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
            expect(text).to.include("AB ∥ DE");
@@ -44,6 +46,8 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.writeInAVInput("I=Intersect(Line(A,D),Line(C,F))\n");
         cy.wait(200);
         cy.writeInAVInput("Discover(F)\n");
+        cy.wait(200);
+        cy.writeInAVInput("\n");
         cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
@@ -71,6 +75,8 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.writeInAVInput("P6=Midpoint(P2,P4)\n");
         cy.wait(200);
         cy.writeInAVInput("Discover(P5)\n");
+        cy.wait(200);
+        cy.writeInAVInput("\n");
         cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
@@ -147,6 +153,8 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.wait(200);
         cy.writeInAVInput("Discover(P)\n");
         cy.wait(200);
+        cy.writeInAVInput("\n");
+        cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
            expect(text).to.include("AMG ∥ DQ");
@@ -213,6 +221,8 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.wait(200);
         cy.writeInAVInput("Discover(D)\n");
         cy.wait(200);
+        cy.writeInAVInput("\n");
+        cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
            expect(text).to.include("ACEN ∥ DF ∥ JL");
@@ -264,6 +274,8 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.wait(200);
         cy.writeInAVInput("Discover(Q)\n");
         cy.wait(200);
+        cy.writeInAVInput("\n");
+        cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
            expect(text).to.include("DP ∥ EQ");
@@ -314,6 +326,8 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.writeInAVInput("I=Intersect(BF,DE)\n");
         cy.wait(200);
         cy.writeInAVInput("Discover(G)\n");
+        cy.wait(200);
+        cy.writeInAVInput("\n");
         cy.wait(200);
         cy.get(".gwt-HTML").should(($div) => {
            const text = $div.text();

@@ -43,6 +43,8 @@ describe("Napoleon's theorem", () => {
         cy.wait(200);
         cy.writeInAVInput("Discover(G)\n");
         cy.wait(200);
+        cy.writeInAVInput("\n");
+        cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
            expect(text).to.include("AG = CG = DG");

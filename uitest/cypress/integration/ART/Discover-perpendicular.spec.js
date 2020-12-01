@@ -25,6 +25,7 @@ describe('Usages of the Discover command to find perpendicular lines (taken from
         cy.wait(200);
         cy.writeInAVInput("Discover(D)\n");
         cy.wait(200);
+        cy.writeInAVInput("\n");
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
            expect(text).to.include("BD ⟂ DC");
