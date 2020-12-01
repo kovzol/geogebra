@@ -2,6 +2,11 @@ describe('Discovery in regular polygons', () => {
     beforeEach(() => {
         cy.visit('index.html');
         cy.get("body.application");
+        cy.window().then((win) => {
+            var result = win.ggbApplet.evalCommandCAS("1+1");
+            });
+        cy.wait(2000);
+
         cy.writeInAVInput("A=(0,0)\n");
         cy.wait(200);
         cy.writeInAVInput("B=(1,0)\n");

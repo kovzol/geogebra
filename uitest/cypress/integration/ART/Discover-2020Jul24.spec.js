@@ -2,6 +2,10 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
     beforeEach(() => {
         cy.visit('index.html');
         cy.get("body.application");
+        cy.window().then((win) => {
+            var result = win.ggbApplet.evalCommandCAS("1+1");
+            });
+        cy.wait(2000);
     });
 
     afterEach(cy.setSaved);
@@ -43,7 +47,7 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
-           expect(text).to.include("AB ∥ CFG ∥ DE");
+           expect(text).to.include("AB ∥ CFG ∥ DE ⟂ BD");
            expect(text).to.include("AD = BE = CF");
            });
         cy.get(".gwt-HTML").should(($div) => {

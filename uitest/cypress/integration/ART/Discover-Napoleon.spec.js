@@ -2,6 +2,10 @@ describe("Napoleon's theorem", () => {
     beforeEach(() => {
         cy.visit('index.html');
         cy.get("body.application");
+        cy.window().then((win) => {
+            var result = win.ggbApplet.evalCommandCAS("1+1");
+            });
+        cy.wait(2000);
     });
 
     afterEach(cy.setSaved);
