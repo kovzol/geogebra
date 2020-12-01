@@ -3,6 +3,8 @@ describe('Usages of the Discover command in the RMEC paper "Discovering geometry
         cy.visit('index.html');
         cy.get("body.application").click(10,10);
         cy.window().then((win) => {
+            win.ggbApplet.setAxesVisible(false, false);
+            win.ggbApplet.setGridVisible(false);
             var result = win.ggbApplet.evalCommandCAS("1+1");
             });
         cy.wait(2000);
@@ -11,7 +13,7 @@ describe('Usages of the Discover command in the RMEC paper "Discovering geometry
     afterEach(cy.setSaved);
 
     it("Fig. 1-2-3", () => {
-        cy.writeInAVInput("A=(-1,-1)\n");
+        cy.writeInAVInput("A=(-3,-3)\n");
         cy.wait(200);
         cy.writeInAVInput("B=(3,1)\n");
         cy.wait(200);
@@ -35,11 +37,11 @@ describe('Usages of the Discover command in the RMEC paper "Discovering geometry
     });
 
     it("Fig. 6-7-8", () => {
-        cy.writeInAVInput("P=(2,3)\n");
+        cy.writeInAVInput("P=(0,3)\n");
         cy.wait(200);
-        cy.writeInAVInput("Q=(1,1)\n");
+        cy.writeInAVInput("Q=(-3,-3)\n");
         cy.wait(200);
-        cy.writeInAVInput("R=(3,2)\n");
+        cy.writeInAVInput("R=(3,0)\n");
         cy.wait(200);
         cy.writeInAVInput("p=Line(Q,R)\n");
         cy.wait(200);

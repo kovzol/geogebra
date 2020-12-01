@@ -3,6 +3,8 @@ describe("Napoleon's theorem", () => {
         cy.visit('index.html');
         cy.get("body.application").click(10,10);
         cy.window().then((win) => {
+            win.ggbApplet.setAxesVisible(false, false);
+            win.ggbApplet.setGridVisible(false);
             var result = win.ggbApplet.evalCommandCAS("1+1");
             });
         cy.wait(2000);
