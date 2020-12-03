@@ -100,9 +100,9 @@ dependencies {
         "com.jogamp:gluegen-rt:$joglVersion:natives-windows-amd64", 
         "com.jogamp:gluegen-rt:$joglVersion:natives-macosx-universal",
         "com.jogamp:gluegen-rt:$joglVersion:natives-linux-i586"
-    runtime "fr.ujf-grenoble:javagiac:69680:natives-linux-amd64",
+    runtime "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-amd64",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-i586",
-        //"fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-arm",
+        "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-arm",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-windows-amd64",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-windows-i586",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-macosx-universal"
