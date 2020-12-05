@@ -617,7 +617,7 @@ public abstract class CommandDispatcher {
 			case Dilate:
 			case Rotate:
 			case Translate:
-			case Compose:
+			case ApplyMap:
 			case Shear:
 			case Stretch:
 

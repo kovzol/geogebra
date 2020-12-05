@@ -748,7 +748,7 @@ public enum Commands implements CommandsConstants,
 
 	Stretch(TABLE_TRANSFORMATION),
 
-	Compose(TABLE_TRANSFORMATION),
+	ApplyMap(TABLE_TRANSFORMATION),
 
 	// =============================================================
 	// spreadsheet

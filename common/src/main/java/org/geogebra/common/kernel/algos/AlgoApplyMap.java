@@ -9,7 +9,7 @@ import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoLineND;
 
-public class AlgoCompose extends AlgoElement {
+public class AlgoApplyMap extends AlgoElement {
 
     // input
     private GeoElement oo;
@@ -17,13 +17,13 @@ public class AlgoCompose extends AlgoElement {
 
     private GeoElement outGeo;
 
-    public AlgoCompose(Construction cons, String label, GeoElement outputObject,
+    public AlgoApplyMap(Construction cons, String label, GeoElement outputObject,
                        GeoList inputList) {
         this(cons, outputObject, inputList);
         outGeo.setLabel(label);
     }
 
-    public AlgoCompose(Construction cons, GeoElement outputObject,
+    public AlgoApplyMap(Construction cons, GeoElement outputObject,
                          GeoList inputList) {
         super(cons);
         il = new GeoElement[inputList.size()];
@@ -44,7 +44,7 @@ public class AlgoCompose extends AlgoElement {
 
     @Override
     public Commands getClassName() {
-        return Commands.Compose;
+        return Commands.ApplyMap;
     }
 
     // for AlgoElement
@@ -64,7 +64,7 @@ public class AlgoCompose extends AlgoElement {
 
         // A is a free point, mirrored about line BC.
         // D is another free point.
-        // Compose({D}, {A, A'})
+        // ApplyMap({A, A'}, {D})
         // should give {{D'}} where D' is the mirror image of D about BC.
 
         if (il.length != 2) {
