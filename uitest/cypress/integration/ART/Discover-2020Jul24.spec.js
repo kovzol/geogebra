@@ -82,13 +82,13 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
-           expect(text).to.include("P1P6 = P3P6"); // here P5 is expected instead of P6
-           expect(text).to.include("P2P6 = P4P6"); // here P5 is expected instead of P6
+           expect(text).to.include("P1P5 = P3P5");
+           expect(text).to.include("P2P5 = P4P5");
            });
         cy.get(".gwt-HTML").should(($div) => {
            const text = $div.text();
            expect(text).to.include("Identical points: P5=P6");
-           expect(text).to.include("Collinear points: P1P3P6");
+           expect(text).to.include("Collinear points: P1P3P5");
            });
     });
 
@@ -167,8 +167,8 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.get(".gwt-HTML").should(($div) => {
            const text = $div.text();
            expect(text).to.include("Identical points: G=H=I, J=K=L, P=Q=R");
-           expect(text).to.include("Collinear points: GJQ");
-           expect(text).to.include("Concyclic points: BDFQ, AEFQ, CDEQ");
+           expect(text).to.include("Collinear points: GJP");
+           expect(text).to.include("Concyclic points: AEFQ, BDFQ, CDEQ");
            });
     });
 
@@ -238,7 +238,7 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.get(".gwt-HTML").should(($div) => {
            const text = $div.text();
            expect(text).to.include("Identical points: G=H=I");
-           expect(text).to.include("Concyclic points: DEFMNOJKL"); // fix order
+           expect(text).to.include("Concyclic points: DEFJKLMNO");
            });
     });
 
