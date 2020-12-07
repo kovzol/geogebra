@@ -1,9 +1,11 @@
 package org.geogebra.common.kernel;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.javax.swing.RelationPane;
@@ -58,9 +60,16 @@ public class Discover {
 	private Construction cons;
 
 	private HashSet<Line> drawnLines = new HashSet<>();
-	private HashSet<Circle> drawnCircles = new HashSet<>();
-	private HashSet<ParallelLines> drawnDirections = new HashSet<>();
-	private HashSet<EqualLongSegments> drawnSegments = new HashSet<>();
+	Comparator pointComparator = new SortPointsAlphabetically();
+	Comparator circleComparator = new SortCirclesAlphabetically();
+	Comparator directionsComparator = new SortParallelLinesAlphabetically();
+	Comparator equalLongSegmentsComparator = new SortEqualLongSegmentsAlphabetically();
+	Comparator orthogonalParallelLinesComparator = new SortOrthogonalParallelLinesAlphabetically();
+	private TreeSet<Point> shownPoints = new TreeSet<>(pointComparator);
+	private TreeSet<Circle> drawnCircles = new TreeSet<>(circleComparator);
+	private TreeSet<ParallelLines> drawnDirections = new TreeSet<>(directionsComparator);
+	private TreeSet<EqualLongSegments> drawnSegments = new TreeSet<>(equalLongSegmentsComparator);
+	private TreeSet<OrthogonalParallelLines> drawnOrthogonalParallelLines = new TreeSet<>(orthogonalParallelLinesComparator);
 	private String problemString = null;
 	private String problemStringDefault = null;
 	private String[] problemParams;
@@ -360,7 +369,7 @@ public class Discover {
 			// Third round: Draw circles from the discovery pool
 			// (those that are not yet drawn):
 			HashSet<GColor> colors = new HashSet<>();
-			for (Circle c: discoveryPool.circles) {
+			for (Circle c : discoveryPool.circles) {
 				if (alreadyDrawn(c)) {
 					GeoConic drawn = getAlreadyDrawn(c);
 					GColor color = drawn.getObjectColor();
@@ -646,6 +655,7 @@ public class Discover {
 
 		// This is an overkill, but it should work:
 		discoveryPool.orthogonalParallelLines.clear();
+		drawnOrthogonalParallelLines.clear();
 		// TODO: Do not clear it, just update it in the next steps!
 
 		HashSet<ParallelLines> paired = new HashSet<>();
@@ -694,7 +704,8 @@ public class Discover {
 											new AlgoArePerpendicular(cons, gl1, gl2);
 									GeoElement root = new GeoBoolean(cons);
 									root.setParentAlgorithm(aap);
-									AlgoProveDetails ap = new AlgoProveDetails(cons, root, false, true);
+									AlgoProveDetails ap =
+											new AlgoProveDetails(cons, root, false, true);
 									ap.compute();
 									GeoElement[] o = ap.getOutput();
 									GeoList output = (GeoList) o[0];
@@ -772,6 +783,9 @@ public class Discover {
 				pl2.setColor(color);
 			}
 			opl.setColor(color);
+		}
+		for (OrthogonalParallelLines opl : discoveryPool.orthogonalParallelLines) {
+			drawnOrthogonalParallelLines.add(opl);
 		}
 	}
 
@@ -876,8 +890,13 @@ public class Discover {
 		int pointitems = 0;
 		int items = 0;
 		// Points
+		shownPoints.clear();
+		for (Point pp : discoveryPool.points) {
+			shownPoints.add(pp);
+		}
+
 		StringBuilder points = new StringBuilder();
-		for (Point p : discoveryPool.points) {
+		for (Point p : shownPoints) {
 			if (p.getPoints().size() > 1) {
 				points.append(p.toString());
 				points.append(", ");
@@ -933,14 +952,15 @@ public class Discover {
 
 		// Parallel and perpendicular lines
 		StringBuilder directions = new StringBuilder();
-		if (!discoveryPool.orthogonalParallelLines.isEmpty()) {
+		if (!drawnOrthogonalParallelLines.isEmpty()) {
 			directions.append("<ul>");
-			for (OrthogonalParallelLines opl : discoveryPool.orthogonalParallelLines) {
+			for (OrthogonalParallelLines opl : drawnOrthogonalParallelLines) {
 				GColor c = opl.getColor();
 				directions.append("<li " + liStyle + ">");
 				if (c != null) {
 					String color = StringUtil.toHexString(c);
-					directions.append("<font color=\"" + color + "\">" + opl.toString() + "</font>");
+					directions.
+							append("<font color=\"" + color + "\">" + opl.toString() + "</font>");
 				} else {
 					directions.append(opl.toString());
 				}
@@ -1381,4 +1401,35 @@ public class Discover {
 			}
 		}
 	}
+
+	class SortPointsAlphabetically implements Comparator<Point> {
+		public int compare(Point p1, Point p2) {
+			return p1.toString().compareTo(p2.toString());
+		}
+	}
+
+	class SortCirclesAlphabetically implements Comparator<Circle> {
+		public int compare(Circle c1, Circle c2) {
+			return c1.toString().compareTo(c2.toString());
+		}
+	}
+
+	class SortParallelLinesAlphabetically implements Comparator<ParallelLines> {
+		public int compare(ParallelLines pl1, ParallelLines pl2) {
+			return pl1.toString().compareTo(pl2.toString());
+		}
+	}
+
+	class SortEqualLongSegmentsAlphabetically implements Comparator<EqualLongSegments> {
+		public int compare(EqualLongSegments els1, EqualLongSegments els2) {
+			return els1.toString().compareTo(els2.toString());
+		}
+	}
+
+	class SortOrthogonalParallelLinesAlphabetically implements Comparator<OrthogonalParallelLines> {
+		public int compare(OrthogonalParallelLines opl1, OrthogonalParallelLines opl2) {
+			return opl1.toString().compareTo(opl2.toString());
+		}
+	}
+
 }

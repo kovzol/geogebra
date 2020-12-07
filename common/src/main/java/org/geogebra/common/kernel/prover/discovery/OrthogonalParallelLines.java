@@ -52,6 +52,9 @@ public class OrthogonalParallelLines {
 		if (pl2 == null) {
 			return pl1.toString();
 		}
+		if (pl1.toString().compareTo(pl2.toString()) > 0) {
+			return pl2.toString() + " " + Unicode.PERPENDICULAR + " " + pl1.toString();
+		}
 		return pl1.toString() + " " + Unicode.PERPENDICULAR + " " + pl2.toString();
 	}
 
