@@ -29,6 +29,7 @@ public class Point {
 
 	public Point(GeoPoint p1) {
 		points.add(p1);
+		geoPoint = p1;
 	}
 
 	public HashSet<GeoPoint> getPoints() {
@@ -37,13 +38,9 @@ public class Point {
 
 	public void identical(GeoPoint p) {
 		points.add(p);
-	}
-
-	public void deletePoint(GeoPoint p) {
-		if (!points.contains(p)) {
-			return; // do nothing
+		if (geoPoint.getLabelSimple().compareTo(p.getLabelSimple()) > 0) {
+			geoPoint = p;
 		}
-		points.remove(p);
 	}
 
 	public String toString() {
@@ -64,10 +61,6 @@ public class Point {
 
 	public GeoPoint getGeoPoint() {
 		return geoPoint;
-	}
-
-	public void setGeoPoint(GeoPoint gp) {
-		geoPoint = gp;
 	}
 
 }

@@ -98,7 +98,6 @@ public class Pool {
         Point p = getPoint(p1);
         if (p == null) {
             Point point = new Point(p1);
-            point.setGeoPoint(p1);
             points.add(point);
             return point;
         }
