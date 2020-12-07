@@ -159,16 +159,16 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
         cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
-           expect(text).to.include("AMG ∥ DQ");
-           expect(text).to.include("BNG ∥ EQ");
-           expect(text).to.include("COG ∥ FQ");
-           expect(text).to.include("AQ = BQ = CQ");
+           expect(text).to.include("AMG ∥ DP");
+           expect(text).to.include("BNG ∥ EP");
+           expect(text).to.include("COG ∥ FP");
+           expect(text).to.include("AP = BP = CP");
            });
         cy.get(".gwt-HTML").should(($div) => {
            const text = $div.text();
            expect(text).to.include("Identical points: G=H=I, J=K=L, P=Q=R");
            expect(text).to.include("Collinear points: GJP");
-           expect(text).to.include("Concyclic points: AEFQ, BDFQ, CDEQ");
+           expect(text).to.include("Concyclic points: AEFP, BDFP, CDEP");
            });
     });
 
