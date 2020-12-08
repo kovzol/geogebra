@@ -1,6 +1,7 @@
 package org.geogebra.common.kernel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -187,8 +188,12 @@ public class Discover {
 						problemString = "CannotDecideEqualityofPointsAB";
 						problemStringDefault = "Cannot decide equality of points %0 and %1.";
 						problemParams = new String[2];
-						problemParams[0] = p0.getLabelSimple();
-						problemParams[1] = p1.getLabelSimple();
+						problemParams[0] = p0.getColoredLabel();
+						problemParams[1] = p1.getColoredLabel();
+						Arrays.sort(problemParams);
+						ap.remove();
+						aac.remove();
+						ajps.remove();
 						return false;
 					}
 					ap.remove();
