@@ -94,7 +94,7 @@ describe('Usages of the Discover command in the RMEC paper "Discovering geometry
            });
         cy.get(".gwt-HTML").should(($div) => {
            const text = $div.text();
-           expect(text).to.include("Concyclic points: RXAB, PXBC, QXAC");
+           expect(text).to.include("Concyclic points: PXBC, QXAC, RXAB");
            });
 
     });

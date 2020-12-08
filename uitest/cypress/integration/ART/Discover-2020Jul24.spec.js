@@ -229,7 +229,7 @@ describe('Usages of the Discover command in the arXiv paper Towards Automated Di
            const text = $div.text();
            expect(text).to.include("ACEN ∥ DF ∥ JL");
            expect(text).to.include("ABFO ∥ DE ∥ JK");
-           expect(text).to.include("COGL ∥ DK ∥ EJ");
+           expect(text).to.include("CGLO ∥ DK ∥ EJ");
            expect(text).to.include("BNGK ∥ DL ∥ FJ");
            expect(text).to.include("BCDM ∥ EF ∥ KL");
            expect(text).to.include("AF = BF = DE = FM = FN = JK");
