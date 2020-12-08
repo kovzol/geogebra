@@ -69,7 +69,7 @@ describe('Usages of the Discover command in the RMEC paper "Discovering geometry
         cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
-           expect(text).to.include("XB ⟂ PRB");
+           expect(text).to.include("PRB ⟂ XB");
            expect(text).to.include("AB ⟂ RX");
            expect(text).to.include("QRA ⟂ XA");
            expect(text).to.include("AX = BX");
