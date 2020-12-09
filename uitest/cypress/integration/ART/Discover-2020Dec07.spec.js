@@ -56,7 +56,7 @@ describe('Usages of the Discover command in a future paper', () => {
         cy.wait(200);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
-           expect(text).to.include("BE = CE = CF = DF"); // = EF also
+           expect(text).to.include("BE = CE = CF = DF = EF");
            });
     });
 
