@@ -305,13 +305,19 @@ public class AlgoCompare extends AlgoElement {
             }
 
             if (inputElement1 instanceof GeoNumeric) {
-                processExpr((GeoNumeric) inputElement1);
+                if (!processExpr((GeoNumeric) inputElement1)) {
+                    outputText.setTextString("");
+                    return;
+                }
                 lhs_var = "w1";
                 inp1 = computeNumericLabel(inputElement1, lhs_var);
             }
 
             if (inputElement2 instanceof GeoNumeric) {
-                processExpr((GeoNumeric) inputElement2);
+                if (!processExpr((GeoNumeric) inputElement2)) {
+                    outputText.setTextString("");
+                    return;
+                }
                 rhs_var = "w2";
                 inp2 = computeNumericLabel(inputElement2, rhs_var);
             }
@@ -611,21 +617,23 @@ public class AlgoCompare extends AlgoElement {
         return null;
     }
 
-    private void processExpr(GeoNumeric n) {
+    private boolean processExpr(GeoNumeric n) {
         AlgoElement ae = n.getParentAlgorithm();
         if (ae instanceof AlgoDependentNumber) {
             for (GeoElement ge : ae.getInput()) {
                 if (!(ge instanceof GeoSegment)) {
                     // this is an expression that contains a non-segment object, unimplemented
-                    outputText.setTextString("");
-                    return;
+                    return false;
                 }
                 PVariable v = processSegment((GeoSegment) ge);
             }
+            return true;
         }
         if (ae instanceof AlgoDistancePoints) {
             PVariable v = processSegment(getGeoSegment(n));
+            return true;
         }
+        return false;
     }
 
     /* To handle substring replacements correctly we need to use our own comparator
