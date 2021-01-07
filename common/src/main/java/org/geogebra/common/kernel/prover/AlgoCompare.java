@@ -208,6 +208,42 @@ public class AlgoCompare extends AlgoElement {
         return in;
     }
 
+    private String computeSegmentLabel(GeoElement inputElement) {
+        String inp;
+        if (htmlMode) {
+            inp = inputElement.getColoredLabel();
+            if (inp == null) {
+                inp = inputElement.getDefinition(fancyFormat);
+            }
+        } else {
+            inp = inputElement.getLabelSimple();
+            if (inp == null) {
+                inp = inputElement.getDefinition(portableFormat);
+            }
+        }
+        return inp;
+    }
+
+    private String computeNumericLabel(GeoElement inputElement, String var) {
+        String inp;
+        extraPolys.add("-" + var + "+" + rewrite((GeoNumeric) inputElement));
+        extraVars.add(var);
+        if (htmlMode) {
+            inp = inputElement.getColoredLabel();
+        } else {
+            if (inputElement.getLabelSimple() != null) {
+                inp = inputElement.getLabelSimple();
+            } else {
+                inp = "(" + inputElement.getDefinition(fancyFormat) + ")";
+            }
+        }
+        return inp;
+
+    }
+
+    ArrayList<String> extraPolys = new ArrayList<>();
+    ArrayList<String> extraVars = new ArrayList<>();
+
     @Override
     public final void compute() {
 
@@ -240,8 +276,6 @@ public class AlgoCompare extends AlgoElement {
         p.setProverEngine(Prover.ProverEngine.BOTANAS_PROVER);
         as = new AlgebraicStatement(gb, null, p);
         as.removeThesis();
-        ArrayList<String> extraPolys = new ArrayList<>();
-        ArrayList<String> extraVars = new ArrayList<>();
         aae.remove();
         gb.remove();
 
@@ -262,53 +296,26 @@ public class AlgoCompare extends AlgoElement {
         try {
             if (inputElement1 instanceof GeoSegment) {
                 lhs_var = (processSegment((GeoSegment) inputElement1)).getName();
-                if (htmlMode) {
-                    inp1 = inputElement1.getColoredLabel();
-                } else {
-                    inp1 = inputElement1.getLabelSimple();
-                }
+                inp1 = computeSegmentLabel(inputElement1);
             }
 
             if (inputElement2 instanceof GeoSegment) {
                 rhs_var = (processSegment((GeoSegment) inputElement2)).getName();
-                if (htmlMode) {
-                    inp2 = inputElement2.getColoredLabel();
-                } else {
-                    inp2 = inputElement2.getLabelSimple();
-                }
+                inp2 = computeSegmentLabel(inputElement2);
             }
 
             if (inputElement1 instanceof GeoNumeric) {
                 processExpr((GeoNumeric) inputElement1);
                 lhs_var = "w1";
-                extraPolys.add("-w1+" + rewrite((GeoNumeric) inputElement1));
-                extraVars.add("w1");
-                if (htmlMode) {
-                    inp1 += inputElement1.getColoredLabel();
-                } else {
-                    if (inputElement1.getLabelSimple() != null) {
-                        inp1 += inputElement1.getLabelSimple();
-                    } else {
-                        inp1 += "(" + inputElement1.getDefinition(fancyFormat) + ")";
-                    }
-                }
+                inp1 = computeNumericLabel(inputElement1, lhs_var);
             }
 
             if (inputElement2 instanceof GeoNumeric) {
                 processExpr((GeoNumeric) inputElement2);
                 rhs_var = "w2";
-                extraPolys.add("-w2+" + rewrite((GeoNumeric) inputElement2));
-                extraVars.add("w2");
-                if (htmlMode) {
-                    inp2 += inputElement2.getColoredLabel();
-                } else {
-                    if (inputElement2.getLabelSimple() != null) {
-                        inp2 += inputElement2.getLabelSimple();
-                    } else {
-                        inp2 += "(" + inputElement2.getDefinition(fancyFormat) + ")";
-                    }
-                }
+                inp2 = computeNumericLabel(inputElement2, rhs_var);
             }
+
             removeExtraDistances();
         } catch (Throwable t) {
             // Maybe there is something unimplemented.
@@ -626,6 +633,13 @@ public class AlgoCompare extends AlgoElement {
      */
     Comparator<GeoSegment> lengthComparator = new Comparator<GeoSegment>() {
         @Override public int compare(GeoSegment gs1, GeoSegment gs2) {
+            if (gs1.getLabelSimple() == null) {
+                return 1;
+            }
+            if (gs2.getLabelSimple() == null) {
+                return -1;
+            }
+
             if (gs1.getLabelSimple().length() > gs2.getLabelSimple().length()) {
                 return -1;
             }
