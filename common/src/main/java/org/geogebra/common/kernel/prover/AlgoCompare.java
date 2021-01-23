@@ -43,8 +43,8 @@ import com.himamis.retex.editor.share.util.Unicode;
  */
 public class AlgoCompare extends AlgoElement {
 
-    private GeoElement inputElement1; // input
-    private GeoElement inputElement2; // input
+    private GeoElement inpElem[] = new GeoElement[2];
+    private String lr_var[] = new String[2];
     private boolean htmlMode;
 
     private GeoText outputText; // output
@@ -61,8 +61,8 @@ public class AlgoCompare extends AlgoElement {
     public AlgoCompare(Construction cons, GeoElement inputElement1,
                        GeoElement inputElement2, boolean htmlMode) {
         super(cons);
-        this.inputElement1 = inputElement1;
-        this.inputElement2 = inputElement2;
+        this.inpElem[0] = inputElement1;
+        this.inpElem[1] = inputElement2;
         this.htmlMode = htmlMode;
 
         outputText = new GeoText(cons);
@@ -94,8 +94,8 @@ public class AlgoCompare extends AlgoElement {
     @Override
     protected void setInputOutput() {
         input = new GeoElement[2];
-        input[0] = inputElement1;
-        input[1] = inputElement2;
+        input[0] = inpElem[0];
+        input[1] = inpElem[1];
 
         super.setOutputLength(1);
         super.setOutput(0, outputText);
@@ -247,7 +247,7 @@ public class AlgoCompare extends AlgoElement {
     @Override
     public final void compute() {
 
-        if (inputElement1.getKernel().isSilentMode()) {
+        if (inpElem[0].getKernel().isSilentMode()) {
             return;
         }
 
@@ -262,14 +262,12 @@ public class AlgoCompare extends AlgoElement {
         cons.addToConstructionList(this, true);
         // TODO: consider moving setInputOutput() out from compute()
 
-        String lhs_var = "";
-        String rhs_var = "";
         rewrites = new TreeMap<>(Collections.reverseOrder());
         rewritesSorted = new TreeMap<>(lengthComparator);
 
         RealGeomWebService realgeomWS = cons.getApplication().getRealGeomWS();
 
-        AlgoAreCongruent aae = new AlgoAreCongruent(cons, inputElement1, inputElement2);
+        AlgoAreCongruent aae = new AlgoAreCongruent(cons, inpElem[0], inpElem[1]);
         GeoBoolean gb = new GeoBoolean(cons);
         gb.setParentAlgorithm(aae);
         Prover p = UtilFactory.getPrototype().newProver();
@@ -279,8 +277,9 @@ public class AlgoCompare extends AlgoElement {
         aae.remove();
         gb.remove();
 
-        String inp1 = "";
-        String inp2 = "";
+        String inp[] = new String[2];
+        inp[0] = "";
+        inp[1] = "";
 
         String currentEqualityStatement = p.getTextFormat(p.getStatement());
         Log.debug("currentEqualityStatement = " + currentEqualityStatement);
@@ -294,32 +293,22 @@ public class AlgoCompare extends AlgoElement {
         startTime = UtilFactory.getPrototype().getMillisecondTime();
 
         try {
-            if (inputElement1 instanceof GeoSegment) {
-                lhs_var = (processSegment((GeoSegment) inputElement1)).getName();
-                inp1 = computeSegmentLabel(inputElement1);
-            }
-
-            if (inputElement2 instanceof GeoSegment) {
-                rhs_var = (processSegment((GeoSegment) inputElement2)).getName();
-                inp2 = computeSegmentLabel(inputElement2);
-            }
-
-            if (inputElement1 instanceof GeoNumeric) {
-                if (!processExpr((GeoNumeric) inputElement1)) {
-                    outputText.setTextString("");
-                    return;
+            for (int i = 0; i < 2; i++) {
+                if (inpElem[i] instanceof GeoSegment) {
+                    lr_var[i] = (processSegment((GeoSegment) inpElem[i])).getName();
+                    inp[i] = computeSegmentLabel(inpElem[i]);
                 }
-                lhs_var = "w1";
-                inp1 = computeNumericLabel(inputElement1, lhs_var);
             }
 
-            if (inputElement2 instanceof GeoNumeric) {
-                if (!processExpr((GeoNumeric) inputElement2)) {
-                    outputText.setTextString("");
-                    return;
+            for (int i = 0; i < 2; i++) {
+                if (inpElem[i] instanceof GeoNumeric) {
+                    if (!processExpr((GeoNumeric) inpElem[i])) {
+                        outputText.setTextString("");
+                        return;
+                    }
+                    lr_var[i] = "w" + i;
+                    inp[i] = computeNumericLabel(inpElem[i], lr_var[i]);
                 }
-                rhs_var = "w2";
-                inp2 = computeNumericLabel(inputElement2, rhs_var);
             }
 
             removeExtraDistances();
@@ -333,7 +322,7 @@ public class AlgoCompare extends AlgoElement {
 
         String rgCommand = "euclideansolver";
         StringBuilder rgParameters = new StringBuilder();
-        rgParameters.append("lhs=" + lhs_var + "&" + "rhs=" + rhs_var + "&")
+        rgParameters.append("lhs=" + lr_var[0] + "&" + "rhs=" + lr_var[1] + "&")
                 .append("polys=");
 
         /* Force some non-degeneracies. */
@@ -378,9 +367,9 @@ public class AlgoCompare extends AlgoElement {
         for (String po : extraPolys) {
             gc.append(",").append(po);
         }
-        gc.append(",(").append(rhs_var).append(")*m-(").append(lhs_var).append(")");
+        gc.append(",(").append(lr_var[1]).append(")*m-(").append(lr_var[0]).append(")");
         // Assume that the rhs_var is non-zero (because of non-degeneracy):
-        gc.append(",(").append(rhs_var).append(")*n-1");
+        gc.append(",(").append(lr_var[1]).append(")*n-1");
         gc.append("],[");
 
         StringBuilder varsubst = new StringBuilder();
@@ -425,7 +414,7 @@ public class AlgoCompare extends AlgoElement {
                         }
                         result = result.replace("m=", "");
                         result = result.replace("*", "" + Unicode.CENTER_DOT);
-                        retval += inp1 + " = " + result + " " + Unicode.CENTER_DOT + " " + inp2;
+                        retval += inp[0] + " = " + result + " " + Unicode.CENTER_DOT + " " + inp[1];
                     }
                     outputText.setTextString(retval);
                     debugElapsedTime();
@@ -511,19 +500,19 @@ public class AlgoCompare extends AlgoElement {
 
                 // Inequality[0, Less, m, LessEqual, 2]
                 result = result.replaceAll("Inequality\\[(.*?), (.*?), m, (.*?), (.*?)\\]",
-                        "($1) " + Unicode.CENTER_DOT + " " + inp2 +
-                                " $2 " + inp1 + " $3 ($4) " + Unicode.CENTER_DOT + " " + inp2);
+                        "($1) " + Unicode.CENTER_DOT + " " + inp[1] +
+                                " $2 " + inp[0] + " $3 ($4) " + Unicode.CENTER_DOT + " " + inp[1]);
                 // Remove "(0)*inp2 Less" from the beginning (it's trivial)
                 result = result.replaceAll("^\\(0\\) " + Unicode.CENTER_DOT + " .*? Less ", "");
                 // m >= 1/2
                 result = result.replaceAll("m >= (.*)",
-                        inp1 + " GreaterEqual ($1) " + Unicode.CENTER_DOT + " " + inp2);
+                        inp[0] + " GreaterEqual ($1) " + Unicode.CENTER_DOT + " " + inp[1]);
                 // m >= 1/2
                 result = result.replaceAll("m > (.*)",
-                        inp1 + " Greater ($1) " + Unicode.CENTER_DOT + " " + inp2);
+                        inp[0] + " Greater ($1) " + Unicode.CENTER_DOT + " " + inp[1]);
                 // m == 1
                 result = result.replaceAll("m == (.*)",
-                        inp1 + " = ($1) " + Unicode.CENTER_DOT + " " + inp2);
+                        inp[0] + " = ($1) " + Unicode.CENTER_DOT + " " + inp[1]);
 
                 // remove spaces at parentheses
                 result = result.replaceAll("\\(\\s", "(");
