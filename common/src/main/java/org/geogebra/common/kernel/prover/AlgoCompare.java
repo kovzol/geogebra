@@ -723,7 +723,7 @@ public class AlgoCompare extends AlgoElement {
 
         String code = "[" + code_a + ":=begin return " + expr + "; end, ";
         code += "d():=begin return total_degree(" + code_a + ",[" + list + "]) end,";
-        code += "[expand(" + code_at + ")==expand(t^d()*" + code_a + "),d()]][2]";
+        code += "[simplify(" + code_at + "-t^d()*(" + code_a + "))==0,d()]][2]";
 
         GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
         String hominfo = "";
