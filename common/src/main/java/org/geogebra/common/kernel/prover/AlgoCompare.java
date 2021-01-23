@@ -45,6 +45,8 @@ public class AlgoCompare extends AlgoElement {
 
     private GeoElement inpElem[] = new GeoElement[2];
     private String lr_var[] = new String[2];
+    private String lr_expr[] = new String[2];
+    private int deg[] = new int[2];
     private boolean htmlMode;
 
     private GeoText outputText; // output
@@ -224,9 +226,13 @@ public class AlgoCompare extends AlgoElement {
         return inp;
     }
 
-    private String computeNumericLabel(GeoElement inputElement, String var) {
+    private String computeNumericLabel(int i) {
+        GeoElement inputElement = inpElem[i];
+        String var = lr_var[i];
         String inp;
-        extraPolys.add("-" + var + "+" + rewrite((GeoNumeric) inputElement));
+        String rewritten = rewrite((GeoNumeric) inputElement);
+        lr_expr[i] = rewritten;
+        extraPolys.add("-" + var + "+" + rewritten);
         extraVars.add(var);
         if (htmlMode) {
             inp = inputElement.getColoredLabel();
@@ -297,6 +303,7 @@ public class AlgoCompare extends AlgoElement {
                 if (inpElem[i] instanceof GeoSegment) {
                     lr_var[i] = (processSegment((GeoSegment) inpElem[i])).getName();
                     inp[i] = computeSegmentLabel(inpElem[i]);
+                    deg[i] = 1;
                 }
             }
 
@@ -307,7 +314,15 @@ public class AlgoCompare extends AlgoElement {
                         return;
                     }
                     lr_var[i] = "w" + i;
-                    inp[i] = computeNumericLabel(inpElem[i], lr_var[i]);
+                    inp[i] = computeNumericLabel(i);
+                    deg[i] = getDegree(lr_expr[i]);
+                    if (deg[i] == -1) {
+                        // The expression is not homogeneous, no general statement exists.
+                        // TODO: Maybe here "false" should be given. Discuss.
+                        removeExtraDistances();
+                        outputText.setTextString(retval);
+                        return;
+                    }
                 }
             }
 
@@ -319,6 +334,13 @@ public class AlgoCompare extends AlgoElement {
             outputText.setTextString(retval);
             return;
         }
+
+        if (deg[0]!=deg[1]) {
+            // The expressions are of different degree, yet unimplemented. TODO, see TP-39.
+            outputText.setTextString(retval);
+            return;
+        }
+
 
         String rgCommand = "euclideansolver";
         StringBuilder rgParameters = new StringBuilder();
@@ -662,5 +684,53 @@ public class AlgoCompare extends AlgoElement {
         }
         exp = exp.replace(" ", "");
         return exp;
+    }
+
+    /**
+     * Get the degree of a polynomial, unless it is non-homogeneous. In this latter case return -1.
+     * We assume that all variables are linear quantities, that is, segments/distances.
+     * @param expr
+     * @return the degree of the polynomial (or -1 in the non-homogeneous case)
+     */
+    int getDegree(String expr) {
+        // See TP-39 for an explanation:
+        // a(x,y,z):=x^2+x*y+2z^2; d:=degree(a(x,y,z)); expand(a(t*x,t*y,t*z))==expand(t^d*a(x,y,z))
+        // For some strange reason Giac needs to handle this in the following way:
+        // [a(v9,v10):=begin return v9+2+v10; end, d():=begin return total_degree(a(v9,v10),[v9,v10]) end,expand(a(t*v9,t*v10))==expand(t^d()*a(v9,v10)),d()]][2]
+        String list = "";
+        String list_t = "";
+        String code_a = "a(";
+        String code_at = "a(";
+        Iterator it = rewritesSorted.values().iterator();
+        while (it.hasNext()) {
+            PVariable v = (PVariable) it.next();
+            list += v + ",";
+            list_t += "t*" + v + ",";
+        }
+        list = list.substring(0, list.length()-1); // remove last ","
+        list_t = list_t.substring(0, list_t.length()-1); // remove last ","
+        code_a += list + ")"; // add closing ")"
+        code_at += list_t + ")"; // add closing ")"
+
+        String code = "[" + code_a + ":=begin return " + expr + "; end, ";
+        code += "d():=begin return total_degree(" + code_a + ",[" + list + "]) end,";
+        code += "[expand(" + code_at + ")==expand(t^d()*" + code_a + "),d()]][2]";
+
+        GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
+        String hominfo = "";
+        try {
+            hominfo = cas.getCurrentCAS().evaluateRaw(code); // expected e.g.: {true,1} or {false,1}
+        } catch (Throwable t) {
+            return -1;
+        }
+        if (hominfo.indexOf("false") > 0) {
+            // Not homogeneous.
+            return -1;
+        }
+        int commapos = hominfo.indexOf(',');
+        String deg = hominfo.substring(commapos + 1);
+        deg = deg.substring(0, deg.length() - 1); // trim "}"
+        int degree = Integer.parseInt(deg);
+        return degree;
     }
 }
