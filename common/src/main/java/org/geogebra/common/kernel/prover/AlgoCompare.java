@@ -1,5 +1,6 @@
 package org.geogebra.common.kernel.prover;
 
+import static org.apache.commons.math3.util.ArithmeticUtils.lcm;
 import static org.geogebra.common.kernel.prover.ProverBotanasMethod.AlgebraicStatement;
 
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class AlgoCompare extends AlgoElement {
     private String lr_var[] = new String[2];
     private String lr_expr[] = new String[2];
     private int deg[] = new int[2];
+    private int exponent[] = new int[2];
+    private String inp[] = new String[2];
     private boolean htmlMode;
 
     private GeoText outputText; // output
@@ -283,7 +286,6 @@ public class AlgoCompare extends AlgoElement {
         aae.remove();
         gb.remove();
 
-        String inp[] = new String[2];
         inp[0] = "";
         inp[1] = "";
 
@@ -335,16 +337,20 @@ public class AlgoCompare extends AlgoElement {
             return;
         }
 
-        if (deg[0]!=deg[1]) {
-            // The expressions are of different degree, yet unimplemented. TODO, see TP-39.
+        if (deg[0] * deg[1]==0) {
+            // One of the expressions is a constant. This is probably a false statement. TODO: Discuss.
             outputText.setTextString(retval);
             return;
         }
 
+        int l = lcm(deg[0], deg[1]);
+        exponent[0] = l/deg[0];
+        exponent[1] = l/deg[1];
 
         String rgCommand = "euclideansolver";
         StringBuilder rgParameters = new StringBuilder();
-        rgParameters.append("lhs=" + lr_var[0] + "&" + "rhs=" + lr_var[1] + "&")
+        rgParameters.append("lhs=" + lr_var[0] + "^" + exponent[0] + "&" + "rhs=" + lr_var[1]
+                + "^" + exponent[1] + "&")
                 .append("polys=");
 
         /* Force some non-degeneracies. */
@@ -389,7 +395,8 @@ public class AlgoCompare extends AlgoElement {
         for (String po : extraPolys) {
             gc.append(",").append(po);
         }
-        gc.append(",(").append(lr_var[1]).append(")*m-(").append(lr_var[0]).append(")");
+        gc.append(",(").append(lr_var[1]).append(")^").append(exponent[1]).
+                append("*m-(").append(lr_var[0]).append(")^").append(exponent[0]);
         // Assume that the rhs_var is non-zero (because of non-degeneracy):
         gc.append(",(").append(lr_var[1]).append(")*n-1");
         gc.append("],[");
@@ -436,7 +443,7 @@ public class AlgoCompare extends AlgoElement {
                         }
                         result = result.replace("m=", "");
                         result = result.replace("*", "" + Unicode.CENTER_DOT);
-                        retval += inp[0] + " = " + result + " " + Unicode.CENTER_DOT + " " + inp[1];
+                        retval += inpWithExponent(0) + " = " + result + " " + Unicode.CENTER_DOT + " " + inpWithExponent(1);
                     }
                     outputText.setTextString(retval);
                     debugElapsedTime();
@@ -493,6 +500,8 @@ public class AlgoCompare extends AlgoElement {
             // If there was some useful result in RealGeom, then use it and forget the previous results from Giac.
             retval = "";
             String[] cases = rgResult.split("\\|\\|");
+            inp[0] = inpWithExponent(0);
+            inp[1] = inpWithExponent(1);
 
             for (String result : cases) {
 
@@ -732,5 +741,15 @@ public class AlgoCompare extends AlgoElement {
         deg = deg.substring(0, deg.length() - 1); // trim "}"
         int degree = Integer.parseInt(deg);
         return degree;
+    }
+
+    String inpWithExponent(int i) {
+        if (exponent[i]==1) {
+            return inp[i];
+        }
+        if (htmlMode) {
+            return "(" + inp[i] + ")<sup>" + exponent[i] + "</sup>";
+        }
+        return "(" + inp[i] + ")^" + exponent[i];
     }
 }
