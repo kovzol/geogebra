@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -403,7 +405,9 @@ public class AlgoCompare extends AlgoElement {
 
         StringBuilder varsubst = new StringBuilder();
         int i = 0;
-        for (PVariable v : as.freeVariables) {
+        Set<PVariable> allowedFreeVariables = as.freeVariables;
+        allowedFreeVariables.removeAll(as.almostFreeVariables);
+        for (PVariable v : allowedFreeVariables) {
             if (i<4) {
                 int value = 0;
                 if (i == 2)
