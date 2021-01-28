@@ -237,7 +237,7 @@ public class AlgoCompare extends AlgoElement {
         String inp;
         String rewritten = rewrite((GeoNumeric) inputElement);
         lr_expr[i] = rewritten;
-        extraPolys.add("-" + var + "+" + rewritten);
+        extraPolys.add("-" + var + "+(" + rewritten + ")^EXPONENT" + i);
         extraVars.add(var);
         if (htmlMode) {
             inp = inputElement.getColoredLabel();
@@ -317,7 +317,7 @@ public class AlgoCompare extends AlgoElement {
                         outputText.setTextString("");
                         return;
                     }
-                    lr_var[i] = "w" + i;
+                    lr_var[i] = "w" + (i+1);
                     inp[i] = computeNumericLabel(i);
                     deg[i] = getDegree(lr_expr[i]);
                     if (deg[i] == -1) {
@@ -349,10 +349,16 @@ public class AlgoCompare extends AlgoElement {
         exponent[0] = l/deg[0];
         exponent[1] = l/deg[1];
 
+        for (int j = 0; j < extraPolys.size(); j++) {
+            for (int i = 0; i < 2; i++) {
+                extraPolys.set(j, extraPolys.get(j).replace("EXPONENT" + i,
+                        Integer.toString(exponent[i])));
+            }
+        }
+
         String rgCommand = "euclideansolver";
         StringBuilder rgParameters = new StringBuilder();
-        rgParameters.append("lhs=" + lr_var[0] + "^" + exponent[0] + "&" + "rhs=" + lr_var[1]
-                + "^" + exponent[1] + "&")
+        rgParameters.append("lhs=" + lr_var[0] + "&" + "rhs=" + lr_var[1] + "&")
                 .append("polys=");
 
         /* Force some non-degeneracies. */
@@ -397,8 +403,8 @@ public class AlgoCompare extends AlgoElement {
         for (String po : extraPolys) {
             gc.append(",").append(po);
         }
-        gc.append(",(").append(lr_var[1]).append(")^").append(exponent[1]).
-                append("*m-(").append(lr_var[0]).append(")^").append(exponent[0]);
+        gc.append(",").append(lr_var[1]).
+                append("*m-(").append(lr_var[0]).append(")");
         // Assume that the rhs_var is non-zero (because of non-degeneracy):
         gc.append(",(").append(lr_var[1]).append(")*n-1");
         gc.append("],[");
@@ -447,7 +453,8 @@ public class AlgoCompare extends AlgoElement {
                         }
                         result = result.replace("m=", "");
                         result = result.replace("*", "" + Unicode.CENTER_DOT);
-                        retval += inpWithExponent(0) + " = " + result + " " + Unicode.CENTER_DOT + " " + inpWithExponent(1);
+                        retval += inpWithExponent(0) + " = " + result + " " + Unicode.CENTER_DOT
+                                + " " + inpWithExponent(1);
                     }
                     outputText.setTextString(retval);
                     debugElapsedTime();
