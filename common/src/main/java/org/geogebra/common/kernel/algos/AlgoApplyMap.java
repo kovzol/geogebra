@@ -17,20 +17,19 @@ public class AlgoApplyMap extends AlgoElement {
 
     private GeoElement outGeo;
 
-    public AlgoApplyMap(Construction cons, String label, GeoElement outputObject,
-                       GeoList inputList) {
-        this(cons, outputObject, inputList);
+    public AlgoApplyMap(Construction cons, String label, GeoList inputList,
+            GeoElement outputObject) {
+        this(cons, inputList, outputObject);
         outGeo.setLabel(label);
     }
 
-    public AlgoApplyMap(Construction cons, GeoElement outputObject,
-                         GeoList inputList) {
+    public AlgoApplyMap(Construction cons, GeoList inputList, GeoElement outputObject) {
         super(cons);
         il = new GeoElement[inputList.size()];
 
         input = new GeoElement[2];
-        input[0] = outputObject;
-        input[1] = inputList;
+        input[0] = inputList;
+        input[1] = outputObject;
 
         for (int i=0; i < il.length; ++i) {
             il[i] = inputList.get(i);

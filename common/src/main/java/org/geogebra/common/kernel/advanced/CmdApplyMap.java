@@ -27,8 +27,7 @@ public class CmdApplyMap extends CommandProcessor {
         arg = resArgs(c);
         if (n == 2) {
             if (arg[0] instanceof GeoList) {
-                AlgoApplyMap algo = new AlgoApplyMap(cons, c.getLabel(), arg[1],
-                        (GeoList) arg[0]);
+                AlgoApplyMap algo = new AlgoApplyMap(cons, c.getLabel(), (GeoList) arg[0], arg[1]);
 
                 GeoElement[] ret = {algo.getResult()};
                 return ret;
