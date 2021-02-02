@@ -129,6 +129,8 @@ public class AlgoApplyMap extends AlgoElement {
         }
         outGeo = nae.getOutput(0);
         outGeo.setParentAlgorithm(this);
+        outGeo.setAdvancedVisualStyle(oo);
+        // outGeo.setAllVisualProperties(oo, false);
 
     }
 }
