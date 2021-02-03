@@ -97,40 +97,58 @@ public class AlgoApplyMap extends AlgoElement {
             return;
         }
 
+        if (!(oo instanceof GeoList)) {
+            outGeo = apply(ae, oo, param);
+        } else {
+            // outGeo = new GeoList(cons);
+            ((GeoList) outGeo).clear();
+            int s = ((GeoList) oo).size();
+            for (int i = 0; i < s; ++i) {
+                GeoElement obj = apply(ae, ((GeoList) oo).get(i), param);
+                ((GeoList) outGeo).add(obj);
+            }
+        }
+    }
+
+    GeoElement apply(AlgoElement algo, GeoElement obj, int p) {
+        GeoElement og;
         AlgoElement nae = null;
-        if (ae instanceof AlgoMirror) {
-            if (param == 0) {
-                GeoElementND about = ae.getInput(1);
+        if (algo instanceof AlgoMirror) {
+            if (p == 0) {
+                GeoElementND about = algo.getInput(1);
                 if (about instanceof GeoLineND) {
-                    nae = new AlgoMirror(cons, oo, (GeoLineND) about);
+                    nae = new AlgoMirror(cons, obj, (GeoLineND) about);
                 }
                 if (about instanceof GeoConic) {
-                    nae = new AlgoMirror(cons, oo, (GeoConic) about);
+                    nae = new AlgoMirror(cons, obj, (GeoConic) about);
                 }
                 if (about instanceof GeoPoint) {
-                    nae = new AlgoMirror(cons, oo, (GeoPoint) about);
+                    nae = new AlgoMirror(cons, obj, (GeoPoint) about);
                 }
             }
-            if (param == 1) {
-                GeoElement about = ae.getInput(0).toGeoElement();
-                if (oo instanceof GeoLineND) {
-                    nae = new AlgoMirror(cons, about, (GeoLineND) oo);
+            if (p == 1) {
+                GeoElement about = algo.getInput(0).toGeoElement();
+                if (obj instanceof GeoLineND) {
+                    nae = new AlgoMirror(cons, about, (GeoLineND) obj);
                 }
-                if (oo instanceof GeoConic) {
-                    nae = new AlgoMirror(cons, about, (GeoConic) oo);
+                if (obj instanceof GeoConic) {
+                    nae = new AlgoMirror(cons, about, (GeoConic) obj);
                 }
-                if (oo instanceof GeoPoint) {
-                    nae = new AlgoMirror(cons, about, (GeoPoint) oo);
+                if (obj instanceof GeoPoint) {
+                    nae = new AlgoMirror(cons, about, (GeoPoint) obj);
                 }
             }
         }
         if (nae == null) {
-            return;
+            return null;
         }
-        outGeo = nae.getOutput(0);
-        outGeo.setParentAlgorithm(this);
-        outGeo.setAdvancedVisualStyle(oo);
-        // outGeo.setAllVisualProperties(oo, false);
+        og = nae.getOutput(0);
+        // og.setLabel(obj.getLabelSimple()+"'");
+        // og.setParentAlgorithm(this);
+        og.setAdvancedVisualStyle(obj);
+        // nae.remove();
+        return og;
 
     }
+
 }
