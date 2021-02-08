@@ -84,8 +84,11 @@ public class Discover {
 	}
 
 	private void updatePercentInfo() {
+		Localization loc = cons.getApplication().getLocalization();
+		String inProgress = loc.getMenuDefault("InProgress",
+				"In progress");
 		if (percent < 100) {
-			cons.getApplication().getGuiManager().updateFrameTitle("In progress (" +
+			cons.getApplication().getGuiManager().updateFrameTitle(inProgress+ " (" +
 					((int) percent) + "%)");
 		} else {
 			cons.getApplication().getGuiManager().updateFrameTitle(null);

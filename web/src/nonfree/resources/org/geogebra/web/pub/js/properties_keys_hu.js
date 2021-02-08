@@ -2056,6 +2056,7 @@ __GGB__keysVar["hu"].menu = {
     "InfiniteCylinderPointAVectorBNumberC": "K\xfap %0-ra/-re illeszked\u0151 %1-hoz/-hez p\xe1rhuzamos tengellyel, %2 sug\xe1rral",
     "InfiniteCylinderPointsABNumberC": "K\xfap %0, %1-re illeszked\u0151 tengellyel, %2 sug\xe1rral",
     "InflectionPointofA": "%0 inflexi\xf3s pontja",
+    "InProgress": "Folyamatban",
     "InputField": "Parancssor",
     "InputField.Help": "Alakzat kijel\xf6l\xe9se a nev\xe9nek parancssorba val\xf3 m\xe1sol\xe1s\xe1hoz",
     "InputFieldHelp": "<html><body><p><b>Parancssor haszn\xe1lata</b></p><table border=\"1\"><tr><td>Enter </td><td>parancs futtat\xe1sa</td></tr><tr><td>Escape</td><td>parancssor t\xf6rl\xe9se</td></tr><tr><td>&#8593;</td><td>el\u0151z\u0151 parancs</td></tr><tr><td>&#8595;</td><td>k\xf6vetkez\u0151 parancs</td></tr><tr><td>F1</td><td>s\xfag\xf3 az aktu\xe1lis parancshoz</td></tr></table><p><b>Parancsok automatikus kieg\xe9sz\xedt\xe9se</b><br>Miut\xe1n be\xedrod a parancs els\u0151 k\xe9t bet\u0171j\xe9t<br>automatikusan megjelen\xedti majd az els\u0151, <br>ilyen nev\u0171 parancsot.</p><table border=\"1\"><tr><td>Enter </td><td>a javasolt parancs elfogad\xe1sa</td></tr><tr><td>egy m\xe1sik bet\u0171</td><td>g\xe9pel\xe9s folytat\xe1sa</td></tr></table></body></html>",

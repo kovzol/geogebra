@@ -2056,6 +2056,7 @@ __GGB__keysVar["es"].menu = {
     "InfiniteCylinderPointAVectorBNumberC": "Cilindro con eje por %0 y paralelo a %1, radio %2",
     "InfiniteCylinderPointsABNumberC": "Cilindro con eje que pasa por %0 y %1, radio %2",
     "InflectionPointofA": "Punto de inflexi\xf3n de %0",
+    "InProgress": "En curso",
     "InputField": "Barra de entrada",
     "InputField.Help": "Objeto cuyo nombre se copiar\xe1 en la barra de entrada",
     "InputFieldHelp": "<html><body><p><b>Uso de la Barra de Entrada</b></p><table border=\"1\"><tr><td >Intro </td><td>Ejecuta la entrada</td></tr><tr><td>Esc</td><td>Borra la entrada</td></tr><tr><td><p align=\"center\">\u2191</p></td><td>Entrada anterior</td></tr><tr><td><p align=\"center\">\u2193</p></td><td>Entrada siguiente</td></tr><tr><td>F1</td><td>Ayuda para el comando introducido</td></tr><tr><td>TAB</td><td>Muestra siguiente comando concordante</td></tr></table><p><br><b>Autocompletar Comandos</b><br>Tras escribir las tres primeras letras de<br>un comando, aparecer\xe1 su nombre completo.</p><table border=\"1\" ><tr><td >Intro </td><td>Acepta el comando propuesto</td></tr><tr><td>Otra letra</td><td>Adapta comando propuesto</td></tr></table></body></html>",
