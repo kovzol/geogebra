@@ -102,6 +102,7 @@ public class Discover {
 	private boolean detectProperties(GeoPoint p) {
 		percent = 0.0;
 		updatePercentInfo();
+		cons.getApplication().setWaitCursor();
 
 		HashSet<GeoElement> ges = new HashSet<>();
 		for (GeoElement ge : cons.getGeoSetLabelOrder()) {
@@ -161,6 +162,7 @@ public class Discover {
 		collectPerpendicularDirections(discoveryPool.getPoint(p), true);
 		percent = 100.0;
 		updatePercentInfo();
+		cons.getApplication().setDefaultCursor();
 
 		return true;
 	}
@@ -932,6 +934,7 @@ public class Discover {
 		if (!detectProperties((GeoPoint) this.input)) {
 			percent = 100.0;
 			updatePercentInfo();
+			cons.getApplication().setDefaultCursor();
 
 			String msg1 = loc.getMenuDefault("UnsupportedSteps",
 					"The construction contains unsupported steps.");
