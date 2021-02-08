@@ -2670,7 +2670,7 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 	}
 
 	@Override
-	public void updateFrameTitle() {
+	public void updateFrameTitle(String info) {
 		if (!(getApp().getFrame() instanceof GeoGebraFrame)) {
 			return;
 		}
@@ -2689,6 +2689,10 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 				sb.append(nr + 1);
 				sb.append(')');
 			}
+		}
+		if (info != null) {
+			sb.append(": ");
+			sb.append(info);
 		}
 		frame.setTitle(sb.toString());
 	}

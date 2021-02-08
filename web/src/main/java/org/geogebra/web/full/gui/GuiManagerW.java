@@ -130,6 +130,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.resources.client.ResourcePrototype;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -1467,6 +1468,19 @@ public class GuiManagerW extends GuiManager
 		if (getApp().getDevice() != null) {
 			getApp().getDevice().resizeView(width, height);
 		}
+	}
+
+	private String originalFrameTitle = null;
+
+	@Override
+	public void updateFrameTitle(String info) {
+		if (originalFrameTitle == null) {
+			originalFrameTitle = Document.get().getTitle();
+		}
+		if (info == null) {
+			info = originalFrameTitle;
+		}
+		Document.get().setTitle(info);
 	}
 
 	@Override

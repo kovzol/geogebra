@@ -56,7 +56,7 @@ public interface GuiManagerInterfaceD extends GuiManagerInterface {
 
 	void allowGUIToRefresh();
 
-	void updateFrameTitle();
+	void updateFrameTitle(String info);
 
 	void setShowToolBarHelp(boolean b);
 

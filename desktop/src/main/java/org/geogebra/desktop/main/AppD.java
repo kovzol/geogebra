@@ -2873,7 +2873,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			return;
 		}
 
-		getGuiManager().updateFrameTitle();
+		getGuiManager().updateFrameTitle(null);
 	}
 
 	@Override

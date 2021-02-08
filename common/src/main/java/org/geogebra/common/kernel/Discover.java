@@ -75,10 +75,21 @@ public class Discover {
 	private String problemStringDefault = null;
 	private String[] problemParams;
 
+	private double percent;
+
 	public Discover(final App app, final GeoElement d) {
 		this.kernel = app.getKernel();
 		this.input = d;
 		this.cons = kernel.getConstruction();
+	}
+
+	private void updatePercentInfo() {
+		if (percent < 100) {
+			cons.getApplication().getGuiManager().updateFrameTitle("In progress (" +
+					((int) percent) + "%)");
+		} else {
+			cons.getApplication().getGuiManager().updateFrameTitle(null);
+		}
 	}
 
 	/*
@@ -86,6 +97,9 @@ public class Discover {
 	 * including all points in the construction list.
 	 */
 	private boolean detectProperties(GeoPoint p) {
+		percent = 0.0;
+		updatePercentInfo();
+
 		HashSet<GeoElement> ges = new HashSet<>();
 		for (GeoElement ge : cons.getGeoSetLabelOrder()) {
 			ges.add(ge);
@@ -105,7 +119,13 @@ public class Discover {
 			return false;
 		}
 
+		percent = 5.0;
+		updatePercentInfo();
+
 		detectOrthogonalCollinearities();
+		percent = 10.0;
+		updatePercentInfo();
+
 		Pool discoveryPool = cons.getDiscoveryPool();
 		for (Point pp : discoveryPool.points) {
 			if (!p.equals(pp.getGeoPoint())) {
@@ -114,7 +134,12 @@ public class Discover {
 			}
 		}
 		collectCollinearites(discoveryPool.getPoint(p), true);
+		percent = 15.0;
+		updatePercentInfo();
+
 		collectConcyclicities(discoveryPool.getPoint(p), true);
+		percent = 35.0;
+		updatePercentInfo();
 
 		for (Point pp : discoveryPool.points) {
 			if (!p.equals(pp.getGeoPoint())) {
@@ -123,8 +148,17 @@ public class Discover {
 			}
 		}
 		collectParallelisms(discoveryPool.getPoint(p), true);
+		percent = 70.0;
+		updatePercentInfo();
+
 		collectEqualLongSegments(discoveryPool.getPoint(p), true);
+		percent = 95.0;
+		updatePercentInfo();
+
 		collectPerpendicularDirections(discoveryPool.getPoint(p), true);
+		percent = 100.0;
+		updatePercentInfo();
+
 		return true;
 	}
 
@@ -339,7 +373,11 @@ public class Discover {
 			// Second round:
 			// put non-trivial concyclicities in the
 			// discovery pool.
+			// This is a heavy part with 20% weight.
 			circles = new Combinations(prevPoints, 3);
+			int n = prevPoints.size();
+			int steps = n*(n-1)*(n-2)/6;
+
 			while (circles.hasNext()) {
 				Set<Point> circle = circles.next();
 				Iterator<Point> i = circle.iterator();
@@ -369,6 +407,8 @@ public class Discover {
 					}
 					aac.remove();
 				}
+				percent += 20.0/steps;
+				updatePercentInfo();
 			}
 
 			// Third round: Draw circles from the discovery pool
@@ -451,6 +491,9 @@ public class Discover {
 
 		if (discover) {
 			// Second run: detect non-trivial parallelisms...
+			// This is a heavy part with 35% weight.
+			int steps = prevPoints.size()*allLines.size();
+
 			for (Line l1 : allLines) {
 				for (Point p1 : prevPoints) {
 					if (!l1.getPoints().contains(p0) && !l1.getPoints().contains(p1)) {
@@ -489,6 +532,8 @@ public class Discover {
 							ajp2.remove();
 						}
 					}
+					percent += 35.0/steps;
+					updatePercentInfo();
 				}
 			}
 
@@ -584,6 +629,9 @@ public class Discover {
 
 		if (discover) {
 			// Second run: detect non-trivial equalities...
+			// This is a heavy part with 25% weight.
+			int steps = allSegments.size() * prevPoints.size();
+
 			for (Segment s1 : allSegments) {
 				for (Point p1 : prevPoints) {
 					Point p2 = s1.getStartPoint();
@@ -622,6 +670,8 @@ public class Discover {
 						ajps1.remove();
 						ajps2.remove();
 					}
+					percent += 25.0/steps;
+					updatePercentInfo();
 				}
 			}
 		}
@@ -877,6 +927,9 @@ public class Discover {
 		// FIXME: This is not shown on the web.
 
 		if (!detectProperties((GeoPoint) this.input)) {
+			percent = 100.0;
+			updatePercentInfo();
+
 			String msg1 = loc.getMenuDefault("UnsupportedSteps",
 					"The construction contains unsupported steps.");
 			String prb = "";

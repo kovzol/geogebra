@@ -276,6 +276,8 @@ public interface GuiManagerInterface {
 
 	void updateFrameSize();
 
+	void updateFrameTitle(String info);
+
 	/**
 	 * 
 	 * @return id of view which is setting the active toolbar
