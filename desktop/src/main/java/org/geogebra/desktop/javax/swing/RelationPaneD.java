@@ -219,6 +219,7 @@ public class RelationPaneD implements RelationPane, ActionListener {
 		frame.setResizable(true);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		frame.setAlwaysOnTop(true);
 	}
 
 	private static int countLines(String html) {
