@@ -56,6 +56,8 @@ import org.geogebra.common.util.debug.Log;
 
 public class Discover {
 
+	private Pool discoveryPool;
+
 	private GeoElement input;
 	private Kernel kernel;
 	private Construction cons;
@@ -130,14 +132,16 @@ public class Discover {
 		percent = 10.0;
 		updatePercentInfo();
 
-		Pool discoveryPool = cons.getDiscoveryPool();
+		int steps = discoveryPool.points.size() - 1;
 		for (Point pp : discoveryPool.points) {
 			if (!p.equals(pp.getGeoPoint())) {
-				collectCollinearites(pp, false);
+				collectCollinearities(pp, false);
 				collectConcyclicities(pp, false);
+				percent += 5.0/steps;
+				updatePercentInfo();
 			}
 		}
-		collectCollinearites(discoveryPool.getPoint(p), true);
+		collectCollinearities(discoveryPool.getPoint(p), true);
 		percent = 15.0;
 		updatePercentInfo();
 
@@ -172,8 +176,6 @@ public class Discover {
 	 * collecting all of them for a given input.
 	 */
 	private boolean collectIdenticalPoints(GeoPoint p0, boolean discover) {
-		Pool discoveryPool = cons.getDiscoveryPool();
-
 		HashSet<GeoPoint> prevPoints = new HashSet<GeoPoint>();
 		for (GeoElement ge : cons.getGeoSetLabelOrder()) {
 			if (ge instanceof GeoPoint && !ge.equals(p0) && ge.isEuclidianVisible()) {
@@ -250,9 +252,7 @@ public class Discover {
 	 * Extend the database of collinearities by
 	 * collecting all of them for a given input.
 	 */
-	private void collectCollinearites(Point p0, boolean discover) {
-		Pool discoveryPool = cons.getDiscoveryPool();
-
+	private void collectCollinearities(Point p0, boolean discover) {
 		HashSet<Point> prevPoints = new HashSet<Point>();
 		for (Point ge : discoveryPool.points) {
 			if (!ge.equals(p0)) {
@@ -337,8 +337,6 @@ public class Discover {
 	 * collecting all conclicities for a given input.
 	 */
 	private void collectConcyclicities(Point p0, boolean discover) {
-		Pool discoveryPool = cons.getDiscoveryPool();
-
 		HashSet<Point> prevPoints = new HashSet<Point>();
 		for (Point ge : discoveryPool.points) {
 			if (!ge.equals(p0)) {
@@ -451,8 +449,6 @@ public class Discover {
 	 * collecting all parallelisms for a given input.
 	 */
 	private void collectParallelisms(Point p0, boolean discover) {
-		Pool discoveryPool = cons.getDiscoveryPool();
-
 		HashSet<Point> prevPoints = new HashSet<Point>();
 		for (Point ge : discoveryPool.points) {
 			if (!ge.equals(p0)) {
@@ -576,8 +572,6 @@ public class Discover {
 	 * collecting all equal long segments for a given input.
 	 */
 	private void collectEqualLongSegments(Point p0, boolean discover) {
-		Pool discoveryPool = cons.getDiscoveryPool();
-
 		HashSet<Point> allPoints = new HashSet<Point>();
 		for (Point ge : discoveryPool.points) {
 			allPoints.add(ge);
@@ -711,14 +705,14 @@ public class Discover {
 	 * collecting all perpendicular directions for a given input.
 	 */
 	private void collectPerpendicularDirections(Point p0, boolean discover) {
-		Pool discoveryPool = cons.getDiscoveryPool();
-
 		// This is an overkill, but it should work:
 		discoveryPool.orthogonalParallelLines.clear();
 		drawnOrthogonalParallelLines.clear();
 		// TODO: Do not clear it, just update it in the next steps!
 
 		HashSet<ParallelLines> paired = new HashSet<>();
+
+		int steps = discoveryPool.lines.size();
 
 		// We want to visit each set of parallel lines only once.
 		HashSet<ParallelLines> visited1 = new HashSet<>();
@@ -811,6 +805,8 @@ public class Discover {
 					// Otherwise (including if this is just a single line) no action is taken.
 				}
 			}
+			percent += 5.0/steps;
+			updatePercentInfo();
 		}
 
 		// Second round: Draw all lines from the discovery pool:
@@ -864,7 +860,6 @@ public class Discover {
 	}
 
 	private void detectOrthogonalCollinearities() {
-		Pool discoveryPool = cons.getDiscoveryPool();
 		for (GeoElement ortholine : cons.getGeoSetLabelOrder()) {
 			if (ortholine instanceof GeoLine && ortholine
 					.getParentAlgorithm() instanceof AlgoOrthoLinePointLine) {
@@ -910,7 +905,8 @@ public class Discover {
 		if (!(this.input instanceof GeoPoint)) {
 			return; // not yet implemented
 		}
-		Pool discoveryPool = cons.getDiscoveryPool();
+		discoveryPool = cons.getDiscoveryPool();
+
 		Log.debug("The discovery pool contains " +
 				discoveryPool.points.size() + " points, " +
 				discoveryPool.lines.size() + " lines, " +
@@ -1244,8 +1240,8 @@ public class Discover {
 			if (ge instanceof GeoLine && !(ge instanceof GeoSegment)) {
 				GeoPoint p1 = ((GeoLine) ge).startPoint;
 				GeoPoint p2 = ((GeoLine) ge).endPoint;
-				Point pp1 = cons.getDiscoveryPool().getPoint(p1);
-				Point pp2 = cons.getDiscoveryPool().getPoint(p2);
+				Point pp1 = discoveryPool.getPoint(p1);
+				Point pp2 = discoveryPool.getPoint(p2);
 				HashSet<Point> points = l.getPoints();
 				if (points.contains(pp1) && points.contains(pp2)) {
 					return true;
@@ -1264,8 +1260,8 @@ public class Discover {
 				GeoPoint p1 = ((GeoLine) ge).startPoint;
 				GeoPoint p2 = ((GeoLine) ge).endPoint;
 				HashSet<Point> points = l.getPoints();
-				Point pp1 = cons.getDiscoveryPool().getPoint(p1);
-				Point pp2 = cons.getDiscoveryPool().getPoint(p2);
+				Point pp1 = discoveryPool.getPoint(p1);
+				Point pp2 = discoveryPool.getPoint(p2);
 				if (points.contains(pp1) && points.contains(pp2)) {
 					return (GeoLine) ge;
 				}
@@ -1279,8 +1275,8 @@ public class Discover {
 			if (ge instanceof GeoSegment) {
 				GeoPoint p1 = ((GeoSegment) ge).startPoint;
 				GeoPoint p2 = ((GeoSegment) ge).endPoint;
-				Point pp1 = cons.getDiscoveryPool().getPoint(p1);
-				Point pp2 = cons.getDiscoveryPool().getPoint(p2);
+				Point pp1 = discoveryPool.getPoint(p1);
+				Point pp2 = discoveryPool.getPoint(p2);
 				Point pq1 = s.getStartPoint();
 				Point pq2 = s.getEndPoint();
 				if ((pq1.equals(pp1) && pq2.equals(pp2)) ||
@@ -1300,9 +1296,9 @@ public class Discover {
 					GeoPoint p1 = (GeoPoint) cpoints.get(0);
 					GeoPoint p2 = (GeoPoint) cpoints.get(1);
 					GeoPoint p3 = (GeoPoint) cpoints.get(2);
-					Point pp1 = cons.getDiscoveryPool().getPoint(p1);
-					Point pp2 = cons.getDiscoveryPool().getPoint(p2);
-					Point pp3 = cons.getDiscoveryPool().getPoint(p3);
+					Point pp1 = discoveryPool.getPoint(p1);
+					Point pp2 = discoveryPool.getPoint(p2);
+					Point pp3 = discoveryPool.getPoint(p3);
 					HashSet<Point> points = c.getPoints();
 					if (points.contains(pp1) && points.contains(pp2) && points.contains(pp3)) {
 						return true;
@@ -1322,9 +1318,9 @@ public class Discover {
 					GeoPoint p1 = (GeoPoint) cpoints.get(0);
 					GeoPoint p2 = (GeoPoint) cpoints.get(1);
 					GeoPoint p3 = (GeoPoint) cpoints.get(2);
-					Point pp1 = cons.getDiscoveryPool().getPoint(p1);
-					Point pp2 = cons.getDiscoveryPool().getPoint(p2);
-					Point pp3 = cons.getDiscoveryPool().getPoint(p3);
+					Point pp1 = discoveryPool.getPoint(p1);
+					Point pp2 = discoveryPool.getPoint(p2);
+					Point pp3 = discoveryPool.getPoint(p3);
 					HashSet<Point> points = c.getPoints();
 					if (points.contains(pp1) && points.contains(pp2) && points.contains(pp3)) {
 						return (GeoConic) ge;
@@ -1340,8 +1336,8 @@ public class Discover {
 			if (ge instanceof GeoSegment) {
 				GeoPoint p1 = ((GeoLine) ge).startPoint;
 				GeoPoint p2 = ((GeoLine) ge).endPoint;
-				Point pp1 = cons.getDiscoveryPool().getPoint(p1);
-				Point pp2 = cons.getDiscoveryPool().getPoint(p2);
+				Point pp1 = discoveryPool.getPoint(p1);
+				Point pp2 = discoveryPool.getPoint(p2);
 				Point pq1 = s.getStartPoint();
 				Point pq2 = s.getEndPoint();
 				if ((pq1.equals(pp1) && pq2.equals(pp2)) ||
@@ -1374,8 +1370,6 @@ public class Discover {
 		/*
 		 * TODO. This is certainly incomplete.
 		 */
-		Pool discoveryPool = cons.getDiscoveryPool();
-
 		AlgoElement ae = D.getParentAlgorithm();
 
 		if (ae instanceof AlgoIntersectSingle) {
@@ -1413,8 +1407,6 @@ public class Discover {
 		/*
 		 * TODO. This is certainly incomplete.
 		 */
-		Pool discoveryPool = cons.getDiscoveryPool();
-
 		AlgoElement ae = C.getParentAlgorithm();
 
 		if (ae instanceof AlgoIntersectLines) {
