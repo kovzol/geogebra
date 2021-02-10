@@ -5,8 +5,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.prover.AlgoProveDetails;
 import org.geogebra.common.kernel.prover.Combinations;
+import org.geogebra.common.util.MaxSizeHashMap;
 import org.geogebra.common.util.debug.Log;
 
 public class Pool {
@@ -17,6 +22,22 @@ public class Pool {
     public ArrayList<Segment> segments = new ArrayList<>();
     public ArrayList<EqualLongSegments> equalLongSegments = new ArrayList<>();
     public ArrayList<OrthogonalParallelLines> orthogonalParallelLines = new ArrayList<>();
+
+    public MaxSizeHashMap<String, GeoList> algoProveDetailsCache = new MaxSizeHashMap<>(5000);
+
+    public GeoList AlgoProveDetailsCached (GeoElement root) {
+        String command = root.getParentAlgorithm().toString();
+        if (algoProveDetailsCache.containsKey(command)) {
+            return algoProveDetailsCache.get(command);
+        }
+        AlgoProveDetails apd = new AlgoProveDetails(root.getConstruction(), root, false, true);
+        apd.compute();
+        GeoElement[] o = apd.getOutput();
+        GeoList ret = (GeoList) o[0];
+        algoProveDetailsCache.put(command, ret);
+        apd.remove();
+        return ret;
+    }
 
     public Point getPoint(GeoPoint p1) {
         for (Point p : points) {
@@ -519,6 +540,8 @@ public class Pool {
 
             }
         }
+        // This is an overkill. Not all elements need to be deleted:
+        algoProveDetailsCache.clear(); // TODO: Find a better way.
 
         points.remove(p);
     }
