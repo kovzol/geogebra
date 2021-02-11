@@ -49,11 +49,32 @@ public class OrthogonalParallelLines {
 	}
 
 	public String toString() {
+		return toHTML(false);
+	}
+
+	public String toHTML(boolean color) {
 		if (pl2 == null) {
+			if (color) {
+				return pl1.toHTML(true);
+			}
 			return pl1.toString();
 		}
 		if (pl1.toString().compareTo(pl2.toString()) > 0) {
-			return pl2.toString() + " " + Unicode.PERPENDICULAR + " " + pl1.toString();
+			String ret;
+			if (color) {
+				ret = pl2.toHTML(true);
+			} else {
+				ret = pl2.toString();
+			}
+			ret += " " + Unicode.PERPENDICULAR + " ";
+			if (color) {
+				ret = pl1.toHTML(true);
+			} else {
+				ret = pl1.toString();
+			}
+		}
+		if (color) {
+			return pl1.toHTML(true) + " " + Unicode.PERPENDICULAR + " " + pl2.toHTML(true);
 		}
 		return pl1.toString() + " " + Unicode.PERPENDICULAR + " " + pl2.toString();
 	}

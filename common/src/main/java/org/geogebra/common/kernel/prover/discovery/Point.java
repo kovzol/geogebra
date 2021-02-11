@@ -44,6 +44,10 @@ public class Point {
 	}
 
 	public String toString() {
+		return toHTML(false);
+	}
+
+	public String toHTML(boolean color) {
 		GeoPoint[] geoPoints = new GeoPoint[points.size()];
 		int i = 0;
 		for (GeoPoint p : points) {
@@ -53,7 +57,12 @@ public class Point {
 		sort(geoPoints);
 		StringBuilder ret = new StringBuilder();
 		for (GeoPoint gp : geoPoints) {
-			ret.append(gp.getColoredLabel() + "=");
+			if (color) {
+				ret.append(gp.getColoredLabel());
+			} else {
+				ret.append(gp.getLabelSimple());
+			}
+			ret.append("=");
 		}
 		ret.deleteCharAt(ret.length() - 1);
 		return ret.toString();

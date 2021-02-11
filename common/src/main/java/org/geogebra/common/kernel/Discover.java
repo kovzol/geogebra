@@ -54,6 +54,8 @@ import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
 
+import com.himamis.retex.editor.share.util.Unicode;
+
 public class Discover {
 
 	private Pool discoveryPool;
@@ -217,7 +219,7 @@ public class Discover {
 					// ap.compute();
 					// GeoElement[] o = ap.getOutput();
 					// GeoList output = (GeoList) o[0];
-					GeoList output = discoveryPool.AlgoProveDetailsCached(root, p0 + "==" + p1);
+					GeoList output = discoveryPool.AlgoProveDetailsCached(root, p0 + "=" + p1);
 					if (output.size() > 0) {
 						GeoElement truth = output.get(0);
 						if (((GeoBoolean) truth).getBoolean()) {
@@ -648,7 +650,7 @@ public class Discover {
 							GeoElement root = new GeoBoolean(cons);
 							root.setParentAlgorithm(aac);
 							GeoList output = discoveryPool.AlgoProveDetailsCached(root,
-									p2 + "," + p3 + "==" + p0 + "," + p1);
+									p2 + "," + p3 + "=" + p0 + "," + p1);
 							if (output.size() > 0) {
 								GeoElement truth = output.get(0);
 								if (((GeoBoolean) truth).getBoolean()) {
@@ -754,7 +756,7 @@ public class Discover {
 									GeoElement root = new GeoBoolean(cons);
 									root.setParentAlgorithm(aap);
 									GeoList output = discoveryPool.AlgoProveDetailsCached(root,
-											pl1 + "_|_" + pl2);
+											pl1.toString() + Unicode.PERPENDICULAR + pl2);
 									if (output.size() > 0) {
 										GeoElement truth = output.get(0);
 										if (((GeoBoolean) truth).getBoolean()) {
@@ -950,7 +952,7 @@ public class Discover {
 		StringBuilder points = new StringBuilder();
 		for (Point p : shownPoints) {
 			if (p.getPoints().size() > 1) {
-				points.append(p.toString());
+				points.append(p.toHTML(true));
 				points.append(", ");
 				pointitems = 1;
 			}
@@ -969,9 +971,9 @@ public class Discover {
 				GeoLine gl = l.getGeoLine();
 				if (gl != null) {
 					String color = StringUtil.toHexString((gl.getLabelColor()));
-					lines.append("<font color=\"" + color + "\">" + l.toString() + "</font>");
+					lines.append("<font color=\"" + color + "\">" + l.toHTML(true) + "</font>");
 				} else {
-					lines.append(l.toString());
+					lines.append(l.toHTML(true));
 				}
 				lines.append(", ");
 			}
@@ -989,9 +991,9 @@ public class Discover {
 				GeoConic gc = c.getGeoConic();
 				if (gc != null) {
 					String color = StringUtil.toHexString((gc.getLabelColor()));
-					circles.append("<font color=\"" + color + "\">" + c.toString() + "</font>");
+					circles.append("<font color=\"" + color + "\">" + c.toHTML(true) + "</font>");
 				} else {
-					circles.append(c.toString());
+					circles.append(c.toHTML(true));
 				}
 				circles.append(", ");
 			}
@@ -1012,9 +1014,9 @@ public class Discover {
 				if (c != null) {
 					String color = StringUtil.toHexString(c);
 					directions.
-							append("<font color=\"" + color + "\">" + opl.toString() + "</font>");
+							append("<font color=\"" + color + "\">" + opl.toHTML(true) + "</font>");
 				} else {
-					directions.append(opl.toString());
+					directions.append(opl.toHTML(true));
 				}
 			}
 			directions.append("</ul>");
@@ -1033,9 +1035,9 @@ public class Discover {
 				if (c != null) {
 					String color = StringUtil.toHexString(c);
 					equalLongSegments
-							.append("<font color=\"" + color + "\">" + els.toString() + "</font>");
+							.append("<font color=\"" + color + "\">" + els.toHTML(true) + "</font>");
 				} else {
-					equalLongSegments.append(els.toString());
+					equalLongSegments.append(els.toHTML(true));
 				}
 			}
 			equalLongSegments.append("</ul>");

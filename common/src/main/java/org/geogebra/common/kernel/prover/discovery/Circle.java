@@ -59,8 +59,12 @@ public class Circle {
         points.remove(p);
     }
 
-    // Literally the same as Line.toString()
+    // Literally the same as Line.toString() and .toHTML()
     public String toString() {
+        return toHTML(false);
+    }
+
+    public String toHTML(boolean color) {
         GeoPoint[] geoPoints = new GeoPoint[points.size()];
         int i = 0;
         for (Point p : points) {
@@ -71,13 +75,19 @@ public class Circle {
         String ret = "";
 
         for (GeoPoint gp : geoPoints) {
-            String label = gp.getColoredLabel();
-            label = label.replaceAll("\\<font color[^>]*>(.*?)\\</font>","$1");
+            String label;
+            if (color) {
+                label = gp.getColoredLabel();
+                label = label.replaceAll("\\<font color[^>]*>(.*?)\\</font>", "$1");
+            } else {
+                label = gp.getLabelSimple();
+            }
             ret += label;
             i++;
         }
         return ret;
     }
+
 
     public GeoConic getGeoConic() {
         return geoConic;

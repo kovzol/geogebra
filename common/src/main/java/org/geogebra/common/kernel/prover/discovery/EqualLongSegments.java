@@ -54,10 +54,18 @@ public class EqualLongSegments {
     }
 
     public String toString() {
+        return toHTML(false);
+    }
+
+    public String toHTML(boolean color) {
         String[] labels = new String[segments.size()];
         int i = 0;
         for (Segment s : segments) {
-            labels[i] = s.toString();
+            if (color) {
+                labels[i] = s.toHTML(true);
+            } else {
+                labels[i] = s.toString();
+            }
             i++;
         }
         sort(labels);

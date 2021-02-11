@@ -13,10 +13,20 @@ public class Segment {
     }
 
     public String toString() {
-        String p1 = startPoint.getGeoPoint().getColoredLabel()
-                .replaceAll("\\<font color[^>]*>(.*?)\\</font>", "$1");
-        String p2 = endPoint.getGeoPoint().getColoredLabel()
-                .replaceAll("\\<font color[^>]*>(.*?)\\</font>", "$1");
+        return toHTML(false);
+    }
+
+    public String toHTML(boolean color) {
+        String p1, p2;
+            if (color) {
+                p1 = startPoint.getGeoPoint().getColoredLabel()
+                        .replaceAll("\\<font color[^>]*>(.*?)\\</font>", "$1");
+                p2 = endPoint.getGeoPoint().getColoredLabel()
+                        .replaceAll("\\<font color[^>]*>(.*?)\\</font>", "$1");
+            } else {
+                p1 = startPoint.getGeoPoint().getLabelSimple();
+                p2 = endPoint.getGeoPoint().getLabelSimple();
+            }
         if (startPoint.toString().compareTo(endPoint.toString()) > 0) {
             // swap them if the alphabetic order is wrong
             String p = p1;

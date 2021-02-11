@@ -58,10 +58,19 @@ public class ParallelLines {
     }
 
     public String toString() {
+        return toHTML(false);
+    }
+
+    public String toHTML(boolean color) {
         String[] labels = new String[lines.size()];
         int i = 0;
         for (Line l : lines) {
-            labels[i] = l.toString();
+            if (color) {
+                labels[i] = l.toHTML(true);
+            } else {
+                labels[i] = l.toString();
+            }
+
             i++;
         }
         sort(labels);
