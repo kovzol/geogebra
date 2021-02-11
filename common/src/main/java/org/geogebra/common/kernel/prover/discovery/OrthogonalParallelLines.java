@@ -68,10 +68,11 @@ public class OrthogonalParallelLines {
 			}
 			ret += " " + Unicode.PERPENDICULAR + " ";
 			if (color) {
-				ret = pl1.toHTML(true);
+				ret += pl1.toHTML(true);
 			} else {
-				ret = pl1.toString();
+				ret += pl1.toString();
 			}
+			return ret;
 		}
 		if (color) {
 			return pl1.toHTML(true) + " " + Unicode.PERPENDICULAR + " " + pl2.toHTML(true);
