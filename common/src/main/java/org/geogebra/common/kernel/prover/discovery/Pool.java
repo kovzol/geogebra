@@ -25,8 +25,8 @@ public class Pool {
 
     public MaxSizeHashMap<String, GeoList> algoProveDetailsCache = new MaxSizeHashMap<>(5000);
 
-    public GeoList AlgoProveDetailsCached (GeoElement root) {
-        String command = root.getParentAlgorithm().toString();
+    public GeoList AlgoProveDetailsCached (GeoElement root, String command) {
+        // String command = root.getParentAlgorithm().toString();
         if (algoProveDetailsCache.containsKey(command)) {
             return algoProveDetailsCache.get(command);
         }

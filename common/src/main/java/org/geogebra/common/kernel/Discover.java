@@ -217,7 +217,7 @@ public class Discover {
 					// ap.compute();
 					// GeoElement[] o = ap.getOutput();
 					// GeoList output = (GeoList) o[0];
-					GeoList output = discoveryPool.AlgoProveDetailsCached(root);
+					GeoList output = discoveryPool.AlgoProveDetailsCached(root, p0 + "==" + p1);
 					if (output.size() > 0) {
 						GeoElement truth = output.get(0);
 						if (((GeoBoolean) truth).getBoolean()) {
@@ -301,7 +301,8 @@ public class Discover {
 					// Conjecture: Collinearity
 					GeoElement root = new GeoBoolean(cons);
 					root.setParentAlgorithm(aac);
-					GeoList output = discoveryPool.AlgoProveDetailsCached(root);
+					GeoList output = discoveryPool.AlgoProveDetailsCached(root,
+							"Coll " + p0 + "," + p1 + "," + p2);
 					if (output.size() > 0) {
 						GeoElement truth = output.get(0);
 						if (((GeoBoolean) truth).getBoolean()) {
@@ -395,7 +396,8 @@ public class Discover {
 						// Conjecture: Concyclicity
 						GeoElement root = new GeoBoolean(cons);
 						root.setParentAlgorithm(aac);
-						GeoList output = discoveryPool.AlgoProveDetailsCached(root);
+						GeoList output = discoveryPool.AlgoProveDetailsCached(root,
+								"Conc " + p0 + "," + p1 + "," + p2 + "," + p3);
 						if (output.size() > 0) {
 							GeoElement truth = output.get(0);
 							if (((GeoBoolean) truth).getBoolean()) {
@@ -510,7 +512,8 @@ public class Discover {
 								AlgoAreParallel aap = new AlgoAreParallel(cons, gl1, gl2);
 								GeoElement root = new GeoBoolean(cons);
 								root.setParentAlgorithm(aap);
-								GeoList output = discoveryPool.AlgoProveDetailsCached(root);
+								GeoList output = discoveryPool.AlgoProveDetailsCached(root,
+										p23[0] + "," + p23[1] + "||" + p0 + "," + p1);
 								if (output.size() > 0) {
 									GeoElement truth = output.get(0);
 									if (((GeoBoolean) truth).getBoolean()) {
@@ -644,7 +647,8 @@ public class Discover {
 							AlgoAreCongruent aac = new AlgoAreCongruent(cons, gs1, gs2);
 							GeoElement root = new GeoBoolean(cons);
 							root.setParentAlgorithm(aac);
-							GeoList output = discoveryPool.AlgoProveDetailsCached(root);
+							GeoList output = discoveryPool.AlgoProveDetailsCached(root,
+									p2 + "," + p3 + "==" + p0 + "," + p1);
 							if (output.size() > 0) {
 								GeoElement truth = output.get(0);
 								if (((GeoBoolean) truth).getBoolean()) {
@@ -749,7 +753,8 @@ public class Discover {
 											new AlgoArePerpendicular(cons, gl1, gl2);
 									GeoElement root = new GeoBoolean(cons);
 									root.setParentAlgorithm(aap);
-									GeoList output = discoveryPool.AlgoProveDetailsCached(root);
+									GeoList output = discoveryPool.AlgoProveDetailsCached(root,
+											pl1 + "_|_" + pl2);
 									if (output.size() > 0) {
 										GeoElement truth = output.get(0);
 										if (((GeoBoolean) truth).getBoolean()) {
