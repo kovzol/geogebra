@@ -29,6 +29,7 @@ public class RealGeomWSSettings {
      * too noisy debug.
      */
     final public static int debugMaxProgramSize = 2000;
+    private static volatile String realGeomWebServiceCAS = "mathematica";
 
     public static void setRealGeomWebServiceRemoteURL(String url) {
         synchronized (lock) {
@@ -45,12 +46,25 @@ public class RealGeomWSSettings {
         }
     }
 
+    /**
+     * @param c CAS
+     */
+    public static void setCAS(String s) {
+        synchronized (lock) {
+            realGeomWebServiceCAS = s;
+        }
+    }
+
     public static String getRealGeomWebServiceRemoteURL() {
         return realGeomWebServiceRemoteURL;
     }
 
     public static int getTimeout() {
         return realGeomWebServiceTimeout;
+    }
+
+    public static String getCAS() {
+        return realGeomWebServiceCAS;
     }
 
     public static boolean isUseRealGeomWebService() {

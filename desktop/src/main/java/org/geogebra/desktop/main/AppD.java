@@ -800,6 +800,8 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 							.getRealGeomWebServiceRemoteURL()
 							+ "]\n" + "      timeout:SECS\tset the timeout ["
 							+ RealGeomWSSettings.getTimeout() + "]\n"
+							+ "      cas:CAS\tset the underlying CAS ["
+							+ RealGeomWSSettings.getCAS() + "]\n"
 							+ "  Example: realgeomWS=timeout:3\n");
 			AppD.exit(0);
 		}
@@ -1230,6 +1232,11 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		}
 		if ("timeout".equalsIgnoreCase(str[0])) {
 			RealGeomWSSettings.setTimeout(Integer.parseInt(str[1]));
+			return;
+		}
+		if ("cas".equalsIgnoreCase(str[0])) {
+			RealGeomWSSettings
+					.setCAS(str[1].toLowerCase());
 			return;
 		}
 		Log.warn("Prover option not recognized: ".concat(option));

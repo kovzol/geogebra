@@ -19,7 +19,8 @@ public class RealGeomWebService {
 
     private int timeout = RealGeomWSSettings.getTimeout();
     String testConnectionCommand = "euclideansolver";
-    String testConnectionParameters = "lhs=a+b-c&rhs=g&polys=(b1-c1)^2+(b2-c2)^2-a^2,(a1-c1)^2+(a2-c2)^2-b^2,(a1-b1)^2+(a2-b2)^2-c^2,(g1-c1)^2+(g2-c2)^2-g^2,(a1+b1)-2g1,(a2+b2)-2g2&vars=a1,a2,b1,b2,c1,c2,g1,g2,a,b,c,g&posvariables=a,b,c,g&triangles=a,b,c&mode=explore";
+    private String wsCAS = RealGeomWSSettings.getCAS();
+    String testConnectionParameters = "lhs=a+b-c&rhs=g&polys=(b1-c1)^2+(b2-c2)^2-a^2,(a1-c1)^2+(a2-c2)^2-b^2,(a1-b1)^2+(a2-b2)^2-c^2,(g1-c1)^2+(g2-c2)^2-g^2,(a1+b1)-2g1,(a2+b2)-2g2&vars=a1,a2,b1,b2,c1,c2,g1,g2,a,b,c,g&posvariables=a,b,c,g&triangles=a,b,c&mode=explore&cas=" + wsCAS;
 
     private String wsHost = RealGeomWSSettings.getRealGeomWebServiceRemoteURL();
     private Boolean available;
@@ -117,6 +118,10 @@ public class RealGeomWebService {
     public String getConnectionSite() {
         return this.wsHost;
     }
+
+    // Reports what CAS is used inside RealGeomWS.
+    // Returns: the underlying CAS
+    public String getCAS() { return this.wsCAS; }
 
     /**
      * If the test connection is working, then set the webservice "available",

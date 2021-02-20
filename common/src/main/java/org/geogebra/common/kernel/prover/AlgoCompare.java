@@ -487,6 +487,8 @@ public class AlgoCompare extends AlgoElement {
         }
         rgParameters.deleteCharAt(rgParameters.length() - 1);
         rgParameters.append("&mode=explore");
+        String rgwsCas = realgeomWS.getCAS();
+        rgParameters.append("&cas=" + rgwsCas);
 
         Log.debug(rgParameters);
 
