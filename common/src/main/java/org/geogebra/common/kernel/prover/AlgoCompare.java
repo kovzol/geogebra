@@ -570,7 +570,7 @@ public class AlgoCompare extends AlgoElement {
             // m >= 1/2
             result = result.replaceAll("m >= (.*)",
                     inp[0] + " GreaterEqual ($1) " + Unicode.CENTER_DOT + " " + inp[1]);
-            // m >= 1/2
+            // m > 1/2
             result = result.replaceAll("m > (.*)",
                     inp[0] + " Greater ($1) " + Unicode.CENTER_DOT + " " + inp[1]);
             // m == 1
@@ -629,16 +629,29 @@ public class AlgoCompare extends AlgoElement {
             result = result.replaceAll("Root\\[(.*?) \\& , (.*?), 0\\]", "$2. root of $1");
             result = result.replaceAll("[^\\&]#1", "x");
 
-            // Inequality[0, Less, m, LessEqual, 2]
-            result = result.replaceAll("Inequality\\[(.*?), (.*?), m, (.*?), (.*?)\\]",
+            // ((m>=1) and (m<=(sqrt2)))
+            result = result.replaceAll("\\(\\(m>=(.*?)\\) and \\(m<=(.*?)\\)\\)",
                     "($1) " + Unicode.CENTER_DOT + " " + inp[1] +
-                            " $2 " + inp[0] + " $3 ($4) " + Unicode.CENTER_DOT + " " + inp[1]);
+                            " LessEqual " + inp[0] + " LessEqual ($2) " + Unicode.CENTER_DOT + " " + inp[1]);
+            // ((m>1) and (m<=(sqrt2)))
+            result = result.replaceAll("\\(\\(m>(.*?)\\) and \\(m<=(.*?)\\)\\)",
+                    "($1) " + Unicode.CENTER_DOT + " " + inp[1] +
+                            " Less " + inp[0] + " LessEqual ($2) " + Unicode.CENTER_DOT + " " + inp[1]);
+            // ((m>1) and (m<=(sqrt2)))
+            result = result.replaceAll("\\(\\(m>=(.*?)\\) and \\(m<(.*?)\\)\\)",
+                    "($1) " + Unicode.CENTER_DOT + " " + inp[1] +
+                            " LessEqual " + inp[0] + " Less ($2) " + Unicode.CENTER_DOT + " " + inp[1]);
+            // ((m>1) and (m<<(sqrt2)))
+            result = result.replaceAll("\\(\\(m>(.*?)\\) and \\(m<(.*?)\\)\\)",
+                    "($1) " + Unicode.CENTER_DOT + " " + inp[1] +
+                            " Less " + inp[0] + " Less ($2) " + Unicode.CENTER_DOT + " " + inp[1]);
+
             // Remove "(0)*inp2 Less" from the beginning (it's trivial)
             result = result.replaceAll("^\\(0\\) " + Unicode.CENTER_DOT + " .*? Less ", "");
             // m >= 1/2
             result = result.replaceAll("m>=(.*)",
                     inp[0] + " GreaterEqual ($1) " + Unicode.CENTER_DOT + " " + inp[1]);
-            // m >= 1/2
+            // m > 1/2
             result = result.replaceAll("m>(.*)",
                     inp[0] + " Greater ($1) " + Unicode.CENTER_DOT + " " + inp[1]);
             // m == 1
