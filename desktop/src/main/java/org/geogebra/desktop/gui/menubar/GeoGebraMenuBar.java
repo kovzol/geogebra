@@ -579,7 +579,7 @@ public class GeoGebraMenuBar extends JMenuBar implements EventRenderable {
 		if (realGeomWS != null
 				&& (v = realGeomWS.getConnectionSite()) != null
 		        && (realGeomWS.isAvailable())) {
-			sb.append(",<br>realgeomws=" + v);
+			sb.append(",<br>realgeomws=" + v + " (" + realGeomWS.getCAS() + ")");
 		}
 
 		sb.append(")<br>");
