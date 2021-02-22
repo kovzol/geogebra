@@ -18,11 +18,14 @@ public class RealGeomWSSettings {
      * The remote machine to be used for outsourced computations.
      */
     private static volatile String realGeomWebServiceRemoteURL = "http://roadrunner.risc.jku.at:8765";
+    // private static volatile String realGeomWebServiceRemoteURL = "http://localhost:8765";
+
     private static Object lock = new Object();
     /**
      * Timeout for a RealGeomWS session to run in seconds.
      */
     private static volatile int realGeomWebServiceTimeout = 5;
+    // private static volatile int realGeomWebServiceTimeout = 10;
     /**
      * Above this value there is no detailed logging, only the size of the
      * program code will be printed as a debug message. This can help avoiding
@@ -30,6 +33,7 @@ public class RealGeomWSSettings {
      */
     final public static int debugMaxProgramSize = 2000;
     private static volatile String realGeomWebServiceCAS = "mathematica";
+    // private static volatile String realGeomWebServiceCAS = "qepcad";
 
     public static void setRealGeomWebServiceRemoteURL(String url) {
         synchronized (lock) {
