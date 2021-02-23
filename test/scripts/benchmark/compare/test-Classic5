@@ -6,6 +6,6 @@
 # regression introduced.
 
 set -e
-./runtests-sql -p Classic5 -d -R http\\://roadrunner.risc.jku.at\\:8765
-./report-sql -c Classic5
+./runtests-sql -p Classic5-m -d -R http\\://roadrunner.risc.jku.at\\:8765
+./report-sql -c Classic5-m
 sensible-browser html/all.html &

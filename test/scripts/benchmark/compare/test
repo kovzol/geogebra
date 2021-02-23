@@ -3,6 +3,6 @@
 # Test all versions.
 
 set -e
-./runtests-sql -p "Classic5 Classic6" -d -R http\\://roadrunner.risc.jku.at\\:8765
-./report-sql -c "Classic5 Classic6"
+./runtests-sql -p "Classic5-m Classic5-q Classic6" -d -R http\\://roadrunner.risc.jku.at\\:8765
+./report-sql -c "Classic5-m Classic5-q Classic6"
 sensible-browser html/all.html &
