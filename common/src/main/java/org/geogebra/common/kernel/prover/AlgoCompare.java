@@ -607,13 +607,15 @@ public class AlgoCompare extends AlgoElement {
 
     private String rgQepcad2ggb(String rgResult) {
         retval = "";
-        String[] cases = new String[1];
-        cases[0] = rgResult; // TODO: split
-
+        String[] cases = rgResult.split(",");
         inp[0] = inpWithExponent(0);
         inp[1] = inpWithExponent(1);
 
         for (String result : cases) {
+
+            if (result.indexOf("m") == -1) {
+               result = "m=" + result;
+               }
 
             if ("m>0".equals(result)) {
                 continue;
