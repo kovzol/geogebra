@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Create the RQE calls. First a realgeom server must be started on localhost:8765
+# with options -l rqe.txt and -d. Then the RQE calls will be stored in rqe.txt
+# without their explicit evaluation.
+
+set -e
+./runtests-sql -p "Classic5-rg-m Classic5-rg-q" -d -R http\\://localhost\\:8765
