@@ -545,7 +545,8 @@ public class GeoGebraFrame extends JFrame
 			// check if newer version is available
 			// must be done last as internet may not be available
 			if (!app.isApplet()) {
-				checkVersion();
+				// Disabled for GeoGebra Discovery:
+				// checkVersion();
 			}
 		}
 
