@@ -2956,7 +2956,7 @@ __GGB__keysVar["de"].menu = {
     "TextfieldLength": "Eingabefeldl\xe4nge",
     "ThanksForSigningIn": "Danke f\xfcr die Anmeldung bei GeoGebra!",
     "TheFollowingAreCollinearA": "%0 sind kollinear",
-    "TheFollowingAreConcurrentA": "%0 sind identisch",
+    "TheFollowingAreConcurrentA": "%0 sind kopunktal",
     "TheFollowingAreConcyclicA": "%0 liegen auf derselben Kreislinie (sind konzyklisch).",
     "TheFollowingAreCongruentA": "%0 sind deckungsgleich",
     "TheFollowingAreEqualA": "%0 sind gleich",
