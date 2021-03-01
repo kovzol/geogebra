@@ -35,6 +35,8 @@ public class RealGeomWSSettings {
     private static volatile String realGeomWebServiceCAS = "mathematica";
     // private static volatile String realGeomWebServiceCAS = "qepcad";
 
+    private static volatile boolean testConnection = true;
+
     public static void setRealGeomWebServiceRemoteURL(String url) {
         synchronized (lock) {
             realGeomWebServiceRemoteURL = url;
@@ -71,6 +73,10 @@ public class RealGeomWSSettings {
         return realGeomWebServiceCAS;
     }
 
+    public static boolean isTestConnection() {
+        return testConnection;
+    }
+
     public static boolean isUseRealGeomWebService() {
         return useRealGeomWebService;
     }
@@ -94,6 +100,12 @@ public class RealGeomWSSettings {
     public static void setUseGiacElimination(boolean b) {
         synchronized (lock) {
             useGiacElimination = b;
+        }
+    }
+
+    public static void setTestConnection(boolean b) {
+        synchronized (lock) {
+            testConnection = b;
         }
     }
 

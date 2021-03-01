@@ -802,7 +802,9 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 							+ RealGeomWSSettings.getTimeout() + "]\n"
 							+ "      cas:CAS\tset the underlying CAS ["
 							+ RealGeomWSSettings.getCAS() + "]\n"
-							+ "  Example: realgeomWS=timeout:3\n");
+							+ "      test:BOOLEAN\ttest connection on startup ["
+							+ RealGeomWSSettings.isTestConnection() + "]\n"
+							+ "  Example: realgeomWS=timeout:3,cas:qepcad\n");
 			AppD.exit(0);
 		}
 		if (args.containsArg("v")) {
@@ -1237,6 +1239,11 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		if ("cas".equalsIgnoreCase(str[0])) {
 			RealGeomWSSettings
 					.setCAS(str[1].toLowerCase());
+			return;
+		}
+		if ("test".equalsIgnoreCase(str[0])) {
+			RealGeomWSSettings.setTestConnection(
+					Boolean.valueOf(str[1]).booleanValue());
 			return;
 		}
 		Log.warn("Prover option not recognized: ".concat(option));

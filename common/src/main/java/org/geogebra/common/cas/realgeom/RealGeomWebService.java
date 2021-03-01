@@ -87,7 +87,10 @@ public class RealGeomWebService {
      * @return true if the connection works properly
      */
     public boolean testConnection() {
-
+        if (!RealGeomWSSettings.isTestConnection()) {
+            Log.debug("Not testing connection, assuming that everything is fine");
+            return true;
+        }
         String result = null;
         try {
             result = rgwsCommandResult(testConnectionCommand, testConnectionParameters);

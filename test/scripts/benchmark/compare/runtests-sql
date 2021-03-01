@@ -220,7 +220,7 @@ for i in `find -name '*.ggb' | sort`; do
     CAS=mathematica
     fi
    timeout $((TIMEOUT+5)) $BINBASE \
-    --prover=engine:$ENGINE,method:$METHOD,timeout:$TIMEOUT --realgeomws=remoteurl:${REALGEOMWSREMOTEURL},timeout:$TIMEOUT,elimination:$ELIM,cas:$CAS \
+    --prover=engine:$ENGINE,method:$METHOD,timeout:$TIMEOUT --realgeomws=remoteurl:${REALGEOMWSREMOTEURL},timeout:$TIMEOUT,elimination:$ELIM,cas:$CAS,test:false \
     --logFile=$LOGFILE \
     --language=en $EXTRAOPTS $MYDIR/$i \
     --regressionFile=$REGRESSIONFILE >$MYDIR/tmp/.test.stdout 2>$MYDIR/tmp/.test.stderr
