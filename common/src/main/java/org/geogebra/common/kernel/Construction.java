@@ -3001,6 +3001,7 @@ public class Construction {
 		// if (getApplication().isApplet()) return;
 
 		undoManager.redo();
+		discoveryPool = new Pool();
 	}
 
 	/**
@@ -3011,6 +3012,7 @@ public class Construction {
 		// if (getApplication().isApplet()) return;
 
 		undoManager.undo();
+		discoveryPool = new Pool();
 	}
 
 	/**
