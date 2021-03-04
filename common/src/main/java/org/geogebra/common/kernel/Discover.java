@@ -670,28 +670,28 @@ public class Discover {
 					updatePercentInfo();
 				}
 			}
-		}
 
-		// Third round: Draw all lines from the discovery pool
-		// (those that are not yet drawn):
-		for (EqualLongSegments els : discoveryPool.equalLongSegments) {
-			if (els.isTheorem()) {
-				boolean showIt = false;
-				HashSet<Segment> segmentsDrawn = new HashSet<>();
-				HashSet<Segment> segmentsToDraw = new HashSet<>();
-				for (Segment s : els.getSegments()) {
-					if (s.getStartPoint().equals(p0) || s.getEndPoint().equals(p0)) {
-						showIt = true;
+			// Third round: Draw all lines from the discovery pool
+			// (those that are not yet drawn):
+			for (EqualLongSegments els : discoveryPool.equalLongSegments) {
+				if (els.isTheorem()) {
+					boolean showIt = false;
+					HashSet<Segment> segmentsDrawn = new HashSet<>();
+					HashSet<Segment> segmentsToDraw = new HashSet<>();
+					for (Segment s : els.getSegments()) {
+						if (s.getStartPoint().equals(p0) || s.getEndPoint().equals(p0)) {
+							showIt = true;
+						}
+						if (alreadyDrawn(s)) {
+							segmentsDrawn.add(s);
+						} else {
+							segmentsToDraw.add(s);
+						}
 					}
-					if (alreadyDrawn(s)) {
-						segmentsDrawn.add(s);
-					} else {
-						segmentsToDraw.add(s);
+					if (showIt) {
+						els.setColor(addOutputSegments(segmentsDrawn, segmentsToDraw));
+						drawnSegments.add(els);
 					}
-				}
-				if (showIt) {
-					els.setColor(addOutputSegments(segmentsDrawn, segmentsToDraw));
-					drawnSegments.add(els);
 				}
 			}
 		}
