@@ -20,7 +20,7 @@ package org.geogebra.common.kernel.geos;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.kernel.Construction;
@@ -1615,7 +1615,7 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			final HashMap<PVariable, BigInteger> values)
+			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if (algoParent instanceof SymbolicParametersAlgo) {
 			return ((SymbolicParametersAlgo) algoParent)

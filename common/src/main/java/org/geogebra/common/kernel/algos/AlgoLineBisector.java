@@ -13,7 +13,7 @@ the Free Software Foundation.
 package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -152,7 +152,7 @@ public class AlgoLineBisector extends AlgoElement
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			HashMap<PVariable, BigInteger> values)
+			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if (A != null && B != null) {
 			BigInteger[] coords1 = A.getExactCoordinates(values);

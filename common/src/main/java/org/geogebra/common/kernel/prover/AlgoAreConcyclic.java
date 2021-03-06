@@ -1,7 +1,7 @@
 package org.geogebra.common.kernel.prover;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.kernel.Construction;
@@ -257,7 +257,7 @@ public class AlgoAreConcyclic extends AlgoElement
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			HashMap<PVariable, BigInteger> values)
+			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if (inputPoint1 != null && inputPoint2 != null && inputPoint3 != null
 				&& inputPoint4 != null) {

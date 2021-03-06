@@ -1,7 +1,7 @@
 package org.geogebra.web.html5.kernel;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -26,7 +26,7 @@ public class ProverReciosMethodW extends AbstractProverReciosMethod {
 
 	@Override
 	protected final ProofResult computeNd(HashSet<PVariable> freeVariables,
-			HashMap<PVariable, BigInteger> values, int deg,
+			TreeMap<PVariable, BigInteger> values, int deg,
 			SymbolicParameters s, AlgebraicStatement as) {
 		int n = freeVariables.size();
 
@@ -69,7 +69,7 @@ public class ProverReciosMethodW extends AbstractProverReciosMethod {
 
 			if (as != null) {
 				// use Botana's method
-				HashMap<PVariable, BigInteger> substitutions = new HashMap<>();
+				TreeMap<PVariable, BigInteger> substitutions = new TreeMap<>();
 				for (Entry<PVariable, BigInteger> entry : values.entrySet()) {
 
 					PVariable v = entry.getKey();

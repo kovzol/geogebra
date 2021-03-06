@@ -20,7 +20,7 @@ package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -287,7 +287,7 @@ public class AlgoJoinPointsSegment extends AlgoElement
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			final HashMap<PVariable, BigInteger> values)
+			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if (P != null && Q != null) {
 			BigInteger[] coords1 = P.getExactCoordinates(values);

@@ -2,6 +2,7 @@ package org.geogebra.common.kernel;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 import org.geogebra.common.kernel.arithmetic.MyArbitraryConstant;
@@ -146,7 +147,7 @@ public interface CASGenericInterface extends SettingListener {
 	 * @return the program code
 	 */
 	public String createGroebnerSolvableScript(
-			HashMap<PVariable, BigInteger> substitutions, String polys,
+			TreeMap<PVariable, BigInteger> substitutions, String polys,
 			String freeVars, String dependantVars, boolean transcext);
 
 	/**
@@ -184,7 +185,7 @@ public interface CASGenericInterface extends SettingListener {
 	 * @return Groebner script
 	 */
 	String createGroebnerInitialsScript(
-			HashMap<PVariable, BigInteger> substitutions,
+			TreeMap<PVariable, BigInteger> substitutions,
 			String polys, String freeVars, String dependantVars);
 
 }

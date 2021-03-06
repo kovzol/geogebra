@@ -19,7 +19,7 @@ the Free Software Foundation.
 package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.kernel.Construction;
@@ -132,7 +132,7 @@ public class AlgoMidpoint extends AlgoMidpointND
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			HashMap<PVariable, BigInteger> values)
+			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		GeoPoint P = getP();
 		GeoPoint Q = getQ();

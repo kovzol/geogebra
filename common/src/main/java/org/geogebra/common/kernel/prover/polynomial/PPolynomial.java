@@ -1,7 +1,7 @@
 package org.geogebra.common.kernel.prover.polynomial;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -848,11 +848,11 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 * Converts substitutions to Singular strings
 	 * 
 	 * @param substitutions
-	 *            input as a HashMap
+	 *            input as a TreeMap
 	 * @return the parameters for Singular (e.g. "v1,0,v2,0,v3,0,v4,1")
 	 */
 	static String substitutionsString(
-			HashMap<PVariable, BigInteger> substitutions) {
+			TreeMap<PVariable, BigInteger> substitutions) {
 		StringBuilder ret = new StringBuilder();
 		Iterator<Entry<PVariable, BigInteger>> it = substitutions.entrySet()
 				.iterator();
@@ -893,7 +893,7 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 * Creates a Singular program for creating a ring to work with several
 	 * polynomials, and returns if the equation system has a solution. Uses
 	 * the Groebner basis w.r.t. the revgradlex order.
-	 * @param substitutions HashMap with variables and values, e.g. {v1->0},{v2->1}
+	 * @param substitutions TreeMap with variables and values, e.g. {v1->0},{v2->1}
 	 * @param polys polynomials, e.g. "v1+v2-3*v4-10"
 	 * @param fieldVars field variables (comma separated) 
 	 * @param ringVars ring variables (comma separated)
@@ -901,7 +901,7 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 * @return the Singular program code
 	 */
 	public static String createGroebnerSolvableScript(
-			HashMap<PVariable, BigInteger> substitutions, String polys,
+			TreeMap<PVariable, BigInteger> substitutions, String polys,
 			String fieldVars, String ringVars, boolean transcext) {
 		
 		String ringVariable = "r";
@@ -1049,7 +1049,7 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 * @return yes if solvable, no if no solutions, or null (if cannot decide)
 	 */
 	public static ExtendedBoolean solvable(PPolynomial[] polys,
-			HashMap<PVariable, BigInteger> substitutions, Kernel kernel,
+			TreeMap<PVariable, BigInteger> substitutions, Kernel kernel,
 			boolean transcext, Set<PVariable> freeVariables) {
 		
 		HashSet<PVariable> substVars = null;
@@ -1172,7 +1172,7 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 * @return elements of the elimination ideal or null if computation failed
 	 */
 	public static Set<Set<PPolynomial>> eliminate(PPolynomial[] eqSystem,
-			HashMap<PVariable, BigInteger> substitutions, Kernel kernel,
+			TreeMap<PVariable, BigInteger> substitutions, Kernel kernel,
 			int permutation, boolean factorized, boolean oneCurve,
 			Set<PVariable> freeVariablesInput) {
 

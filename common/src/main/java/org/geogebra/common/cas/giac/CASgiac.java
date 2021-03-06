@@ -3,11 +3,11 @@ package org.geogebra.common.cas.giac;
 import java.math.BigInteger;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.TreeMap;
 
 import org.geogebra.common.cas.CASparser;
 import org.geogebra.common.kernel.AsynchronousCommand;
@@ -1068,7 +1068,7 @@ public abstract class CASgiac implements CASGenericInterface {
 
 	@Override
 	public String createGroebnerSolvableScript(
-			HashMap<PVariable, BigInteger> substitutions, String polys,
+			TreeMap<PVariable, BigInteger> substitutions, String polys,
 			String freeVars, String dependantVars, boolean transcext) {
 		/*
 		 * Example syntax (from Groebner basis tester; but in GeoGebra v1, v2,
@@ -1121,7 +1121,7 @@ public abstract class CASgiac implements CASGenericInterface {
 
 	@Override
 	public String createGroebnerInitialsScript(
-			HashMap<PVariable, BigInteger> substitutions, String polys,
+			TreeMap<PVariable, BigInteger> substitutions, String polys,
 			String freeVars, String dependantVars) {
 		/*
 		 * Example syntax (from Groebner basis tester; but in GeoGebra v1, v2,
@@ -1163,14 +1163,14 @@ public abstract class CASgiac implements CASGenericInterface {
 	 * Converts substitutions to giac strings
 	 * 
 	 * @param substitutions
-	 *            input as a HashMap
+	 *            input as a TreeMap
 	 * @return the parameters for giac (e.g. "v1=0,v2=0,v3=0,v4=1")
 	 * 
 	 *         Taken from prover.Polynomial, one character difference. Maybe
 	 *         commonize.
 	 */
 	static String substitutionsString(
-			HashMap<PVariable, BigInteger> substitutions) {
+			TreeMap<PVariable, BigInteger> substitutions) {
 		StringBuilder ret = new StringBuilder();
 		Iterator<Entry<PVariable, BigInteger>> it = substitutions.entrySet()
 				.iterator();

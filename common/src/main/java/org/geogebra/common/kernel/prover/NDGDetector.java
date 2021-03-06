@@ -3,7 +3,7 @@ package org.geogebra.common.kernel.prover;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,9 +35,9 @@ import org.geogebra.common.util.debug.Log;
  */
 public class NDGDetector {
 
-	private HashMap<String, NDGCondition> lookupTable;
+	private TreeMap<String, NDGCondition> lookupTable;
 	private Prover prover;
-	private HashMap<PVariable, BigInteger> substitutions;
+	private TreeMap<PVariable, BigInteger> substitutions;
 	private Set<PVariable> freeVariables;
 
 	/**
@@ -53,9 +53,9 @@ public class NDGDetector {
 	 *            the input set of free variables
 	 */
 	NDGDetector(Prover prover,
-			HashMap<PVariable, BigInteger> substitutionsInput,
+			TreeMap<PVariable, BigInteger> substitutionsInput,
 			Set<PVariable> freeVariablesInput) {
-		lookupTable = new HashMap<>();
+		lookupTable = new TreeMap<>();
 		this.prover = prover;
 		this.substitutions = substitutionsInput;
 		this.freeVariables = freeVariablesInput;
@@ -104,7 +104,7 @@ public class NDGDetector {
 					.getParentAlgorithm()).getProverAdapter()
 							.getVarSubstListOfSegs();
 			// create list of variables -> segments
-			HashMap<PVariable, GeoElement> geos = new HashMap<>();
+			TreeMap<PVariable, GeoElement> geos = new TreeMap<>();
 			if (varSubstListOfSegs != null) {
 				for (int i = 0; i < varSubstListOfSegs.size(); ++i) {
 					Entry<GeoElement, PVariable> e = varSubstListOfSegs.get(i);
@@ -137,7 +137,7 @@ public class NDGDetector {
 					/* e.g. v1->3, v2->1 */
 
 					TreeSet<GeoElement> geoSet = new TreeSet<>();
-					HashMap<GeoElement, ExpressionNode> bases = new HashMap<>();
+					TreeMap<GeoElement, ExpressionNode> bases = new TreeMap<>();
 					for (Entry<PVariable, Integer> entry0 : tm2.entrySet()) { // e.g.
 																				// v1
 						PVariable t2 = entry0.getKey();
@@ -289,9 +289,9 @@ public class NDGDetector {
 		}
 
 		HashSet<PVariable> freeXvars = new HashSet<>();
-		HashMap<PVariable, GeoElement> xvarGeo = new HashMap<>();
+		TreeMap<PVariable, GeoElement> xvarGeo = new TreeMap<>();
 		HashSet<PVariable> freeYvars = new HashSet<>();
-		HashMap<PVariable, GeoElement> yvarGeo = new HashMap<>();
+		TreeMap<PVariable, GeoElement> yvarGeo = new TreeMap<>();
 		Iterator<GeoElement> it = prover.getStatement().getAllPredecessors()
 				.iterator();
 		while (it.hasNext()) {

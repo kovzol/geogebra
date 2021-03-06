@@ -2,7 +2,7 @@ package org.geogebra.common.kernel.prover;
 
 import java.math.BigInteger;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -117,7 +117,7 @@ public abstract class AbstractProverReciosMethod {
 		// setting two points fixed (the first to (0,0) and the second to (0,1))
 		// all other variables are stored in freeVariables
 		Iterator<PVariable> it = variables.iterator();
-		HashMap<PVariable, BigInteger> values = new HashMap<>();
+		TreeMap<PVariable, BigInteger> values = new TreeMap<>();
 		TreeSet<PVariable> fixedVariables = new TreeSet<>(
 				new Comparator<PVariable>() {
 					@Override
@@ -221,11 +221,11 @@ public abstract class AbstractProverReciosMethod {
 
 	}
 
-	private static ProofResult compute0d(HashMap<PVariable, BigInteger> values,
+	private static ProofResult compute0d(TreeMap<PVariable, BigInteger> values,
 			SymbolicParameters s, AlgebraicStatement as) {
 		if (as != null) {
 			// use Botana's method
-			HashMap<PVariable, BigInteger> substitutions = new HashMap<>();
+			TreeMap<PVariable, BigInteger> substitutions = new TreeMap<>();
 			for (Entry<PVariable, BigInteger> entry : values.entrySet()) {
 				PVariable v = entry.getKey();
 				// FIXME: Change Long in Variable to BigInteger
@@ -257,14 +257,14 @@ public abstract class AbstractProverReciosMethod {
 	}
 
 	private static ProofResult compute1d(final HashSet<PVariable> freeVariables,
-			final HashMap<PVariable, BigInteger> values, final int deg,
+			final TreeMap<PVariable, BigInteger> values, final int deg,
 			final SymbolicParameters s, AlgebraicStatement as) {
 		PVariable variable = freeVariables.iterator().next();
 		for (int i = 1; i <= deg + 2; i++) {
 			values.put(variable, BigInteger.valueOf(i));
 			if (as != null) {
 				// use Botana's method
-				HashMap<PVariable, BigInteger> substitutions = new HashMap<>();
+				TreeMap<PVariable, BigInteger> substitutions = new TreeMap<>();
 				for (Entry<PVariable, BigInteger> entry : values.entrySet()) {
 					PVariable v = entry.getKey();
 					// FIXME: Change Long in Variable to BigInteger
@@ -298,7 +298,7 @@ public abstract class AbstractProverReciosMethod {
 	}
 
 	private static ProofResult compute2d(final HashSet<PVariable> freeVariables,
-			final HashMap<PVariable, BigInteger> values, final int deg,
+			final TreeMap<PVariable, BigInteger> values, final int deg,
 			final SymbolicParameters s, AlgebraicStatement as) {
 		PVariable[] variables = new PVariable[freeVariables.size()];
 		Iterator<PVariable> it = freeVariables.iterator();
@@ -318,7 +318,7 @@ public abstract class AbstractProverReciosMethod {
 
 				if (as != null) {
 					// use Botana's method
-					HashMap<PVariable, BigInteger> substitutions = new HashMap<>();
+					TreeMap<PVariable, BigInteger> substitutions = new TreeMap<>();
 					for (Entry<PVariable, BigInteger> entry : values
 							.entrySet()) {
 						PVariable v = entry.getKey();
@@ -376,7 +376,7 @@ public abstract class AbstractProverReciosMethod {
 
 	protected abstract ProofResult computeNd(
 			final HashSet<PVariable> freeVariables,
-			final HashMap<PVariable, BigInteger> values, final int deg,
+			final TreeMap<PVariable, BigInteger> values, final int deg,
 			final SymbolicParameters s, AlgebraicStatement as);
 
 	/**

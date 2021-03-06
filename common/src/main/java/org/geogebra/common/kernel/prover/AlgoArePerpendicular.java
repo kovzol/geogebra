@@ -1,7 +1,7 @@
 package org.geogebra.common.kernel.prover;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.kernel.Construction;
@@ -139,7 +139,7 @@ public class AlgoArePerpendicular extends AlgoElement
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			HashMap<PVariable, BigInteger> values)
+			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if (inputLine1 != null && inputLine2 != null) {
 			BigInteger[] coords1 = ((SymbolicParametersAlgo) input[0])

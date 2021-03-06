@@ -22,7 +22,7 @@ package org.geogebra.common.kernel.geos;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import javax.annotation.CheckForNull;
@@ -1008,7 +1008,7 @@ final public class GeoVector extends GeoVec3D implements Path, VectorValue,
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			final HashMap<PVariable, BigInteger> values)
+			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if (algoParent instanceof SymbolicParametersAlgo) {
 			return ((SymbolicParametersAlgo) algoParent)

@@ -1,7 +1,7 @@
 package org.geogebra.common.kernel.prover;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.kernel.Construction;
@@ -160,7 +160,7 @@ public class AlgoAreConcurrent extends AlgoElement
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			final HashMap<PVariable, BigInteger> values)
+			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if ((inputLine1 instanceof GeoSegment)
 				|| (inputLine2 instanceof GeoSegment)

@@ -1,7 +1,7 @@
 package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -166,7 +166,7 @@ public class SymbolicParameters {
 	 *             thrown if it is not possible to obtain the exact coordinates
 	 */
 	public BigInteger[] getExactCoordinates(
-			final HashMap<PVariable, BigInteger> values)
+			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		return spa.getExactCoordinates(values);
 	}

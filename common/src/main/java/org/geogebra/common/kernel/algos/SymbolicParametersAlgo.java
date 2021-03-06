@@ -1,7 +1,7 @@
 package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
@@ -75,7 +75,7 @@ public interface SymbolicParametersAlgo {
 	 *             coordinates
 	 */
 	public BigInteger[] getExactCoordinates(
-			final HashMap<PVariable, BigInteger> values)
+			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException;
 
 	/**

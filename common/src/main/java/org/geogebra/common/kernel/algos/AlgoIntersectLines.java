@@ -19,7 +19,7 @@ the Free Software Foundation.
 package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -175,7 +175,7 @@ public class AlgoIntersectLines extends AlgoIntersectAbstract
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			final HashMap<PVariable, BigInteger> values)
+			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if ((g instanceof GeoSegment) || (h instanceof GeoSegment)) {
 			throw new NoSymbolicParametersException();

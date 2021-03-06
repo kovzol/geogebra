@@ -1,10 +1,11 @@
 package org.geogebra.common.kernel.prover;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.kernel.Kernel;
@@ -38,7 +39,7 @@ public class HilbertDimension {
 	}
 
 	private static boolean eliminationIsZero(Set<PPolynomial> polys,
-			Set<PVariable> vars, HashMap<PVariable, BigInteger> substitutions) {
+			Set<PVariable> vars, TreeMap<PVariable, BigInteger> substitutions) {
 		Set<Set<PPolynomial>> eliminationIdeal = PPolynomial.eliminate(
 				polys.toArray(new PPolynomial[polys.size()]), substitutions,
 				kernel, 0,
@@ -57,7 +58,7 @@ public class HilbertDimension {
 	}
 
 	public static boolean isDimGreaterThan(AlgebraicStatement as,
-			HashMap<PVariable, BigInteger> substitutions, int minDim) {
+			TreeMap<PVariable, BigInteger> substitutions, int minDim) {
 
 		int dim = 0;
 
@@ -138,7 +139,7 @@ public class HilbertDimension {
 	 * @return the Hilbert dimension
 	 */
 	public static int compute(AlgebraicStatement as,
-			HashMap<PVariable, BigInteger> substitutions) {
+			TreeMap<PVariable, BigInteger> substitutions) {
 		int dim = 0;
 
 		kernel = as.geoStatement.getKernel();
@@ -192,7 +193,7 @@ public class HilbertDimension {
 	}
 
 	public static boolean isDimGreaterThan2(AlgebraicStatement as,
-			HashMap<PVariable, BigInteger> substitutions, int minDim) {
+			TreeMap<PVariable, BigInteger> substitutions, int minDim) {
 
 		kernel = as.geoStatement.getKernel();
 		HashSet<PVariable> allVars = PPolynomial.getVars(as.getPolynomials());

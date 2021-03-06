@@ -1,7 +1,7 @@
 package org.geogebra.common.kernel.prover;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.kernel.Construction;
@@ -131,7 +131,7 @@ public class AlgoAreCollinear extends AlgoElement
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			final HashMap<PVariable, BigInteger> values)
+			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if (getInputPoint1() != null && getInputPoint2() != null
 				&& getInputPoint3() != null) {

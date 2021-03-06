@@ -13,7 +13,7 @@ the Free Software Foundation.
 package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.kernel.Construction;
@@ -141,7 +141,7 @@ public class AlgoDependentBoolean extends AlgoElement implements
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			HashMap<PVariable, BigInteger> values)
+			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 
 		SymbolicParametersAlgo algo = getRootAlgo();

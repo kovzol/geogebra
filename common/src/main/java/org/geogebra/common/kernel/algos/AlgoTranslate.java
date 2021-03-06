@@ -19,7 +19,7 @@ the Free Software Foundation.
 package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -210,7 +210,7 @@ public class AlgoTranslate extends AlgoTransformation
 
 	@Override
 	public BigInteger[] getExactCoordinates(
-			final HashMap<PVariable, BigInteger> values)
+			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if (inGeo instanceof GeoPoint && v instanceof GeoVector) {
 			BigInteger[] coords1 = ((SymbolicParametersAlgo) inGeo)

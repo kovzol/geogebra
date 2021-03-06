@@ -1,7 +1,7 @@
 package org.geogebra.desktop.kernel.prover;
 
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -88,7 +88,7 @@ public class ProverReciosMethodD extends AbstractProverReciosMethod {
 
 	@Override
 	protected final ProofResult computeNd(HashSet<PVariable> freeVariables,
-			HashMap<PVariable, BigInteger> values, int deg, SymbolicParameters s,
+			TreeMap<PVariable, BigInteger> values, int deg, SymbolicParameters s,
 			AlgebraicStatement as) {
 		int n = freeVariables.size();
 		PVariable[] variables = new PVariable[n];
@@ -215,7 +215,7 @@ public class ProverReciosMethodD extends AbstractProverReciosMethod {
 
 			if (as != null) {
 				// use Botana's method
-				HashMap<PVariable, BigInteger> substitutions = new HashMap<>();
+				TreeMap<PVariable, BigInteger> substitutions = new TreeMap<>();
 				for (Entry<PVariable, BigInteger> entry : values.entrySet()) {
 
 					PVariable v = entry.getKey();
@@ -279,18 +279,18 @@ public class ProverReciosMethodD extends AbstractProverReciosMethod {
 	}
 
 	private final static class PointTester implements Runnable {
-		HashMap<PVariable, BigInteger> values;
+		TreeMap<PVariable, BigInteger> values;
 		PVariable[] variables;
 		ProverReciosMethodD prover;
 		SymbolicParameters s;
 		public int nrOfTests;
 
 		public PointTester(final ProverReciosMethodD prover,
-				final HashMap<PVariable, BigInteger> values,
+				final TreeMap<PVariable, BigInteger> values,
 				final PVariable[] variables, final SymbolicParameters s) {
 			this.prover = prover;
 			this.variables = variables;
-			this.values = (HashMap<PVariable, BigInteger>) values.clone();
+			this.values = (TreeMap<PVariable, BigInteger>) values.clone();
 			this.s = s;
 		}
 
