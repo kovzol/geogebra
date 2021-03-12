@@ -440,7 +440,7 @@ for c in $MYCOLUMNS; do
  echo "&\multicolumn{2}{c|}{\bf $VALUE}" >> $MYDIR/$TEX
 
  # Creating R based density graph. We use the r-cran-sm package under Ubuntu.
- R_COLNAME=`echo $c | sed s/,/__/g`
+ R_COLNAME=`echo $c | sed s/,/__/g | sed s/\-/_/g`
  LTY=${R_LTY[$cn]}
  COLOR=${R_COL[$cn]}
  if [ $cn = 1 ]; then
