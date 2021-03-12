@@ -3,7 +3,7 @@
 # @author Zoltan Kovacs <zoltan@geogebra.org>
 
 # Setting defaults.
-MY_VERSION=2.1
+MY_VERSION=2.2
 
 IMGHEIGHT=25
 HTML=html/all.html
@@ -16,6 +16,20 @@ IGNORE=""
 
 DOTS=40
 NICEHTML=1
+R_RUN=0
+# R related settings. If there are more than 12 columns, this will not work. FIXME.
+R_COL[1]=blue;	R_LTY[1]=1
+R_COL[2]=red;	R_LTY[2]=1
+R_COL[3]=black;	R_LTY[3]=1
+R_COL[4]=black;	R_LTY[4]=2
+R_COL[5]=black;	R_LTY[5]=3
+R_COL[6]=red;	R_LTY[6]=2
+R_COL[7]=darkgreen;	R_LTY[7]=1
+R_COL[8]=darkgreen;	R_LTY[8]=2
+R_COL[9]=blue;	R_LTY[9]=2
+R_COL[10]=red;	R_LTY[10]=3
+R_COL[11]=blue;	R_LTY[11]=3
+R_COL[12]=darkgreen;	R_LTY[12]=3
 
 COMMANDLINE="$0 $*"
 
@@ -32,6 +46,7 @@ usage() {
  echo "   -I <list>    space separated list of test files to ignore (empty by default)"
  echo "   -d <length>  use dots in test names in LaTeX output if the name is longer than length ($DOTS)"
  echo "   -N           do not use nice HTML output (similarly to LaTeX)"
+ echo "   -G           run R to create a density graph also"
  echo "   -h           show this help"
  echo "   -v           print script version"
  echo
@@ -43,7 +58,7 @@ version() {
  exit 0
  }
 
-while getopts "I:H:o:T:c:d:b:Nhv" OPT; do
+while getopts "I:H:o:T:c:d:b:NGhv" OPT; do
  case $OPT in
   H)
    IMGHEIGHT="$OPTARG"
@@ -62,6 +77,9 @@ while getopts "I:H:o:T:c:d:b:Nhv" OPT; do
    ;;
   T)
    TEX="$OPTARG"
+   ;;
+  G)
+   R_RUN=1
    ;;
   c)
    MYCOLUMNS="$OPTARG"
@@ -92,6 +110,7 @@ MYDIR=`cd $THISDIR; pwd`
 mkdir -p $MYDIR/tmp $MYDIR/html
 LOGFILE=$MYDIR/tmp/.test.log
 rm -f $HTML $TEX
+R_PROG=$MYDIR/tmp/rprog
 
 # Title
 TITLE="Comparison benchmark for GeoGebra $BUILD_NUMBER"
@@ -151,6 +170,9 @@ cn=0
 declare -A COL_BUILD_NUMBER
 declare -A COL_J
 declare -A COL_R
+
+# Creating R input file
+echo "library(sm); data = NULL; group = NULL;" > $R_PROG
 
 # Creating column header related data
 for c in $MYCOLUMNS; do
@@ -417,8 +439,33 @@ for c in $MYCOLUMNS; do
  echo "<td class=\"summary\" colspan=\"2\"><b>$VALUE</b></td>" >> $MYDIR/$HTML
  echo "&\multicolumn{2}{c|}{\bf $VALUE}" >> $MYDIR/$TEX
 
+ # Creating R based density graph. We use the r-cran-sm package under Ubuntu.
+ R_COLNAME=`echo $c | sed s/,/__/g`
+ LTY=${R_LTY[$cn]}
+ COLOR=${R_COL[$cn]}
+ if [ $cn = 1 ]; then
+  PROVERSLIST="'$R_COLNAME'"
+  COLSLIST="'$COLOR'"
+  LTYSLIST="$LTY"
+ else
+  PROVERSLIST="$PROVERSLIST,'$c'"
+  COLSLIST="$COLSLIST,'$COLOR'"
+  LTYSLIST="$LTYSLIST,$LTY"
+  fi
+ echo "$R_COLNAME <- read.csv('$MYDIR/tmp/rinput-$c', header = F);" >> $R_PROG
+ echo "sm.density($R_COLNAME,xlim=c(0,$R_XMAX),ylim=c(0,$R_YMAX),col='$COLOR',lty=$LTY,positive=TRUE,xlab='',ylab='');" >> $R_PROG
+ echo "par(new=TRUE);" >> $R_PROG
+
  done
 echo "</tr></table>" >> $MYDIR/$HTML
+
+# Final R related computations
+echo "legend('center','groups',c($PROVERSLIST),lty=c($LTYSLIST),col=c($COLSLIST),ncol=2,bty=\"n\");" >> $R_PROG
+if [ "$R_RUN" = 1 ]; then
+ cat $R_PROG | R -q --save && convert Rplots.pdf png:html/Rplots.png && \
+  echo "<p class=figure><img src=Rplots.png></p>" >> $MYDIR/$HTML
+ # TODO: Add this for LaTeX also.
+ fi
 
 echo "</tr>" >> $MYDIR/$HTML
 echo "\\\\ \\hline" >> $MYDIR/$TEX
