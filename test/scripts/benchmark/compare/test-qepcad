@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Test desktop version.
+
+set -e
+./runtests-sql -p Classic5-rg-q -d -t 30
+./report-sql -c Classic5-rg-q
+sensible-browser html/all.html &
