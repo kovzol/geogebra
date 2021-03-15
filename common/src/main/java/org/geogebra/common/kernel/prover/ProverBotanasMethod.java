@@ -2046,8 +2046,12 @@ public class ProverBotanasMethod {
 			if (i0 instanceof GeoLine) {
 				GeoLine gl = (GeoLine) i0;
 				// End points of the line path of the mover should be avoided.
-				moverDirectDependencies.add(gl.startPoint);
-				moverDirectDependencies.add(gl.endPoint);
+				if (gl.startPoint != null) {
+					moverDirectDependencies.add(gl.startPoint);
+				}
+				if (gl.endPoint != null) {
+					moverDirectDependencies.add(gl.endPoint);
+				}
 			} else if (i0 instanceof GeoConic && ((GeoConic) i0).isCircle()) {
 				GeoConic gc = (GeoConic) i0;
 				if (gc.isCircle()) {
