@@ -1,12 +1,12 @@
 package org.geogebra.common.kernel.prover;
 
 import java.math.BigInteger;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.factories.FormatFactory;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.algos.AlgoAnglePoints;
@@ -33,6 +33,7 @@ import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
 import org.geogebra.common.util.DoubleUtil;
+import org.geogebra.common.util.NumberFormatAdapter;
 
 /**
  * Decides if the objects are equal. Can be embedded into the Prove command to
@@ -43,6 +44,8 @@ import org.geogebra.common.util.DoubleUtil;
  */
 public class AlgoAreEqual extends AlgoElement
 		implements SymbolicParametersBotanaAlgoAre {
+	private static final NumberFormatAdapter formatter =
+			FormatFactory.getPrototype().getNumberFormat(8);
 
 	private GeoElement inputElement1; // input
 	private GeoElement inputElement2; // input
@@ -168,7 +171,7 @@ public class AlgoAreEqual extends AlgoElement
 	}
 
 	private int countSignifiantDigits(double d) {
-		String s = new DecimalFormat("#.#########").format(d);
+		String s = formatter.format(d);
 
 		if (s.contains(".")) {
 			return s.length() - 1;
