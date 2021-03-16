@@ -22,9 +22,13 @@ public class RealGeomWebService {
     private String wsCAS = RealGeomWSSettings.getCAS();
     // String testConnectionParameters = "lhs=a+b-c&rhs=g&polys=(b1-c1)^2+(b2-c2)^2-a^2,(a1-c1)^2+(a2-c2)^2-b^2,(a1-b1)^2+(a2-b2)^2-c^2,(g1-c1)^2+(g2-c2)^2-g^2,(a1+b1)-2g1,(a2+b2)-2g2&vars=a1,a2,b1,b2,c1,c2,g1,g2,a,b,c,g&posvariables=a,b,c,g&triangles=a,b,c&mode=explore&cas=" + wsCAS;
     // String testConnectionExpectedResult = "Inequality[0, Less, m, Less, 2]";
-    String testConnectionParameters = "lhs=w1&rhs=v11&polys=2*v7-v5-v3,2*v8-v6-v4,2*v9-v5-v1,2*v10-v6-v2,-v12^2+v10^2+v9^2-2*v10*v4+v4^2-2*v9*v3+v3^2,-v11^2+v4^2+v3^2-2*v4*v2+v2^2-2*v3*v1+v1^2,-v13^2+v8^2+v7^2-2*v8*v2+v2^2-2*v7*v1+v1^2,-1-v14*v5*v4+v14*v6*v3+v14*v5*v2-v14*v3*v2-v14*v6*v1+v14*v4*v1,-w1+(v13+v12)^1&vars=v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,w1&posvariables=v12,v13,v11&mode=explore&cas=" + wsCAS;
-    String testConnectionExpectedResult1 = "m>(3/2)";
-    String testConnectionExpectedResult2 = "m > 3/2";
+    // String testConnectionParameters = "lhs=v11&rhs=w2&polys=v9*v8-v10*v7-v9*v6+v7*v6+v10*v5-v8*v5,-v12^2+v10^2+v9^2-2*v10*v4+v4^2-2*v9*v3+v3^2,-v10^2-v9^2+2*v10*v6+2*v9*v5-2*v6*v4+v4^2-2*v5*v3+v3^2,2*v6-v4-v2,-v7+v5-v4+v2,2*v5-v3-v1,-v8+v6+v3-v1,-v13^2+v10^2+v9^2-2*v10*v2+v2^2-2*v9*v1+v1^2,-v11^2+v4^2+v3^2-2*v4*v2+v2^2-2*v3*v1+v1^2,-w2+(v12+v13)^1,vars=v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,w2,posvariables=v13,v12,v11,mode=explore,cas=" + wsCAS;
+    // String testConnectionParameters = "lhs=w1&rhs=v11&polys=2*v7-v5-v3,2*v8-v6-v4,2*v9-v5-v1,2*v10-v6-v2,-v12^2+v10^2+v9^2-2*v10*v4+v4^2-2*v9*v3+v3^2,-v11^2+v4^2+v3^2-2*v4*v2+v2^2-2*v3*v1+v1^2,-v13^2+v8^2+v7^2-2*v8*v2+v2^2-2*v7*v1+v1^2,-1-v14*v5*v4+v14*v6*v3+v14*v5*v2-v14*v3*v2-v14*v6*v1+v14*v4*v1,-w1+(v13+v12)^1&vars=v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,w1&posvariables=v12,v13,v11&mode=explore&cas=" + wsCAS;
+    String testConnectionParameters = "lhs=v8&rhs=v9&polys=-v9^2+v6^2+v5^2-2*v6*v4+v4^2-2*v5*v3+v3^2,2*v6-v4-v2,2*v5-v3-v1,-v8^2+v6^2+v5^2-2*v6*v2+v2^2-2*v5*v1+v1^2&vars=v1,v2,v3,v4,v5,v6,v8,v9&posvariables=v9,v8&mode=explore&cas=" + wsCAS;
+    // String testConnectionExpectedResult1 = "m>(3/2)";
+    // String testConnectionExpectedResult2 = "m > 3/2";
+    String testConnectionExpectedResult1 = "1";
+    String testConnectionExpectedResult2 = "m == 1";
 
     private String wsHost = RealGeomWSSettings.getRealGeomWebServiceRemoteURL();
     private Boolean available;
