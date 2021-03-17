@@ -1065,7 +1065,7 @@ public class ConstructionProtocolView implements ConstructionStepper {
 		// include image file
 		if (imgBase64 != null) {
 			sb.append("<p>\n");
-			sb.append("<img height='32' width ='32' src=\"");
+			sb.append("<img src=\"");
 			sb.append(StringUtil.pngMarker);
 			sb.append(imgBase64);
 			sb.append("\" alt=\"");
