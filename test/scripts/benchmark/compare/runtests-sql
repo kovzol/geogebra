@@ -9,7 +9,7 @@ MY_VERSION=2.2
 DEBUG=0 # In tmp/ there can be some log, if you set this to 1.
 DBDEBUG=0
 TIMEOUT=5
-PROVERS="Classic5-m Classic5-rg-m Classic5-q Classic5-rg-q Classic6"
+PROVERS="Classic5-m Classic5-rg-m Classic5-q Classic5-rg-q Classic5-t Classic5-rg-t Classic6"
 REALGEOMWSREMOTEURL="http\\://localhost\\:8765"
 
 GEOGEBRADIR=../../../../
@@ -209,13 +209,15 @@ for i in `find -name '*.ggb' | sort`; do
     tac $MYDIR/tmp/.test.stdout | grep "COMPARISON RESULT IS " | head -1 > $REGRESSIONFILE
    RESULT=`cat $REGRESSIONFILE | awk '{a=index($0, "COMPARISON"); print substr($0,a+21)}'`
   else
-   if [ "$ENGINE" = "Classic5-rg-m" -o "$ENGINE" = "Classic5-rg-q" ]; then
+   if [ "$ENGINE" = "Classic5-rg-m" -o "$ENGINE" = "Classic5-rg-q" -o "$ENGINE" = "Classic5-rg-t" ]; then
     ELIM=false
    else
     ELIM=true
     fi
    if [ "$ENGINE" = "Classic5-q" -o "$ENGINE" = "Classic5-rg-q" ]; then
     CAS=qepcad
+   if [ "$ENGINE" = "Classic5-t" -o "$ENGINE" = "Classic5-rg-t" ]; then
+    CAS=tarski
    else
     CAS=mathematica
     fi
