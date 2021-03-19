@@ -513,12 +513,18 @@ public class AlgoCompare extends AlgoElement {
             rgResult = "";
         }
 
+        if ("TARSKI ERROR".equals(rgResult)) {
+            Log.debug("Tarski error in RealGeom");
+            rgResult = "";
+        }
+
         if (rgwsCas.equals("mathematica") && rgResult != null && !rgResult.equals("")) {
             // If there was some useful result in RealGeom, then use it and forget the previous results from Giac.
             retval = rgMathematica2ggb(rgResult);
         }
 
-        if (rgwsCas.equals("qepcad") && rgResult != null && !rgResult.equals("[]") && !rgResult.equals("")) {
+        if ((rgwsCas.equals("qepcad") || (rgwsCas.equals("tarski")))
+                && rgResult != null && !rgResult.equals("[]") && !rgResult.equals("")) {
             // If there was some useful result in RealGeom, then use it and forget the previous results from Giac.
             retval = rgQepcad2ggb(rgResult);
         }
