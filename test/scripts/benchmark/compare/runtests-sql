@@ -216,10 +216,12 @@ for i in `find -name '*.ggb' | sort`; do
     fi
    if [ "$ENGINE" = "Classic5-q" -o "$ENGINE" = "Classic5-rg-q" ]; then
     CAS=qepcad
-   if [ "$ENGINE" = "Classic5-t" -o "$ENGINE" = "Classic5-rg-t" ]; then
-    CAS=tarski
    else
-    CAS=mathematica
+    if [ "$ENGINE" = "Classic5-t" -o "$ENGINE" = "Classic5-rg-t" ]; then
+     CAS=tarski
+    else
+     CAS=mathematica
+     fi
     fi
    timeout $((TIMEOUT+5)) $BINBASE \
     --prover=engine:$ENGINE,method:$METHOD,timeout:$TIMEOUT --realgeomws=remoteurl:${REALGEOMWSREMOTEURL},timeout:$TIMEOUT,elimination:$ELIM,cas:$CAS,test:false \
