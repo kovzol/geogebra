@@ -47,7 +47,8 @@ public class RealGeomWebService {
             encodedParameters = urle.encode(parameters);
         }
         HttpRequest httpr = UtilFactory.getPrototype().newHttpRequest();
-        httpr.setTimeout(timeout);
+        httpr.setTimeout(timeout + 5); // allow +5 seconds for the peer (hardcoded),
+        // this may be important for pipe based peers
         System.err.println(url1 + "/" + command + "?" + encodedParameters);
 
         if (encodedParameters.length() + url1.length() + command.length()
