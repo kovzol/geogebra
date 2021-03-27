@@ -5,6 +5,7 @@ cd ../../../../uitest
 rm -fr content
 mkdir content
 cp ../web/war/classic.html content/index.html
+cp ../web/war/giacggb.wasm content
 cp -a ../web/war/web3d content/web3d
 npm install
 npx http-server -p 8888 content &
