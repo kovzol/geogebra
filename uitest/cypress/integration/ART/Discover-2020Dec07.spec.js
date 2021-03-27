@@ -38,6 +38,8 @@ describe('Usages of the Discover command in a future paper', () => {
         cy.wait(200);
         cy.writeInAVInput("\n");
         cy.wait(200);
+        cy.writeInAVInput("\n"); // attempt to work around slow response, FIXME
+        cy.wait(1000);
         cy.get(".RelationTool").should(($div) => {
            const text = $div.text();
            expect(text).to.include("MN = MP = NO = OP");
