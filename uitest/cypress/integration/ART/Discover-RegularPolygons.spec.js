@@ -23,7 +23,7 @@ describe('Discovery in regular polygons', () => {
         cy.window().then((win) => {
             win.ggbApplet.asyncEvalCommand("Discover(B)");
             cy.get(".RelationTool").contains("AB = AC = BC");
-        }
+        });
     });
 
     it("The sides and the diagonals of a square are of equal length", () => {
@@ -33,7 +33,7 @@ describe('Discovery in regular polygons', () => {
             win.ggbApplet.asyncEvalCommand("Discover(B)");
             cy.get(".RelationTool").contains("AB = AD = BC = CD");
             cy.get(".RelationTool").contains("AC = BD");
-        }
+        });
     });
 
     it("The sides and the diagonals of a square are of equal length (by typing)", () => {
