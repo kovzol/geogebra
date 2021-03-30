@@ -54,7 +54,7 @@ public class AlgoCompare extends AlgoElement {
 
     private GeoText outputText; // output
 
-    private String cachedEqualityStatement = null;
+    private String cachedProblem = null;
 
     /**
      * Compares two objects
@@ -290,13 +290,17 @@ public class AlgoCompare extends AlgoElement {
         inp[0] = "";
         inp[1] = "";
 
-        String currentEqualityStatement = p.getTextFormat(p.getStatement());
-        Log.debug("currentEqualityStatement = " + currentEqualityStatement);
-        Log.debug("cachedEqualityStatement = " + cachedEqualityStatement);
-        if (cachedEqualityStatement != null && currentEqualityStatement.equals(cachedEqualityStatement)) {
+        String currentProblem = p.getTextFormat(p.getStatement(), false);
+        Localization loc = kernel.getLocalization();
+        currentProblem += loc.getPlain("CompareAandB",
+                inpElem[0].getDefinition(fancyFormat),
+                inpElem[1].getDefinition(fancyFormat));
+        Log.debug("currentProblem = " + currentProblem);
+        // Log.debug("cachedProblem = " + cachedProblem);
+        if (cachedProblem != null && currentProblem.equals(cachedProblem)) {
             return;
         }
-        cachedEqualityStatement = currentEqualityStatement;
+        cachedProblem = currentProblem;
 
         // Adding benchmarking:
         startTime = UtilFactory.getPrototype().getMillisecondTime();
@@ -425,7 +429,6 @@ public class AlgoCompare extends AlgoElement {
             }
         }
 
-        Localization loc = kernel.getLocalization();
         or = loc.getMenu("Symbol.Or").toLowerCase();
 
         gc.append(varsubst).append("]),[");

@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.TreeSet;
 
 import org.geogebra.common.kernel.Construction;
@@ -762,7 +763,7 @@ public abstract class Prover {
 	 *            the input statement
 	 * @return a localized statement in readable format
 	 */
-	public static String getTextFormat(GeoElement statement) {
+	public static String getTextFormat(GeoElement statement, boolean showStatement) {
 		Localization loc = statement.getKernel().getLocalization();
 		ArrayList<String> freePoints = new ArrayList<>();
 		Iterator<GeoElement> it = statement.getAllPredecessors().iterator();
@@ -774,9 +775,12 @@ public abstract class Prover {
 			} else if (!(geo instanceof GeoNumeric)) {
 				String definition = geo.getDefinitionDescription(
 						StringTemplate.noLocalDefault);
+				// Make the first letter lowercase. TODO: Check if this is OK for all locales.
+				definition = (definition.substring(0,1)).toLowerCase(Locale.ROOT)
+						+ definition.substring(1);
 				String textLocalized = loc.getPlain("LetABeB",
 						geo.getLabelSimple(), definition);
-				hypotheses.append(textLocalized).append(".\n");
+				hypotheses.append(textLocalized).append(" ");
 			}
 		}
 		StringBuilder theoremText = new StringBuilder();
@@ -790,13 +794,15 @@ public abstract class Prover {
 		if (l > 0) {
 			freePointsText.deleteCharAt(l - 1);
 			theoremText.append(loc.getPlain("LetABeArbitraryPoints",
-					freePointsText.toString())).append(".\n");
+					freePointsText.toString())).append(" ");
 		}
 
 		theoremText.append(hypotheses);
 
-		String toProveStr = String.valueOf(statement.getParentAlgorithm());
-		theoremText.append(loc.getPlain("ProveThat", toProveStr)).append(".");
+		if (showStatement) {
+			String toProveStr = String.valueOf(statement.getParentAlgorithm());
+			theoremText.append(loc.getPlain("ProveThatA", toProveStr));
+		}
 		return theoremText.toString();
 	}
 
