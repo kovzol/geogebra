@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -292,9 +293,11 @@ public class AlgoCompare extends AlgoElement {
 
         String currentProblem = p.getTextFormat(p.getStatement(), false);
         Localization loc = kernel.getLocalization();
-        currentProblem += loc.getPlain("CompareAandB",
-                inpElem[0].getDefinition(fancyFormat),
-                inpElem[1].getDefinition(fancyFormat));
+        String def1 = inpElem[0].getDefinitionDescription(fancyFormat);
+        String def2 = inpElem[1].getDefinitionDescription(fancyFormat);
+        def1 = (def1.substring(0,1)).toLowerCase(Locale.ROOT) + def1.substring(1);
+        def2 = (def2.substring(0,1)).toLowerCase(Locale.ROOT) + def2.substring(1);
+        currentProblem += loc.getPlain("CompareAandB", def1, def2);
         Log.debug("currentProblem = " + currentProblem);
         // Log.debug("cachedProblem = " + cachedProblem);
         if (cachedProblem != null && currentProblem.equals(cachedProblem)) {

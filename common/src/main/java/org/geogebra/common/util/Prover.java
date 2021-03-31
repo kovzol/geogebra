@@ -15,6 +15,8 @@ import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoJoinPoints;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
+import org.geogebra.common.kernel.algos.AlgoPointOnPath;
+import org.geogebra.common.kernel.algos.AlgoPolygonRegular;
 import org.geogebra.common.kernel.geos.GProperty;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
@@ -764,23 +766,54 @@ public abstract class Prover {
 	 * @return a localized statement in readable format
 	 */
 	public static String getTextFormat(GeoElement statement, boolean showStatement) {
+		// FIXME: This is now English specific. For a more general approach we need
+		// more work on the localization (with additional database entries).
 		Localization loc = statement.getKernel().getLocalization();
 		ArrayList<String> freePoints = new ArrayList<>();
 		Iterator<GeoElement> it = statement.getAllPredecessors().iterator();
 		StringBuilder hypotheses = new StringBuilder();
+		ArrayList<AlgoElement> ael = new ArrayList<>(); // processed algos
 		while (it.hasNext()) {
 			GeoElement geo = it.next();
 			if (geo.isGeoPoint() && geo.getParentAlgorithm() == null) {
 				freePoints.add(geo.getLabelSimple());
-			} else if (!(geo instanceof GeoNumeric)) {
-				String definition = geo.getDefinitionDescription(
-						StringTemplate.noLocalDefault);
+			} else if (!(geo instanceof GeoNumeric) && !ael.contains(geo.getParentAlgorithm())) {
+				String definition = geo.getDefinitionDescription(StringTemplate.defaultTemplate);
 				// Make the first letter lowercase. TODO: Check if this is OK for all locales.
 				definition = (definition.substring(0,1)).toLowerCase(Locale.ROOT)
 						+ definition.substring(1);
-				String textLocalized = loc.getPlain("LetABeB",
-						geo.getLabelSimple(), definition);
-				hypotheses.append(textLocalized).append(" ");
+				definition = definition.replace("Bisector", "bisector");
+				String textLocalized = null;
+				AlgoElement ae = geo.getParentAlgorithm();
+				if (ae != null && ae instanceof AlgoPointOnPath) {
+					textLocalized = loc.getPlain("LetABeAB",
+							geo.getLabelSimple(), definition);
+				} else {
+					if (ae != null && ae instanceof AlgoPolygonRegular && !ael.contains(ae))
+					{
+						ael.add(ae);
+						StringBuilder points = new StringBuilder();
+						points.append(ae.getInput(0).getLabelSimple()).append(", ");
+						points.append(ae.getInput(1).getLabelSimple()).append(", ");
+						int n = ae.getOutputLength();
+						for (int i = n / 2 + 2; i < n; ++i) {
+							points.append(ae.getOutput(i).getLabelSimple());
+							points.append(", ");
+						}
+						int l = points.length();
+						points.deleteCharAt(l - 1);
+						points.deleteCharAt(l - 2);
+						textLocalized = loc.getPlain("LetABeTheRegularBGonVerticesC",
+								geo.getLabelSimple(), ae.getInput(2).toString(), points.toString());
+					} else {
+						textLocalized = loc.getPlain("LetABeTheB",
+								geo.getLabelSimple(), definition);
+					}
+				}
+
+				if (textLocalized != null) {
+					hypotheses.append(textLocalized).append(" ");
+				}
 			}
 		}
 		StringBuilder theoremText = new StringBuilder();
@@ -788,11 +821,13 @@ public abstract class Prover {
 
 		for (String str : freePoints) {
 			freePointsText.append(str);
-			freePointsText.append(",");
+			freePointsText.append(", ");
 		}
 		int l = freePointsText.length();
 		if (l > 0) {
+			// remove last two chars:
 			freePointsText.deleteCharAt(l - 1);
+			freePointsText.deleteCharAt(l - 2);
 			theoremText.append(loc.getPlain("LetABeArbitraryPoints",
 					freePointsText.toString())).append(" ");
 		}

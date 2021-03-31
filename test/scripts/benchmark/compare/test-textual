@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Save construction steps in a textual form for each input.
+
+set -e
+./runtests-sql -p "Classic5-rg-m" -i -d -R http\\://localhost\\:8765 -t 1 | cut -f1-2 -d';' | tee textual-descriptions.txt

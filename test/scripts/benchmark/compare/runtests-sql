@@ -9,6 +9,7 @@ MY_VERSION=2.2
 DEBUG=0 # In tmp/ there can be some log, if you set this to 1.
 DBDEBUG=0
 TIMEOUT=5
+CINFO=0
 PROVERS="Classic5-m Classic5-rg-m Classic5-q Classic5-rg-q Classic5-t Classic5-rg-t Classic6"
 REALGEOMWSREMOTEURL="http\\://localhost\\:8765"
 
@@ -37,6 +38,7 @@ usage() {
  echo "   -p <list>    space separated list of prover engines to test ($PROVERS)"
  echo "   -R <url>     use 'url' to use non-default RealGeomWS ($REALGEOMWSREMOTEURL)"
  echo "   -P <path>    use path to run PhantomJS ($PHANTOMJS)"
+ echo "   -i           get construction info only"
  echo "   -h           show this help, then exit"
  echo "   -v           print script version, then exit"
  echo "   -V           print available provers from the database, then exit"
@@ -48,10 +50,13 @@ version() {
  exit 0
  }
 
-while getopts "t:p:R:P:dbhvV" OPT; do
+while getopts "t:p:R:P:dbihvV" OPT; do
  case $OPT in
   t)
    TIMEOUT="$OPTARG"
+   ;;
+  i)
+   CINFO=1
    ;;
   P)
    PHANTOMJS="$OPTARG"
@@ -251,6 +256,10 @@ for i in `find -name '*.ggb' | sort`; do
     RESULT=`echo $RESULT | awk '{a=index($0, "COMPARISON"); print substr($0,a+21)}'`
     fi
    TIME=`cat $LOGFILE | grep Benchmarking | awk '{s=s+$5; print s}' | tail -1` # collecting all entries
+   if [ $CINFO = 1 ]; then
+    DEF=`cat $LOGFILE | grep currentProblem | head -1 | cut -d= -f2 | cut -d" " -f2-`
+    echo -n "$DEF;"
+    fi
    if [ $DEBUG = 1 ]; then
     cp $REGRESSIONFILE $REGRESSIONFILE-$TEST-$j
     cp $LOGFILE $LOGFILE-$TEST-$j
