@@ -496,7 +496,7 @@ public class AlgoCompare extends AlgoElement {
         rgParameters.append("&cas=" + rgwsCas);
         String label = cons.getTitle();
         rgParameters.append("&label=" + label);
-        Log.debug("constructionLabel = " + label);
+        Log.debug("constructionLabel = " + label.replaceAll("[\\t\\n\\r]+"," "));
 
         Log.debug(rgParameters);
 
