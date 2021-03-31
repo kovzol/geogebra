@@ -257,8 +257,9 @@ for i in `find -name '*.ggb' | sort`; do
     fi
    TIME=`cat $LOGFILE | grep Benchmarking | awk '{s=s+$5; print s}' | tail -1` # collecting all entries
    if [ $CINFO = 1 ]; then
+    LABEL=`cat $LOGFILE | grep constructionLabel | head -1 | cut -d= -f2 | cut -d" " -f2-`
     DEF=`cat $LOGFILE | grep currentProblem | head -1 | cut -d= -f2 | cut -d" " -f2-`
-    echo -n "$DEF;"
+    echo -n "$LABEL:$DEF"
     fi
    if [ $DEBUG = 1 ]; then
     cp $REGRESSIONFILE $REGRESSIONFILE-$TEST-$j
