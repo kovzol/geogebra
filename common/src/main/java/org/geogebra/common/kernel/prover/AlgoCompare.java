@@ -495,8 +495,9 @@ public class AlgoCompare extends AlgoElement {
         String rgwsCas = realgeomWS.getCAS();
         rgParameters.append("&cas=" + rgwsCas);
         String label = cons.getTitle();
+        label = label.trim().replaceAll("\\s+", " ");
+        Log.debug("constructionLabel = " + label);
         rgParameters.append("&label=" + label);
-        Log.debug("constructionLabel = " + label.replaceAll("[\\t\\n\\r]+"," "));
 
         Log.debug(rgParameters);
 
