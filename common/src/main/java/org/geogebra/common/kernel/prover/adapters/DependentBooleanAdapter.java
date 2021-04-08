@@ -1,5 +1,7 @@
 package org.geogebra.common.kernel.prover.adapters;
 
+import static org.geogebra.common.plugin.Operation.*;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.AbstractMap;
@@ -17,6 +19,7 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.StringTemplate;
+import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
 import org.geogebra.common.kernel.algos.AlgoDependentNumber;
 import org.geogebra.common.kernel.algos.AlgoDistancePoints;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -112,20 +115,20 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			GeoElement left = (GeoElement) root.getLeft();
 			GeoElement right = (GeoElement) root.getRight();
 
-			if (root.getOperation().equals(Operation.PERPENDICULAR)) {
+			if (root.getOperation().equals(PERPENDICULAR)) {
 				AlgoArePerpendicular algo = new AlgoArePerpendicular(cons, left,
 						right);
 				PPolynomial[][] ret = algo.getBotanaPolynomials();
 				cons.removeFromConstructionList(algo);
 				return ret;
 			}
-			if (root.getOperation().equals(Operation.PARALLEL)) {
+			if (root.getOperation().equals(PARALLEL)) {
 				AlgoAreParallel algo = new AlgoAreParallel(cons, left, right);
 				PPolynomial[][] ret = algo.getBotanaPolynomials();
 				cons.removeFromConstructionList(algo);
 				return ret;
 			}
-			if (root.getOperation().equals(Operation.EQUAL_BOOLEAN)) {
+			if (root.getOperation().equals(EQUAL_BOOLEAN)) {
 				if (root.getLeft() instanceof GeoNumeric
 						&& ((GeoElement) root.getLeft()).getParentAlgorithm()
 								.getRelatedModeID() == EuclidianConstants.MODE_AREA
@@ -160,7 +163,7 @@ public class DependentBooleanAdapter extends ProverAdapter {
 				}
 				return ret;
 			}
-			if (root.getOperation().equals(Operation.IS_ELEMENT_OF)) {
+			if (root.getOperation().equals(IS_ELEMENT_OF)) {
 				AlgoIsOnPath algo = new AlgoIsOnPath(cons, (GeoPoint) left,
 						(Path) right);
 				PPolynomial[][] ret = algo.getBotanaPolynomials();
@@ -188,14 +191,15 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			}
 		}
 
+		Operation o = root.getOperation();
 		// More difficult cases: sides are expressions:
-		if (((root.getLeft().isExpressionNode()
-				|| root.getRight().isExpressionNode())
-				&& root.getOperation().equals(Operation.EQUAL_BOOLEAN))
-				|| (root.getLeft() instanceof GeoElement
-						&& root.getRight() instanceof MyDouble
-						&& root.getOperation()
-								.equals(Operation.EQUAL_BOOLEAN))) {
+
+		if ((o == EQUAL_BOOLEAN || o == LESS_EQUAL || o == LESS || o == GREATER_EQUAL || o == GREATER) &&
+				(
+						(root.getLeft().isExpressionNode() || root.getRight().isExpressionNode())
+								||
+						(root.getLeft() instanceof GeoElement && root.getRight() instanceof MyDouble)
+				)) {
 			traverseExpression(root, kernel);
 			// try to check substituted and expanded expression
 
@@ -227,9 +231,8 @@ public class DependentBooleanAdapter extends ProverAdapter {
 					&& rootCopy.getRight() instanceof MyDouble)
 					|| (rootCopy.getRight() instanceof GeoSegment
 							&& rootCopy.getLeft() instanceof MyDouble))
-					&& rootCopy.getOperation()
-							.equals(Operation.EQUAL_BOOLEAN)) {
-				PPolynomial[][] ret = null;
+					&& o == EQUAL_BOOLEAN) {
+				PPolynomial[][] ret = null; // a segment cannot be of fixed length
 				return ret;
 			}
 
@@ -256,7 +259,7 @@ public class DependentBooleanAdapter extends ProverAdapter {
 				e.printStackTrace();
 			}
 
-			PPolynomial[][] ret = null;
+			PPolynomial[][] ret = null; // no additional polynomials are required
 			return ret;
 
 		}
@@ -301,8 +304,8 @@ public class DependentBooleanAdapter extends ProverAdapter {
 		// case number with segment, eg. 2*a^2
 		if (node.getLeft() instanceof MyDouble
 				&& node.getRight().isExpressionNode()
-				&& (node.getOperation() == Operation.DIVIDE
-						|| node.getOperation() == Operation.MULTIPLY)) {
+				&& (node.getOperation() == DIVIDE
+						|| node.getOperation() == MULTIPLY)) {
 			return;
 		}
 		// case segment with number, eg. a^2*1,5
@@ -313,11 +316,13 @@ public class DependentBooleanAdapter extends ProverAdapter {
 	}
 
 	/**
+	 * Create a Giac program that computes the minimal extended polynomial (MEP) for an
+	 * equation type statement, and create the needed Botana variables for the prover system.
 	 * @return string for giac from input expression
 	 * @throws NoSymbolicParametersException
 	 *             when no polynomials can be obtained
 	 */
-	public String getStrForGiac(GeoBoolean bool, Construction cons)
+	public String MEPCode(GeoBoolean bool, Construction cons)
 			throws NoSymbolicParametersException {
 		Kernel kernel = cons.getKernel();
 		String[] labels = new String[allSegmentsFromExpression.size()];
@@ -423,9 +428,13 @@ public class DependentBooleanAdapter extends ProverAdapter {
 	}
 
 	/**
+	 * Create a Giac program that expresses the statement. It assumes that the Botana
+	 * variables are already computed. Use minimalExtendedPolyGiacCode() first.
+	 * FIXME: That is an overkill, but currently required.
 	 * @return string for giac
 	 */
-	public String getUserGiacString(GeoBoolean bool, Construction cons) {
+	public String exprCode(GeoBoolean bool, Construction cons) {
+
 		Kernel kernel = cons.getKernel();
 		String[] labels = new String[allSegmentsFromExpression.size()];
 		int index = 0;
@@ -461,27 +470,23 @@ public class DependentBooleanAdapter extends ProverAdapter {
 					.toString(StringTemplate.giacTemplate);
 		}
 		String[] splitedStr = rootStr.split(",");
-		/*
-		 * This 10 is hardcoded, it is the length of "[ggbIsZero" which
-		 * is the beginning of rootStr. FIXME
-		 */
-		rootStr = splitedStr[0].substring(10, splitedStr[0].length() - 1);
+		if (splitedStr[0].contains("ggbIsZero")) {
+			/*
+			 * This 10 is hardcoded, it is the length of "[ggbIsZero" which
+			 * is the beginning of rootStr. FIXME
+			 */
+			rootStr = splitedStr[0].substring(10, splitedStr[0].length() - 1);
+		}
 		StringBuilder strForGiac = new StringBuilder();
-		strForGiac.append("eliminate([");
-		strForGiac.append(rootStr);
-		strForGiac.append("=0");
+		strForGiac.append("subst([");
+		strForGiac.append(rootStr).append("],[");
 		StringBuilder labelsStr = new StringBuilder();
 		for (int i = 0; i < labels.length; i++) {
-			if (i == 0) {
-				labelsStr.append(labels[i]);
-			} else {
-				labelsStr.append(",");
-				labelsStr.append(labels[i]);
+			if (i>0) {
+				strForGiac.append(",");
 			}
-			strForGiac.append("," + labels[i] + "=" + botanaVars[i]);
+			strForGiac.append(labels[i] + "=" + botanaVars[i]);
 		}
-		strForGiac.append("],[");
-		strForGiac.append(labelsStr);
 		strForGiac.append("])");
 		return strForGiac.toString();
 	}
@@ -652,7 +657,7 @@ public class DependentBooleanAdapter extends ProverAdapter {
 					// max of decimal numbers)
 					// than multiply the coefficient with 10^n
 					if (nrOfMaxDecimals != 0
-							&& expNode.getOperation() != Operation.POWER) {
+							&& expNode.getOperation() != POWER) {
 						i = new BigInteger(Long.toString(
 								((long) (d * Math.pow(10, nrOfMaxDecimals)))));
 					} else {

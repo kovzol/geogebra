@@ -1,5 +1,7 @@
 package org.geogebra.common.kernel.prover;
 
+import static org.geogebra.common.plugin.Operation.*;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,14 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.cas.singularws.SingularWebService;
 import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.kernel.CASGenericInterface;
 import org.geogebra.common.kernel.Kernel;
-import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.advanced.AlgoDynamicCoordinates;
 import org.geogebra.common.kernel.algos.AlgoAngularBisectorPoints;
@@ -37,7 +37,6 @@ import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.MyList;
 import org.geogebra.common.kernel.arithmetic.ValidExpression;
 import org.geogebra.common.kernel.geos.GeoAngle;
-import org.geogebra.common.kernel.geos.GeoAxis;
 import org.geogebra.common.kernel.geos.GeoBoolean;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
@@ -349,6 +348,7 @@ public class ProverBotanasMethod {
 
 		private PPolynomial[] thesisFactors;
 		private TreeMap<GeoElement, PPolynomial[]> geoPolys = new TreeMap<>();
+		private Set<String> ineqs = new TreeSet<>();
 
 		/**
 		 * Number of maximal fix coordinates. -1 if no limit. Sometimes we need
@@ -523,6 +523,16 @@ public class ProverBotanasMethod {
 			polynomials.add(p);
 			int size = polynomials.size();
 			Log.debug("Adding poly #" + (size) + ": " + p.toTeX());
+		}
+
+		public void addIneq(String ie) {
+			if (ineqs.contains(ie)) {
+				Log.debug("Ignoring existing ineq " + ie);
+				return;
+			}
+			ineqs.add(ie);
+			int size = ineqs.size();
+			Log.debug("Adding ineq #" + (size) + ": " + ie);
 		}
 
 		/**
@@ -1111,192 +1121,19 @@ public class ProverBotanasMethod {
 
 				/* case input was an expression */
 				if (statements == null) {
-
-					/*
-					 * Disallow fixing the second point. This is crucial,
-					 * otherwise false theorems like Segment[A,B]==1 will be
-					 * proven.
-					 */
-					maxFixcoords = 2;
-
-					AlgoElement algo = geoStatement.getParentAlgorithm();
-					/* get expression string for giac */
-					String strForGiac = ((AlgoDependentBoolean) algo)
-							.getStrForGiac();
-					String userStrForGiac = ((AlgoDependentBoolean) algo)
-							.getUserGiacString();
-
-					GeoGebraCAS cas = (GeoGebraCAS) geoStatement.getKernel()
-							.getGeoGebraCAS();
-					try {
-						/* K: extended polynomial */
-						String output = cas.getCurrentCAS()
-								.evaluateRaw(strForGiac);
-						/* F: user's polynomial formula */
-						String userOutput = cas.getCurrentCAS()
-								.evaluateRaw(userStrForGiac);
-						/*
-						 * T = K/F: the factor between user's formula and the
-						 * extended one
-						 */
-						String casResult = cas.getCurrentCAS().evaluateRaw(
-								"simplify(" + output + "/" + userOutput + ")");
-						/* unhandled input expression */
-						if (output.contains("?") || userOutput.contains("?")
-								|| casResult.contains("?")) {
-							this.result = ProofResult.UNKNOWN;
-							return;
-						}
-						/* T is not empty */
-						/*
-						 * Put possible extended factors into the NDG list. Here
-						 * we simply parse the Giac output. This code is ugly,
-						 * TODO: use a more elegant way.
-						 */
-						if (geoProver
-								.getProverEngine() != ProverEngine.LOCUS_IMPLICIT
-								&& !("{}".equals(casResult))) {
-							// skip { and }
-							casResult = casResult.substring(1,
-									casResult.length() - 1);
-							// factorization of the result
-							String factResult = cas.getCurrentCAS()
-									.evaluateRaw("factor(" + casResult + ")");
-							// removing leading - from a product (if any)
-							if (factResult.length() > 1 && factResult
-									.substring(0, 2).equals("-(")) {
-								factResult = factResult.substring(1);
-							}
-							// split regarding to )*(
-							String[] factors = factResult.split("\\)\\*\\(");
-							// if there are more factors, the first and last
-							// still contain ( and ), trim them
-							if (factors.length > 1) {
-								factors[0] = factors[0].substring(1);
-								factors[factors.length
-										- 1] = factors[factors.length - 1]
-										.substring(0,
-												factors[factors.length
-														- 1].length()
-														- 1);
-							}
-							boolean polyIsConst = false;
-							if (factors.length == 1 && factors[0]
-									.matches("[-+]?\\d*\\.?\\d+")) {
-								polyIsConst = true; // poly is a number
-							}
-							// list of polynomial factors
-							ArrayList<PPolynomial> polyListOfFactors = new ArrayList<>();
-							if (!polyIsConst) {
-								for (String factor : factors) {
-									// parse factors into expression
-									ValidExpression resultVE = (geoStatement
-											.getKernel().getGeoGebraCAS())
-											.getCASparser()
-											.parseGeoGebraCASInputAndResolveDummyVars(
-													factor,
-													geoStatement
-															.getKernel(),
-													null);
-									PolynomialNode polyRoot = new PolynomialNode();
-									// build polynomial to parsed expression
-									((AlgoDependentBoolean) algo)
-											.getProverAdapter()
-											.buildPolynomialTree(
-													(ExpressionNode) resultVE,
-													polyRoot);
-									((AlgoDependentBoolean) algo)
-											.getProverAdapter()
-											.expressionNodeToPolynomial(
-													(ExpressionNode) resultVE,
-													polyRoot);
-									while (polyRoot.getPoly() == null) {
-										((AlgoDependentBoolean) algo)
-												.getProverAdapter()
-												.expressionNodeToPolynomial(
-														(ExpressionNode) resultVE,
-														polyRoot);
-									}
-									// add polynomial to list of polys
-									PPolynomial poly = polyRoot.getPoly();
-									if (poly != null) {
-										polyListOfFactors.add(poly);
-									}
-								}
-							}
-
-							for (PPolynomial p : polyListOfFactors) {
-								NDGCondition ndgc = new NDGDetector(geoProver,
-										null, freeVariables).detect(p);
-								if (ndgc != null) {
-									geoProver.addNDGcondition(ndgc);
-								}
-							}
-							/*
-							 * Put possible extended factors into the NDG list,
-							 * end.
-							 */
-
-						}
-						/* giac output is not empty */
-						if (!("{}".equals(output))) {
-							ValidExpression validExpression = (geoStatement
-									.getKernel().getGeoGebraCAS())
-									.getCASparser()
-									.parseGeoGebraCASInputAndResolveDummyVars(
-											output,
-											geoStatement.getKernel(),
-											null);
-							PolynomialNode polyRoot = new PolynomialNode();
-							ExpressionNode expNode = new ExpressionNode(
-									geoStatement.getKernel(),
-									((ExpressionNode) validExpression)
-											.getLeft());
-							MyList list = new MyList(geoStatement.getKernel());
-							ExpressionNode root = null;
-							if (expNode.getLeft() instanceof MyList) {
-								list = ((MyList) expNode.getLeft()).getMyList();
-							}
-							if (list.getListElement(0).isExpressionNode()) {
-								root = (ExpressionNode) list.getListElement(0);
-							}
-
-							((AlgoDependentBoolean) algo).getProverAdapter()
-									.buildPolynomialTree(root, polyRoot);
-							((AlgoDependentBoolean) algo).getProverAdapter()
-									.expressionNodeToPolynomial(root, polyRoot);
-							while (polyRoot.getPoly() == null) {
-								((AlgoDependentBoolean) algo).getProverAdapter()
-										.expressionNodeToPolynomial(root,
-												polyRoot);
-							}
-							/* get distance polynomials */
-							ArrayList<PPolynomial> extraPolys = ((AlgoDependentBoolean) algo)
-									.getProverAdapter()
-									.getExtraPolys();
-							statements = new PPolynomial[1][extraPolys.size()
-									+ 1];
-							int index = 0;
-							for (PPolynomial p : extraPolys) {
-								statements[0][index] = p;
-								index++;
-							}
-
-							/* add input polynomial */
-							statements[0][index] = polyRoot.getPoly();
-						}
-						/* case giac result was empty */
-						else {
-							statements = new PPolynomial[1][1];
-							statements[0][0] = new PPolynomial(0);
-						}
-					} catch (Throwable e) {
-						Log.debug(
-								"Unsuccessful run on evaluating the expression, statement is UNKNOWN at the moment");
+					statements = getExpressionStatements(geoStatement);
+					if (!ineqs.isEmpty()) {
+						Log.debug(ineqs);
+						Log.debug("Inequalities are not yet supported");
 						result = ProofResult.UNKNOWN;
 						return;
+						// proveInequality();
+					}
+					if (statements == null) {
+						return; // no success
 					}
 				}
+
 				if (disallowFixSecondPoint) {
 					maxFixcoords = 2;
 				}
@@ -1313,7 +1150,7 @@ public class ProverBotanasMethod {
 				if (algo instanceof AlgoDependentBoolean) {
 					Operation operation = ((AlgoDependentBoolean) algo)
 							.getOperation();
-					if (operation == Operation.IS_ELEMENT_OF) {
+					if (operation == IS_ELEMENT_OF) {
 						if (algo.input[0] instanceof GeoConic
 								&& (((GeoConic) algo.input[0]).isEllipse()
 								|| ((GeoConic) algo.input[0])
@@ -1325,7 +1162,7 @@ public class ProverBotanasMethod {
 								.isHyperbola())) {
 							interpretTrueAsUndefined = true;
 						}
-					} else if (operation == Operation.EQUAL_BOOLEAN) {
+					} else if (operation == EQUAL_BOOLEAN) {
 						if ((algo.input[0] instanceof GeoAngle
 								&& algo.input[1] instanceof GeoAngle)) {
 							interpretTrueAsUndefined = true;
@@ -1411,6 +1248,181 @@ public class ProverBotanasMethod {
 				result = ProofResult.UNKNOWN;
 			}
 
+		}
+
+		private PPolynomial[][] getExpressionStatements(GeoElement geoStatement) {
+			PPolynomial[][] statements;
+
+			/*
+			 * Disallow fixing the second point. This is crucial, otherwise false theorems
+			 * like Segment[A,B]==1 will be proven.
+			 */
+			maxFixcoords = 2;
+
+			AlgoElement algo = geoStatement.getParentAlgorithm();
+			/*
+			 * First the MEP code must be computed. It implicitly computes the Botana variables
+			 * as well. Even if we do not use the MEP code (for inequalities), the Botana
+			 * variables are necessary.
+			 */
+			String mepCode = null;
+			try {
+				mepCode = ((AlgoDependentBoolean) algo).minimalExtendedPolyGiacCode();
+			} catch (NoSymbolicParametersException e) {
+				Log.debug("Error during creating MEP code");
+				return null;
+			}
+			String pCode = ((AlgoDependentBoolean) algo).exprGiacCode();
+
+
+			Kernel k = geoStatement.getKernel();
+			GeoGebraCAS cas = (GeoGebraCAS) k.getGeoGebraCAS();
+			CASGenericInterface c = cas.getCurrentCAS();
+
+			Operation operation = ((AlgoDependentBoolean) algo).getOperation();
+			if (operation == LESS || operation == LESS_EQUAL || operation == GREATER || operation == GREATER_EQUAL) {
+				Log.debug("Inequality");
+				try {
+					String userOutput = c.evaluateRaw(pCode);
+					userOutput = userOutput.substring(1, userOutput.length() - 1); // trim { }
+					addIneq(userOutput);
+					return null;
+				} catch (Throwable e) {
+					Log.debug(
+							"Unsuccessful run on evaluating the expression, statement is UNKNOWN at the moment");
+					result = ProofResult.UNKNOWN;
+					return null;
+				}
+			}
+
+			try {
+				/* K: extended polynomial */
+				String output = c.evaluateRaw(mepCode);
+				/* F: user's polynomial formula */
+				String userOutput = c.evaluateRaw(pCode);
+				/* T = K/F: the factor between user's formula and the extended one */
+				String casResult = c.evaluateRaw(
+						"simplify(" + output + "/" + userOutput + ")");
+				/* unhandled input expression */
+				if (output.contains("?") || userOutput.contains("?")
+						|| casResult.contains("?")) {
+					this.result = ProofResult.UNKNOWN;
+					return null;
+				}
+				/* T is not empty */
+				/*
+				 * Put possible extended factors into the NDG list. Here we simply parse
+				 * the Giac output. This code is ugly, TODO: use a more elegant way.
+				 */
+				if (geoProver.getProverEngine() != ProverEngine.LOCUS_IMPLICIT
+						&& !("{}".equals(casResult))) {
+					// skip { and }
+					casResult = casResult.substring(1, casResult.length() - 1);
+					// factorization of the result
+					String factResult = cas.getCurrentCAS()
+							.evaluateRaw("factor(" + casResult + ")");
+					// removing leading - from a product (if any)
+					if (factResult.length() > 1 && factResult.substring(0, 2).equals("-(")) {
+						factResult = factResult.substring(1);
+					}
+					// split regarding to )*(
+					String[] factors = factResult.split("\\)\\*\\(");
+					// if there are more factors, the first and last
+					// still contain ( and ), trim them
+					if (factors.length > 1) {
+						factors[0] = factors[0].substring(1);
+						factors[factors.length - 1] = factors[factors.length - 1]
+								.substring(0, factors[factors.length - 1].length() - 1);
+					}
+					boolean polyIsConst = false;
+					if (factors.length == 1 && factors[0].matches("[-+]?\\d*\\.?\\d+")) {
+						polyIsConst = true; // poly is a number
+					}
+					// list of polynomial factors
+					ArrayList<PPolynomial> polyListOfFactors = new ArrayList<>();
+					if (!polyIsConst) {
+						for (String factor : factors) {
+							// parse factors into expression
+							ValidExpression resultVE = cas.getCASparser().
+									parseGeoGebraCASInputAndResolveDummyVars(factor, k, null);
+							PolynomialNode polyRoot = new PolynomialNode();
+							// build polynomial to parsed expression
+							((AlgoDependentBoolean) algo).getProverAdapter().buildPolynomialTree(
+									(ExpressionNode) resultVE, polyRoot);
+							((AlgoDependentBoolean) algo).getProverAdapter().
+									expressionNodeToPolynomial((ExpressionNode) resultVE, polyRoot);
+							while (polyRoot.getPoly() == null) {
+								((AlgoDependentBoolean) algo).getProverAdapter()
+										.expressionNodeToPolynomial((ExpressionNode) resultVE,
+												polyRoot);
+							}
+							// add polynomial to list of polys
+							PPolynomial poly = polyRoot.getPoly();
+							if (poly != null) {
+								polyListOfFactors.add(poly);
+							}
+						}
+					}
+
+					for (PPolynomial p : polyListOfFactors) {
+						NDGCondition ndgc =
+								new NDGDetector(geoProver, null, freeVariables).detect(p);
+						if (ndgc != null) {
+							geoProver.addNDGcondition(ndgc);
+						}
+					}
+					/* Put possible extended factors into the NDG list, end. */
+				}
+				/* giac output is not empty */
+				if (!("{}".equals(output))) {
+					ValidExpression validExpression = cas.getCASparser()
+							.parseGeoGebraCASInputAndResolveDummyVars(output, k, null);
+					PolynomialNode polyRoot = new PolynomialNode();
+					ExpressionNode expNode =
+							new ExpressionNode(k, ((ExpressionNode) validExpression).getLeft());
+					MyList list = new MyList(k);
+					ExpressionNode root = null;
+					if (expNode.getLeft() instanceof MyList) {
+						list = ((MyList) expNode.getLeft()).getMyList();
+					}
+					if (list.getListElement(0).isExpressionNode()) {
+						root = (ExpressionNode) list.getListElement(0);
+					}
+
+					((AlgoDependentBoolean) algo).getProverAdapter()
+							.buildPolynomialTree(root, polyRoot);
+					((AlgoDependentBoolean) algo).getProverAdapter()
+							.expressionNodeToPolynomial(root, polyRoot);
+					while (polyRoot.getPoly() == null) {
+						((AlgoDependentBoolean) algo).getProverAdapter()
+								.expressionNodeToPolynomial(root, polyRoot);
+					}
+					/* get distance polynomials */
+					ArrayList<PPolynomial> extraPolys =
+							((AlgoDependentBoolean) algo).getProverAdapter().getExtraPolys();
+					statements = new PPolynomial[1][extraPolys.size() + 1];
+					int index = 0;
+					for (PPolynomial p : extraPolys) {
+						statements[0][index] = p;
+						index++;
+					}
+
+					/* add input polynomial */
+					statements[0][index] = polyRoot.getPoly();
+				}
+				/* case giac result was empty */
+				else {
+					statements = new PPolynomial[1][1];
+					statements[0][0] = new PPolynomial(0);
+				}
+			} catch (Throwable e) {
+				Log.debug(
+						"Unsuccessful run on evaluating the expression, statement is UNKNOWN at the moment");
+				result = ProofResult.UNKNOWN;
+				return null;
+			}
+
+			return statements;
 		}
 
 		private void algebraicTranslation(GeoElement statement,

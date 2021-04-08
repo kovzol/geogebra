@@ -226,20 +226,25 @@ public class AlgoDependentBoolean extends AlgoElement implements
 	}
 
 	/**
+	 * Create a Giac program that computes the minimal extended polynomial (MEP) for an
+	 * equation type statement, and create the needed Botana variables for the prover system.
 	 * @return string for giac from input expression
 	 * @throws NoSymbolicParametersException
 	 *             when no polynomials can be obtained
 	 */
 
-	public String getStrForGiac() throws NoSymbolicParametersException {
-		return getProverAdapter().getStrForGiac(bool, cons);
+	public String minimalExtendedPolyGiacCode() throws NoSymbolicParametersException {
+		return getProverAdapter().MEPCode(bool, cons);
 	}
 
 	/**
+	 * Create a Giac program that expresses the statement. It assumes that the Botana
+	 * variables are already computed. Use minimalExtendedPolyGiacCode() first.
+	 * FIXME: That is an overkill, but currently required.
 	 * @return string for giac
 	 */
-	public String getUserGiacString() {
-		return getProverAdapter().getUserGiacString(bool, cons);
+	public String exprGiacCode() {
+		return getProverAdapter().exprCode(bool, cons);
 	}
 
 }
