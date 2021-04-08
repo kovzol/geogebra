@@ -80,7 +80,8 @@ public class CASgiacD extends CASgiacJre {
 
 	@Override
 	final protected boolean useThread() {
-		return !AppD.LINUX;
+		// return !AppD.LINUX;
+		return true;
 	}
 
 	@SuppressWarnings("deprecation")
