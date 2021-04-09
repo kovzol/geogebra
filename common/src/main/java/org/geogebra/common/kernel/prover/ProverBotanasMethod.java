@@ -1253,6 +1253,9 @@ public class ProverBotanasMethod {
 		private void proveInequality() {
 			String rgCommand = "euclideansolver";
 			StringBuilder rgParameters = new StringBuilder();
+			// Do not send = via http, it is reserved:
+			thesisIneq = thesisIneq.replace(">=", "≥").replace("<=", "≤");
+
 			rgParameters.append("ineq=").append(thesisIneq).append("&")
 					.append("polys=");
 
@@ -1339,6 +1342,11 @@ public class ProverBotanasMethod {
 			if ("TARSKI ERROR".equals(rgResult)) {
 				Log.debug("Tarski error in RealGeom");
 				rgResult = "";
+			}
+
+			if (rgResult == null) {
+				result = ProofResult.UNKNOWN;
+				return;
 			}
 
 			if (rgResult.equals("false")) {
