@@ -1251,13 +1251,6 @@ public class ProverBotanasMethod {
 		}
 
 		private void proveInequality() {
-
-			// This is too heavy to compute on each keystroke.
-			if (geoStatement.getKernel().isSilentMode()) {
-				result = ProofResult.PROCESSING;
-				return;
-			}
-
 			String rgCommand = "euclideansolver";
 			StringBuilder rgParameters = new StringBuilder();
 			rgParameters.append("ineq=").append(thesisIneq).append("&")
@@ -1350,10 +1343,17 @@ public class ProverBotanasMethod {
 
 			if (rgResult.equals("false")) {
 				result = ProofResult.TRUE;
-			} else {
-				result = ProofResult.UNKNOWN;
+				return;
 			}
 
+			if (rgResult.equals("true")) {
+				// Consider checking if we can say something like true if some
+				// non-degeneracy conditions hold... TODO
+				result = ProofResult.FALSE;
+				return;
+			}
+
+			result = ProofResult.UNKNOWN;
 		}
 
 		private PPolynomial[][] getExpressionStatements(GeoElement geoStatement) {

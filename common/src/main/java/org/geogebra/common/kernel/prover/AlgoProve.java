@@ -90,6 +90,10 @@ public class AlgoProve extends AlgoElement implements UsesCAS {
 	 * Heavy computation of the proof.
 	 */
 	public final void initialCompute() {
+		if (root.getKernel().isSilentMode()) {
+			return;
+		}
+
 		ProverSettings proverSettings = ProverSettings.get();
 		// Create and initialize the prover
 		Prover p = UtilFactory.getPrototype().newProver();
