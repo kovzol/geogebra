@@ -14,7 +14,7 @@ public interface GeoGebraConstants {
 	/** complete version string */
 	public static final String VERSION_STRING = "5.0.591.0";
 	/** GeoGebra Discovery version string */
-	public static final String DISCOVERY_VERSION = "2021Apr06";
+	public static final String DISCOVERY_VERSION = "2021Apr09";
 
 	/** proper noun, should NOT be translated / transliterated */
 	public static final String APPLICATION_NAME = "GeoGebra";
