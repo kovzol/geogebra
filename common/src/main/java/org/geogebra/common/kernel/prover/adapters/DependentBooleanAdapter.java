@@ -63,6 +63,7 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			Construction cons) throws NoSymbolicParametersException {
 		ExpressionNode root = bool.getDefinition();
 		Kernel kernel = cons.getKernel();
+		Operation o = root.getOperation();
 		// replace Distance[A,B] with geoSegment
 		if (!(root.getLeft().isExpressionNode())
 				&& root.getLeft() instanceof GeoNumeric) {
@@ -116,20 +117,24 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			GeoElement left = (GeoElement) root.getLeft();
 			GeoElement right = (GeoElement) root.getRight();
 
-			if (root.getOperation().equals(PERPENDICULAR)) {
+			if (o == PERPENDICULAR) {
 				AlgoArePerpendicular algo = new AlgoArePerpendicular(cons, left,
 						right);
 				PPolynomial[][] ret = algo.getBotanaPolynomials();
 				cons.removeFromConstructionList(algo);
 				return ret;
 			}
-			if (root.getOperation().equals(PARALLEL)) {
+			if (o == PARALLEL) {
 				AlgoAreParallel algo = new AlgoAreParallel(cons, left, right);
 				PPolynomial[][] ret = algo.getBotanaPolynomials();
 				cons.removeFromConstructionList(algo);
 				return ret;
 			}
-			if (root.getOperation().equals(EQUAL_BOOLEAN)) {
+			if (o == LESS_EQUAL || o == LESS || o == GREATER_EQUAL || o == GREATER) {
+				PPolynomial[][] ret = null;
+				return ret;
+			}
+			if (o == EQUAL_BOOLEAN) {
 				if (root.getLeft() instanceof GeoNumeric
 						&& ((GeoElement) root.getLeft()).getParentAlgorithm()
 								.getRelatedModeID() == EuclidianConstants.MODE_AREA
@@ -192,7 +197,6 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			}
 		}
 
-		Operation o = root.getOperation();
 		// More difficult cases: sides are expressions:
 
 		if ((o == EQUAL_BOOLEAN || o == LESS_EQUAL || o == LESS || o == GREATER_EQUAL || o == GREATER) &&
@@ -233,7 +237,7 @@ public class DependentBooleanAdapter extends ProverAdapter {
 					|| (rootCopy.getRight() instanceof GeoSegment
 							&& rootCopy.getLeft() instanceof MyDouble))
 					&& o == EQUAL_BOOLEAN) {
-				PPolynomial[][] ret = null; // a segment cannot be of fixed length
+				PPolynomial[][] ret = null;
 				return ret;
 			}
 
@@ -326,10 +330,21 @@ public class DependentBooleanAdapter extends ProverAdapter {
 	public String MEPCode(GeoBoolean bool, Construction cons)
 			throws NoSymbolicParametersException {
 		Kernel kernel = cons.getKernel();
-		String[] labels = new String[allSegmentsFromExpression.size()];
+		int size = allSegmentsFromExpression.size();
+		if (size == 0) {
+			// This is maybe a comparison of two segments.
+			// TODO: Add here some check if this is indeed the case.
+			AlgoElement algo = bool.getParentAlgorithm();
+			GeoSegment left = (GeoSegment) algo.getInput(0);
+			GeoSegment right = (GeoSegment) algo.getInput(1);
+			allSegmentsFromExpression.add(left);
+			allSegmentsFromExpression.add(right);
+			size = 2;
+		}
+		String[] labels = new String[size];
 		extraPolys.clear();
 		if (botanaVars == null) {
-			botanaVars = new PVariable[allSegmentsFromExpression.size()];
+			botanaVars = new PVariable[size];
 		}
 		if (varSubstListOfSegs == null) {
 			varSubstListOfSegs = new ArrayList<>();
