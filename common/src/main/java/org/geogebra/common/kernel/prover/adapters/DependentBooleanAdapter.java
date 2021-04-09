@@ -54,6 +54,7 @@ public class DependentBooleanAdapter extends ProverAdapter {
 	private Set<GeoSegment> allSegmentsFromExpression = new HashSet<>();
 	private ArrayList<PPolynomial> extraPolys = new ArrayList<>();
 	private int nrOfMaxDecimals;
+	private ArrayList<String> ineqs = new ArrayList<>();
 
 	// substitution list of segments with variables
 	private ArrayList<Map.Entry<GeoElement, PVariable>> varSubstListOfSegs;

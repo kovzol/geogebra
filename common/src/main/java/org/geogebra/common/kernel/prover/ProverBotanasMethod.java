@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.geogebra.common.cas.GeoGebraCAS;
+import org.geogebra.common.cas.realgeom.RealGeomWebService;
 import org.geogebra.common.cas.singularws.SingularWebService;
 import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.kernel.CASGenericInterface;
@@ -349,6 +350,7 @@ public class ProverBotanasMethod {
 		private PPolynomial[] thesisFactors;
 		private TreeMap<GeoElement, PPolynomial[]> geoPolys = new TreeMap<>();
 		private Set<String> ineqs = new TreeSet<>();
+		private String thesisIneq = null;
 
 		/**
 		 * Number of maximal fix coordinates. -1 if no limit. Sometimes we need
@@ -1122,12 +1124,10 @@ public class ProverBotanasMethod {
 				/* case input was an expression */
 				if (statements == null) {
 					statements = getExpressionStatements(geoStatement);
-					if (!ineqs.isEmpty()) {
-						Log.debug(ineqs);
-						Log.debug("Inequalities are not yet supported");
-						result = ProofResult.UNKNOWN;
+					if (thesisIneq != null) {
+						Log.debug("Thesis inequality = " + thesisIneq);
+						proveInequality();
 						return;
-						// proveInequality();
 					}
 					if (statements == null) {
 						return; // no success
@@ -1250,6 +1250,112 @@ public class ProverBotanasMethod {
 
 		}
 
+		private void proveInequality() {
+
+			// This is too heavy to compute on each keystroke.
+			if (geoStatement.getKernel().isSilentMode()) {
+				result = ProofResult.PROCESSING;
+				return;
+			}
+
+			String rgCommand = "euclideansolver";
+			StringBuilder rgParameters = new StringBuilder();
+			rgParameters.append("ineq=").append(thesisIneq).append("&")
+					.append("polys=");
+
+			/* Force some non-degeneracies. */
+			PPolynomial[] nonDegPolys;
+			try {
+				nonDegPolys = create3FreePointsNeverCollinearNDG(geoProver);
+			} catch (Exception e) {
+				result = ProofResult.UNKNOWN;
+				return;
+			}
+			for (PPolynomial ndp : nonDegPolys) {
+				addPolynomial(ndp);
+			}
+
+			computeStrings();
+			rgParameters.append(getPolys());
+
+			StringBuilder posvariables = new StringBuilder();
+
+			/* get distance polynomials */
+			AlgoElement algo = geoStatement.getParentAlgorithm();
+			ArrayList<PPolynomial> extraPolys =
+					((AlgoDependentBoolean) algo).getProverAdapter().getExtraPolys();
+			PVariable[] extraVars =
+					((AlgoDependentBoolean) algo).getProverAdapter().getBotanaVars();
+
+			for (PPolynomial p : extraPolys) {
+				rgParameters.append(",").append(p.toString());
+			}
+			for (PVariable v : extraVars) {
+				posvariables.append(v.getName()).append(",");
+			}
+			posvariables.deleteCharAt(posvariables.length() - 1); // remove last ,
+
+			String freeVars = getFreeVarsWithoutAlmostFree();
+			String elimVars = getElimVarsWithAlmostFree();
+			Log.debug("freevars=" + freeVars);
+			Log.debug("elimvars=" + elimVars);
+
+			String vars = freeVars;
+			if (!"".equals(elimVars)) {
+				vars += "," + elimVars;
+			}
+
+			RealGeomWebService realgeomWS = geoStatement.getConstruction().getApplication().getRealGeomWS();
+
+			if (realgeomWS == null || (!realgeomWS.isAvailable())) {
+				Log.debug("RealGeomWS is not available");
+				result = ProofResult.UNKNOWN;
+				return;
+			}
+
+			rgParameters.append("&vars=").append(vars);
+			rgParameters.append("&posvariables=").append(posvariables);
+			rgParameters.append("&mode=prove");
+			String rgwsCas = realgeomWS.getCAS();
+			rgParameters.append("&cas=" + rgwsCas);
+
+			Log.debug(rgParameters);
+
+			String rgResult = realgeomWS.directCommand(rgCommand, rgParameters.toString());
+
+			if ("$Aborted".equals(rgResult)) {
+				Log.debug("Timeout in RealGeom");
+				rgResult = "";
+			}
+
+			if ("$Failed".equals(rgResult)) {
+				Log.debug("Computation issue in RealGeom");
+				rgResult = "";
+			}
+
+			if ("GIAC ERROR".equals(rgResult)) {
+				Log.debug("Giac error in RealGeom");
+				rgResult = "";
+			}
+
+			if ("QEPCAD ERROR".equals(rgResult)) {
+				Log.debug("Qepcad error in RealGeom");
+				rgResult = "";
+			}
+
+			if ("TARSKI ERROR".equals(rgResult)) {
+				Log.debug("Tarski error in RealGeom");
+				rgResult = "";
+			}
+
+			if (rgResult.equals("false")) {
+				result = ProofResult.TRUE;
+			} else {
+				result = ProofResult.UNKNOWN;
+			}
+
+		}
+
 		private PPolynomial[][] getExpressionStatements(GeoElement geoStatement) {
 			PPolynomial[][] statements;
 
@@ -1285,7 +1391,7 @@ public class ProverBotanasMethod {
 				try {
 					String userOutput = c.evaluateRaw(pCode);
 					userOutput = userOutput.substring(1, userOutput.length() - 1); // trim { }
-					addIneq(userOutput);
+					thesisIneq = userOutput;
 					return null;
 				} catch (Throwable e) {
 					Log.debug(
