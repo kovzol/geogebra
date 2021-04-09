@@ -481,6 +481,10 @@ public class DependentBooleanAdapter extends ProverAdapter {
 		StringBuilder strForGiac = new StringBuilder();
 		strForGiac.append("subst([");
 		strForGiac.append(rootStr).append("],[");
+		// In fact, we need something very simple here, subst is an overkill.
+		// Also, if a formula like a=a or a>=a or a>a is given, Giac evaluates it automatically
+		// as true or false which is not really expected...
+		// FIXME. Now we acknowledge this and handle the situation in ProverBotanasMethod.
 		StringBuilder labelsStr = new StringBuilder();
 		for (int i = 0; i < labels.length; i++) {
 			if (i>0) {

@@ -1251,6 +1251,20 @@ public class ProverBotanasMethod {
 		}
 
 		private void proveInequality() {
+			/* Handle some special cases. It is possible that DependentBooleanAdapter.exprCode
+			 * already computed this accidentally, if the input was some simple algebraic
+			 * formula. We acknowledge this and simply return that value.
+			 * FIXME in DependentBooleanAdapter.exprCode.
+			 */
+			if (thesisIneq.equals("true")) {
+				result = ProofResult.TRUE;
+				return;
+			}
+			if (thesisIneq.equals("false")) {
+				result = ProofResult.FALSE;
+				return;
+			}
+
 			String rgCommand = "euclideansolver";
 			StringBuilder rgParameters = new StringBuilder();
 			// Do not send = via http, it is reserved:
