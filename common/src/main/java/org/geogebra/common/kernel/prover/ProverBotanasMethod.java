@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.cas.realgeom.RealGeomWebService;
@@ -29,6 +31,7 @@ import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
 import org.geogebra.common.kernel.algos.AlgoDependentNumber;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoEllipseHyperbolaFociPoint;
+import org.geogebra.common.kernel.algos.AlgoFractionText;
 import org.geogebra.common.kernel.algos.AlgoIntersectConics;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
@@ -60,6 +63,8 @@ import org.geogebra.common.util.Prover.NDGCondition;
 import org.geogebra.common.util.Prover.ProofResult;
 import org.geogebra.common.util.Prover.ProverEngine;
 import org.geogebra.common.util.debug.Log;
+
+import com.himamis.retex.editor.share.util.Unicode;
 
 /**
  * A prover which uses Francisco Botana's method to prove geometric theorems.
@@ -350,6 +355,7 @@ public class ProverBotanasMethod {
 		private PPolynomial[] thesisFactors;
 		private TreeMap<GeoElement, PPolynomial[]> geoPolys = new TreeMap<>();
 		private Set<String> ineqs = new TreeSet<>();
+		private Set<String> posVars = new TreeSet<>();
 		private String thesisIneq = null;
 
 		/**
@@ -535,6 +541,16 @@ public class ProverBotanasMethod {
 			ineqs.add(ie);
 			int size = ineqs.size();
 			Log.debug("Adding ineq #" + (size) + ": " + ie);
+		}
+
+		public void addPosVar(String v) {
+			if (posVars.contains(v)) {
+				Log.debug("Ignoring existing var " + v);
+				return;
+			}
+			posVars.add(v);
+			int size = posVars.size();
+			Log.debug("Adding posVar #" + (size) + ": " + v);
 		}
 
 		/**
@@ -1303,6 +1319,9 @@ public class ProverBotanasMethod {
 			for (PVariable v : extraVars) {
 				posvariables.append(v.getName()).append(",");
 			}
+			for (String v : posVars) {
+				posvariables.append(v).append(",");
+			}
 			posvariables.deleteCharAt(posvariables.length() - 1); // remove last ,
 
 			String freeVars = getFreeVarsWithoutAlmostFree();
@@ -1322,6 +1341,16 @@ public class ProverBotanasMethod {
 				result = ProofResult.UNKNOWN;
 				return;
 			}
+
+			// Inequalities
+			rgParameters.append("&ineqs=");
+			StringBuilder ies = new StringBuilder();
+			for (String ie : ineqs) {
+				ie = ie.replace("=", "E");
+				ies.append(ie).append(",");
+			}
+			ies.deleteCharAt(ies.length() - 1); // remove last ,
+			rgParameters.append(ies);
 
 			rgParameters.append("&vars=").append(vars);
 			rgParameters.append("&posvariables=").append(posvariables);
@@ -1378,6 +1407,45 @@ public class ProverBotanasMethod {
 			result = ProofResult.UNKNOWN;
 		}
 
+		private String convertDecimalsToFractions(String text) {
+			Pattern pattern = Pattern.compile("\\d*\\.\\d+|\\d+\\.\\d*");
+			Matcher matcher = pattern.matcher(text);
+			StringBuffer buffer = new StringBuffer();
+
+			while (matcher.find()) {
+				String decimal = matcher.group();
+				double d = Double.parseDouble(decimal);
+				double[] f = AlgoFractionText.decimalToFraction(d, 0);
+				int numer = (int)f[0];
+				int denom = (int)f[1];
+				String fraction = "(" + numer + "/" + denom + ")";
+				matcher.appendReplacement(buffer, "");
+				buffer.append(fraction);
+			}
+			matcher.appendTail(buffer);
+			return buffer.toString();
+		}
+
+		private String convertSqrtToQepcad(String text) {
+			char s = Unicode.SQUARE_ROOT;
+			Pattern pattern = Pattern.compile(s + "\\d+");
+
+			Matcher matcher = pattern.matcher(text);
+			StringBuffer buffer = new StringBuffer();
+
+			while (matcher.find()) {
+				String number = matcher.group().substring(1); // remove leading SQUARE_ROOT
+				String qexpr = "(sqrt" + number + ")";
+				matcher.appendReplacement(buffer, "");
+				buffer.append(qexpr);
+				addIneq("sqrt" + number + "^2=" + number);
+				addPosVar("sqrt" + number);
+			}
+			matcher.appendTail(buffer);
+			return buffer.toString();
+		}
+
+
 		private PPolynomial[][] getExpressionStatements(GeoElement geoStatement) {
 			PPolynomial[][] statements;
 
@@ -1411,9 +1479,10 @@ public class ProverBotanasMethod {
 			if (operation == LESS || operation == LESS_EQUAL || operation == GREATER || operation == GREATER_EQUAL) {
 				Log.debug("Inequality");
 				try {
-					String userOutput = c.evaluateRaw(pCode);
-					userOutput = userOutput.substring(1, userOutput.length() - 1); // trim { }
-					thesisIneq = userOutput;
+					thesisIneq = c.evaluateRaw(pCode);
+					thesisIneq = thesisIneq.substring(1, thesisIneq.length() - 1); // trim { }
+					// thesisIneq = convertDecimalsToFractions(thesisIneq);
+					thesisIneq = convertSqrtToQepcad(thesisIneq);
 					return null;
 				} catch (Throwable e) {
 					Log.debug(
