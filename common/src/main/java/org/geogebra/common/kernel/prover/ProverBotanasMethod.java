@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.cas.realgeom.RealGeomWebService;
@@ -64,6 +62,8 @@ import org.geogebra.common.util.Prover.ProofResult;
 import org.geogebra.common.util.Prover.ProverEngine;
 import org.geogebra.common.util.debug.Log;
 
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
 import com.himamis.retex.editor.share.util.Unicode;
 
 /**
@@ -1434,6 +1434,7 @@ public class ProverBotanasMethod {
 			result = ProofResult.UNKNOWN;
 		}
 
+		/*
 		private String convertDecimalsToFractions(String text) {
 			Pattern pattern = Pattern.compile("\\d*\\.\\d+|\\d+\\.\\d*");
 			Matcher matcher = pattern.matcher(text);
@@ -1471,7 +1472,23 @@ public class ProverBotanasMethod {
 			matcher.appendTail(buffer);
 			return buffer.toString();
 		}
+		 */
 
+		private String convertSqrtToQepcad(String text) {
+			char s = Unicode.SQUARE_ROOT;
+			RegExp regExp = RegExp.compile(s + "\\d+");
+			MatchResult matcher = regExp.exec(text);
+			boolean matchFound = matcher != null;
+			if (matchFound) {
+				for (int i = 0; i < matcher.getGroupCount(); i++) {
+					String number = matcher.getGroup(i).substring(1);
+					String qexpr = "(sqrt" + number + ")";
+					addIneq("sqrt" + number + "^2=" + number);
+					addPosVar("sqrt" + number);
+				}
+			}
+			return text.replace(s + "", "sqrt");
+		}
 
 		private PPolynomial[][] getExpressionStatements(GeoElement geoStatement) {
 			PPolynomial[][] statements;
