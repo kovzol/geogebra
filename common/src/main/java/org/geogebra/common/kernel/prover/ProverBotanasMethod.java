@@ -946,6 +946,28 @@ public class ProverBotanasMethod {
 							maxFixcoords = 2;
 						}
 
+						if (algo instanceof AlgoPointOnPath
+								&& algo.input[0] instanceof GeoSegment) {
+							// Let P be on segment AB. Then (A-P)*(P-B)>=0 is assumed.
+							GeoSegment s = (GeoSegment) algo.input[0];
+							GeoPoint A = s.getStartPoint();
+							GeoPoint B = s.getEndPoint();
+							PVariable[] geoVariablesA = ((SymbolicParametersBotanaAlgo) A)
+									.getBotanaVars(A);
+							PVariable[] geoVariablesB = ((SymbolicParametersBotanaAlgo) B)
+									.getBotanaVars(B);
+							PPolynomial a1mp1 = new PPolynomial(geoVariablesA[0])
+									.subtract(new PPolynomial(geoVariables[0]));
+							PPolynomial a2mp2 = new PPolynomial(geoVariablesA[1])
+									.subtract(new PPolynomial(geoVariables[1]));
+							PPolynomial p1mb1 = new PPolynomial(geoVariables[0])
+									.subtract(new PPolynomial(geoVariablesB[0]));
+							PPolynomial p2mb2 = new PPolynomial(geoVariables[1])
+									.subtract(new PPolynomial(geoVariablesB[1]));
+							PPolynomial lhs = a1mp1.multiply(p1mb1).add(a2mp2.multiply(p2mb2));
+							addIneq(lhs.toString() + ">=0");
+						}
+
 						if (geoPolynomials != null) {
 							if (geo instanceof GeoPoint) {
 								PVariable[] v;
@@ -1322,7 +1344,9 @@ public class ProverBotanasMethod {
 			for (String v : posVars) {
 				posvariables.append(v).append(",");
 			}
-			posvariables.deleteCharAt(posvariables.length() - 1); // remove last ,
+			if (!posVars.isEmpty()) {
+				posvariables.deleteCharAt(posvariables.length() - 1); // remove last ,
+			}
 
 			String freeVars = getFreeVarsWithoutAlmostFree();
 			String elimVars = getElimVarsWithAlmostFree();
@@ -1343,14 +1367,17 @@ public class ProverBotanasMethod {
 			}
 
 			// Inequalities
-			rgParameters.append("&ineqs=");
 			StringBuilder ies = new StringBuilder();
 			for (String ie : ineqs) {
 				ie = ie.replace("=", "E");
 				ies.append(ie).append(",");
 			}
-			ies.deleteCharAt(ies.length() - 1); // remove last ,
-			rgParameters.append(ies);
+			if (!ineqs.isEmpty()) {
+				rgParameters.append("&ineqs=");
+				ies.deleteCharAt(ies.length() - 1); // remove last ,
+				rgParameters.append(ies);
+			}
+
 
 			rgParameters.append("&vars=").append(vars);
 			rgParameters.append("&posvariables=").append(posvariables);
