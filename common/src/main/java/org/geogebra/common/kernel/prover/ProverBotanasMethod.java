@@ -1384,6 +1384,8 @@ public class ProverBotanasMethod {
 			rgParameters.append("&mode=prove");
 			String rgwsCas = realgeomWS.getCAS();
 			rgParameters.append("&cas=" + rgwsCas);
+			// This should be set but QEPCAD has problems with this:
+			// rgParameters.append("&maxfixcoords=" + maxFixcoords);
 
 			Log.debug(rgParameters);
 
