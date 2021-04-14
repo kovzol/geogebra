@@ -23,6 +23,7 @@ import org.geogebra.common.kernel.CASGenericInterface;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.advanced.AlgoDynamicCoordinates;
+import org.geogebra.common.kernel.advanced.AlgoIncircleCenter;
 import org.geogebra.common.kernel.algos.AlgoAngularBisectorPoints;
 import org.geogebra.common.kernel.algos.AlgoCirclePointRadius;
 import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
@@ -688,6 +689,26 @@ public class ProverBotanasMethod {
 			return keptElements;
 		}
 
+		private PPolynomial tripletSign (GeoPoint p1, GeoPoint p2, GeoPoint p3) {
+			// Idea taken from https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+			// (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+			try {
+				PVariable[] geoVariables1 = ((SymbolicParametersBotanaAlgo) p1)
+						.getBotanaVars(p1);
+				PVariable[] geoVariables2 = ((SymbolicParametersBotanaAlgo) p2)
+						.getBotanaVars(p2);
+				PVariable[] geoVariables3 = ((SymbolicParametersBotanaAlgo) p3)
+						.getBotanaVars(p3);
+				PPolynomial p = (((new PPolynomial(geoVariables1[0]).subtract(new PPolynomial(geoVariables3[0])))
+						.multiply(new PPolynomial(geoVariables2[1]).subtract(new PPolynomial(geoVariables3[1])))))
+						.subtract((new PPolynomial(geoVariables2[0]).subtract(new PPolynomial(geoVariables3[0])))
+						.multiply(new PPolynomial(geoVariables1[1]).subtract(new PPolynomial(geoVariables3[1]))));
+				return p;
+			} catch (NoSymbolicParametersException e) {
+				return null;
+			}
+		}
+
 		private void setHypotheses(GeoElement movingPoint) {
 			polynomials = new TreeSet<>();
 
@@ -966,6 +987,20 @@ public class ProverBotanasMethod {
 									.subtract(new PPolynomial(geoVariablesB[1]));
 							PPolynomial lhs = a1mp1.multiply(p1mb1).add(a2mp2.multiply(p2mb2));
 							addIneq(lhs.toString() + ">=0");
+						}
+
+						if (algo instanceof AlgoIncircleCenter) {
+							// Idea taken from https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+							GeoPoint A = (GeoPoint) algo.input[0];
+							GeoPoint B = (GeoPoint) algo.input[1];
+							GeoPoint C = (GeoPoint) algo.input[2];
+							GeoPoint P = (GeoPoint) geo;
+							String d1 = tripletSign(P, A, B).toString();
+							String d2 = tripletSign(P, B, C).toString();
+							String d3 = tripletSign(P, C, A).toString();
+							String all_pos = "((" + d1 + ">0)AND" + "(" + d2 + ">0)AND" + "(" + d3 + ">0))";
+							String all_neg = "((" + d1 + "<0)AND" + "(" + d2 + "<0)AND" + "(" + d3 + "<0))";
+							addIneq(all_pos + "OR" + all_neg);
 						}
 
 						if (geoPolynomials != null) {
