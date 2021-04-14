@@ -51,11 +51,13 @@ public class RealGeomWebService {
         // this may be important for pipe based peers
         System.err.println(url1 + "/" + command + "?" + encodedParameters);
 
-        if (encodedParameters.length() + url1.length() + command.length()
+        // POST is not implemented yet in realgeom, forcing GET:
+        if (true || encodedParameters.length() + url1.length() + command.length()
                 + 6 <= GET_REQUEST_MAX_SIZE) {
             httpr.sendRequestPost("GET",
                     url1 + "/" + command + "?" + encodedParameters, null, null);
         } else {
+            // TODO: Implement this is realgeom:
             httpr.sendRequestPost("POST", url1,
                     "/" + command + "?" + encodedParameters,
                     null);
