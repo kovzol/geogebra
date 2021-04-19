@@ -35,6 +35,7 @@ import org.geogebra.common.kernel.algos.AlgoIntersectConics;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
 import org.geogebra.common.kernel.algos.AlgoPointInRegion;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
+import org.geogebra.common.kernel.algos.AlgoPolygonRegular;
 import org.geogebra.common.kernel.algos.SymbolicParametersBotanaAlgo;
 import org.geogebra.common.kernel.algos.SymbolicParametersBotanaAlgoAre;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
@@ -1024,6 +1025,16 @@ public class ProverBotanasMethod {
 												+ "<0))";
 								addIneq(all_pos + "OR" + all_neg);
 							}
+						}
+
+						if (algo instanceof AlgoPolygonRegular) {
+							GeoPoint A = (GeoPoint) algo.input[0];
+							GeoPoint B = (GeoPoint) algo.input[1];
+							int num = (int) ((GeoNumeric) algo.input[2]).getValue();
+							AlgoPolygonRegular apr = (AlgoPolygonRegular) algo;
+							GeoPoint C = (GeoPoint) apr.getOutput(num + 1);
+							String d = tripletSign(A, B, C).toString() + ">0";
+							addIneq(d);
 						}
 
 						if (geoPolynomials != null) {
