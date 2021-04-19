@@ -19,6 +19,10 @@ import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.kernelND.GeoElementND;
+import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
+import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
+import org.geogebra.common.kernel.prover.polynomial.PVariable;
 
 /**
  * Point in region algorithm
@@ -26,10 +30,13 @@ import org.geogebra.common.kernel.geos.GeoPoint;
  * @author mathieu
  *
  */
-public class AlgoPointInRegion extends AlgoElement {
+public class AlgoPointInRegion extends AlgoElement implements SymbolicParametersBotanaAlgo {
 
 	protected Region region; // input
 	protected GeoPoint P; // output
+
+	private PPolynomial[] polynomials;
+    private PVariable[] botanaVars;
 
 	/**
 	 * @param cons
@@ -128,4 +135,20 @@ public class AlgoPointInRegion extends AlgoElement {
 
 	}
 
+	@Override
+	public PVariable[] getBotanaVars(GeoElementND geo) throws NoSymbolicParametersException {
+		if (botanaVars != null) {
+			return botanaVars;
+		}
+		botanaVars = new PVariable[2];
+		botanaVars[0] = new PVariable(kernel);
+		botanaVars[1] = new PVariable(kernel);
+		return botanaVars;
+	}
+
+	@Override
+	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
+			throws NoSymbolicParametersException {
+		return null;
+	}
 }

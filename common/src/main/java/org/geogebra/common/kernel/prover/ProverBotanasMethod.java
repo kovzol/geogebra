@@ -33,6 +33,7 @@ import org.geogebra.common.kernel.algos.AlgoEllipseHyperbolaFociPoint;
 import org.geogebra.common.kernel.algos.AlgoFractionText;
 import org.geogebra.common.kernel.algos.AlgoIntersectConics;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
+import org.geogebra.common.kernel.algos.AlgoPointInRegion;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.SymbolicParametersBotanaAlgo;
 import org.geogebra.common.kernel.algos.SymbolicParametersBotanaAlgoAre;
@@ -47,6 +48,7 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.geos.GeoPolygon;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.matrix.Coords;
@@ -1001,6 +1003,27 @@ public class ProverBotanasMethod {
 							String all_pos = "((" + d1 + ">0)AND" + "(" + d2 + ">0)AND" + "(" + d3 + ">0))";
 							String all_neg = "((" + d1 + "<0)AND" + "(" + d2 + "<0)AND" + "(" + d3 + "<0))";
 							addIneq(all_pos + "OR" + all_neg);
+						}
+
+						if (algo instanceof AlgoPointInRegion) {
+							// Idea taken from https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+							GeoPolygon p = (GeoPolygon) algo.input[0];
+							if (p.getPointsLength() == 3) {
+								GeoPoint A = p.getPoint(0);
+								GeoPoint B = p.getPoint(1);
+								GeoPoint C = p.getPoint(2);
+								GeoPoint P = (GeoPoint) geo;
+								String d1 = tripletSign(P, A, B).toString();
+								String d2 = tripletSign(P, B, C).toString();
+								String d3 = tripletSign(P, C, A).toString();
+								String all_pos =
+										"((" + d1 + ">0)AND" + "(" + d2 + ">0)AND" + "(" + d3
+												+ ">0))";
+								String all_neg =
+										"((" + d1 + "<0)AND" + "(" + d2 + "<0)AND" + "(" + d3
+												+ "<0))";
+								addIneq(all_pos + "OR" + all_neg);
+							}
 						}
 
 						if (geoPolynomials != null) {
