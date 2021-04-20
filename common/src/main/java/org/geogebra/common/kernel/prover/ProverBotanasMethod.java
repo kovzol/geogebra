@@ -712,6 +712,33 @@ public class ProverBotanasMethod {
 			}
 		}
 
+		private PPolynomial tripletSignRotated (GeoPoint p1, GeoPoint p2, GeoPoint p3) {
+			// Instead of using p1, we use its rotation by 90 about p2.
+
+			// Idea taken from https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+			// (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+			try {
+				PVariable[] geoVariables1 = ((SymbolicParametersBotanaAlgo) p1)
+						.getBotanaVars(p1);
+				PVariable[] geoVariables2 = ((SymbolicParametersBotanaAlgo) p2)
+						.getBotanaVars(p2);
+				PVariable[] geoVariables3 = ((SymbolicParametersBotanaAlgo) p3)
+						.getBotanaVars(p3);
+				PPolynomial[] rotated = new PPolynomial[2];
+				rotated[0] = (new PPolynomial(geoVariables2[0]).add(new PPolynomial(geoVariables1[1]))).
+						subtract(new PPolynomial(geoVariables2[1]));
+				rotated[1] = (new PPolynomial(geoVariables2[1]).add(new PPolynomial(geoVariables2[0]))).
+						subtract(new PPolynomial(geoVariables1[0]));
+				PPolynomial p = ((rotated[0].subtract(new PPolynomial(geoVariables3[0])))
+						.multiply(new PPolynomial(geoVariables2[1]).subtract(new PPolynomial(geoVariables3[1]))))
+						.subtract((new PPolynomial(geoVariables2[0]).subtract(new PPolynomial(geoVariables3[0])))
+								.multiply(rotated[1].subtract(new PPolynomial(geoVariables3[1]))));
+				return p;
+			} catch (NoSymbolicParametersException e) {
+				return null;
+			}
+		}
+
 		private void setHypotheses(GeoElement movingPoint) {
 			polynomials = new TreeSet<>();
 
@@ -1028,6 +1055,7 @@ public class ProverBotanasMethod {
 						}
 
 						if (algo instanceof AlgoPolygonRegular) {
+							// see https://geogebra-prover.myjetbrains.com/youtrack/issue/TP-69
 							GeoPoint A = (GeoPoint) algo.input[0];
 							GeoPoint B = (GeoPoint) algo.input[1];
 							int num = (int) ((GeoNumeric) algo.input[2]).getValue();
@@ -1035,6 +1063,10 @@ public class ProverBotanasMethod {
 							GeoPoint C = (GeoPoint) apr.getOutput(num + 1);
 							String d = tripletSign(A, B, C).toString() + ">0";
 							addIneq(d);
+							if (num > 4) {
+								String e = tripletSignRotated(A, B, C).toString() + ">0";
+								addIneq(e);
+							} // TODO: add better setting of the interval for num >= 9
 						}
 
 						if (geoPolynomials != null) {
