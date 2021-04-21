@@ -1,5 +1,7 @@
 package org.geogebra.desktop.cas.giac;
 
+import static java.lang.management.ManagementFactory.getRuntimeMXBean;
+
 import org.geogebra.common.cas.CASparser;
 import org.geogebra.common.jre.cas.giac.CASgiacJre;
 import org.geogebra.common.main.App;
@@ -80,6 +82,13 @@ public class CASgiacD extends CASgiacJre {
 
 	@Override
 	final protected boolean useThread() {
+		// Don't use thread when debugging (it will timeout):
+		boolean isDebug = getRuntimeMXBean().
+				getInputArguments().toString().contains("-agentlib:jdwp");
+		if (isDebug) {
+			return false;
+		}
+		// We didn't use to use threads on Linux, but now we use them on all platforms.
 		// return !AppD.LINUX;
 		return true;
 	}
