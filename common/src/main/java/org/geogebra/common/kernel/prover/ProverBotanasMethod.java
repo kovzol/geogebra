@@ -997,6 +997,8 @@ public class ProverBotanasMethod {
 							maxFixcoords = 2;
 						}
 
+						/* START OF REAL GEOMETRY SUPPORT. */
+
 						if (algo instanceof AlgoPointOnPath
 								&& algo.input[0] instanceof GeoSegment) {
 							// Let P be on segment AB. Then (A-P)*(P-B)>=0 is assumed.
@@ -1068,6 +1070,7 @@ public class ProverBotanasMethod {
 								addIneq(e);
 							} // TODO: add better setting of the interval for num >= 9
 						}
+						/* END OF REAL GEOMETRY SUPPORT. */
 
 						if (geoPolynomials != null) {
 							if (geo instanceof GeoPoint) {
