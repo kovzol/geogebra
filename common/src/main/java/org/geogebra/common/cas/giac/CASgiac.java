@@ -36,11 +36,16 @@ import org.geogebra.common.kernel.arithmetic.variable.Variable;
 import org.geogebra.common.kernel.geos.GeoCasCell;
 import org.geogebra.common.kernel.geos.GeoDummyVariable;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.ProverSettings;
+import org.geogebra.common.main.RealGeomWSSettings;
+import org.geogebra.common.main.SingularWSSettings;
 import org.geogebra.common.main.settings.AbstractSettings;
 import org.geogebra.common.main.settings.CASSettings;
 import org.geogebra.common.plugin.Operation;
+import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
 
@@ -856,6 +861,14 @@ public abstract class CASgiac implements CASGenericInterface {
 	 * @return CAS timeout in seconds
 	 */
 	protected long getTimeoutMilliseconds() {
+		// If SingularWS, RealGeomWS or the prover has a bigger timeout, then we will override this
+		// and use the biggest value. TODO: Find a better concept. This is just a workaround.
+		int wsTimeouts = Math.max(SingularWSSettings.getTimeout() * 1000, RealGeomWSSettings.getTimeout() * 1000);
+		int proverTimeout = ProverSettings.get().proverTimeout * 1000;
+		int timeouts = Math.max(wsTimeouts, proverTimeout);
+		if (timeouts > timeoutMillis) {
+			return timeouts;
+		}
 		return timeoutMillis;
 	}
 
