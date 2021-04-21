@@ -239,7 +239,11 @@ public class AlgoCompare extends AlgoElement {
         extraPolys.add("-" + var + "+(" + rewritten + ")^EXPONENT" + i);
         extraVars.add(var);
         if (htmlMode) {
-            inp = inputElement.getColoredLabel();
+            if (inputElement.getLabelSimple() != null) {
+                inp = inputElement.getColoredLabel();
+            } else {
+                inp = "(" + inputElement.getColoredLabel() + ")";
+            }
         } else {
             if (inputElement.getLabelSimple() != null) {
                 inp = inputElement.getLabelSimple();
