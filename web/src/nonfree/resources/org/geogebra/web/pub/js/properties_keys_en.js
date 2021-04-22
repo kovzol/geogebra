@@ -189,6 +189,8 @@ __GGB__keysVar["en"].command = {
     "Command": "Command",
     "CommonDenominator": "CommonDenominator",
     "CommonDenominator.Syntax": "[ <Expression>, <Expression> ]",
+    "Compare": "Compare",
+    "Compare": "[ <Expression>, <Expression> ]",
     "CompetitionRank": "CompetitionRank",
     "CompetitionRank.Syntax": "[ <List> ]",
     "CompleteSquare": "CompleteSquare",
