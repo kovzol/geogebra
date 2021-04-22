@@ -53,8 +53,9 @@ public class ProverD extends Prover {
 		long startTime = System.currentTimeMillis();
 		t.start();
 		int i = 0;
+		Log.debug("Waiting " + getTimeout() + "s for the prover...");
 		while (t.isAlive()) {
-			Log.debug("Waiting for the prover: " + i++);
+			Log.trace("Waiting for the prover: " + i++);
 			try {
 				t.join(50);
 			} catch (InterruptedException e) {
