@@ -1063,8 +1063,10 @@ public class ProverBotanasMethod {
 							int num = (int) ((GeoNumeric) algo.input[2]).getValue();
 							AlgoPolygonRegular apr = (AlgoPolygonRegular) algo;
 							GeoPoint C = (GeoPoint) apr.getOutput(num + 1);
-							String d = tripletSign(A, B, C).toString() + ">0";
-							addIneq(d);
+							if (num != 4) { // unnecessary condition for n=4 (it is unambiguous)
+								String d = tripletSign(A, B, C).toString() + ">0";
+								addIneq(d);
+							}
 							if (num > 4) {
 								String e = tripletSignRotated(A, B, C).toString() + ">0";
 								addIneq(e);
