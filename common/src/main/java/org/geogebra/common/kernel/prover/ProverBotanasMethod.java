@@ -1584,16 +1584,14 @@ public class ProverBotanasMethod {
 
 		private String convertSqrtToQepcad(String text) {
 			char s = Unicode.SQUARE_ROOT;
-			RegExp regExp = RegExp.compile(s + "\\d+");
+			RegExp regExp = RegExp.compile(s + "\\d+", "g");
 			MatchResult matcher = regExp.exec(text);
-			boolean matchFound = matcher != null;
-			if (matchFound) {
-				for (int i = 0; i < matcher.getGroupCount(); i++) {
-					String number = matcher.getGroup(i).substring(1);
-					String qexpr = "(sqrt" + number + ")";
-					addIneq("sqrt" + number + "^2=" + number);
-					addPosVar("sqrt" + number);
-				}
+			while (matcher != null) {
+				String number = matcher.getGroup(0).substring(1);
+				String qexpr = "(sqrt" + number + ")";
+				addIneq("sqrt" + number + "^2=" + number);
+				addPosVar("sqrt" + number);
+				matcher = regExp.exec(text);
 			}
 			return text.replace(s + "", "sqrt");
 		}
