@@ -366,6 +366,13 @@ public class AlgoCompare extends AlgoElement {
             }
         }
 
+        // Correct lr_var if it was not updated with the correct exponent:
+        for (int i = 0; i < 2; i++) {
+            if (inpElem[i] instanceof GeoSegment && exponent[i] > 1) {
+                lr_var[i] += "^" + exponent[i];
+            }
+        }
+
         String rgCommand = "euclideansolver";
         StringBuilder rgParameters = new StringBuilder();
         rgParameters.append("lhs=" + lr_var[0] + "&" + "rhs=" + lr_var[1] + "&")
