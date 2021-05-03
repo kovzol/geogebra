@@ -19,16 +19,17 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.StringTemplate;
-import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
 import org.geogebra.common.kernel.algos.AlgoDependentNumber;
 import org.geogebra.common.kernel.algos.AlgoDistancePoints;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
+import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.arithmetic.MySpecialDouble;
 import org.geogebra.common.kernel.arithmetic.Traversing.GeoNumericLabelCollector;
 import org.geogebra.common.kernel.arithmetic.Traversing.GeoNumericReplacer;
 import org.geogebra.common.kernel.arithmetic.ValidExpression;
+import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoBoolean;
 import org.geogebra.common.kernel.geos.GeoDummyVariable;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -58,6 +59,16 @@ public class DependentBooleanAdapter extends ProverAdapter {
 
 	// substitution list of segments with variables
 	private ArrayList<Map.Entry<GeoElement, PVariable>> varSubstListOfSegs;
+
+	// Abreviations of certain cases
+	private boolean caseAngleOpAngle(ExpressionNode root) {
+		return root.getLeft() instanceof GeoAngle && root.getRight() instanceof GeoAngle;
+	}
+	private boolean isAreaValue(ExpressionValue value) {
+		return value instanceof GeoNumeric &&
+				((GeoElement) value).getParentAlgorithm().getRelatedModeID() ==
+						EuclidianConstants.MODE_AREA;
+	}
 
 	public PPolynomial[][] getBotanaPolynomials(GeoBoolean bool,
 			Construction cons) throws NoSymbolicParametersException {
@@ -105,18 +116,56 @@ public class DependentBooleanAdapter extends ProverAdapter {
 		}
 
 		// Easy cases: both sides are GeoElements:
-		if (root.getLeft().isGeoElement()
-				&& (!(root.getLeft() instanceof GeoNumeric)
-						|| ((GeoElement) root.getLeft()).getParentAlgorithm()
-								.getRelatedModeID() == EuclidianConstants.MODE_AREA)
-				&& root.getRight().isGeoElement()
-				&& (!(root.getRight() instanceof GeoNumeric)
-						|| ((GeoElement) root.getRight()).getParentAlgorithm()
-								.getRelatedModeID() == EuclidianConstants.MODE_AREA)) {
+		if (root.getLeft().isGeoElement() && root.getRight().isGeoElement() &&
+				(!(isAreaValue(root.getLeft())) && !(isAreaValue(root.getRight())))
+				|| caseAngleOpAngle(root)
+		) {
 
 			GeoElement left = (GeoElement) root.getLeft();
 			GeoElement right = (GeoElement) root.getRight();
 
+			if (o == EQUAL_BOOLEAN) {
+				if ((root.getLeft() instanceof GeoNumeric
+						&& ((GeoElement) root.getLeft()).getParentAlgorithm()
+						.getRelatedModeID() == EuclidianConstants.MODE_AREA
+						&& root.getRight() instanceof GeoNumeric
+						&& ((GeoElement) root.getLeft()).getParentAlgorithm()
+						.getRelatedModeID() == EuclidianConstants.MODE_AREA)
+
+						|| caseAngleOpAngle(root)
+				) {
+
+					if (!caseAngleOpAngle(root)) {
+
+						AlgoAreEqual algo = new AlgoAreEqual(cons, left, right);
+						PPolynomial[][] ret = algo.getBotanaPolynomials();
+						cons.removeFromConstructionList(algo);
+						algo.setProtectedInput(true);
+						if (leftWasDist) {
+							left.getParentAlgorithm().setProtectedInput(true);
+							left.doRemove();
+						}
+						if (rightWasDist) {
+							right.getParentAlgorithm().setProtectedInput(true);
+							right.doRemove();
+						}
+						return ret;
+					}
+				}
+				AlgoAreCongruent algo = new AlgoAreCongruent(cons, left, right);
+				PPolynomial[][] ret = algo.getBotanaPolynomials();
+				cons.removeFromConstructionList(algo);
+				algo.setProtectedInput(true);
+				if (leftWasDist) {
+					left.getParentAlgorithm().setProtectedInput(true);
+					left.doRemove();
+				}
+				if (rightWasDist) {
+					right.getParentAlgorithm().setProtectedInput(true);
+					right.doRemove();
+				}
+				return ret;
+			}
 			if (o == PERPENDICULAR) {
 				AlgoArePerpendicular algo = new AlgoArePerpendicular(cons, left,
 						right);
@@ -132,41 +181,6 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			}
 			if (o == LESS_EQUAL || o == LESS || o == GREATER_EQUAL || o == GREATER) {
 				PPolynomial[][] ret = null;
-				return ret;
-			}
-			if (o == EQUAL_BOOLEAN) {
-				if (root.getLeft() instanceof GeoNumeric
-						&& ((GeoElement) root.getLeft()).getParentAlgorithm()
-								.getRelatedModeID() == EuclidianConstants.MODE_AREA
-						&& root.getRight() instanceof GeoNumeric
-						&& ((GeoElement) root.getLeft()).getParentAlgorithm()
-								.getRelatedModeID() == EuclidianConstants.MODE_AREA) {
-					AlgoAreEqual algo = new AlgoAreEqual(cons, left, right);
-					PPolynomial[][] ret = algo.getBotanaPolynomials();
-					cons.removeFromConstructionList(algo);
-					algo.setProtectedInput(true);
-					if (leftWasDist) {
-						left.getParentAlgorithm().setProtectedInput(true);
-						left.doRemove();
-					}
-					if (rightWasDist) {
-						right.getParentAlgorithm().setProtectedInput(true);
-						right.doRemove();
-					}
-					return ret;
-				}
-				AlgoAreCongruent algo = new AlgoAreCongruent(cons, left, right);
-				PPolynomial[][] ret = algo.getBotanaPolynomials();
-				cons.removeFromConstructionList(algo);
-				algo.setProtectedInput(true);
-				if (leftWasDist) {
-					left.getParentAlgorithm().setProtectedInput(true);
-					left.doRemove();
-				}
-				if (rightWasDist) {
-					right.getParentAlgorithm().setProtectedInput(true);
-					right.doRemove();
-				}
 				return ret;
 			}
 			if (root.getOperation().equals(IS_ELEMENT_OF)) {
@@ -199,6 +213,9 @@ public class DependentBooleanAdapter extends ProverAdapter {
 
 		// More difficult cases: sides are expressions:
 
+		/* This seems incomplete. If GeoElement OP MyDouble is implemented, MyDouble OP GeoElement should
+		 * also be implemented.
+		 */
 		if ((o == EQUAL_BOOLEAN || o == LESS_EQUAL || o == LESS || o == GREATER_EQUAL || o == GREATER) &&
 				(
 						(root.getLeft().isExpressionNode() || root.getRight().isExpressionNode())
