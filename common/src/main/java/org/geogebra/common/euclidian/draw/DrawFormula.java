@@ -3,6 +3,8 @@ package org.geogebra.common.euclidian.draw;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geogebra.common.awt.GAffineTransform;
+import org.geogebra.common.awt.GFont;
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.awt.GPoint2D;
 import org.geogebra.common.awt.GRectangle;
@@ -11,10 +13,9 @@ import org.geogebra.common.euclidian.BoundingBox;
 import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianBoundingBoxHandler;
 import org.geogebra.common.euclidian.EuclidianView;
-import org.geogebra.common.euclidian.RotatableBoundingBox;
+import org.geogebra.common.euclidian.MediaBoundingBox;
 import org.geogebra.common.euclidian.inline.InlineFormulaController;
 import org.geogebra.common.kernel.StringTemplate;
-import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoFormula;
 
 public class DrawFormula extends Drawable implements DrawInline {
@@ -32,7 +33,7 @@ public class DrawFormula extends Drawable implements DrawInline {
 	 */
 	public DrawFormula(EuclidianView ev, GeoFormula formula) {
 		super(ev, formula);
-		this.rectangle = new TransformableRectangle(view, formula);
+		this.rectangle = new TransformableRectangle(view, formula, false);
 		this.formula = formula;
 		this.formulaController = ev.getApplication().createInlineFormulaController(ev, formula);
 		update();
@@ -62,14 +63,17 @@ public class DrawFormula extends Drawable implements DrawInline {
 
 	@Override
 	public void draw(GGraphics2D g2) {
-		if (formulaController == null || !formulaController.isInForeground()) {
+		if (formula.isEuclidianVisible()
+				&& (formulaController == null || !formulaController.isInForeground())
+			&& rectangle.getDirectTransform() != null) {
 			g2.setPaint(geo.getObjectColor());
-			g2.setFont(view.getFont());
 			g2.setStroke(objStroke); // needed eg for \sqrt
 			g2.saveTransform();
 			g2.transform(rectangle.getDirectTransform());
 			g2.translate(PADDING, PADDING);
-			drawMultilineLaTeX(g2, view.getFont().deriveFont(0, view.getFontSize()),
+			GFont font = view.getApplication().getFontCommon(false,
+					GFont.PLAIN, view.getFontSize());
+			drawMultilineLaTeX(g2, font,
 					geo.getObjectColor(), view.getBackgroundCommon());
 			g2.restoreTransform();
 		}
@@ -91,13 +95,25 @@ public class DrawFormula extends Drawable implements DrawInline {
 	}
 
 	@Override
-	public GeoElement getGeoElement() {
-		return geo;
+	public MediaBoundingBox getBoundingBox() {
+		return rectangle.getBoundingBox();
 	}
 
 	@Override
-	public RotatableBoundingBox getBoundingBox() {
-		return rectangle.getBoundingBox();
+	public String urlByCoordinate(int x, int y) {
+		return "";
+	}
+
+	@Override
+	public void saveContent() {
+		if (formulaController != null) {
+			formula.setContent(formulaController.getText());
+		}
+	}
+
+	@Override
+	public GAffineTransform getTransform() {
+		return rectangle.getDirectTransform();
 	}
 
 	@Override
@@ -112,7 +128,8 @@ public class DrawFormula extends Drawable implements DrawInline {
 
 	@Override
 	public void updateContent() {
-		if (formulaController != null) {
+		if (formulaController != null
+				&& !formulaController.getText().equals(formula.getContent())) {
 			formulaController.updateContent(formula.getContent());
 		}
 	}

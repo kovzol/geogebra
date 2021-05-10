@@ -12,19 +12,19 @@ public class CommandRenewCommand extends Command {
 		final String name = tp.getArgAsCommand();
 		final int nbargs = tp.getOptionAsPositiveInteger(0);
 
-        if (TeXLengthSettings.isLengthName(name) && nbargs == 0) {
-            tp.addToConsumer(new SetLengthAtom(name, tp.getArgAsLength()));
-            return false;
-        }
+		if (TeXLengthSettings.isLengthName(name) && nbargs == 0) {
+			tp.addToConsumer(new SetLengthAtom(name, tp.getArgAsLength()));
+			return false;
+		}
 
-        if (TeXLengthSettings.isFactorName(name) && nbargs == 0) {
-            tp.addToConsumer(new SetLengthAtom(name, tp.getArgAsDecimal()));
-            return false;
-        }
+		if (TeXLengthSettings.isFactorName(name) && nbargs == 0) {
+			tp.addToConsumer(new SetLengthAtom(name, tp.getArgAsDecimal()));
+			return false;
+		}
 
 		final String code = tp.getGroupAsArgument();
 
-        NewCommandMacro.addNewCommand(tp, name, code, nbargs, true);
+		NewCommandMacro.addNewCommand(tp, name, code, nbargs, true);
 		return false;
 	}
 }

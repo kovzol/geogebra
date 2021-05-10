@@ -37,8 +37,9 @@ public interface Export3dDialogInterface {
 	 */
 	double getCurrentThickness();
 
-    /**
-     * @return true if user wants filled solid (box checked or thickness == 0)
-     */
-    boolean wantsFilledSolids();
+	/**
+	 * 
+	 * @return true if user wants filled solid (box checked or thickness == 0)
+	 */
+	boolean wantsFilledSolids();
 }

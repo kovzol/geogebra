@@ -1,18 +1,14 @@
 package org.geogebra.web.full.main;
 
 import org.geogebra.web.html5.main.AppW;
-import org.geogebra.web.html5.main.TestArticleElement;
+import org.geogebra.web.html5.util.AppletParameters;
 import org.geogebra.web.test.AppMocker;
+import org.geogebra.web.test.GgbMockitoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.google.gwt.dom.client.TextAreaElement;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.gwtmockito.WithClassesToStub;
-
-@RunWith(GwtMockitoTestRunner.class)
-@WithClassesToStub({ TextAreaElement.class })
+@RunWith(GgbMockitoTestRunner.class)
 public class CasTest {
 	private static AppW app;
 	@Before
@@ -23,7 +19,7 @@ public class CasTest {
 	@Test
 	public void startApp() {
 		app = AppMocker
-				.mockApplet(new TestArticleElement("prerelease", "cas"));
+				.mockApplet(new AppletParameters("cas"));
 	}
 
 }

@@ -22,26 +22,26 @@ class DerivativeCreator {
 			index--;
 		}
 		GeoElement geo = null;
-        boolean hasGeoDerivative = false;
-        while (index < funcName.length() && !hasGeoDerivative) {
+		boolean hasGeoDerivative = false;
+		while (index < funcName.length() && !hasGeoDerivative) {
 			String label = funcName.substring(0, index + 1);
 			geo = kernel.lookupLabel(label);
-            hasGeoDerivative = geo != null && hasDerivative(geo);
+			hasGeoDerivative = geo != null && hasDerivative(geo);
 			// stop if f' is defined but f is not defined, see #1444
-            if (!hasGeoDerivative) {
-                order--;
-                index++;
-            }
+			if (!hasGeoDerivative) {
+				order--;
+				index++;
+			}
 		}
 
-        if (hasGeoDerivative) {
+		if (hasGeoDerivative) {
 			return FunctionParser.derivativeNode(kernel, geo, order,
 					geo.isGeoCurveCartesian(), new FunctionVariable(kernel));
 		}
 		return null;
 	}
 
-    private boolean hasDerivative(GeoElement geoElement) {
-        return geoElement.isRealValuedFunction() || geoElement.isGeoCurveCartesian();
-    }
+	private boolean hasDerivative(GeoElement geoElement) {
+		return geoElement.isRealValuedFunction() || geoElement.isGeoCurveCartesian();
+	}
 }

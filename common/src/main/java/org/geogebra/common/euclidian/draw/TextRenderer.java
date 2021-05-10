@@ -24,15 +24,16 @@ public interface TextRenderer {
 				  GFont font, String text,
 				  double xPos, double yPos);
 
-    /**
-     * Measure the text that is draw.
-     *
-     * @param graphics         graphics
-     * @param geo              geo
-     * @param font             font
-     * @param labelDescription label
-     * @return size of the drawn text
-     */
-    GRectangle measureBounds(GGraphics2D graphics, GeoInputBox geo, GFont font,
-                             String labelDescription);
+	/**
+	 * Measure the text that is draw.
+	 *
+	 * @param graphics graphics
+	 * @param geo geo
+	 * @param font font
+	 * @param labelDescription label
+	 *
+	 * @return size of the drawn text
+	 */
+	GRectangle measureBounds(GGraphics2D graphics, GeoInputBox geo, GFont font,
+							 String labelDescription);
 }

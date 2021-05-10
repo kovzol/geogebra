@@ -1,6 +1,7 @@
 package org.geogebra.web.full.gui;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.geogebra.common.awt.GDimension;
@@ -24,6 +25,8 @@ import org.geogebra.common.gui.view.algebra.AlgebraView;
 import org.geogebra.common.gui.view.consprotocol.ConstructionProtocolNavigation;
 import org.geogebra.common.gui.view.consprotocol.ConstructionProtocolView;
 import org.geogebra.common.gui.view.properties.PropertiesView;
+import org.geogebra.common.gui.view.table.InvalidValuesException;
+import org.geogebra.common.io.layout.DockPanelData;
 import org.geogebra.common.javax.swing.GOptionPane;
 import org.geogebra.common.javax.swing.SwingConstants;
 import org.geogebra.common.kernel.ModeSetter;
@@ -96,7 +99,6 @@ import org.geogebra.web.full.gui.view.algebra.RetexKeyboardListener;
 import org.geogebra.web.full.gui.view.consprotocol.ConstructionProtocolNavigationW;
 import org.geogebra.web.full.gui.view.data.DataAnalysisViewW;
 import org.geogebra.web.full.gui.view.probcalculator.ProbabilityCalculatorViewW;
-import org.geogebra.web.full.gui.view.spreadsheet.CopyPasteCutW;
 import org.geogebra.web.full.gui.view.spreadsheet.MyTableW;
 import org.geogebra.web.full.gui.view.spreadsheet.SpreadsheetContextMenuW;
 import org.geogebra.web.full.gui.view.spreadsheet.SpreadsheetViewW;
@@ -122,15 +124,19 @@ import org.geogebra.web.html5.gui.util.NoDragImage;
 import org.geogebra.web.html5.gui.view.browser.BrowseViewI;
 import org.geogebra.web.html5.javax.swing.GOptionPaneW;
 import org.geogebra.web.html5.main.AppW;
+import org.geogebra.web.html5.util.Dom;
+import org.geogebra.web.html5.util.FileConsumer;
+import org.geogebra.web.html5.util.StringConsumer;
 import org.geogebra.web.html5.util.Visibility;
 import org.geogebra.web.shared.GlobalHeader;
 
 import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ResourcePrototype;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -181,6 +187,8 @@ public class GuiManagerW extends GuiManager
 
 	private AnimatingPanel sciSettingsView;
 	private TemplateChooserController templateController;
+
+	private Runnable runAfterLogin;
 
 	/**
 	 *
@@ -233,12 +241,12 @@ public class GuiManagerW extends GuiManager
 	public void showPopupMenu(final ArrayList<GeoElement> selectedGeos,
 			final EuclidianViewInterfaceCommon view, final GPoint mouseLoc) {
 		showPopupMenu(selectedGeos,
-                ((EuclidianViewWInterface) view).getG2P().getElement(),
+				((EuclidianViewWInterface) view).getG2P().getElement(),
 				mouseLoc);
 	}
 
 	private void showPopupMenu(final ArrayList<GeoElement> geos,
-                               final Element invoker, final GPoint p) {
+			final Element invoker, final GPoint p) {
 		if (geos == null || !getApp().letShowPopupMenu()) {
 			return;
 		}
@@ -247,7 +255,7 @@ public class GuiManagerW extends GuiManager
 		} else {
 			// clear highlighting and selections in views
 			getApp().getActiveEuclidianView().resetMode();
-            getPopupMenu(geos).showScaled(invoker, p.x, p.y);
+			getPopupMenu(geos).showScaled(invoker, p.x, p.y);
 		}
 	}
 
@@ -316,13 +324,13 @@ public class GuiManagerW extends GuiManager
 			showDrawingPadPopup(view, p);
 		} else {
 
-            final Element invoker = ((EuclidianViewWInterface) view)
-                    .getCanvasElement();
+			final Element invoker = ((EuclidianViewWInterface) view)
+					.getCanvasElement();
 			// clear highlighting and selections in views
 			getApp().getActiveEuclidianView().resetMode();
 			ContextMenuGeoElementW menu = getPopupMenu(view, selectedGeos,
 					geos, p);
-            menu.showScaled(invoker, p.x, p.y);
+			menu.showScaled(invoker, p.x, p.y);
 		}
 	}
 
@@ -402,32 +410,6 @@ public class GuiManagerW extends GuiManager
 			getApp().getToolbar().closeAllSubmenu();
 		}
 
-		if (altDown) {
-			// AppW.nativeConsole("alt down");
-			Log.debug("trying to paste image");
-
-			// try to paste image in html format eg
-			// http://jsfiddle.net/bvFNL/8/
-			String html = CopyPasteCutW.getClipboardContents(null);
-			// AppW.nativeConsole("from clipboard = " + html);
-
-			Log.debug("trying to paste image " + html);
-
-			int pngBase64index = html.indexOf(StringUtil.pngMarker);
-
-			if (pngBase64index > -1) {
-				int pngBase64end = html.indexOf("\"", pngBase64index);
-				String base64 = html.substring(
-						pngBase64index,
-						pngBase64end);
-
-				getApp().imageDropHappened("pastedFromClipboard.png",
-						base64);
-
-				return;
-			}
-		}
-
 		((DialogManagerW) app.getDialogManager()).showImageInputDialog(imageLoc,
 				this.device);
 	}
@@ -437,12 +419,12 @@ public class GuiManagerW extends GuiManager
 		if (getApp().getToolbar() != null) {
 			getApp().getToolbar().closeAllSubmenu();
 		}
-        DialogManagerW dialogManager = (DialogManagerW) app.getDialogManager();
-        if (Browser.isiOS()) {
-            dialogManager.showImageInputDialog(null, device);
-        } else {
-            dialogManager.showWebcamInputDialog(device);
-        }
+		DialogManagerW dialogManager = (DialogManagerW) app.getDialogManager();
+		if (Browser.isiOS()) {
+			dialogManager.showImageInputDialog(null, device);
+		} else {
+			dialogManager.showWebcamInputDialog();
+		}
 	}
 
 	/**
@@ -459,7 +441,7 @@ public class GuiManagerW extends GuiManager
 	@Override
 	public void showDrawingPadPopup(final EuclidianViewInterfaceCommon view,
 			final GPoint mouseLoc) {
-        showDrawingPadPopup(((EuclidianViewW) view).getG2P().getElement(),
+		showDrawingPadPopup(((EuclidianViewW) view).getG2P().getElement(),
 				mouseLoc);
 	}
 
@@ -469,10 +451,10 @@ public class GuiManagerW extends GuiManager
 		// 3D stuff
 	}
 
-    private void showDrawingPadPopup(final Element invoker, final GPoint p) {
+	private void showDrawingPadPopup(final Element invoker, final GPoint p) {
 		// clear highlighting and selections in views
 		getApp().getActiveEuclidianView().resetMode();
-        getDrawingPadpopupMenu(p.x, p.y).showScaled(invoker, p.x, p.y);
+		getDrawingPadpopupMenu(p.x, p.y).showScaled(invoker, p.x, p.y);
 	}
 
 	private ContextMenuGeoElementW getDrawingPadpopupMenu(final int x,
@@ -514,7 +496,7 @@ public class GuiManagerW extends GuiManager
 			} else {
 				hideViewWith(viewId, isPermanent);
 			}
-            getApp().dispatchEvent(new Event(EventType.PERSPECTIVE_CHANGE));
+			getApp().dispatchEvent(new Event(EventType.PERSPECTIVE_CHANGE));
 		}
 
 		getApp().updateVoiceover();
@@ -633,7 +615,7 @@ public class GuiManagerW extends GuiManager
 	@Override
 	public void resize(final int width, final int height) {
 		final Element geogebraFrame = getApp().getFrameElement();
-		int borderThickness = getApp().getArticleElement()
+		int borderThickness = getApp().getAppletParameters()
 				.getBorderThickness();
 		if (getLayout() != null && getLayout().getRootComponent() != null) {
 			if (geogebraFrame.getOffsetHeight() <= 0) {
@@ -642,14 +624,12 @@ public class GuiManagerW extends GuiManager
 			int widthChanged = width - geogebraFrame.getOffsetWidth();
 			int heightChanged = height - geogebraFrame.getOffsetHeight();
 			final DockSplitPaneW root = getLayout().getRootComponent();
-			root.setPixelSize(root.getOffsetWidth() + widthChanged,
-					root.getOffsetHeight() + heightChanged);
+			root.setPixelSize(getPxWidth(root) + widthChanged,
+					getPxHeight(root) + heightChanged);
 			root.onResize();
 		} else {
-			geogebraFrame.getStyle().setProperty("height",
-					height - borderThickness + "px");
-			geogebraFrame.getStyle().setProperty("width",
-					width - borderThickness + "px");
+			geogebraFrame.getStyle().setHeight(height, Style.Unit.PX);
+			geogebraFrame.getStyle().setWidth(width, Style.Unit.PX);
 			getApp().getEuclidianViewpanel().setPixelSize(width, height);
 
 			// maybe onResize is OK too
@@ -676,6 +656,16 @@ public class GuiManagerW extends GuiManager
 			}
 
 		});
+	}
+
+	private int getPxWidth(DockSplitPaneW root) {
+		return root.getOffsetWidth() > 0 ? root.getOffsetWidth()
+				: Dom.getPxProperty(root.getElement(), "width");
+	}
+
+	private int getPxHeight(DockSplitPaneW root) {
+		return root.getOffsetHeight() > 0 ? root.getOffsetHeight()
+				: Dom.getPxProperty(root.getElement(), "height");
 	}
 
 	private ToolBarW getGeneralToolbar() {
@@ -890,9 +880,6 @@ public class GuiManagerW extends GuiManager
 	@Override
 	public InputBarHelpPanelW getInputHelpPanel() {
 		if (inputHelpPanel == null) {
-			if (getApp().showView(App.VIEW_CAS)) {
-				getApp().getCommandDictionaryCAS();
-			}
 			inputHelpPanel = new InputBarHelpPanelW(getApp());
 		}
 		return inputHelpPanel;
@@ -1062,6 +1049,19 @@ public class GuiManagerW extends GuiManager
 	@Override
 	public boolean save() {
 		return getApp().getFileManager().save(getApp());
+	}
+
+	private String originalFrameTitle = null;
+
+	@Override
+	public void updateFrameTitle(String info) {
+		if (originalFrameTitle == null) {
+			originalFrameTitle = Document.get().getTitle();
+		}
+		if (info == null) {
+			info = originalFrameTitle;
+		}
+		Document.get().setTitle(info);
 	}
 
 	@Override
@@ -1297,7 +1297,7 @@ public class GuiManagerW extends GuiManager
 		} catch (final Exception e) {
 			Log.debug("openHelp error: " + e.toString() + " " + e.getMessage()
 			+ " " + page + " " + type);
-            getApp().showGenericError(e);
+			getApp().showGenericError(e);
 		}
 	}
 
@@ -1342,10 +1342,10 @@ public class GuiManagerW extends GuiManager
 			toolbarPanel.getToolBar().buildGui();
 			toolbarPanel.setLabels();
 		}
-		SetLabels toolbarMow = (((AppWFull) app).getAppletFrame())
-				.getToolbarMow();
-		if (toolbarMow != null) {
-			toolbarMow.setLabels();
+		SetLabels notesLayout = (((AppWFull) app).getAppletFrame())
+				.getNotesLayout();
+		if (notesLayout != null) {
+			notesLayout.setLabels();
 		}
 		resetMenu();
 
@@ -1456,7 +1456,7 @@ public class GuiManagerW extends GuiManager
 
 	@Override
 	public void updateFrameSize() {
-		if (!getApp().getArticleElement().getDataParamApp()) {
+		if (!getApp().getAppletParameters().getDataParamApp()) {
 			return;
 		}
 		// get frame size from layout manager
@@ -1468,19 +1468,6 @@ public class GuiManagerW extends GuiManager
 		if (getApp().getDevice() != null) {
 			getApp().getDevice().resizeView(width, height);
 		}
-	}
-
-	private String originalFrameTitle = null;
-
-	@Override
-	public void updateFrameTitle(String info) {
-		if (originalFrameTitle == null) {
-			originalFrameTitle = Document.get().getTitle();
-		}
-		if (info == null) {
-			info = originalFrameTitle;
-		}
-		Document.get().setTitle(info);
 	}
 
 	@Override
@@ -1696,7 +1683,7 @@ public class GuiManagerW extends GuiManager
 	 */
 	@Override
 	public void showMenuBar(final boolean show) {
-		getApp().getArticleElement().attr("showMenuBar", show + "");
+		getApp().getAppletParameters().setAttribute("showMenuBar", show + "");
 		if (show) {
 			showToolBar(true);
 		}
@@ -1719,7 +1706,7 @@ public class GuiManagerW extends GuiManager
 		}
 		if (currentlyVisible != show) {
 			getApp().setShowToolBar(show);
-			getApp().getArticleElement()
+			getApp().getAppletParameters()
 			.removeAttribute("data-param-showToolBar");
 			getApp().persistWidthAndHeight();
 			getApp()
@@ -1767,7 +1754,7 @@ public class GuiManagerW extends GuiManager
 		}
 
 		if (getApp().isWhiteboardActive()) {
-			(getApp().getAppletFrame()).setToorbarMowMode(mode);
+			(getApp().getAppletFrame()).setNotesMode(mode);
 			return mode;
 		}
 
@@ -1933,24 +1920,20 @@ public class GuiManagerW extends GuiManager
 		if (showDialog) {
 			getOptionPane().showSaveDialog(loc.getMenu("Save"),
 					getApp().getExportTitle() + extension, null,
-					new AsyncOperation<String[]>() {
+					obj -> {
+						if (Integer.parseInt(obj[0]) == 0) {
 
-						@Override
-						public void callback(String[] obj) {
-							if (Integer.parseInt(obj[0]) == 0) {
+							String filename = obj[1];
 
-								String filename = obj[1];
-
-								if (filename == null || filename.trim().isEmpty()) {
-									filename = getApp().getExportTitle();
-								}
-
-								// in case user removes extension
-								if (!filename.endsWith(extension)) {
-									filename += extension;
-								}
-								exportGgb(filename, extension);
+							if (filename == null || filename.trim().isEmpty()) {
+								filename = getApp().getExportTitle();
 							}
+
+							// in case user removes extension
+							if (!filename.endsWith(extension)) {
+								filename += extension;
+							}
+							exportGgb(filename, extension);
 						}
 					}, loc.getMenu("Save"));
 		} else {
@@ -1960,7 +1943,9 @@ public class GuiManagerW extends GuiManager
 
 	private void exportGGBDirectly() {
 		String extension = ((AppW) app).getFileExtension();
-		String filename = getApp().getExportTitle() + extension;
+		String currentDate = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm").format(new Date())
+				+ extension;
+		String filename = getApp().isMebis() ? currentDate : getApp().getExportTitle() + extension;
 		exportGgb(filename, extension);
 	}
 
@@ -1973,7 +1958,7 @@ public class GuiManagerW extends GuiManager
 			getApp().getGgbApi().getBase64(true,
 					getBase64DownloadCallback(filename));
 		} else {
-			getApp().getGgbApi().getGGBfile(true,
+			getApp().getGgbApi().getZippedGgbAsync(true,
 					getDownloadCallback(filename));
 		}
 	}
@@ -1981,27 +1966,9 @@ public class GuiManagerW extends GuiManager
 	/**
 	 * @param title
 	 *            construction title
-	 * @return local file saving callback for base64
-	 */
-	native JavaScriptObject getStringCallback(String title) /*-{
-
-		return function(base64) {
-			var a = $doc.createElement("a");
-			$doc.body.appendChild(a);
-			a.style = "display: none";
-			a.href = @org.geogebra.common.util.StringUtil::ggbMarker + base64;
-			a.download = title;
-			a.click();
-		}
-
-	}-*/;
-
-	/**
-	 * @param title
-	 *            construction title
 	 * @return local file saving callback for binary file
 	 */
-	native JavaScriptObject getDownloadCallback(String title) /*-{
+	native FileConsumer getDownloadCallback(String title) /*-{
 		var _this = this;
 		return function(ggbZip) {
 			var URL = $wnd.URL || $wnd.webkitURL;
@@ -2032,22 +1999,36 @@ public class GuiManagerW extends GuiManager
 	 *            export title
 	 * @return callback for base64 encoded download
 	 */
-	native JavaScriptObject getBase64DownloadCallback(String title) /*-{
-		return function(base64) {
-			@org.geogebra.web.html5.Browser::downloadDataURL(Ljava/lang/String;Ljava/lang/String;)("data:application/vnd.geogebra.file;base64,"+base64, title);
-		}
-	}-*/;
+	protected StringConsumer getBase64DownloadCallback(String title) {
+		return base64 ->
+			Browser.downloadDataURL("data:application/vnd.geogebra.file;base64," + base64,
+					title);
+	}
 
 	@Override
 	public final void renderEvent(final BaseEvent event) {
 		if (this.uploadWaiting && event instanceof LoginEvent
 				&& ((LoginEvent) event).isSuccessful()) {
 			this.uploadWaiting = false;
-			save();
+			runAfterSuccessfulLogin();
 		} else if (this.uploadWaiting && event instanceof StayLoggedOutEvent) {
 			this.uploadWaiting = false;
 			getApp().getFileManager().saveLoggedOut(getApp());
 		}
+	}
+
+	private void runAfterSuccessfulLogin() {
+		if (app.isMebis() && runAfterLogin != null) {
+			runAfterLogin.run();
+			setRunAfterLogin(null);
+		} else {
+			save();
+		}
+	}
+
+	@Override
+	public void setRunAfterLogin(Runnable runAfterLogin) {
+		this.runAfterLogin = runAfterLogin;
 	}
 
 	@Override
@@ -2084,7 +2065,7 @@ public class GuiManagerW extends GuiManager
 		}
 		if (textField instanceof RadioTreeItem) {
 			return new MathFieldProcessing(
-					((RadioTreeItem) textField).getMathField(),
+					(RadioTreeItem) textField,
 					lastItemProvider);
 		}
 		if (textField instanceof KeyboardListener) {
@@ -2156,7 +2137,7 @@ public class GuiManagerW extends GuiManager
 	 */
 	public static boolean mayForceKeyboard(AppW app) {
 		return !app.isStartedWithFile()
-				&& !app.getArticleElement().preventFocus()
+				&& !app.getAppletParameters().preventFocus()
 				&& (app.getExam() == null || app.getExam().getStart() > 0);
 	}
 
@@ -2226,7 +2207,7 @@ public class GuiManagerW extends GuiManager
 	@Override
 	public void switchToolsToAV() {
 		getLayout().getDockManager().getPanel(App.VIEW_ALGEBRA)
-				.setToolMode(false);
+				.setTabId(DockPanelData.TabIds.ALGEBRA);
 	}
 
 	/**
@@ -2289,9 +2270,38 @@ public class GuiManagerW extends GuiManager
 	 *            function/lie to be added
 	 */
 	public void addGeoToTableValuesView(GeoElement geo) {
+		app.getEventDispatcher()
+				.dispatchEvent(EventType.ADD_TV, geo);
+		addGeoToTV(geo);
+		getUnbundledToolbar().openTableView((GeoEvaluatable) geo, true);
+	}
+
+	@Override
+	public void removeGeoFromTV(String label) {
+		GeoElement geo = app.getKernel().lookupLabel(label);
+		if (getTableValuesView() != null && geo instanceof GeoEvaluatable) {
+			getTableValuesView().hideColumn((GeoEvaluatable) geo);
+		}
+	}
+
+	@Override
+	public void setValues(double min, double max, double step) throws InvalidValuesException {
+		if (getTableValuesView() != null) {
+			getTableValuesView().setValues(min, max, step);
+		}
+	}
+
+	@Override
+	public void showPointsTV(int column, boolean show) {
+		if (getTableValuesPoints() != null) {
+			getTableValuesPoints().setPointsVisible(column, show);
+		}
+	}
+
+	@Override
+	public void addGeoToTV(GeoElement geo) {
 		getTableValuesView().add(geo);
 		getTableValuesView().showColumn((GeoEvaluatable) geo);
-		getUnbundledToolbar().openTableView((GeoEvaluatable) geo, true);
 	}
 
 	@Override
@@ -2325,9 +2335,7 @@ public class GuiManagerW extends GuiManager
 
 			@Override
 			public void callback(Widget share) {
-				if (getApp().isMenuShowing()) {
-					getApp().toggleMenu();
-				}
+				getApp().hideMenu();
 				FileMenuW.share(getApp(), share);
 			}
 		});
@@ -2345,5 +2353,4 @@ public class GuiManagerW extends GuiManager
 		DockPanelW dockPanelForKeyboard = layout.getDockManager().getPanelForKeyboard();
 		return getKeyboardListener(dockPanelForKeyboard);
 	}
-
 }

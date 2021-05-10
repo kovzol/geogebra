@@ -42,8 +42,6 @@ import org.geogebra.common.kernel.geos.GeoPolygon;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.geos.GeoVec2D;
 import org.geogebra.common.kernel.kernelND.GeoSurfaceCartesianND;
-import org.geogebra.common.kernel.parser.FunctionParser;
-import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.MyError;
 import org.geogebra.common.main.MyError.Errors;
@@ -51,6 +49,8 @@ import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.DoubleUtil;
 import org.geogebra.common.util.MyMath;
 import org.geogebra.common.util.debug.Log;
+
+import com.google.j2objc.annotations.Weak;
 
 /**
  * Tree node for expressions like "3*a - b/5"
@@ -60,17 +60,8 @@ import org.geogebra.common.util.debug.Log;
 public class ExpressionNode extends ValidExpression
 		implements ExpressionNodeConstants, ReplaceChildrenByValues {
 
-	private static final Inspecting TRICKY_DIVISION_CHECKER = new Inspecting() {
-
-		@Override
-		public boolean check(ExpressionValue v) {
-			return v.isExpressionNode()
-					&& ((ExpressionNode) v).getOperation() == Operation.DIVIDE
-					&& DoubleUtil.isZero(v.evaluateDouble())
-					&& ((ExpressionNode) v).getLeft().evaluateDouble() != 0;
-		}
-	};
 	private Localization loc;
+	@Weak
 	private Kernel kernel;
 	private ExpressionValue left;
 	private ExpressionValue right;
@@ -78,6 +69,8 @@ public class ExpressionNode extends ValidExpression
 	private boolean forceVector = false;
 	private boolean forcePoint = false;
 	private boolean forceFunction = false;
+	private boolean forceInequality = false;
+	private boolean forceSurface = false;
 
 	/** true if this holds text and the text is in LaTeX format */
 	public boolean holdsLaTeXtext = false;
@@ -111,6 +104,7 @@ public class ExpressionNode extends ValidExpression
 	 */
 	public ExpressionNode(Kernel kernel, ExpressionValue left,
 			Operation operation, ExpressionValue right) {
+
 		this.kernel = kernel;
 		loc = kernel.getLocalization();
 		this.operation = operation;
@@ -290,19 +284,22 @@ public class ExpressionNode extends ValidExpression
 
 		if (lev != null) {
 			newNode = new ExpressionNode(kernel1, lev, operation, rev);
-			newNode.leaf = leaf;
 		} else {
 			// something went wrong
 			return null;
 		}
+		newNode.leaf = leaf;
+		copyAttributesTo(newNode);
+		return newNode;
+	}
 
-		// set member vars that are not set by constructors
-		newNode.forceVector = forceVector;
-		newNode.forcePoint = forcePoint;
-		newNode.forceFunction = forceFunction;
-		newNode.brackets = brackets;
-		newNode.secretMaskingAlgo = secretMaskingAlgo;
-		// Application.debug("getCopy() output: " + newNode);
+	/**
+	 * @return copy of this, keeping left and right subtrees
+	 */
+	public ExpressionNode shallowCopy() {
+		ExpressionNode newNode = new ExpressionNode(kernel, left, operation, right);
+		newNode.leaf = leaf;
+		copyAttributesTo(newNode);
 		return newNode;
 	}
 
@@ -320,9 +317,10 @@ public class ExpressionNode extends ValidExpression
 			return null;
 		}
 
-		ExpressionValue ret = null;
-		// Application.debug("copy ExpressionValue input: " + ev);
-		if (ev.isExpressionNode()) {
+		ExpressionValue ret;
+		if (ev instanceof MinusOne) {
+			return new MinusOne(kernel);
+		} else if (ev.isExpressionNode()) {
 			ExpressionNode en = (ExpressionNode) ev;
 			ret = en.getCopy(kernel);
 		} else if (ev instanceof MyList) {
@@ -396,43 +394,6 @@ public class ExpressionNode extends ValidExpression
 	}
 
 	/**
-	 * Replaces all constant parts in tree by their values
-	 */
-	final public void simplifyConstantIntegers() {
-		if (left.isExpressionNode()) {
-			left = doSimplifyConstantIntegers(left);
-		}
-
-		if ((right != null) && right.isExpressionNode()) {
-			right = doSimplifyConstantIntegers(right);
-		}
-	}
-
-	private static ExpressionValue doSimplifyConstantIntegers(
-			ExpressionValue left2) {
-		ExpressionNode node = (ExpressionNode) left2;
-		if (left2.isConstant() && node.getOperation() != Operation.ARBCONST) {
-			ExpressionValue eval = node
-					.evaluate(StringTemplate.defaultTemplate);
-			if (eval instanceof NumberValue) {
-				// we only simplify numbers that have integer values
-				if (DoubleUtil.isInteger(eval.evaluateDouble())) {
-					if (node.inspect(TRICKY_DIVISION_CHECKER)) {
-						node.simplifyConstantIntegers();
-						return left2;
-					}
-					return eval;
-				}
-			} else {
-				return eval;
-			}
-		} else {
-			node.simplifyConstantIntegers();
-		}
-		return left2;
-	}
-
-	/**
 	 * Evaluates this expression
 	 * 
 	 * @param tpl
@@ -461,8 +422,8 @@ public class ExpressionNode extends ValidExpression
 	private void doResolveVariables(EvalInfo info) {
 		// resolve left wing
 		if (left.isVariable()) {
-			left = ((Variable) left).resolveAsExpressionValue(
-					info.getSymbolicMode(), info.isMultipleUnassignedAllowed());
+			left = ((Variable) left).resolveAsExpressionValue(info.getSymbolicMode(),
+					info.isMultipleUnassignedAllowed(), info.isMultiLetterVariablesAllowed());
 			if (operation == Operation.POWER
 					|| operation == Operation.FACTORIAL) {
 				fixPowerFactorial(Operation.MULTIPLY);
@@ -480,8 +441,8 @@ public class ExpressionNode extends ValidExpression
 		// resolve right wing
 		if (right != null) {
 			if (right.isVariable()) {
-				right = ((Variable) right).resolveAsExpressionValue(
-						info.getSymbolicMode(), info.isMultipleUnassignedAllowed());
+				right = ((Variable) right).resolveAsExpressionValue(info.getSymbolicMode(),
+						info.isMultipleUnassignedAllowed(), info.isMultiLetterVariablesAllowed());
 				right = groupPowers(right);
 			} else {
 				right.resolveVariables(info);
@@ -490,7 +451,7 @@ public class ExpressionNode extends ValidExpression
 	}
 
 	private static ExpressionValue groupPowers(ExpressionValue left) {
-		if (left.wrap().getOperation() == Operation.MULTIPLY) {
+		if (left.isOperation(Operation.MULTIPLY)) {
 			ArrayList<ExpressionValue> factors = new ArrayList<>();
 			left.wrap().collectFactors(factors);
 			if (factors.size() > 1) {
@@ -849,8 +810,7 @@ public class ExpressionNode extends ValidExpression
 			ExpressionValue trigArg = ((ExpressionNode) this.left).getLeft();
 			Operation leftOperation = ((ExpressionNode) left).operation;
 			// sinxyz^2 is parsed as sin(x y z)^2, change to sin(x y z^2)
-			if (trigArg.isExpressionNode()
-					&& ((ExpressionNode) trigArg).getOperation() == Operation.MULTIPLY) {
+			if (trigArg.isOperation(Operation.MULTIPLY)) {
 				ExpressionNode trigArgExpr = (ExpressionNode) trigArg;
 				left = trigArgExpr.getRight().wrap()
 						.apply(operation, right).multiply(trigArgExpr.getLeft());
@@ -887,23 +847,24 @@ public class ExpressionNode extends ValidExpression
 			left = left.traverse(t);
 		}
 
-		if (right != null) {
+		if (right != null && !operation.isUnary()) {
 			right = right.traverse(t);
 		}
 
-		// if we did some replacement in a leaf,
-		// we might need to update the leaf flag (#3512)
-		ExpressionNode rewrap = unwrap().wrap();
-		if (isSecret()) {
-			rewrap.secretMaskingAlgo = this.secretMaskingAlgo;
+		if (isLeaf() && left != null && left.isExpressionNode()) {
+			ExpressionNode leftNode = left.wrap();
+			right = leftNode.right;
+			left = leftNode.left;
+			leaf = leftNode.leaf;
+			operation = leftNode.operation;
 		}
-		return rewrap;
+		return this;
 	}
 
 	@Override
 	public boolean inspect(Inspecting t) {
 		return t.check(this) || left.inspect(t)
-				|| (right != null && right.inspect(t));
+				|| (right != null && !operation.isUnary() && right.inspect(t));
 	}
 
 	@Override
@@ -1251,6 +1212,20 @@ public class ExpressionNode extends ValidExpression
 	}
 
 	/**
+	 * Force to evaluate to inequality
+	 */
+	public void setForceInequality() {
+		forceInequality = true;
+	}
+
+	/**
+	 * @return true iff forced to be an inequality
+	 */
+	final public boolean isForceInequality() {
+		return forceInequality;
+	}
+
+	/**
 	 * Returns whether this tree has any operations
 	 * 
 	 * @return true iff this tree has any operations
@@ -1389,7 +1364,7 @@ public class ExpressionNode extends ValidExpression
 			String rightStr = null;
 
 			if (right != null) {
-				rightStr = getCasString(right, tpl, symbolic, true);
+				rightStr = getCasString(right, tpl, symbolic, shaveBrackets());
 			}
 			// do not send random() to CAS
 			// #4072
@@ -1407,22 +1382,29 @@ public class ExpressionNode extends ValidExpression
 		return ret;
 	}
 
-	private String getCasString(ExpressionValue left2, StringTemplate tpl,
-			boolean symbolic, boolean isRight) {
-		if (symbolic && left2.isGeoElement()) {
-			if (((GeoElement) left2).isRandomGeo()) {
-				return left2.toValueString(tpl);
+	/**
+	 * @param expr expression
+	 * @param tpl template
+	 * @param symbolic whether to print label for geos
+	 * @param shaveOffBrackets whether to shave off brackets in case expr is a list
+	 * @return serialized expression
+	 */
+	public static String getCasString(ExpressionValue expr, StringTemplate tpl,
+			boolean symbolic, boolean shaveOffBrackets) {
+		if (symbolic && expr.isGeoElement()) {
+			if (((GeoElement) expr).isRandomGeo()) {
+				return expr.toValueString(tpl);
 			}
-			return ((GeoElement) left2).getLabel(tpl);
-		} else if (left2.isExpressionNode()) {
-			return ((ExpressionNode) left2).getCASstring(tpl, symbolic);
-		} else if (left2.isGeoElement()
-				&& ((GeoElement) left2).getDefinition() != null) {
-			return "(" + ((GeoElement) left2).getDefinition().toValueString(tpl) + ")";
-		} else if (isRight && shaveBrackets()) {
-			return ((MyList) left2).toString(tpl, !symbolic, false);
+			return ((GeoElement) expr).getLabel(tpl);
+		} else if (expr.isExpressionNode()) {
+			return ((ExpressionNode) expr).getCASstring(tpl, symbolic);
+		} else if (expr.isGeoElement()
+				&& ((GeoElement) expr).getDefinition() != null) {
+			return "(" + ((GeoElement) expr).getDefinition().toValueString(tpl) + ")";
+		} else if (shaveOffBrackets) {
+			return ((MyList) expr).toString(tpl, !symbolic, false);
 		}
-		return symbolic ? left2.toString(tpl) : left2.toValueString(tpl);
+		return symbolic ? expr.toString(tpl) : expr.toValueString(tpl);
 	}
 
 	/**
@@ -1462,43 +1444,43 @@ public class ExpressionNode extends ValidExpression
 		}
 
 		if (leaf) { // leaf is GeoElement or not
-			if (left.isGeoElement()) {
-				return ((GeoElement) left).getLabel(tpl);
-			}
-			return left.toString(tpl);
+			return getLabelOrDefinition(left, tpl);
 		}
 
 		// expression node
-		String leftStr = null, rightStr = null;
-		if (left.isGeoElement()) {
-			if (tpl.getStringType().equals(StringType.OGP)
-					&& expandForOGP(left)) {
-				leftStr = ((GeoElement) left).getDefinition(tpl);
-			} else {
-				leftStr = ((GeoElement) left).getLabel(tpl);
-			}
-		} else {
-			leftStr = left.toString(tpl);
-		}
+		String leftStr = getLabelOrDefinition(left, tpl);
+		String rightStr = null;
 
 		if (right != null) {
-			if (right.isGeoElement()) {
-				if (tpl.getStringType().equals(StringType.OGP)
-						&& expandForOGP(right)) {
-					rightStr = ((GeoElement) right).getDefinition(tpl);
-				} else {
-					rightStr = ((GeoElement) right).getLabel(tpl);
-				}
+			if (shaveBrackets()) {
+				rightStr = ((MyList) right).toString(tpl, false, false);
 			} else {
-				if (shaveBrackets()) {
-					rightStr = ((MyList) right).toString(tpl, false, false);
-				} else {
-					rightStr = right.toString(tpl);
-				}
+				rightStr = getLabelOrDefinition(right, tpl);
+			}
+		}
+		if (tpl.getStringType().equals(StringType.OGP)
+				&& expandForOGP(left)) {
+			if (left instanceof GeoElement) {
+				leftStr = ((GeoElement) left).getDefinition(tpl);
+			}
+			if (right instanceof GeoElement) {
+				rightStr = ((GeoElement) right).getDefinition(tpl);
 			}
 		}
 		return ExpressionSerializer.operationToString(left, right, operation,
 				leftStr, rightStr, false, tpl, kernel);
+	}
+
+	/**
+	 * @param left expression
+	 * @param tpl template
+	 * @return label or symbolic string
+	 */
+	public static String getLabelOrDefinition(ExpressionValue left, StringTemplate tpl) {
+		if (left.isGeoElement()) {
+			return ((GeoElement) left).getLabel(tpl);
+		}
+		return left.toString(tpl);
 	}
 
 	private boolean shaveBrackets() {
@@ -2118,8 +2100,7 @@ public class ExpressionNode extends ValidExpression
 	 * @return result of this * -1
 	 */
 	public ExpressionNode reverseSign() {
-		return new ExpressionNode(kernel, new MyDouble(kernel, -1.0),
-				Operation.MULTIPLY, this);
+		return new ExpressionNode(kernel, new MinusOne(kernel), Operation.MULTIPLY, this);
 	}
 
 	/**
@@ -2216,8 +2197,8 @@ public class ExpressionNode extends ValidExpression
 		if (specialCase != null) {
 			return specialCase;
 		}
-		return new ExpressionNode(kernel, new MyDouble(kernel, d),
-				Operation.MULTIPLY, this);
+		MyDouble left = d == -1 ? new MinusOne(kernel) : new MyDouble(kernel, d);
+		return new ExpressionNode(kernel, left, Operation.MULTIPLY, this);
 	}
 
 	private ExpressionNode multiplyOneOrZero(double d) {
@@ -2288,7 +2269,8 @@ public class ExpressionNode extends ValidExpression
 		if (isConstantDouble(v2, 1) || isConstantDouble(this, 0)) {
 			return this;
 		}
-		return new ExpressionNode(kernel, v2, Operation.MULTIPLY, this);
+		ExpressionValue left = isConstantDouble(v2, -1) ? new MinusOne(kernel) : v2;
+		return new ExpressionNode(kernel, left, Operation.MULTIPLY, this);
 	}
 
 	/**
@@ -3161,11 +3143,29 @@ public class ExpressionNode extends ValidExpression
 			return super.evaluateDouble();
 		}
 		double lt = left.evaluateDouble();
-		if (lt < 0 && right.isExpressionNode() && ((ExpressionNode) right)
-				.getOperation() == Operation.DIVIDE) {
-			return ExpressionNodeEvaluator.negPower(lt, right);
+		if (lt < 0 && right.isExpressionNode()) {
+			Double negPower = right.wrap().calculateNegPower(lt);
+			if (negPower != null) {
+				return negPower;
+			}
 		}
 		return Math.pow(left.evaluateDouble(), right.evaluateDouble());
+	}
+
+	/**
+	 * @param base
+	 *            base of power term
+	 * @return negPower if exponent is negative fraction
+	 */
+	public Double calculateNegPower(double base) {
+		if (isOperation(Operation.DIVIDE)) {
+			return ExpressionNodeEvaluator.negPower(base, this);
+		} else if (getOperation() == Operation.MULTIPLY
+				&& getLeft() instanceof MinusOne
+				&& getRight().isOperation(Operation.DIVIDE)) {
+			return 1.0 / ExpressionNodeEvaluator.negPower(base, getRight());
+		}
+		return null;
 	}
 
 	/**
@@ -3348,97 +3348,6 @@ public class ExpressionNode extends ValidExpression
 	}
 
 	/**
-	 * Builds product of two expressions
-	 * 
-	 * @param left
-	 *            left factor
-	 * @param right
-	 *            right factor
-	 * @param kernel
-	 *            kernel
-	 * @param giacParsing
-	 *            whether this is from GIAC
-	 * @return product of factors
-	 */
-	public static ExpressionValue multiplySpecial(ExpressionValue left,
-			ExpressionValue right, Kernel kernel, boolean giacParsing) {
-		String leftImg;
-		App app = kernel.getApplication();
-
-		// sin x in GGB is function application if "sin" is not a variable
-		if (left instanceof Variable) {
-			leftImg = left.toString(StringTemplate.defaultTemplate);
-			Operation op = app.getParserFunctions().getSingleArgumentOp(leftImg);
-			if (op != null) {
-				return new ExpressionNode(kernel, right, op, null);
-
-			}
-			if (leftImg.startsWith("log_")
-					&& kernel.lookupLabel(leftImg) == null) {
-				ExpressionValue index = FunctionParser.getLogIndex(leftImg,
-						kernel);
-
-				if (index != null) {
-					return new ExpressionNode(kernel, index, Operation.LOGB,
-							right);
-				}
-			}
-			// sin^2 x
-		} else if (left instanceof ExpressionNode
-				&& ((ExpressionNode) left).getOperation() == Operation.POWER
-				&& ((ExpressionNode) left).getLeft() instanceof Variable) {
-			leftImg = ((ExpressionNode) left).getLeft()
-					.toString(StringTemplate.defaultTemplate);
-			Operation op = app.getParserFunctions().getSingleArgumentOp(leftImg);
-			if (op != null) {
-				ExpressionValue exponent = ((ExpressionNode) left).getRight()
-						.unwrap();
-				if (exponent.isConstant()
-						&& DoubleUtil.isEqual(-1, exponent.evaluateDouble())) {
-					return kernel.inverseTrig(op, right);
-				}
-				return new ExpressionNode(kernel, right, op, null)
-						.power(exponent);
-
-			}
-			// x * sin x in GGB is function applied on the right if "sin" is not
-			// a variable
-			// a * b * f -- check if b*f needs special handling
-		} else if (left instanceof ExpressionNode && (((ExpressionNode) left)
-				.getOperation() == Operation.MULTIPLY)) {
-			ExpressionValue bf = multiplySpecial(
-					((ExpressionNode) left).getRight(), right, kernel,
-					giacParsing);
-			return bf == null ? null
-					: new ExpressionNode(kernel,
-							((ExpressionNode) left).getLeft(),
-							Operation.MULTIPLY, bf);
-			// +-b * f is parsed as (b +- ()) *f
-		} else if (left instanceof ExpressionNode
-				&& (((ExpressionNode) left).getOperation() == Operation.PLUSMINUS)
-				&& (((ExpressionNode) left).getRight() instanceof MyNumberPair)) {
-			ExpressionValue bf = multiplySpecial(((ExpressionNode) left).getLeft(), right, kernel,
-					giacParsing);
-			return bf == null ? null
-					: new ExpressionNode(kernel, bf, Operation.PLUSMINUS,
-							((ExpressionNode) left).getRight());
-		}
-
-		if (giacParsing) {
-			// (a)(b) in Giac is function application
-			if (left instanceof Variable) {
-				Command ret = new Command(kernel,
-						left.toString(StringTemplate.defaultTemplate), true,
-						true);
-				ret.addArgument(right.wrap());
-				return ret;
-				// c*(a)(b) in Giac: function applied on right subtree
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * @return true if the ExpressionNode is a GeoSegment on even power
 	 */
 	public boolean isSegmentSquare() {
@@ -3515,12 +3424,10 @@ public class ExpressionNode extends ValidExpression
 	public static ExpressionValue unaryMinus(Kernel kernel2,
 			ExpressionValue f) {
 		if (f instanceof MyDouble && f.isConstant()
-				&& !(f instanceof MySpecialDouble)
 				&& !(f instanceof MyDoubleDegreesMinutesSeconds)) {
-			return new MyDouble(kernel2, -f.evaluateDouble());
+			return ((MyDouble) f).unaryMinus(kernel2);
 		}
-		return new ExpressionNode(kernel2, new MyDouble(kernel2, -1),
-				Operation.MULTIPLY, f);
+		return new ExpressionNode(kernel2, new MinusOne(kernel2), Operation.MULTIPLY, f);
 	}
 
 	/**
@@ -3635,7 +3542,7 @@ public class ExpressionNode extends ValidExpression
 	 */
 	public boolean isFraction() {
 		initFraction();
-		return ((ExpressionNode) resolve).getOperation() == Operation.DIVIDE;
+		return resolve.isOperation(Operation.DIVIDE);
 	}
 	
 	/**
@@ -3673,6 +3580,10 @@ public class ExpressionNode extends ValidExpression
 			String leftS = left.isExpressionNode()
 					? left.wrap().toFractionStringFlat(tpl, locale)
 					: left.toValueString(tpl);
+			if (leftS.startsWith("-")) {
+				return "-" + tpl.divideString(left, right, leftS.substring(1),
+						right.toValueString(tpl), true, locale);
+			}
 			return tpl.divideString(left, right, leftS,
 					right.toValueString(tpl), true, locale);
 		}
@@ -3713,28 +3624,33 @@ public class ExpressionNode extends ValidExpression
 	/**
 	 * Check whether denominator and numerator are both independent integers
 	 * 
-	 * @return whether is a simple fraction like 7/2 or -1/2
+	 * @return whether is a simple fraction like 7/2 or (-1)/2 or -(1/2)
 	 */
 	public boolean isSimpleFraction() {
-		if (operation == Operation.DIVIDE) {
-			ExpressionValue leftUnsigned = left.unwrap();
-			if (left.isExpressionNode()
-					&& getLeftTree().getOperation() == Operation.MULTIPLY
-					&& ExpressionNode.isConstantDouble(getLeftTree().getLeft(),
-							-1)) {
-				leftUnsigned = getLeftTree().getRight();
+		ExpressionValue unsigned = getUnsigned(this);
+		return unsigned.isExpressionNode() && ((ExpressionNode) unsigned).isUnsignedFraction();
+	}
 
-			}
+	private boolean isUnsignedFraction() {
+		if (operation == Operation.DIVIDE) {
+			ExpressionValue leftUnsigned = getUnsigned(left);
 			if (leftUnsigned instanceof MyDouble
 					&& right.unwrap() instanceof MyDouble) {
 				double lt = left.evaluateDouble();
 				double rt = right.evaluateDouble();
-				if (DoubleUtil.isInteger(lt) && DoubleUtil.isInteger(rt)) {
-					return true;
-				}
+				return DoubleUtil.isInteger(lt) && DoubleUtil.isInteger(rt);
 			}
 		}
 		return false;
+	}
+
+	private ExpressionValue getUnsigned(ExpressionValue expr) {
+		if (expr.isOperation(Operation.MULTIPLY)
+				&& ExpressionNode.isConstantDouble(expr.wrap().getLeft(),
+				-1)) {
+			return expr.wrap().getRight();
+		}
+		return expr;
 	}
 
 	/**
@@ -3759,7 +3675,7 @@ public class ExpressionNode extends ValidExpression
 			return false;
 		}
 		if ((unwrap instanceof MyDouble && !(unwrap instanceof FunctionVariable))
-				|| unwrap instanceof GeoNumeric) {
+				|| (unwrap instanceof GeoNumeric && !(unwrap instanceof GeoDummyVariable))) {
 			double val = evaluateDouble();
 			return MyDouble.isFinite(val) && !DoubleUtil.isEqual(val, Math.PI)
 					&& !DoubleUtil.isEqual(val, Math.E);
@@ -3768,7 +3684,7 @@ public class ExpressionNode extends ValidExpression
 	}
 
 	private boolean hasSimpleNumbers() {
-		return areLeftAndRightNumbers() && isLeftOrRightSpecial() && !isRightPiOrE();
+		return areLeftAndRightNumbers() && isRightDeg() && !isRightPiOrE();
 	}
 
 	private boolean isRightPiOrE() {
@@ -3784,11 +3700,36 @@ public class ExpressionNode extends ValidExpression
 		return getLeft().unwrap() instanceof NumberValue && getRight().unwrap() instanceof MyDouble;
 	}
 
-	private boolean isLeftOrRightSpecial() {
-		double evaluatedLeft = getLeft().evaluateDouble();
-		boolean isLeftMinusOne = MyDouble.exactEqual(evaluatedLeft, -1);
-		double evaluatedRight = getRight().evaluateDouble();
-		boolean isRightDeg = MyDouble.exactEqual(evaluatedRight, MyMath.DEG);
-		return isLeftMinusOne || isRightDeg;
+	private boolean isRightDeg() {
+		return MyDouble.exactEqual(getRight().evaluateDouble(), MyMath.DEG);
+	}
+
+	public void setForceSurfaceCartesian() {
+		this.forceSurface = true;
+	}
+
+	public boolean isForceSurface() {
+		return forceSurface;
+	}
+
+	/**
+	 * Copy all attributes except for those set in constructor and the leaf flag
+	 *
+	 * @param newNode node that should receive the attributes
+	 */
+	public void copyAttributesTo(ExpressionNode newNode) {
+		newNode.forceVector = forceVector;
+		newNode.forcePoint = forcePoint;
+		newNode.forceFunction = forceFunction;
+		newNode.forceInequality = forceInequality;
+		newNode.forceSurface = forceSurface;
+		newNode.brackets = brackets;
+		newNode.secretMaskingAlgo = secretMaskingAlgo;
+		newNode.holdsLaTeXtext = holdsLaTeXtext;
+	}
+
+	@Override
+	public boolean isOperation(Operation operation) {
+		return operation == this.operation;
 	}
 }

@@ -23,6 +23,7 @@ import org.geogebra.common.gui.dialog.options.model.ConicEqnModel;
 import org.geogebra.common.gui.dialog.options.model.CoordsModel;
 import org.geogebra.common.gui.dialog.options.model.DecoAngleModel;
 import org.geogebra.common.gui.dialog.options.model.DecoSegmentModel;
+import org.geogebra.common.gui.dialog.options.model.DrawArrowsModel;
 import org.geogebra.common.gui.dialog.options.model.FillingModel;
 import org.geogebra.common.gui.dialog.options.model.FixCheckboxModel;
 import org.geogebra.common.gui.dialog.options.model.FixObjectModel;
@@ -145,6 +146,7 @@ public class OptionsObjectW extends OptionsObject implements OptionPanelW {
 			mainWidget = new FlowPanel();
 			showLabelCB = new CheckBox(localize("ShowLabel") + ":");
 			mainWidget.add(showLabelCB);
+			mainWidget.setStyleName("checkBoxPanel");
 			setWidget(mainWidget);
 
 			model = new ShowLabelModel(app, this);
@@ -787,7 +789,25 @@ public class OptionsObjectW extends OptionsObject implements OptionPanelW {
 		this.isDefaults = isDefaults;
 		loc = app.getLocalization();
 		// build GUI
+		initPermissions();
 		initGUI(onTabSelection);
+	}
+
+	private void initPermissions() {
+		if (app.getLoginOperation() != null
+				&& app.getAppletParameters().getDataParamApp()) {
+			updateJsEnabled();
+			app.getLoginOperation().getView().add(event -> {
+				updateJsEnabled();
+				updateGUI();
+			});
+		}
+	}
+
+	private void updateJsEnabled() {
+		app.getScriptManager().setJsEnabled(!app.isMebis()
+				|| app.getLoginOperation().isTeacherLoggedIn());
+
 	}
 
 	AppW getAppW() {
@@ -797,10 +817,6 @@ public class OptionsObjectW extends OptionsObject implements OptionPanelW {
 	private void initGUI(final Runnable onTabSelection) {
 		wrappedPanel = new FlowPanel();
 		wrappedPanel.setStyleName("propertiesPanel");
-
-		// TODO after release MULTIROW_TAB_PROPERTIES feature: propertiesPanel
-		// and propertiesPanel2 classes should be merged
-		wrappedPanel.addStyleName("propertiesPanel2");
 		tabPanel = new MultiRowsTabPanel();
 
 		tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
@@ -814,7 +830,7 @@ public class OptionsObjectW extends OptionsObject implements OptionPanelW {
 				onTabSelection.run();
 			}
 		});
-		((Widget) tabPanel).setStyleName("propertiesTabPanel");
+		((Widget) tabPanel).setStyleName("propertiesPanel");
 		createBasicTab();
 		if (!(app.isExam())) {
 			tabs = Arrays.asList(basicTab, addTextTab(), addSliderTab(),
@@ -849,8 +865,8 @@ public class OptionsObjectW extends OptionsObject implements OptionPanelW {
 		CheckboxPanel animatingPanel = null;
 		CheckboxPanel bgImagePanel = null;
 		ReflexAnglePanel reflexAnglePanel = null;
-        labelPanel = new LabelPanel();
-        NamePanel namePanel = new NamePanel(getAppW(), labelPanel.model);
+		labelPanel = new LabelPanel();
+		NamePanel namePanel = new NamePanel(getAppW(), labelPanel.model);
 		if (!isDefaults) {
 			basicTab.add(namePanel);
 		}
@@ -946,11 +962,12 @@ public class OptionsObjectW extends OptionsObject implements OptionPanelW {
 		PointSizeModel ptSize = new PointSizeModel(app);
 		PointStyleModel ptStyle = new PointStyleModel(app);
 		LineStyleModel lineStyle = new LineStyleModel(app);
+		DrawArrowsModel drawArrows = new DrawArrowsModel(null, app);
 		AngleArcSizeModel arcSize = new AngleArcSizeModel(app);
 		SlopeTriangleSizeModel slopeSize = new SlopeTriangleSizeModel(app);
 		IneqStyleModel ineqStyle = new IneqStyleModel(app);
 		TextFieldSizeModel tfSize = new TextFieldSizeModel(app);
-        TextFieldAlignmentModel alignModel = new TextFieldAlignmentModel(app);
+		TextFieldAlignmentModel alignModel = new TextFieldAlignmentModel(app);
 		ButtonSizeModel buttonSize = new ButtonSizeModel(app);
 		FillingModel filling = new FillingModel(app);
 		LodModel lod = new LodModel(app, isDefaults);
@@ -959,10 +976,10 @@ public class OptionsObjectW extends OptionsObject implements OptionPanelW {
 		DecoSegmentModel decoSegment = new DecoSegmentModel(app);
 
 		tab.addModel(ptSize).addModel(ptStyle).addModel(lod).addModel(lineStyle)
-				.addModel(arcSize).addModel(slopeSize).addModel(ineqStyle)
-                .addModel(tfSize).addModel(alignModel).addModel(buttonSize)
-                .addModel(filling).addModel(interpol).addModel(decoAngle)
-                .addModel(decoSegment);
+				.addModel(drawArrows).addModel(arcSize).addModel(slopeSize).addModel(ineqStyle)
+				.addModel(tfSize).addModel(alignModel).addModel(buttonSize)
+				.addModel(filling).addModel(interpol).addModel(decoAngle)
+				.addModel(decoSegment);
 		return tab;
 	}
 
@@ -999,13 +1016,15 @@ public class OptionsObjectW extends OptionsObject implements OptionPanelW {
 	private OptionsTab addAlgebraTab() {
 		OptionsTab tab;
 		tab = makeOptionsTab("Properties.Algebra");
-		tab.addModel(new CoordsModel(app));
+		if (app.getConfig().isCoordinatesObjectSettingEnabled()) {
+			tab.addModel(new CoordsModel(app));
+		}
 		tab.addModel(new LineEqnModel(app));
 		tab.addModel(new PlaneEqnModel(app));
 		tab.addModel(new SymbolicModel(app));
 		tab.addModel(new ConicEqnModel(app));
 		tab.addModel(new AnimationSpeedModel(getAppW()));
-        tab.addModel(new AnimationStepModel(getAppW()));
+		tab.addModel(new AnimationStepModel(getAppW()));
 		return tab;
 	}
 

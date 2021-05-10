@@ -8,12 +8,12 @@ import org.geogebra.common.euclidian.draw.DrawInputBox;
 import org.geogebra.common.euclidian.event.FocusListenerDelegate;
 import org.geogebra.common.euclidian.event.KeyHandler;
 import org.geogebra.common.kernel.geos.GeoInputBox;
-import org.geogebra.common.kernel.geos.properties.TextAlignment;
+import org.geogebra.common.kernel.geos.properties.HorizontalAlignment;
 import org.geogebra.common.util.AutoCompleteDictionary;
 import org.geogebra.common.util.TextObject;
 
 public interface AutoCompleteTextField
-        extends TextObject {
+		extends TextObject {
 
 	void showPopupSymbolButton(boolean b);
 
@@ -81,18 +81,18 @@ public interface AutoCompleteTextField
 	 */
 	void setAuralText(String text);
 
-    void drawBounds(GGraphics2D g2, GColor bgColor, GRectangle inputFieldBounds);
+	void drawBounds(GGraphics2D g2, GColor bgColor, GRectangle inputFieldBounds);
 
-    /**
-     * @param start from which character to highlight the text
-     * @param end   to which character to highlight the text
-     */
-    void setSelection(int start, int end);
+	/**
+	 * @param start from which character to highlight the text
+	 * @param end to which character to highlight the text
+	 */
+	void setSelection(int start, int end);
 
 	/**
 	 * @param alignment the text alignment in the input box
 	 */
-	void setTextAlignmentsForInputBox(TextAlignment alignment);
+	void setTextAlignmentsForInputBox(HorizontalAlignment alignment);
 
 	/**
 	 * Set the input mode of the text field.

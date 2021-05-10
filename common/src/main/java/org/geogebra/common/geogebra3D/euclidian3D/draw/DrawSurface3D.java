@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.euclidian.EuclidianController;
-import org.geogebra.common.euclidian.plot.CurvePlotter;
+import org.geogebra.common.euclidian.plot.CurveSegmentPlotter;
 import org.geogebra.common.geogebra3D.euclidian3D.EuclidianView3D;
 import org.geogebra.common.geogebra3D.euclidian3D.Hitting;
 import org.geogebra.common.geogebra3D.euclidian3D.openGL.PlotterBrush;
@@ -141,19 +141,19 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 	 */
 	private Corner firstCorner;
 
-    private CurveHitting curveHitting;
+	private CurveHitting curveHitting;
 
-    private ArrayList<GeoCurveCartesian3D> borders = new ArrayList<>();
+	private ArrayList<GeoCurveCartesian3D> borders = new ArrayList<>();
 
-    private SurfaceParameter uParam = new SurfaceParameter();
-    private SurfaceParameter vParam = new SurfaceParameter();
+	private SurfaceParameter uParam = new SurfaceParameter();
+	private SurfaceParameter vParam = new SurfaceParameter();
 
 	private static class NotEnoughCornersException extends Exception {
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 		private DrawSurface3D surface;
 
-        public NotEnoughCornersException(DrawSurface3D surface,
-                                         String message) {
+		public NotEnoughCornersException(DrawSurface3D surface,
+				String message) {
 			super(message);
 			this.surface = surface;
 		}
@@ -222,7 +222,7 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 	}
 
 	private void setTolerances() {
-		maxRWPixelDistance = CurvePlotter.MAX_PIXEL_DISTANCE;
+		maxRWPixelDistance = CurveSegmentPlotter.MAX_PIXEL_DISTANCE;
 
 		// set sizes
 		switch (levelOfDetail) {
@@ -234,7 +234,7 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 		case QUALITY:
 			maxRWDistanceNoAngleCheck = 1 * maxRWPixelDistance;
 			maxRWDistance = 2 * maxRWPixelDistance;
-			maxBend = CurvePlotter.MAX_BEND;
+			maxBend = CurveSegmentPlotter.MAX_BEND;
 			break;
 		}
 
@@ -330,8 +330,11 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 		boolean drawOccured = false;
 
 		if (drawFromScratch) {
-            borders.clear();
+			borders.clear();
 			drawUpToDate = false;
+
+			// maybe it was set to null after redefine, so we need to compute it again
+			surfaceGeo.setDerivatives();
 
 			if (levelOfDetail == LevelOfDetail.QUALITY
 					&& splitsStartedNotFinished) {
@@ -339,15 +342,12 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 				drawOccured = true;
 			}
 
-			// maybe set to null after redefine
-			surfaceGeo.setDerivatives();
-
 			// calc min/max values
-            uParam.initBorder(surfaceGeo, getView3D(), 0);
-            vParam.initBorder(surfaceGeo, getView3D(), 1);
+			uParam.initBorder(surfaceGeo, getView3D(), 0);
+			vParam.initBorder(surfaceGeo, getView3D(), 1);
 
-            if (DoubleUtil.isZero(uParam.delta)
-                    || DoubleUtil.isZero(vParam.delta)) {
+			if (DoubleUtil.isZero(uParam.delta)
+					|| DoubleUtil.isZero(vParam.delta)) {
 				setSurfaceIndex(-1);
 				setWireframeInvisible();
 				return true;
@@ -365,25 +365,25 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 					+ maxRWDistanceNoAngleCheck);
 
 			// create root mesh
-            double uOverVFactor = uParam.delta / vParam.delta;
+			double uOverVFactor = uParam.delta / vParam.delta;
 			if (uOverVFactor > ROOT_MESH_INTERVALS_SPEED) {
 				uOverVFactor = ROOT_MESH_INTERVALS_SPEED;
 			} else if (uOverVFactor < 1.0 / ROOT_MESH_INTERVALS_SPEED) {
 				uOverVFactor = 1.0 / ROOT_MESH_INTERVALS_SPEED;
 			}
-            uParam.n = (int) (ROOT_MESH_INTERVALS_SPEED * uOverVFactor);
-            vParam.n = ROOT_MESH_INTERVALS_SPEED_SQUARE / uParam.n;
-            uParam.n += 2;
-            vParam.n += 2;
+			uParam.n = (int) (ROOT_MESH_INTERVALS_SPEED * uOverVFactor);
+			vParam.n = ROOT_MESH_INTERVALS_SPEED_SQUARE / uParam.n;
+			uParam.n += 2;
+			vParam.n += 2;
 
-            uParam.init(levelOfDetail);
-            vParam.init(levelOfDetail);
+			uParam.init(levelOfDetail);
+			vParam.init(levelOfDetail);
 
-            debug("grids: " + uParam.n + ", " + vParam.n);
+			debug("grids: " + uParam.n + ", " + vParam.n);
 			cornerListIndex = 0;
 
 			try {
-                firstCorner = createRootMesh();
+				firstCorner = createRootMesh();
 
 				// split root mesh as start
 				currentSplitIndex = 0;
@@ -769,32 +769,32 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 		}
 	}
 
-    private Corner createRootMesh() throws NotEnoughCornersException {
+	private Corner createRootMesh() throws NotEnoughCornersException {
 		if (wireframeNeeded()) {
-            wireframeBottomCorners = new Corner[uParam.getCornerCount()];
-            wireframeRightCorners = new Corner[vParam.getCornerCount()];
+			wireframeBottomCorners = new Corner[uParam.getCornerCount()];
+			wireframeRightCorners = new Corner[vParam.getCornerCount()];
 		}
 
-        Corner bottomRight = newCorner(uParam.borderMax, vParam.borderMax);
+		Corner bottomRight = newCorner(uParam.borderMax, vParam.borderMax);
 		Corner first = bottomRight;
 
 		wireframeBottomCornersLength = 0;
 		wireframeRightCornersLength = 0;
-        int wireFrameSetU = uParam.wireFrameStep,
-                wireFrameSetV = vParam.wireFrameStep;
+		int wireFrameSetU = uParam.wireFrameStep,
+				wireFrameSetV = vParam.wireFrameStep;
 		if (wireframeNeeded()) {
-            if (uParam.wireframeUnique) {
+			if (uParam.wireframeUnique) {
 				wireFrameSetU = 0;
 			}
-            if (uParam.wireframeBorder == 1) { // draw edges
+			if (uParam.wireframeBorder == 1) { // draw edges
 				wireframeBottomCorners[0] = first;
 				wireframeBottomCornersLength = 1;
 				wireFrameSetU = 1;
 			}
-            if (vParam.wireframeUnique) {
+			if (vParam.wireframeUnique) {
 				wireFrameSetV = 0;
 			}
-            if (vParam.wireframeBorder == 1) { // draw edges
+			if (vParam.wireframeBorder == 1) { // draw edges
 				wireframeRightCorners[0] = first;
 				wireframeRightCornersLength = 1;
 				wireFrameSetV = 1;
@@ -803,15 +803,15 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 
 		// first row
 		Corner right = bottomRight;
-        int uN = uParam.n;
+		int uN = uParam.n;
 		for (int i = 0; i < uN - 1; i++) {
-            right = addLeftToMesh(right, uParam.max - (uParam.delta * i) / uN,
-                    vParam.borderMax);
+			right = addLeftToMesh(right, uParam.max - (uParam.delta * i) / uN,
+					vParam.borderMax);
 			if (wireframeNeeded()) {
-                if (wireFrameSetU == uParam.wireFrameStep) { // set wireframe
+				if (wireFrameSetU == uParam.wireFrameStep) { // set wireframe
 					wireframeBottomCorners[wireframeBottomCornersLength] = right;
 					wireframeBottomCornersLength++;
-                    if (uParam.wireframeUnique) {
+					if (uParam.wireframeUnique) {
 						wireFrameSetU++;
 					} else {
 						wireFrameSetU = 1;
@@ -821,24 +821,24 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 				}
 			}
 		}
-        right = addLeftToMesh(right, uParam.borderMin, vParam.borderMax);
+		right = addLeftToMesh(right, uParam.borderMin, vParam.borderMax);
 		if (wireframeNeeded()) {
-            if (uParam.wireframeBorder == 1) {
+			if (uParam.wireframeBorder == 1) {
 				wireframeBottomCorners[wireframeBottomCornersLength] = right;
 				wireframeBottomCornersLength++;
 			}
 		}
-        int vN = vParam.n;
+		int vN = vParam.n;
 		// all intermediate rows
 		for (int j = 0; j < vN - 1; j++) {
 			bottomRight = addRowAboveToMesh(bottomRight,
-                    vParam.max - (vParam.delta * j) / vN, uParam.borderMin,
-                    uParam.borderMax, uParam.max, uN);
+					vParam.max - (vParam.delta * j) / vN, uParam.borderMin,
+					uParam.borderMax, uParam.max, uN);
 			if (wireframeNeeded()) {
-                if (wireFrameSetV == vParam.wireFrameStep) { // set wireframe
+				if (wireFrameSetV == vParam.wireFrameStep) { // set wireframe
 					wireframeRightCorners[wireframeRightCornersLength] = bottomRight;
 					wireframeRightCornersLength++;
-                    if (vParam.wireframeUnique) {
+					if (vParam.wireframeUnique) {
 						wireFrameSetV++;
 					} else {
 						wireFrameSetV = 1;
@@ -850,10 +850,10 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 		}
 
 		// last row
-        bottomRight = addRowAboveToMesh(bottomRight, vParam.borderMin,
-                uParam.borderMin, uParam.borderMax, uParam.max, uN);
+		bottomRight = addRowAboveToMesh(bottomRight, vParam.borderMin,
+				uParam.borderMin, uParam.borderMax, uParam.max, uN);
 		if (wireframeNeeded()) {
-            if (vParam.wireframeBorder == 1) {
+			if (vParam.wireframeBorder == 1) {
 				wireframeRightCorners[wireframeRightCornersLength] = bottomRight;
 				wireframeRightCornersLength++;
 			}
@@ -876,7 +876,7 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 		Corner right = newCorner(uBorderMax, v);
 		below.a = right;
 		for (int i = 0; i < uN - 1; i++) {
-            right = addLeftToMesh(right, uMax - (uParam.delta * i) / uN, v);
+			right = addLeftToMesh(right, uMax - (uParam.delta * i) / uN, v);
 			below = below.l;
 			below.a = right;
 		}
@@ -887,8 +887,8 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 		return bottomRight.a;
 	}
 
-    private static void splitRootMesh(Corner first)
-            throws NotEnoughCornersException {
+	private static void splitRootMesh(Corner first)
+			throws NotEnoughCornersException {
 
 		Corner nextAbove, nextLeft;
 
@@ -2613,8 +2613,8 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 	 */
 	protected static boolean isAngleOK(double bend, Corner c1, Corner c2,
 			Corner c3) {
-        return isAngleOK(c1.normal, c2.normal, bend)
-                && isAngleOK(c2.normal, c3.normal, bend)
+		return isAngleOK(c1.normal, c2.normal, bend)
+				&& isAngleOK(c2.normal, c3.normal, bend)
 				&& isAngleOK(c3.normal, c1.normal, bend);
 	}
 
@@ -2634,10 +2634,10 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 	 */
 	protected static boolean isAngleOK(double bend, Corner c1, Corner c2,
 			Corner c3, Corner c4) {
-        return isAngleOK(c1.normal, c2.normal, bend)
-                && isAngleOK(c2.normal, c3.normal, bend)
-                && isAngleOK(c3.normal, c4.normal, bend)
-                && isAngleOK(c4.normal, c1.normal, bend);
+		return isAngleOK(c1.normal, c2.normal, bend)
+				&& isAngleOK(c2.normal, c3.normal, bend)
+				&& isAngleOK(c3.normal, c4.normal, bend)
+				&& isAngleOK(c4.normal, c1.normal, bend);
 	}
 
 	/**
@@ -2656,8 +2656,8 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 	 */
 	protected static boolean isAngleOKNoLoop(double bend, Corner c1, Corner c2,
 			Corner c3, Corner c4) {
-        return isAngleOK(c1.normal, c2.normal, bend)
-                && isAngleOK(c2.normal, c3.normal, bend)
+		return isAngleOK(c1.normal, c2.normal, bend)
+				&& isAngleOK(c2.normal, c3.normal, bend)
 				&& isAngleOK(c3.normal, c4.normal, bend);
 	}
 
@@ -2920,8 +2920,8 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 	 *             if no new corner left in array
 	 * @return new corner calculated for parameters u, v
 	 */
-    protected Corner newCorner(double u, double v)
-            throws NotEnoughCornersException {
+	protected Corner newCorner(double u, double v)
+			throws NotEnoughCornersException {
 		if (cornerListIndex >= cornerListSize) {
 			throw new NotEnoughCornersException(this, "Index " + cornerListIndex
 					+ " is larger than size " + cornerListSize);
@@ -2957,154 +2957,154 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 	}
 
 	@Override
-    public boolean hit(Hitting hitting) {
+	public boolean hit(Hitting hitting) {
 
-        if (waitForReset) { // prevent NPE
-            return false;
-        }
+		if (waitForReset) { // prevent NPE
+			return false;
+		}
 
-        if (getGeoElement()
-                .getAlphaValue() < EuclidianController.MIN_VISIBLE_ALPHA_VALUE) {
-            return false;
-        }
+		if (getGeoElement()
+				.getAlphaValue() < EuclidianController.MIN_VISIBLE_ALPHA_VALUE) {
+			return false;
+		}
 
-        if (((GeoElement) surfaceGeo).isGeoFunctionNVar()) {
-            return hitFunction2Var(hitting);
-        }
+		if (((GeoElement) surfaceGeo).isGeoFunctionNVar()) {
+			return hitFunction2Var(hitting);
+		}
 
-        if (!(getGeoElement() instanceof GeoSurfaceCartesian3D)) {
-            return false;
-        }
+		if (!(getGeoElement() instanceof GeoSurfaceCartesian3D)) {
+			return false;
+		}
 
-        if (curveHitting == null) {
-            curveHitting = new CurveHitting(this, getView3D());
-        }
-        resetZPick();
-        boolean isHit = false;
-        if (borders.isEmpty()) {
-            calculateBorders();
-        }
-        for (GeoCurveCartesian3D border : borders) {
-            isHit = curveHitting.hit(hitting, border,
-                    Math.max(5, getGeoElement().getLineThickness())) || isHit;
+		if (curveHitting == null) {
+			curveHitting = new CurveHitting(this, getView3D());
+		}
+		resetZPick();
+		boolean isHit = false;
+		if (borders.isEmpty()) {
+			calculateBorders();
+		}
+		for (GeoCurveCartesian3D border : borders) {
+			isHit = curveHitting.hit(hitting, border,
+					Math.max(5, getGeoElement().getLineThickness())) || isHit;
 
-        }
-        return isHit;
-    }
+		}
+		return isHit;
+	}
 
-    private void calculateBorders() {
-        for (int axis = 0; axis < 2; axis++) {
-            double[] paramValues = new double[]{
-                    surfaceGeo.getMinParameter(axis),
-                    surfaceGeo.getMaxParameter(axis)};
-            for (int borderIndex = 0; borderIndex < 2; borderIndex++) {
-                GeoCurveCartesian3D border = setHitting(axis,
-                        paramValues[borderIndex]);
-                borders.add(border);
-            }
-        }
-    }
+	private void calculateBorders() {
+		for (int axis = 0; axis < 2; axis++) {
+			double[] paramValues = new double[] {
+					surfaceGeo.getMinParameter(axis),
+					surfaceGeo.getMaxParameter(axis) };
+			for (int borderIndex = 0; borderIndex < 2; borderIndex++) {
+				GeoCurveCartesian3D border = setHitting(axis,
+						paramValues[borderIndex]);
+				borders.add(border);
+			}
+		}
+	}
 
-    private GeoCurveCartesian3D setHitting(int axis, double paramValue) {
-        GeoCurveCartesian3D border = new GeoCurveCartesian3D(
-                getGeoElement().getConstruction());
-        GeoSurfaceCartesian3D geoSurface3D = (GeoSurfaceCartesian3D) getGeoElement();
-        FunctionNVar[] functions = geoSurface3D.getFunctions();
-        Function[] borderFunctions = new Function[functions.length];
-        for (int i = 0; i < functions.length; i++) {
-            Kernel kernel = geoSurface3D.getKernel();
-            ExpressionNode expr = functions[i].getFunctionExpression()
-                    .deepCopy(kernel);
-            FunctionVariable fVar = new FunctionVariable(kernel, "u");
-            expr = expr.traverse(VariableReplacer.getReplacer(
-                    functions[i].getVarString(axis,
-                            StringTemplate.defaultTemplate),
-                    new MyDouble(kernel, paramValue), kernel)).wrap();
-            expr = expr
-                    .traverse(VariableReplacer.getReplacer(
-                            functions[i].getVarString(1 - axis,
-                                    StringTemplate.defaultTemplate),
-                            fVar, kernel))
-                    .wrap();
-            borderFunctions[i] = new Function(expr, fVar);
-        }
-        border.setFun(borderFunctions);
-        border.setInterval(geoSurface3D.getMinParameter(1 - axis),
-                geoSurface3D.getMaxParameter(1 - axis));
-        return border;
+	private GeoCurveCartesian3D setHitting(int axis, double paramValue) {
+		GeoCurveCartesian3D border = new GeoCurveCartesian3D(
+				getGeoElement().getConstruction());
+		GeoSurfaceCartesian3D geoSurface3D = (GeoSurfaceCartesian3D) getGeoElement();
+		FunctionNVar[] functions = geoSurface3D.getFunctions();
+		Function[] borderFunctions = new Function[functions.length];
+		for (int i = 0; i < functions.length; i++) {
+			Kernel kernel = geoSurface3D.getKernel();
+			ExpressionNode expr = functions[i].getFunctionExpression()
+					.deepCopy(kernel);
+			FunctionVariable fVar = new FunctionVariable(kernel, "u");
+			expr = expr.traverse(VariableReplacer.getReplacer(
+					functions[i].getVarString(axis,
+							StringTemplate.defaultTemplate),
+					new MyDouble(kernel, paramValue), kernel)).wrap();
+			expr = expr
+					.traverse(VariableReplacer.getReplacer(
+							functions[i].getVarString(1 - axis,
+									StringTemplate.defaultTemplate),
+							fVar, kernel))
+					.wrap();
+			borderFunctions[i] = new Function(expr, fVar);
+		}
+		border.setFun(borderFunctions);
+		border.setInterval(geoSurface3D.getMinParameter(1 - axis),
+				geoSurface3D.getMaxParameter(1 - axis));
+		return border;
 
-    }
+	}
 
-    private boolean hitFunction2Var(Hitting hitting) {
-        GeoFunctionNVar geoF = (GeoFunctionNVar) surfaceGeo;
+	private boolean hitFunction2Var(Hitting hitting) {
+		GeoFunctionNVar geoF = (GeoFunctionNVar) surfaceGeo;
 
-        hitting.calculateClippedValues();
-        if (Double.isNaN(hitting.x0)) { // hitting doesn't intersect
-            // clipping box
-            resetLastHitParameters(geoF);
-            return false;
-        }
+		hitting.calculateClippedValues();
+		if (Double.isNaN(hitting.x0)) { // hitting doesn't intersect
+										// clipping box
+			resetLastHitParameters(geoF);
+			return false;
+		}
 
-        double[][] xyzf = geoF.getXYZF();
+		double[][] xyzf = geoF.getXYZF();
 
-        // compute samples from xyz0 to xyz1, try to find consecutive +/-
-        geoF.setXYZ(hitting.x0, hitting.y0, hitting.z0,
-                xyzf[GeoFunctionNVar.DICHO_LAST]);
-        boolean isLessZ0 = false, isLessZ1;
-        isLessZ1 = GeoFunctionNVar.isLessZ(xyzf[GeoFunctionNVar.DICHO_LAST]);
-        double t = 0;
+		// compute samples from xyz0 to xyz1, try to find consecutive +/-
+		geoF.setXYZ(hitting.x0, hitting.y0, hitting.z0,
+				xyzf[GeoFunctionNVar.DICHO_LAST]);
+		boolean isLessZ0 = false, isLessZ1;
+		isLessZ1 = GeoFunctionNVar.isLessZ(xyzf[GeoFunctionNVar.DICHO_LAST]);
+		double t = 0;
 
-        for (int i = 1; i <= HIT_SAMPLES; i++) {
-            double[] tmp = xyzf[GeoFunctionNVar.DICHO_FIRST];
-            xyzf[GeoFunctionNVar.DICHO_FIRST] = xyzf[GeoFunctionNVar.DICHO_LAST];
-            xyzf[GeoFunctionNVar.DICHO_LAST] = tmp;
-            t = i * DELTA_SAMPLES;
-            geoF.setXYZ(hitting.x0 * (1 - t) + hitting.x1 * t,
-                    hitting.y0 * (1 - t) + hitting.y1 * t,
-                    hitting.z0 * (1 - t) + hitting.z1 * t,
-                    xyzf[GeoFunctionNVar.DICHO_LAST]);
-            isLessZ0 = isLessZ1;
-            isLessZ1 = GeoFunctionNVar
-                    .isLessZ(xyzf[GeoFunctionNVar.DICHO_LAST]);
-            if (isLessZ0 ^ isLessZ1) {
-                break; // found
-            }
-        }
+		for (int i = 1; i <= HIT_SAMPLES; i++) {
+			double[] tmp = xyzf[GeoFunctionNVar.DICHO_FIRST];
+			xyzf[GeoFunctionNVar.DICHO_FIRST] = xyzf[GeoFunctionNVar.DICHO_LAST];
+			xyzf[GeoFunctionNVar.DICHO_LAST] = tmp;
+			t = i * DELTA_SAMPLES;
+			geoF.setXYZ(hitting.x0 * (1 - t) + hitting.x1 * t,
+					hitting.y0 * (1 - t) + hitting.y1 * t,
+					hitting.z0 * (1 - t) + hitting.z1 * t,
+					xyzf[GeoFunctionNVar.DICHO_LAST]);
+			isLessZ0 = isLessZ1;
+			isLessZ1 = GeoFunctionNVar
+					.isLessZ(xyzf[GeoFunctionNVar.DICHO_LAST]);
+			if (isLessZ0 ^ isLessZ1) {
+				break; // found
+			}
+		}
 
-        // set - as first value, + as second value, or return false
-        if (isLessZ0) {
-            if (isLessZ1) {
-                resetLastHitParameters(geoF);
-                return false;
-            }
-            double dx = xyzf[GeoFunctionNVar.DICHO_FIRST][0]
-                    - hitting.origin.getX();
-            double dy = xyzf[GeoFunctionNVar.DICHO_FIRST][1]
-                    - hitting.origin.getY();
-            double dz = xyzf[GeoFunctionNVar.DICHO_FIRST][2]
-                    - hitting.origin.getZ();
-            double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
-            setZPick(-d, -d, hitting.discardPositiveHits(), d);
-            setLastHitParameters(geoF, false);
-            return true;
-        }
+		// set - as first value, + as second value, or return false
+		if (isLessZ0) {
+			if (isLessZ1) {
+				resetLastHitParameters(geoF);
+				return false;
+			}
+			double dx = xyzf[GeoFunctionNVar.DICHO_FIRST][0]
+					- hitting.origin.getX();
+			double dy = xyzf[GeoFunctionNVar.DICHO_FIRST][1]
+					- hitting.origin.getY();
+			double dz = xyzf[GeoFunctionNVar.DICHO_FIRST][2]
+					- hitting.origin.getZ();
+			double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+			setZPick(-d, -d, hitting.discardPositiveHits(), d);
+			setLastHitParameters(geoF, false);
+			return true;
+		}
 
-        if (isLessZ1) {
-            double dx = xyzf[GeoFunctionNVar.DICHO_FIRST][0]
-                    - hitting.origin.getX();
-            double dy = xyzf[GeoFunctionNVar.DICHO_FIRST][1]
-                    - hitting.origin.getY();
-            double dz = xyzf[GeoFunctionNVar.DICHO_FIRST][2]
-                    - hitting.origin.getZ();
-            double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
-            setZPick(-d, -d, hitting.discardPositiveHits(), d);
-            setLastHitParameters(geoF, true);
-            return true;
-        }
+		if (isLessZ1) {
+			double dx = xyzf[GeoFunctionNVar.DICHO_FIRST][0]
+					- hitting.origin.getX();
+			double dy = xyzf[GeoFunctionNVar.DICHO_FIRST][1]
+					- hitting.origin.getY();
+			double dz = xyzf[GeoFunctionNVar.DICHO_FIRST][2]
+					- hitting.origin.getZ();
+			double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+			setZPick(-d, -d, hitting.discardPositiveHits(), d);
+			setLastHitParameters(geoF, true);
+			return true;
+		}
 
-        resetLastHitParameters(geoF);
-        return false;
-    }
+		resetLastHitParameters(geoF);
+		return false;
+	}
 
 	private static void setLastHitParameters(GeoFunctionNVar geoF,
 			boolean swap) {
@@ -3123,18 +3123,18 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 
 	@Override
 	public void setWaitForUpdateVisualStyle(GProperty prop) {
-        super.setWaitForUpdateVisualStyle(prop);
-        if (prop == GProperty.LINE_STYLE) {
-            // also update for line width (e.g when translated)
-            setWaitForUpdate();
-        } else if (prop == GProperty.COLOR) {
-            setWaitForUpdateColor();
-        } else if (prop == GProperty.HIGHLIGHT) {
-            setWaitForUpdateColor();
-        } else if (prop == GProperty.VISIBLE) {
-            setWaitForUpdateVisibility();
-        }
-    }
+		super.setWaitForUpdateVisualStyle(prop);
+		if (prop == GProperty.LINE_STYLE) {
+			// also update for line width (e.g when translated)
+			setWaitForUpdate();
+		} else if (prop == GProperty.COLOR) {
+			setWaitForUpdateColor();
+		} else if (prop == GProperty.HIGHLIGHT) {
+			setWaitForUpdateColor();
+		} else if (prop == GProperty.VISIBLE) {
+			setWaitForUpdateVisibility();
+		}
+	}
 
 	@Override
 	protected GColor getObjectColorForOutline() {
@@ -3149,14 +3149,14 @@ public class DrawSurface3D extends Drawable3DSurfaces implements HasZPick {
 		stillRoomLeft = false;
 	}
 
-    @Override
-    public void setZPickIfBetter(double zNear, double zFar,
-                                 boolean discardPositive, double positionOnHitting) {
-        if (!needsDiscardZPick(discardPositive, zNear, zFar)
-                && (zNear > getZPickNear())) {
-            setZPickValue(zNear, zFar);
-            setPositionOnHitting(positionOnHitting);
-        }
-    }
+	@Override
+	public void setZPickIfBetter(double zNear, double zFar,
+			boolean discardPositive, double positionOnHitting) {
+		if (!needsDiscardZPick(discardPositive, zNear, zFar)
+				&& (zNear > getZPickNear())) {
+			setZPickValue(zNear, zFar);
+			setPositionOnHitting(positionOnHitting);
+		}
+	}
 
 }

@@ -16,15 +16,15 @@ import org.geogebra.web.html5.main.AppW;
  */
 public class SpeechRecognitionController {
 	private final AppW appW;
-    @ExternalAccess
-    private String lang = null;
+	@ExternalAccess
+	private String lang = null;
 	private String speechRecResultTxt = "";
 	private String action;
 	private double xCoord = 0;
 	private double yCoord = 0;
 	private double radius = 0;
-    @ExternalAccess
-    private String gotResult = "false";
+	@ExternalAccess
+	private String gotResult = "false";
 
 	/**
 	 * @param app
@@ -351,8 +351,8 @@ public class SpeechRecognitionController {
 		}
 	}-*/;
 
-    @ExternalAccess
-    private void showMessage(String msg) {
-        ToolTipManagerW.sharedInstance().showBottomMessage(msg, true, appW);
-    }
+	@ExternalAccess
+	private void showMessage(String msg) {
+		ToolTipManagerW.sharedInstance().showBottomMessage(msg, true, appW);
+	}
 }

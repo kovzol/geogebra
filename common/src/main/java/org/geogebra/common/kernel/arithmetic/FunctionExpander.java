@@ -59,8 +59,7 @@ public class FunctionExpander implements Traversing {
 					|| en.getOperation() == Operation.VEC_FUNCTION) {
 				ExpressionValue geo = en.getLeft().unwrap();
 				ExpressionValue deriv = null;
-				if (geo instanceof ExpressionNode
-						&& ((ExpressionNode) geo).getOperation() == Operation.DERIVATIVE) {
+				if (geo.isOperation(Operation.DERIVATIVE)) {
 					// template not important, right it is a constant
 					// MyDouble anyway
 					deriv = ((ExpressionNode) geo).getRight().evaluate(
@@ -181,33 +180,33 @@ public class FunctionExpander implements Traversing {
 					// or else replacing f(x,y) with f(y,x)
 					// will result in f(x, x)
 					for (int i = 0; i < fv.length; i++) {
-                        if (en.getOperation() == Operation.FUNCTION_NVAR || surface) {
-                            if (argument instanceof MyList) {
-                                ithArg = ((MyList) argument).getListElement(i);
-                            } else {
-                                MyVecNDNode vec = (MyVecNDNode) argument;
-                                switch (i) {
-                                    default:
-                                        ithArg = null;
-                                        Log.debug("problem in FunctionExpander " + i);
-                                        break;
-                                    case 0:
-                                        ithArg = vec.getX();
-                                        break;
-                                    case 1:
-                                        ithArg = vec.getY();
-                                        break;
-                                    case 2:
-                                        ithArg = vec.getZ();
-                                        break;
-                                }
-                            }
-                        }
-                        VariableReplacer.addVars(fv[i].getSetVarString(), ithArg);
-                    }
+						if (en.getOperation() == Operation.FUNCTION_NVAR || surface) {
+							if (argument instanceof MyList) {
+								ithArg = ((MyList) argument).getListElement(i);
+							} else {
+								MyVecNDNode vec = (MyVecNDNode) argument;
+								switch (i) {
+								default:
+									ithArg = null;
+									Log.debug("problem in FunctionExpander " + i);
+									break;
+								case 0:
+									ithArg = vec.getX();
+									break;
+								case 1:
+									ithArg = vec.getY();
+									break;
+								case 2:
+									ithArg = vec.getZ();
+									break;
+								}
+							}
+						}
+						VariableReplacer.addVars(fv[i].getSetVarString(), ithArg);
+					}
 					en2 = en2.traverse(vr).wrap();
 					return en2;
-                }
+				}
 			} else if (en.getOperation() == Operation.DERIVATIVE) {
 				// should not get there
 
@@ -272,11 +271,11 @@ public class FunctionExpander implements Traversing {
 
 	/**
 	 * Resets and returns the collector
-     *
+	 *
 	 * @return function expander
 	 */
 	public static FunctionExpander getCollector() {
 		collector.variables = null;
 		return collector;
-    }
+	}
 }

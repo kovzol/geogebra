@@ -52,9 +52,9 @@ public class SVGResourceGenerator extends AbstractResourceGenerator {
 
 		String toWrite = Util.readURLAsString(resource);
 		SourceWriter sw = new StringSourceWriter();
-        sw.println("new " + DefaultSVGResource.class.getName() +
-                "(\"" + Generator.escape(toWrite) + "\", " +
-                "\"" + method.getName() + "\") {");
+		sw.println("new " + DefaultSVGResource.class.getName() +
+				"(\"" + Generator.escape(toWrite)+ "\", " +
+				"\"" + method.getName() + "\") {");
 		sw.indent();
 
 		// Convenience when examining the generated code.

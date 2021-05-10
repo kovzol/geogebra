@@ -5,10 +5,10 @@ package org.geogebra.web.html5.gui.accessibility;
  */
 public interface HasSliders {
 
-    /**
-     * @param index slider index
-     * @param value slider value
-     */
-    void onValueChange(int index, double value);
+	/**
+	 * @param index slider index
+	 * @param value slider value
+	 */
+	void onValueChange(int index, double value);
 
 }

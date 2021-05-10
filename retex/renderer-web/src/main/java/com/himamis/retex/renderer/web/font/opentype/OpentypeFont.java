@@ -46,7 +46,6 @@ package com.himamis.retex.renderer.web.font.opentype;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.himamis.retex.renderer.share.CharFont;
 import com.himamis.retex.renderer.share.platform.FactoryProvider;
 import com.himamis.retex.renderer.share.platform.font.Font;
@@ -56,6 +55,7 @@ import com.himamis.retex.renderer.share.platform.geom.Shape;
 import com.himamis.retex.renderer.web.font.FontW;
 import com.himamis.retex.renderer.web.font.FontWrapper;
 import com.himamis.retex.renderer.web.geom.ShapeW;
+import com.himamis.retex.renderer.web.graphics.FontGlyph;
 
 public class OpentypeFont extends FontW implements OpentypeFontStatusListener {
 
@@ -92,7 +92,7 @@ public class OpentypeFont extends FontW implements OpentypeFontStatusListener {
 	}
 
 	@Override
-	public FontWrapper getFontWrapper() {
+	public OpentypeFontWrapper getFontWrapper() {
 		return opentype.getFont(name);
 	}
 
@@ -102,7 +102,7 @@ public class OpentypeFont extends FontW implements OpentypeFontStatusListener {
 			// not interested
 			return;
 		}
-        FactoryProvider.debugS("Font " + name + " loaded");
+		FactoryProvider.debugS("Font " + name + " loaded");
 		opentype.removeListener(this);
 		for (FontLoadCallback fontLoadCallback : fontLoadCallbacks) {
 			fontLoadCallback.onFontLoaded(this);
@@ -117,8 +117,8 @@ public class OpentypeFont extends FontW implements OpentypeFontStatusListener {
 			// not interested
 			return;
 		}
-        FactoryProvider.debugS("Font " + name + " error");
-        FactoryProvider.debugS(error.toString());
+		FactoryProvider.debugS("Font " + name + " error");
+		FactoryProvider.debugS(error.toString());
 		opentype.removeListener(this);
 		for (FontLoadCallback fontLoadCallback : fontLoadCallbacks) {
 			fontLoadCallback.onFontError(this);
@@ -134,8 +134,7 @@ public class OpentypeFont extends FontW implements OpentypeFontStatusListener {
 
 	@Override
 	public Shape getGlyphOutline(FontRenderContext frc, CharFont cf) {
-		FontW font = this;
-		FontWrapper wrap = font.getFontWrapper();
+		OpentypeFontWrapper wrap = this.getFontWrapper();
 
 		if (wrap == null) {
 			// fail gracefully when font not loaded
@@ -143,8 +142,8 @@ public class OpentypeFont extends FontW implements OpentypeFontStatusListener {
 			return null;
 		}
 
-		JavaScriptObject outline = wrap.getGlyphOutline(cf + "",
-				font.getSize());
+		FontGlyph outline = wrap.getGlyphOutline(cf + "",
+				this.getSize());
 
 		double height = cf.fontInfo.getHeight(cf.c);
 		double width = cf.fontInfo.getWidth(cf.c);

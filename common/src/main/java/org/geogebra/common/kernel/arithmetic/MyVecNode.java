@@ -32,6 +32,8 @@ import org.geogebra.common.kernel.printing.printer.vector.VectorPrinterMapBuilde
 import org.geogebra.common.kernel.printing.printer.vector.VectorPrintingMode;
 import org.geogebra.common.util.debug.Log;
 
+import com.google.j2objc.annotations.Weak;
+
 /**
  * 
  * @author Markus
@@ -50,6 +52,7 @@ public class MyVecNode extends ValidExpression
 
 	private VectorNodeStringifier stringifier;
 	private int mode = Kernel.COORD_CARTESIAN;
+	@Weak
 	private Kernel kernel;
 	private boolean isCASVector;
 
@@ -102,16 +105,16 @@ public class MyVecNode extends ValidExpression
 	/**
 	 * @return x-coord
 	 */
-    @Override
-    public ExpressionValue getX() {
+	@Override
+	public ExpressionValue getX() {
 		return x;
 	}
 
 	/**
 	 * @return y-coord
 	 */
-    @Override
-    public ExpressionValue getY() {
+	@Override
+	public ExpressionValue getY() {
 		return y;
 	}
 
@@ -146,10 +149,10 @@ public class MyVecNode extends ValidExpression
 		// check if both ExpressionNodes represent NumberValues
 		ExpressionValue evx = x.evaluate(tpl);
 		ExpressionValue evy = y.evaluate(tpl);
-        if (!(evx instanceof NumberValue) || !(evy instanceof NumberValue)) {
-            // don't need to throw MyParseError
-            // evx.evaluateDouble() / evy.evaluateDouble() will give NaN
-            Log.debug("evx or evy not a number");
+		if (!(evx instanceof NumberValue) || !(evy instanceof NumberValue)) {
+			// don't need to throw MyParseError
+			// evx.evaluateDouble() / evy.evaluateDouble() will give NaN
+			Log.debug("evx or evy not a number");
 		}
 
 		if (mode == Kernel.COORD_POLAR) {
@@ -227,7 +230,7 @@ public class MyVecNode extends ValidExpression
 		if (mode == Kernel.COORD_CARTESIAN) {
 			stringifier.setPrintingMode(VectorPrintingMode.Cartesian);
 		} else {
-			stringifier.setPrintingMode(VectorPrintingMode.Default);
+			stringifier.setPrintingMode(VectorPrintingMode.Polar);
 		}
 	}
 
@@ -362,10 +365,10 @@ public class MyVecNode extends ValidExpression
 		return super.evaluate(tpl);
 	}
 
-    @Override
-    public ExpressionValue getZ() {
-        return null;
-    }
+	@Override
+	public ExpressionValue getZ() {
+		return null;
+	}
 
     @Override
 	public int getCoordinateSystem() {

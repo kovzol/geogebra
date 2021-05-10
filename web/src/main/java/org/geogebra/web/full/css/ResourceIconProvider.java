@@ -4,11 +4,11 @@ import org.geogebra.web.resources.SVGResource;
 
 public interface ResourceIconProvider {
 
-    SVGResource newFileMenu();
+	SVGResource newFileMenu();
 
-    SVGResource openFileMenu();
+	SVGResource openFileMenu();
 
-    SVGResource fileMenu();
+	SVGResource fileMenu();
 
-    SVGResource downloadMenu();
+	SVGResource downloadMenu();
 }

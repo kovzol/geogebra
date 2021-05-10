@@ -26,6 +26,8 @@ public class EvalInfo {
 	private boolean copyingPlainVariables = false;
 	private boolean allowTypeChange = true;
 	private boolean multipleUnassignedAllowed = false;
+	private boolean allowMultiLetterVariables = true;
+	private boolean keepDefinition = true;
 	private SymbolicMode symbolicMode = SymbolicMode.NONE;
 	private GPredicate<String> labelFilter;
 	private RedefinitionRule redefinitionRule;
@@ -156,6 +158,9 @@ public class EvalInfo {
 		ret.allowTypeChange = this.allowTypeChange;
 		ret.redefinitionRule = this.redefinitionRule;
 		ret.constant = this.constant;
+		ret.keepDefinition = this.keepDefinition;
+		ret.multipleUnassignedAllowed = this.multipleUnassignedAllowed;
+		ret.allowMultiLetterVariables = this.allowMultiLetterVariables;
 		return ret;
 	}
 
@@ -425,6 +430,22 @@ public class EvalInfo {
 		return multipleUnassignedAllowed;
 	}
 
+	public boolean isMultiLetterVariablesAllowed() {
+		return allowMultiLetterVariables;
+	}
+
+	/**
+	 * EvalInfo with preventing variable parsing if label is more than one letter
+	 * for example: abc slider label is not allowed in inputbox,
+	 * only single letter followed by apostrophes or subscript
+	 * @return a copy of the eval info
+	 */
+	public EvalInfo withPreventVariable() {
+		EvalInfo info = copy();
+		info.allowMultiLetterVariables = false;
+		return info;
+	}
+
 	/**
 	 * Copy eval info with arbitrary constant
 	 * @param constant const
@@ -438,5 +459,23 @@ public class EvalInfo {
 
 	public MyArbitraryConstant getArbitraryConstant() {
 		return constant;
+	}
+
+	/**
+	 * Copy eval info with keep definition
+	 * @param keepDefinition keepDefinition
+	 * @return eval info
+	 */
+	public EvalInfo withKeepDefinition(boolean keepDefinition) {
+		EvalInfo info = copy();
+		info.keepDefinition = keepDefinition;
+		return info;
+	}
+
+	/**
+	 * @return wether the algebra processor keeps the definition of strips it.
+	 */
+	public boolean getKeepDefinition() {
+		return keepDefinition;
 	}
 }

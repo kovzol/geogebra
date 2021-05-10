@@ -34,7 +34,7 @@ public class Pstricks {
 
 	@BeforeClass
 	public static void setup() {
-        app = AlgebraTest.createApp();
+		app = AlgebraTest.createApp();
 		ec = app.getActiveEuclidianView().getEuclidianController();
 		inputs = new ArrayList<>();
 		createObjects();

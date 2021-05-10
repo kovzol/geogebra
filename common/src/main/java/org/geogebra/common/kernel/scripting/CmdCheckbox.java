@@ -80,7 +80,7 @@ public class CmdCheckbox extends CommandProcessor {
 
 		if (!geo.isGeoBoolean()) {
 			// invalid input
-            app.showError(Errors.InvalidInput,
+			app.showError(Errors.InvalidInput,
 					label + " = " + c.toString(StringTemplate.defaultTemplate));
 			return new GeoElement[] { null };
 		}
@@ -100,7 +100,7 @@ public class CmdCheckbox extends CommandProcessor {
 				}
 			}
 		} catch (CircularDefinitionException e) {
-            app.showError(Errors.CircularDefinition);
+			app.showError(Errors.CircularDefinition);
 		}
 		return new GeoElement[] { gb };
 	}

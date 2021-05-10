@@ -85,7 +85,6 @@ public class FencedAtom extends Atom implements HasTrueBase {
 		left = l == Symbols.NORMALDOT ? null : l;
 		right = r == Symbols.NORMALDOT ? null : r;
 		middle = m;
-        // FactoryProvider.debugS("creating FencedAtom");
 	}
 
 	/**
@@ -110,8 +109,8 @@ public class FencedAtom extends Atom implements HasTrueBase {
 		final double delta = Math.max(content.getHeight() - axis,
 				content.getDepth() + axis);
 		final double minHeight = Math.max(
-                (delta / 500.) * env.lengthSettings().getFactor("delimiterfactor"),
-                2. * delta - env.lengthSettings().getLength("delimitershortfall", env));
+				(delta / 500.) * env.lengthSettings().getFactor("delimiterfactor"),
+				2. * delta - env.lengthSettings().getLength("delimitershortfall", env));
 
 		// construct box
 		final HorizontalBox hBox = new HorizontalBox();
@@ -164,7 +163,7 @@ public class FencedAtom extends Atom implements HasTrueBase {
 			hBox.add(center(b, axis));
 		}
 
-		return hBox;
+		return hBox.setAtom(this);
 	}
 
 	@Override

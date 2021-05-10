@@ -123,11 +123,8 @@ public class CommandUnicode extends Command {
 						}
 					}
 				} else {
-					atom = tp.getCharMapping().getAtom(c, tp.isMathMode());
-					if (atom == null) {
-						atom = new JavaFontRenderingAtom(
-								new String(new int[] { c }, 0, 1));
-					}
+					atom = new JavaFontRenderingAtom(
+							new String(new int[] { c }, 0, 1));
 				}
 				tp.addToConsumer(new HeightDepthAtom(hd[0], hd[1], atom));
 			}
@@ -167,9 +164,9 @@ public class CommandUnicode extends Command {
 		tp.setParseString(s);
 		tp.skipPureWhites();
 		final TeXLength[] hd = new TeXLength[2];
-        hd[0] = tp.getLength(Unit.EM);
+		hd[0] = tp.getLength(Unit.EM);
 		tp.skipSeparators(",;");
-        hd[1] = tp.getLength(Unit.EM);
+		hd[1] = tp.getLength(Unit.EM);
 
 		return hd;
 	}

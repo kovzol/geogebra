@@ -64,7 +64,7 @@ public class InputDialogSegmentFixedD extends InputDialogD {
 	@Override
 	public void windowGainedFocus(WindowEvent arg0) {
 		if (!wrappedDialog.isModal()) {
-            app.resetCurrentSelectionListener();
+			app.resetCurrentSelectionListener();
 		}
 		((GuiManagerD) app.getGuiManager()).setCurrentTextfield(this, true);
 	}

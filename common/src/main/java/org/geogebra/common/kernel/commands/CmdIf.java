@@ -317,7 +317,7 @@ public class CmdIf extends CommandProcessor {
 				gf.validate(label == null);
 				return gf;
 			}
-            throw new MyError(loc, Errors.InvalidFunction);
+			throw new MyError(loc, Errors.InvalidFunction);
 		}
 		FunctionNVar fun = new FunctionNVar(expr, fv);
 		if (mayUseIndependent) {

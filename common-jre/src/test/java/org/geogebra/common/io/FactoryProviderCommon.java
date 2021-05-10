@@ -15,29 +15,29 @@ import com.himamis.retex.renderer.share.platform.graphics.Image;
 
 public class FactoryProviderCommon extends FactoryProvider {
 
-    @Override
-    protected GeomFactory createGeomFactory() {
-        return mock(GeomFactory.class);
-    }
+	@Override
+	protected GeomFactory createGeomFactory() {
+		return mock(GeomFactory.class);
+	}
 
-    @Override
-    protected FontFactory createFontFactory() {
-        FontFactory fontFactory = mock(FontFactory.class);
-        when(fontFactory.createTextAttributeProvider())
-                .thenReturn(mock(TextAttributeProvider.class));
-        return fontFactory;
-    }
+	@Override
+	protected FontFactory createFontFactory() {
+		FontFactory fontFactory = mock(FontFactory.class);
+		when(fontFactory.createTextAttributeProvider())
+				.thenReturn(mock(TextAttributeProvider.class));
+		return fontFactory;
+	}
 
-    @Override
-    protected GraphicsFactory createGraphicsFactory() {
-        GraphicsFactory factory = mock(GraphicsFactory.class);
-        when(factory.createImage(ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt()))
-                .thenReturn(mock(Image.class));
-        when(factory.createColor(ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt()))
-                .thenReturn(mock(Color.class));
-        return factory;
-    }
+	@Override
+	protected GraphicsFactory createGraphicsFactory() {
+		GraphicsFactory factory = mock(GraphicsFactory.class);
+		when(factory.createImage(ArgumentMatchers.anyInt(),
+				ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt()))
+						.thenReturn(mock(Image.class));
+		when(factory.createColor(ArgumentMatchers.anyInt(),
+				ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt()))
+						.thenReturn(mock(Color.class));
+		return factory;
+	}
 
 }

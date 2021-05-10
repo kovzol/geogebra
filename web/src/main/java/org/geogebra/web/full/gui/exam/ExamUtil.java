@@ -93,19 +93,19 @@ public class ExamUtil {
 		}
 	}-*/ ;
 
-    @ExternalAccess
-    private void startCheating() {
-        if (app.getExam() != null && !app.getExam().isClosed()) {
-            app.getExam().checkedWindowLeft();
-        }
-    }
+	@ExternalAccess
+	private void startCheating() {
+		if (app.getExam() != null && !app.getExam().isClosed()) {
+			app.getExam().checkedWindowLeft();
+		}
+	}
 
-    @ExternalAccess
-    private void stopCheating() {
-        if (app.getExam() != null) {
-            app.getExam().stopCheating();
-        }
-    }
+	@ExternalAccess
+	private void stopCheating() {
+		if (app.getExam() != null) {
+			app.getExam().stopCheating();
+		}
+	}
 
 	/**
 	 * @param full

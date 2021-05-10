@@ -9,8 +9,8 @@ plugins {
     id 'java'
     id 'pmd'
     id 'checkstyle'
-    id 'com.github.spotbugs' version '1.6.9'
-    id 'de.aaschmid.cpd' version '2.0'
+    id "com.github.spotbugs" version "4.6.0"
+    id 'de.aaschmid.cpd' version '3.1'
 }
 
 description 'Parts of GeoGebra related to web platforms'
@@ -45,8 +45,8 @@ if(hasProperty("eclipse")){
 }
 
 dependencies {
-    compile project(path: ':carota-web', configuration: 'gwt')
-    compile project(':web:dev'),
+    compile project(path: ':carota-web'),
+        project(':web:dev'),
         project(':common'),
         project(':renderer-base'),
         project(':editor-base'),
@@ -54,21 +54,18 @@ dependencies {
         project(':editor-web'),
         project(':keyboard-web'),
         project(':ggbjdk'),
+        files(project(':carota-web').sourceSets.main.allSource.srcDirs),
         files(project(':web:dev').sourceSets.main.allSource.srcDirs),
         files(project(':common').sourceSets.main.allSource.srcDirs),
         files(project(':ggbjdk').sourceSets.main.java.srcDirs),
         files(project(':editor-web').sourceSets.main.allSource.srcDirs),
         files(project(':keyboard-web').sourceSets.main.allSource.srcDirs),
-        'com.googlecode.gwtphonegap:gwtphonegap:3.5.0.1',
-        'com.googlecode:gwtgl:0.9.1',
-        'com.googlecode:gwtgl:0.9.1:sources',
-        "fr.ujf-grenoble:giac-gwt:69762",
-        "fr.ujf-grenoble:giac-gwt:69762:sources",
-        "com.google.gwt:gwt-dev:$gwtCompilerVersion",
-        'com.asual.lesscss:lesscss-engine:1.3.0'
+        "fr.ujf-grenoble:giac-gwt:$javaGiacVersion",
+        "fr.ujf-grenoble:giac-gwt:$javaGiacVersion:sources",
+        "com.google.gwt:gwt-dev:$gwtCompilerVersion"
 
     testCompile "junit:junit:$junitVersion",
-        'com.google.gwt.gwtmockito:gwtmockito:1.1.9',
+        'com.google.gwt.gwtmockito:gwtmockito:1.1.10-SNAPSHOT',
         "com.google.gwt:gwt-user:$gwtCompilerVersion"
 }
 
@@ -93,12 +90,13 @@ ext.appSpecs = [
         partials:["undo-redo"], appStoreId:'1412748754', measurementId: 'G-YJ1QVF1SFK',
         firebaseAppId: '1:895270214636:web:540b533d4b47a7bb84fec9'],
     [id:'geometry', title:'Geometry', transKey:'Geometry',
-        exe:'GeoGebraGeometry', pkg:'GeoGebra_Geometry',  releases: 'Releases-geometry',
+        exe:'GeoGebraGeometry', pkg:'GeoGebra_Geometry', releases: 'Releases-geometry',
         icon: 'Geometry.ico', appStoreId:'1232591335', measurementId: 'G-82GL4RTR4H',
         firebaseAppId: '1:895270214636:web:6bf3d469e0d2b32584fec9'],
     [id:'suite', title:'Calculator Suite', transKey:'CalculatorSuite',
-         firebaseAppId: '1:895270214636:web:7daf432883a8464084fec9',
-         measurementId: 'G-FXVLXMD21Y'],
+         firebaseAppId: '1:895270214636:web:7daf432883a8464084fec9', icon: 'ggb.ico',
+         measurementId: 'G-FXVLXMD21Y', appStoreId: '1504416652',
+         pkg:'GeoGebra_Calculator', exe: 'GeoGebraCalculator', releases: 'Releases-suite',],
     [id:'notes', title:'Notes', transKey: 'Notes', exe:'GeoGebraNotes', pkg:'GeoGebra_Notes',
          releases: 'Releases-notes', icon: 'notes.ico', measurementId: 'G-MWHBRQSXTL',
          firebaseAppId: '1:895270214636:web:aece5066924cacb084fec9'],
@@ -112,17 +110,20 @@ gwt {
         modules = project.getProperty("gmodule").split(",")
     } else {
         modules = ['org.geogebra.web.Web3D', 'org.geogebra.web.WebSimple', 'org.geogebra.web.Web',
-          'org.geogebra.web.Tablet3D', 'org.geogebra.web.TabletWin']
+          'org.geogebra.web.Tablet3D']
     }
     
     devModules devModule
     
     maxHeapSize = '2000M'
 
+    jsInteropExports {
+        shouldGenerate = true;
+    }
+
     compiler {
         // Customize the GWT compiler here
         strict = true
-        // enableClosureCompiler = true;        
         disableCastChecking = true
       
         if (project.hasProperty("greport")) {
@@ -257,7 +258,7 @@ task mergeDeploy(){
                           .replace('%WEBSIMPLE_PERMUTATION%', webSimplePermutation)
       def parentRoot = project(":common").getBuildDir().getAbsolutePath() + "/../../"
       def currentVersion = getGeogebraVersion(parentRoot)
-      file(warDirRel + "/deployggb.js").text = deployText.replace('%MODULE_BASE%','')
+      file(warDirRel + "/deployggb.js").text = deployText.replace('%MODULE_BASE%','./')
       file(warDirRel + "/deployggb-latest.js").text = deployText.replace('%MODULE_BASE%','https://www.geogebra.org/apps/latest/')
       file(warDirRel + "/deployggb-${currentVersion}.js").text = deployText.replace('%MODULE_BASE%',"https://www.geogebra.org/apps/${currentVersion}/")
    }
@@ -288,6 +289,7 @@ task run(type: JavaExec, dependsOn: ['jar','copyHtml', 'createSolverHtml']) {
         '-bindAddress', project.findProperty("gbind") ?: 'localhost',
         '-superDevMode',
         '-war', file(warDirRel),
+        '-generateJsInteropExports',
         devModule
     systemProperty 'gwt.persistentunitcachedir', '../build/gwt/devModeCache'
     systemProperty 'java.io.tmpdir', gwtGlobalCache.getAbsolutePath()
@@ -323,7 +325,7 @@ spotbugs {
 pmd {
      ignoreFailures = true
      ruleSets = []
-     ruleSetFiles = files("config/pmd.xml")
+     ruleSetFiles = files("../config/pmd.xml")
 }
 
 cpd {

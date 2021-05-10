@@ -40,10 +40,10 @@ public class InputSuggestions {
 
 	/**
 	 * Update completions from input.
-	 *
+	 * 
 	 * @param currentWord
 	 *            sequence of alphanumeric characters around the cursor
-	 *
+	 * 
 	 * @return completions for current word
 	 */
 	public List<String> resetCompletions(StringBuilder currentWord) {
@@ -79,13 +79,23 @@ public class InputSuggestions {
 
 		// Start with the built-in function completions
 		completions = app.getParserFunctions().getCompletions(cmdPrefix);
-		// Then add the command completions
+		addToCompletions(commandCompletions);
+		return completions;
+	}
+
+	private void addToCompletions(List<String> commandCompletions) {
+		if (isNullOrEmpty(commandCompletions)) {
+			return;
+		}
 		if (completions.isEmpty()) {
 			completions = commandCompletions;
-		} else if (commandCompletions != null) {
+		} else {
 			completions.addAll(commandCompletions);
 		}
-		return completions;
+	}
+
+	private boolean isNullOrEmpty(List<String> list) {
+		return list == null || list.isEmpty() || (list.size() == 1 && list.get(0).isEmpty());
 	}
 
 	/**
@@ -100,7 +110,7 @@ public class InputSuggestions {
 	/**
 	 * Take a list of commands and return all possible syntaxes for these
 	 * commands
-	 *
+	 * 
 	 * @param commands
 	 *            commands
 	 * @return syntaxes
@@ -156,7 +166,7 @@ public class InputSuggestions {
 
 	/**
 	 * Lazy load the dictionary.
-	 *
+	 * 
 	 * @return dictionary of completions
 	 */
 	public AutoCompleteDictionary getDictionary() {

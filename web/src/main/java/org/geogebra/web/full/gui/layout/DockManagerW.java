@@ -12,12 +12,15 @@ import org.geogebra.common.gui.layout.DockManager;
 import org.geogebra.common.gui.layout.DockPanel;
 import org.geogebra.common.io.layout.DockPanelData;
 import org.geogebra.common.io.layout.DockSplitPaneData;
+import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.io.layout.PerspectiveDecoder;
 import org.geogebra.common.io.layout.ShowDockPanelListener;
 import org.geogebra.common.javax.swing.SwingConstants;
 import org.geogebra.common.main.App;
 import org.geogebra.common.util.ExtendedBoolean;
+import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
+import org.geogebra.ggbjdk.java.awt.geom.Dimension;
 import org.geogebra.ggbjdk.java.awt.geom.Rectangle;
 import org.geogebra.web.full.gui.laf.GLookAndFeel;
 import org.geogebra.web.full.gui.layout.panels.EuclidianDockPanelWAbstract;
@@ -25,16 +28,21 @@ import org.geogebra.web.full.gui.layout.panels.ToolbarDockPanelW;
 import org.geogebra.web.full.gui.toolbarpanel.ToolbarPanel;
 import org.geogebra.web.full.gui.view.algebra.AlgebraViewW;
 import org.geogebra.web.full.main.AppWFull;
-import org.geogebra.web.html5.awt.GDimensionW;
 import org.geogebra.web.html5.gui.GuiManagerInterfaceW;
 import org.geogebra.web.html5.main.AppW;
+import org.geogebra.web.html5.util.StringConsumer;
 
+import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import elemental2.dom.BaseRenderingContext2D;
+import elemental2.dom.CanvasRenderingContext2D;
+import jsinterop.base.Js;
 
 /**
  * Class responsible to manage the whole docking area of the window.
@@ -223,10 +231,10 @@ public class DockManagerW extends DockManager {
 				// skip panels which will not be drawn in the main window
 				if (!dpItem.isVisible() || dpItem.isOpenInFrame()
 				// eg run "no 3D" with 3D View open in saved settings
-						|| panel == null) {
+						|| panel == null || !PerspectiveDecoder.isAllowed(panel.getViewId(),
+						app.getConfig().getForcedPerspective())) {
 					continue;
 				}
-
 				// attach view to kernel (being attached multiple times is
 				// ignored)
 				app.getGuiManager().attachView(panel.getViewId());
@@ -244,18 +252,17 @@ public class DockManagerW extends DockManager {
 				 * last direction as its reserved for the position of the dock
 				 * panel itself.
 				 * 
-				 * In contrast to the algorithm used in the show() method we'll
-				 * not take care of invalid positions as the data should not be
-				 * corrupted.
 				 */
 				for (int j = 0; j < directions.length - 1; ++j) {
+					Widget current;
 					if (directions[j].equals("0")
 							|| directions[j].equals("3")) {
-						currentParent = (DockSplitPaneW) currentParent
-								.getLeftComponent();
+						current = currentParent.getLeftComponent();
 					} else {
-						currentParent = (DockSplitPaneW) currentParent
-								.getRightComponent();
+						current = currentParent.getRightComponent();
+					}
+					if (current instanceof  DockSplitPaneW) {
+						currentParent = (DockSplitPaneW) current;
 					}
 				}
 				if (currentParent == null) {
@@ -370,7 +377,7 @@ public class DockManagerW extends DockManager {
 					windowWidth2 = windowWidth;
 					windowHeight2 = windowHeight;
 					app.setPreferredSize(
-							new GDimensionW(windowWidth2, windowHeight2));
+							new Dimension(windowWidth2, windowHeight2));
 				}
 
 				setSplitPaneDividers(spData, splitPanes, windowHeight2,
@@ -415,7 +422,7 @@ public class DockManagerW extends DockManager {
 				panel.setEmbeddedDef(dpData[i].getEmbeddedDef());
 				panel.setEmbeddedSize(dpData[i].getEmbeddedSize());
 				panel.setShowStyleBar(dpData[i].showStyleBar());
-				panel.setToolMode(dpData[i].isToolMode());
+				panel.setTabId(dpData[i].getTabId());
 
 				// detach views which were visible, but are not in the new
 				// perspective
@@ -565,10 +572,10 @@ public class DockManagerW extends DockManager {
 			}
 		}
 
-		if (app.getArticleElement().getDataParamShowMenuBar(false)) {
+		if (app.getAppletParameters().getDataParamShowMenuBar(false)) {
 			DockGlassPaneW glassPane = ((AppWFull) app).getGlassPane();
-			if (glassPane.getArticleElement() == null) {
-				glassPane.setArticleElement(app.getArticleElement());
+			if (glassPane.getGeoGebraElement() == null) {
+				glassPane.setGeoGebraElement(app.getGeoGebraElement());
 			}
 			glassPane.attach(this, (int) app.getWidth(), (int) app.getHeight());
 			glassPane.startDrag(new DnDState(panel));
@@ -787,7 +794,9 @@ public class DockManagerW extends DockManager {
 	 *            panel
 	 */
 	public void show(DockPanelW panel) {
-
+		if (panel.isAttached() && panel.isVisible()) {
+			return;
+		}
 		panel.setVisible(true);
 		panel.setHidden(false);
 
@@ -868,14 +877,8 @@ public class DockManagerW extends DockManager {
 		// the component opposite to the current component
 		int[] oppositeDim = new int[] { 0, 0 };
 
-		// ====================
-		// TODO temporary fix:
-		// newSplitPane.setDividerLocation(size);
-
 		Widget opposite = prepareRootPaneForInsert(oppositeDim, currentPane,
-				newSplitPane, lastPos, secondLastPos);
-
-		// App.debug("\n"+((DockComponent) opposite).toString("opposite"));
+					newSplitPane, lastPos, secondLastPos);
 		// save divider locations to prevent not visible views
 		if (opposite != null) {
 			((DockComponent) opposite).saveDividerLocation();
@@ -1088,7 +1091,7 @@ public class DockManagerW extends DockManager {
 	 */
 	public boolean hide(DockPanelW panel, boolean isPermanent,
 			boolean fromDrop) {
-		if (!panel.isVisible()) {
+		if (!panel.isVisible() || panel.getParentSplitPane() == null) {
 			// some views (especially CAS) will close so slowly that the user is
 			// able
 			// to issue another "close" call, therefore we quit quietly
@@ -1413,10 +1416,6 @@ public class DockManagerW extends DockManager {
 		for (DockPanelW panel : dockPanels) {
 			panel.setLabels();
 		}
-
-		for (DockPanelW panel : dockPanels) {
-			panel.buildToolbarGui();
-		}
 	}
 
 	/**
@@ -1430,19 +1429,6 @@ public class DockManagerW extends DockManager {
 	public void updatePanels() {
 		for (DockPanelW panel : dockPanels) {
 			panel.updatePanel(false);
-		}
-	}
-
-	/**
-	 * Update the fonts in all dock panels.
-	 */
-	public void updateFonts() {
-		for (DockPanelW panel : dockPanels) {
-			panel.updateFonts();
-		}
-
-		for (DockPanelW panel : dockPanels) {
-			panel.buildToolbarGui();
 		}
 	}
 
@@ -1564,19 +1550,19 @@ public class DockManagerW extends DockManager {
 	 * @return panel that should get keyboard
 	 */
 	public DockPanelW getPanelForKeyboard() {
-        DockPanelW focusedPanel = getFocusedPanel();
-        List<Integer> keyboardViews = ((AppWFull) app).getKeyboardManager()
-                .getKeyboardViews();
-        if (focusedPanel != null && keyboardViews.contains(focusedPanel.getViewId())) {
-            return focusedPanel;
-        }
+		DockPanelW focusedPanel = getFocusedPanel();
+		List<Integer> keyboardViews = ((AppWFull) app).getKeyboardManager()
+				.getKeyboardViews();
+		if (focusedPanel != null && keyboardViews.contains(focusedPanel.getViewId())) {
+			return focusedPanel;
+		}
 		for (int panelId : keyboardViews) {
-            DockPanelW panel = getPanel(panelId);
-            if (panel.isVisible()) {
+			DockPanelW panel = getPanel(panelId);
+			if (panel.isVisible()) {
 				return panel;
 			}
-        }
-        return null;
+		}
+		return null;
 	}
 
 	@Override
@@ -1712,6 +1698,16 @@ public class DockManagerW extends DockManager {
 	}
 
 	/**
+	 * Resize probability calculator view; can't be done by CSS because of canvas
+	 */
+	public void resizeProbabilityCalculator() {
+		DockPanelW probPanel = getPanel(App.VIEW_PROBABILITY_CALCULATOR);
+		if (probPanel != null) {
+			probPanel.deferredOnResize();
+		}
+	}
+
+	/**
 	 * Closes toolbar in portrait mode
 	 * 
 	 */
@@ -1779,6 +1775,52 @@ public class DockManagerW extends DockManager {
 		for (DockPanelW dock : this.dockPanels) {
 			if (dock.getViewId() != App.VIEW_ALGEBRA) {
 				dock.resetStylebar();
+			}
+		}
+	}
+
+	/**
+	 * Set active tab(s) from perspective
+	 * @param p perspective
+	 */
+	public void setActiveTab(Perspective p) {
+		for (DockPanelData dpData: p.getDockPanelData()) {
+			DockPanelW panel = getPanel(dpData.getViewId());
+			if (panel != null) {
+				panel.setTabId(dpData.getTabId());
+			}
+		}
+	}
+
+	/**
+	 * Paint all panels to a canvas
+	 * @param c canvas
+	 * @param callback consumer for the resulting base64 string (without marker)
+	 */
+	public void paintPanels(Canvas c, StringConsumer callback) {
+		c.setCoordinateSpaceWidth(rootPane.getOffsetWidth());
+		c.setCoordinateSpaceHeight(rootPane.getOffsetHeight());
+		Runnable counter = new Runnable() {
+			private int count = dockPanels.size();
+			@Override
+			public void run() {
+				count--;
+				if (count == 0) {
+					callback.consume(c.toDataUrl().replace(StringUtil.pngMarker, ""));
+				}
+			}
+		};
+		CanvasRenderingContext2D context2d = Js.uncheckedCast(c.getContext("2d"));
+		// gray color for the dividers in Classic
+		context2d.fillStyle = BaseRenderingContext2D.FillStyleUnionType.of("rgb(200,200,200)");
+		context2d.fillRect(0, 0, rootPane.getOffsetWidth(), rootPane.getOffsetHeight());
+		for (DockPanelW panel: dockPanels) {
+			if (panel.isAttached() && panel.isVisible()) {
+				panel.paintToCanvas(context2d, counter,
+						panel.getAbsoluteLeft() - rootPane.getAbsoluteLeft(),
+						panel.getAbsoluteTop() - rootPane.getAbsoluteTop());
+			} else {
+				counter.run();
 			}
 		}
 	}

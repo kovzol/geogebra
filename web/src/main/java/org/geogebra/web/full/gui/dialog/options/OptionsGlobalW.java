@@ -77,11 +77,7 @@ public class OptionsGlobalW implements OptionPanelW, SetLabels {
 			optionsMenu = new OptionsMenu(app.getLocalization());
 			createGUI();
 			updateGUI();
-			if (app.isUnbundledOrWhiteboard()) {
-				setStyleName("propMaterialTab");
-			} else {
-				setStyleName("propertiesTab");
-			}
+			setStyleName("propertiesTab");
 			add(optionsPanel);
 		}
 
@@ -105,7 +101,7 @@ public class OptionsGlobalW implements OptionPanelW, SetLabels {
 					app.getLocalization().getMenu("Rounding") + ":")
 							.setFor(roundingList);
 			optionsPanel
-					.add(LayoutUtilW.panelRowIndent(lblRounding, roundingList));
+					.add(LayoutUtilW.panelRow(lblRounding, roundingList));
 			roundingList.addChangeHandler(new ChangeHandler() {
 
 				@Override
@@ -119,7 +115,7 @@ public class OptionsGlobalW implements OptionPanelW, SetLabels {
 								figures ? index + 1 : index, figures);
 						app.setUnsaved();
 					} catch (Exception e) {
-                        app.showGenericError(e);
+						app.showGenericError(e);
 					}
 				}
 			});
@@ -132,7 +128,7 @@ public class OptionsGlobalW implements OptionPanelW, SetLabels {
 							.setFor(labelingList);
 
 			optionsPanel
-					.add(LayoutUtilW.panelRowIndent(lblLabeling, labelingList));
+					.add(LayoutUtilW.panelRow(lblLabeling, labelingList));
 			labelingList.addChangeHandler(new ChangeHandler() {
 
 				@Override
@@ -153,7 +149,7 @@ public class OptionsGlobalW implements OptionPanelW, SetLabels {
 					app.getLocalization().getMenu("FontSize") + ":")
 							.setFor(fontSizeList);
 			optionsPanel
-					.add(LayoutUtilW.panelRowIndent(lblFontSize, fontSizeList));
+					.add(LayoutUtilW.panelRow(lblFontSize, fontSizeList));
 			fontSizeList.addChangeHandler(new ChangeHandler() {
 
 				@Override
@@ -166,7 +162,7 @@ public class OptionsGlobalW implements OptionPanelW, SetLabels {
 								true);
 						app.setUnsaved();
 					} catch (Exception e) {
-                        app.showGenericError(e);
+						app.showGenericError(e);
 					}
 				}
 			});
@@ -191,7 +187,7 @@ public class OptionsGlobalW implements OptionPanelW, SetLabels {
 					app.getLocalization().getMenu("Language") + ":")
 							.setFor(languageList);
 			optionsPanel
-					.add(LayoutUtilW.panelRowIndent(lblLanguage, languageList));
+					.add(LayoutUtilW.panelRow(lblLanguage, languageList));
 			languageList.addChangeHandler(new ChangeHandler() {
 
 				@Override
@@ -250,8 +246,7 @@ public class OptionsGlobalW implements OptionPanelW, SetLabels {
 
 		private void addRestoreSettingsBtn() {
 			restoreSettingsBtn = new StandardButton(
-					app.getLocalization().getMenu("RestoreSettings"),
-					app);
+					app.getLocalization().getMenu("RestoreSettings"));
 			restoreSettingsBtn.setStyleName("MyCanvasButton");
 			restoreSettingsBtn.addStyleName("settingsBtn");
 			restoreSettingsBtn.addFastClickHandler(new FastClickHandler() {
@@ -265,14 +260,14 @@ public class OptionsGlobalW implements OptionPanelW, SetLabels {
 				}
 			});
 			saveRestoreRow = LayoutUtilW
-					.panelRowIndent(saveSettingsBtn, restoreSettingsBtn);
+					.panelRow(saveSettingsBtn, restoreSettingsBtn);
 			saveRestoreRow.setVisible(!app.isExam());
 			optionsPanel.add(saveRestoreRow);
 		}
 
 		private void addSaveSettingBtn() {
 			saveSettingsBtn = new StandardButton(
-					app.getLocalization().getMenu("Settings.Save"), app);
+					app.getLocalization().getMenu("Settings.Save"));
 			saveSettingsBtn.setStyleName("MyCanvasButton");
 			saveSettingsBtn.addStyleName("settingsBtn");
 			saveSettingsBtn.addFastClickHandler(new FastClickHandler() {
@@ -415,7 +410,7 @@ public class OptionsGlobalW implements OptionPanelW, SetLabels {
 	 *            see {@link AppW}{
 	 */
 	public static void switchLanguage(String localeStr, AppW app) {
-		app.getLAF().storeLanguage(localeStr, app);
+		app.getLAF().storeLanguage(localeStr);
 		if (app.getLoginOperation().isLoggedIn()) {
 			app.getLoginOperation().getGeoGebraTubeAPI().setUserLanguage(
 					localeStr,

@@ -13,7 +13,7 @@ public class CellFormatText {
 
 	@BeforeClass
 	public static void setup() {
-        app = AlgebraTest.createApp();
+		app = AlgebraTest.createApp();
 	}
 
 	@Test

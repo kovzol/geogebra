@@ -15,8 +15,8 @@ import org.geogebra.common.awt.MyImage;
 import org.geogebra.common.awt.font.GTextLayout;
 import org.geogebra.common.main.App;
 import org.geogebra.ggbjdk.factories.AwtFactoryHeadless;
+import org.geogebra.ggbjdk.java.awt.geom.Dimension;
 import org.geogebra.web.html5.awt.GAlphaCompositeW;
-import org.geogebra.web.html5.awt.GDimensionW;
 import org.geogebra.web.html5.awt.GFontRenderContextW;
 import org.geogebra.web.html5.awt.GFontW;
 import org.geogebra.web.html5.awt.GGradientPaintW;
@@ -26,8 +26,6 @@ import org.geogebra.web.html5.euclidian.EuclidianViewW;
 import org.geogebra.web.html5.euclidian.GGraphics2DWI;
 import org.geogebra.web.html5.gawt.GBufferedImageW;
 import org.geogebra.web.html5.main.MyImageW;
-import org.geogebra.web.html5.util.ImageLoadCallback;
-import org.geogebra.web.html5.util.ImageWrapper;
 
 import com.google.gwt.core.client.Scheduler;
 
@@ -56,7 +54,7 @@ public class AwtFactoryW extends AwtFactoryHeadless {
 
 	@Override
 	public GDimension newDimension(int width, int height) {
-		return new GDimensionW(width, height);
+		return new Dimension(width, height);
 	}
 
 	@Override
@@ -111,30 +109,17 @@ public class AwtFactoryW extends AwtFactoryHeadless {
 			} else if (repaintsFromHereInProgress == 0) {
 				// the if condition makes sure there will be no infinite loop
 
-				// note: AFAIK (?), DOM's addEventListener method can add more
-				// listeners
-				ImageWrapper.nativeon(((GBufferedImageW) gi).getImageElement(),
-						"load", new ImageLoadCallback() {
-							@Override
-							public void onLoad() {
-								if (!repaintDeferred) {
-									repaintDeferred = true;
-									// otherwise, at the first time, issue a
-									// complete repaint
-									// but schedule it deferred to avoid
-									// conflicts
-									// in repaints
-									Scheduler.get().scheduleDeferred(
-											new Scheduler.ScheduledCommand() {
-												@Override
-												public void execute() {
-													doRepaint(app);
-												}
-
-											});
-								}
-							}
-						});
+				((GBufferedImageW) gi).getImageElement().addEventListener("load", (event) -> {
+						if (!repaintDeferred) {
+							repaintDeferred = true;
+							// otherwise, at the first time, issue a
+							// complete repaint
+							// but schedule it deferred to avoid
+							// conflicts
+							// in repaints
+							Scheduler.get().scheduleDeferred(() -> doRepaint(app));
+						}
+				});
 			}
 		}
 	}

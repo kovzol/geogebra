@@ -19,7 +19,7 @@ public class ToolButton extends StandardButton {
 
 	private int mode;
 	private AppW appW;
-    private String selectedColor;
+	private String selectedColor;
 
 	/**
 	 * @param mode
@@ -42,10 +42,10 @@ public class ToolButton extends StandardButton {
 	 */
 	public ToolButton(int mode, AppW app) {
 		super(AppResources.INSTANCE.empty(), app.getLocalization()
-				.getMenu(EuclidianConstants.getModeText(mode)), 24, app);
+				.getMenu(EuclidianConstants.getModeText(mode)), 24);
 		this.mode = mode;
 		this.appW = app;
-        this.selectedColor = app.getVendorSettings().getPrimaryColor().toString();
+		this.selectedColor = app.getVendorSettings().getPrimaryColor().toString();
 		setStyleName("toolButton");
 		setAccessible();
 		setSelected(false); // update icon
@@ -78,8 +78,8 @@ public class ToolButton extends StandardButton {
 			public void onSuccess() {
 				setIcon(selected
 						? GGWToolBar.getColoredImageForMode(
-                        ToolbarSvgResources.INSTANCE, iconMode, app,
-                        selectedColor)
+								ToolbarSvgResources.INSTANCE, iconMode, app,
+								selectedColor)
 						: GGWToolBar.getImageURLNotMacro(
 								ToolbarSvgResources.INSTANCE, iconMode, app));
 			}

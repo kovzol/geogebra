@@ -32,7 +32,7 @@ public class AlgoNumeratorDenominator extends AlgoElement {
 	private GeoNumeric g; // output
 	private Commands type;
 
-    private ExpressionValue[] fraction = new ExpressionValue[2];
+	private ExpressionValue[] fraction = new ExpressionValue[2];
 
 	/**
 	 * @param cons
@@ -81,49 +81,52 @@ public class AlgoNumeratorDenominator extends AlgoElement {
 			return;
 		}
 
-        ExpressionNode def = f.getDefinition();
+		ExpressionNode def = f.getDefinition();
 
-        ExpressionValue top = null;
-        ExpressionValue bottom = null;
+		ExpressionValue top = null;
+		ExpressionValue bottom = null;
 
-        // check if it's possible to get as an exact fraction!
-        if (def != null) {
-            if (def.isSimpleFraction()) {
+		// check if it's possible to get as an exact fraction!
+		if (def != null) {
+			if (def.isSimpleFraction()) {
 
-                top = def.getLeft();
-                bottom = def.getRight();
+				top = def.getLeft();
+				bottom = def.getRight();
 
-            } else {
+			} else {
 
-                def.getFraction(fraction, true);
+				def.getFraction(fraction, true);
 
-                if (fraction[0] != null && fraction[1] != null) {
-                    top = fraction[0];
-                    bottom = fraction[1];
-                }
-            }
+				if (fraction[0] != null && fraction[1] != null) {
+					top = fraction[0];
+					bottom = fraction[1];
+				}
+			}
 
-            if (top != null && bottom != null && DoubleUtil.isInteger(top.evaluateDouble())
-                    && DoubleUtil.isInteger(bottom.evaluateDouble())) {
-                // cancel down to lowest terms
-                long num = (long) top.evaluateDouble();
-                long den = (long) bottom.evaluateDouble();
-                long gcd = Kernel.gcd(num, den);
+			if (top != null && bottom != null && DoubleUtil.isInteger(top.evaluateDouble())
+					&& DoubleUtil.isInteger(bottom.evaluateDouble())) {
+				// cancel down to lowest terms
+				long num = (long) top.evaluateDouble();
+				long den = (long) bottom.evaluateDouble();
+				long gcd = Math.abs(Kernel.gcd(num, den));
+				int denSign = den < 0 ? -1 : 1;
+				num = num * denSign;
+				den = den * denSign;
 
-                long val;
-                if (gcd == 0) {
-                    val = (type == Commands.Numerator) ? num : den;
-                } else {
-                    val = (type == Commands.Numerator) ? num / gcd : den / gcd;
-                }
+				long val;
+				if (gcd == 0) {
+					val = (type == Commands.Numerator) ? num : den;
+				} else {
+					val = (type == Commands.Numerator) ? num / gcd : den / gcd;
+				}
 
-                g.setValue(val);
-                return;
-            }
+				g.setValue(val);
+				return;
+			}
 
-        }
+		}
 
-        // regular decimal -> find approximate fraction
+		// regular decimal -> find approximate fraction
 		double[] frac = AlgoFractionText.decimalToFraction(f.getDouble(),
 				Kernel.STANDARD_PRECISION);
 		if (frac.length < 2) {

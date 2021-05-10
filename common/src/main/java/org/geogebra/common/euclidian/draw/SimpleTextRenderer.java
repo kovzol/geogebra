@@ -40,44 +40,40 @@ public class SimpleTextRenderer implements TextRenderer {
 		EuclidianStatic.drawIndexedString(app, graphics, truncated, newXPos, textBottom, false);
 	}
 
-    private static int getTextOffset(String text, GeoInputBox geoInputBox, App app,
-                                     int boxWidth, GGraphics2D graphics2D) {
-        switch (geoInputBox.getAlignment()) {
-            case CENTER:
-                return (boxWidth - getTextWidth(app, graphics2D, text)) / 2;
-            case RIGHT:
-                return boxWidth - getTextWidth(app, graphics2D, text);
-            default:
-                return 0;
-        }
-    }
+	private static int getTextOffset(String text, GeoInputBox geoInputBox, App app,
+								 int boxWidth, GGraphics2D graphics2D) {
+		switch (geoInputBox.getAlignment()) {
+		case CENTER:
+			return (boxWidth - getTextWidth(app, graphics2D, text)) / 2;
+		case RIGHT:
+			return boxWidth - getTextWidth(app, graphics2D, text);
+		default:
+			return 0;
+		}
+	}
 
-    private static int getTextWidth(App app, GGraphics2D graphics2D, String text) {
-        return EuclidianStatic.drawIndexedString(app, graphics2D, text,
-                0, 0, false, false, null, null).x;
-    }
+	private static int getTextWidth(App app, GGraphics2D graphics2D, String text) {
+		return EuclidianStatic.drawIndexedString(app, graphics2D, text,
+				0, 0, false, false, null, null).x;
+	}
 
 	@Override
 	public GRectangle measureBounds(GGraphics2D graphics, GeoInputBox geo, GFont font,
 									String labelDescription) {
 		drawable.measureLabel(graphics, geo, labelDescription);
 		int height = Math.max(drawable.boxHeight, DrawInputBox.MIN_HEIGHT);
-
-		double labelHeight = drawable.getHeightForLabel(labelDescription);
-		double inputBoxTop = drawable.getLabelTop() + ((labelHeight - height) / 2);
-
 		return AwtFactory.getPrototype().newRectangle(
-				drawable.boxLeft, (int) Math.round(inputBoxTop), drawable.boxWidth, height);
+				drawable.boxLeft, drawable.computeBoxTop(height), drawable.boxWidth, height);
 	}
 
-    private int getTruncIndex(String text, GGraphics2D g2, double boxWidth) {
-        int idx = text.length();
-        int mt = drawable.measureTextWidth(text, g2.getFont(), g2);
-        while (mt > boxWidth && idx > 0) {
-            idx--;
-            mt = drawable.measureTextWidth(text.substring(0, idx), g2.getFont(), g2);
+	private int getTruncIndex(String text, GGraphics2D g2, double boxWidth) {
+		int idx = text.length();
+		int mt = drawable.measureTextWidth(text, g2.getFont(), g2);
+		while (mt > boxWidth && idx > 0) {
+			idx--;
+			mt = drawable.measureTextWidth(text.substring(0, idx), g2.getFont(), g2);
 
-        }
-        return idx;
-    }
+		}
+		return idx;
+	}
 }

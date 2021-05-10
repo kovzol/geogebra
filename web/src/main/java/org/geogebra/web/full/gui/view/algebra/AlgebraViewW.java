@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import org.geogebra.common.gui.view.algebra.AlgebraController;
 import org.geogebra.common.gui.view.algebra.AlgebraItem;
 import org.geogebra.common.gui.view.algebra.AlgebraView;
+import org.geogebra.common.io.layout.DockPanelData;
 import org.geogebra.common.io.layout.PerspectiveDecoder;
 import org.geogebra.common.javax.swing.SwingConstants;
 import org.geogebra.common.kernel.Kernel;
@@ -21,7 +22,6 @@ import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.App.InputPosition;
-import org.geogebra.common.main.GeoElementSelectionListener;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.settings.AbstractSettings;
@@ -47,9 +47,7 @@ import org.geogebra.web.shared.SharedResources;
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.animation.client.AnimationScheduler.AnimationCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.DragStartEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -83,15 +81,12 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 	protected final Localization loc;
 	/** Kernel */
 	protected final Kernel kernel;
-	private AnimationScheduler repaintScheduler = AnimationScheduler.get();
-	// protected AlgebraInputW inputPanel;
+	private final AnimationScheduler repaintScheduler = AnimationScheduler.get();
 	/** Input item */
-	RadioTreeItem inputPanelLatex;
+	private RadioTreeItem inputPanelLatex;
 	private AlgebraStyleBarW styleBar;
 	private boolean editItem = false;
 	private GeoElement draggedGeo;
-	// to store width if original was thiner than needed.
-	private Integer originalWidth = null;
 	private int mqFontSize = -1;
 	private int maxItemWidth = 0;
 	private boolean latexLoaded;
@@ -102,19 +97,9 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 	/** whether it's attached to kernel */
 	protected boolean attached = false;
 
-	private AnimationCallback repaintCallback = new AnimationCallback() {
-		@Override
-		public void execute(double ts) {
-			doRepaint();
-		}
-	};
+	private AnimationCallback repaintCallback = ts -> doRepaint();
 
-	private AnimationCallback repaintSlidersCallback = new AnimationCallback() {
-		@Override
-		public void execute(double ts) {
-			doRepaintSliders();
-		}
-	};
+	private AnimationCallback repaintSlidersCallback = ts -> doRepaintSliders();
 
 	/**
 	 * The mode of the tree, see MODE_DEPENDENCY, MODE_TYPE
@@ -155,7 +140,6 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 	private StringBuilder sbXML;
 
 	private RadioTreeItem activeItem;
-	// private AlgebraHelperBar helperBar;
 
 	private AlgebraController algebraController;
 	private AVSelectionController selectionCtrl;
@@ -191,13 +175,7 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 		}
 
 		app.getSelectionManager()
-				.addSelectionListener(new GeoElementSelectionListener() {
-					@Override
-					public void geoElementSelected(GeoElement geo,
-							boolean addToSelection) {
-						updateSelection();
-					}
-				});
+				.addSelectionListener((geo, addToSelection) -> updateSelection());
 		app.getGgbApi().setEditor(new AlgebraMathEditorAPI(this));
 	}
 
@@ -218,9 +196,9 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 		// add listener
 		addDomHandler(algCtrl, MouseDownEvent.getType());
 		addDomHandler(algCtrl, MouseMoveEvent.getType());
-        addBitlessDomHandler(algCtrl, TouchStartEvent.getType());
-        addBitlessDomHandler(algCtrl, TouchEndEvent.getType());
-        addBitlessDomHandler(algCtrl, TouchMoveEvent.getType());
+		addBitlessDomHandler(algCtrl, TouchStartEvent.getType());
+		addBitlessDomHandler(algCtrl, TouchEndEvent.getType());
+		addBitlessDomHandler(algCtrl, TouchMoveEvent.getType());
 
 		// initializes the tree model, important to set tree mode first to avoid
 		// inf. loop #3651
@@ -236,7 +214,7 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 		addKeyDownHandler(this.app.getGlobalKeyDispatcher());
 		addKeyUpHandler(this.app.getGlobalKeyDispatcher());
 		addKeyPressHandler(this.app.getGlobalKeyDispatcher());
-		if (!app.getArticleElement().preventFocus()) {
+		if (!app.getAppletParameters().preventFocus()) {
 			setFocus(true);
 		}
 
@@ -249,7 +227,8 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 	public void onBrowserEvent(Event event) {
 		// as arrow keys are prevented in super.onBrowserEvent,
 		// we need to handle arrow key events before that
-		switch (DOM.eventGetType(event)) {
+		int eventType = DOM.eventGetType(event);
+		switch (eventType) {
 		default:
 			// do nothing
 			break;
@@ -284,7 +263,7 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 		}
 		if (!editItem) {
 			// background click
-			if (event.getTypeInt() == Event.ONCLICK
+			if (eventType == Event.ONCLICK
 					&& !CancelEventTimer.cancelKeyboardHide()
 					&& !CancelEventTimer.cancelMouseEvent()) {
 				app.hideKeyboard();
@@ -1218,12 +1197,9 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 			boolean wasEmpty = isNodeTableEmpty();
 			nodeTable.put(geo, node);
 			if (wasEmpty) {
-				// if adding new elements the first time,
-				// let's show the X signs in the input bar!
 				if (this.inputPanelLatex != null) {
 					this.inputPanelLatex.updateGUIfocus(false);
 				}
-
 			}
 
 			// ensure that the leaf with the new object is visible
@@ -1232,15 +1208,9 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 
 		if (inputPanelLatex != null && scroll) {
 			inputPanelLatex.updateUIforInput();
-			Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-				@Override
-				public void execute() {
-
-					inputPanelLatex.updateButtonPanelPosition();
-					getAlgebraDockPanel().scrollAVToBottom();
-
-				}
+			Scheduler.get().scheduleDeferred(() -> {
+				inputPanelLatex.updateButtonPanelPosition();
+				getAlgebraDockPanel().scrollAVToBottom();
 			});
 		}
 		updateSelection();
@@ -1568,8 +1538,6 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 		inputPanelLatex.getWidget().getElement().getParentElement()
 				.addClassName("NewRadioButtonTreeItemParent");
 
-		unselect(getSelectionCtrl().getLastSelectedGeo());
-
 		if (inputJustCreated) {
 			if (isNodeTableEmpty()) {
 				inputPanelLatex.updateGUIfocus(false);
@@ -1647,7 +1615,7 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 			}
 		}
 
-		if (app.showView(App.VIEW_ALGEBRA) && !isToolMode()) {
+		if (app.showView(App.VIEW_ALGEBRA) && isAvInputMode()) {
 			if (forceKeyboard) {
 				doShowKeyboard();
 			} else if (suggestKeyboard) {
@@ -1660,8 +1628,8 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 		updateFonts();
 	}
 
-	private boolean isToolMode() {
-		return app.isUnbundled() && getAlgebraDockPanel().isToolMode();
+	private boolean isAvInputMode() {
+		return getAlgebraDockPanel().getTabId() == DockPanelData.TabIds.ALGEBRA;
 	}
 
 	private void doShowKeyboard() {
@@ -1866,7 +1834,7 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 
 			if (!geo.isChangeable()) {
 				if (geo.isProtected(EventType.UPDATE)) {
-                    app.showError(Errors.AssignmentToFixed);
+					app.showError(Errors.AssignmentToFixed);
 					return;
 				} else if (geo.isRedefineable() && !(geo
 						.getParentAlgorithm() instanceof AlgoCurveCartesian)) {
@@ -1879,17 +1847,14 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 			}
 		}
 
-		TreeItem node = nodeTable.get(geo);
+		RadioTreeItem node = nodeTable.get(geo);
 
 		if (node != null) {
 			cancelEditItem();
 			editItem = true;
 			setAnimationEnabled(false);
-			if (node instanceof RadioTreeItem) {
-				RadioTreeItem ri = RadioTreeItem.as(node);
-				expandAVToItem(ri);
-				ri.enterEditMode(geo.isPointOnPath() || geo.isPointInRegion());
-			}
+			expandAVToItem(node);
+			node.enterEditMode(geo.isPointOnPath() || geo.isPointInRegion());
 		}
 	}
 
@@ -1904,13 +1869,8 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 			return;
 		}
 		int editedWidth = ri.getWidthForEdit();
-		Log.debug("EDIT:" + editedWidth);
 
-		int expanded = editedWidth;
-		if (editedWidth < userWidth) {
-			expanded = userWidth;
-		}
-
+		int expanded = Math.max(editedWidth, userWidth);
 		expandWidth(expanded);
 		setWidths(expanded);
 	}
@@ -1966,12 +1926,10 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 
 	/**
 	 *
-	 * @param event
-	 *            drag event
 	 * @param geo
 	 *            element
 	 */
-	public void dragStart(DragStartEvent event, GeoElement geo) {
+	public void dragStart(GeoElement geo) {
 		setDraggedGeo(geo);
 	}
 
@@ -1986,7 +1944,7 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 
 	@Override
 	public boolean hasFocus() {
-		Log.debug("unimplemented");
+		// unimplemented
 		return false;
 	}
 
@@ -2209,24 +2167,6 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 		return selectionCtrl;
 	}
 
-	/**
-	 * Gets the original width before AV expansion to restore original width
-	 * after.
-	 *
-	 * @return original width in pixels
-	 */
-	public Integer getOriginalWidth() {
-		return originalWidth;
-	}
-
-	/**
-	 * @param oldWidth
-	 *            original width in pixels
-	 */
-	public void setOriginalWidth(Integer oldWidth) {
-		this.originalWidth = oldWidth;
-	}
-
 	@Override
 	public boolean isAttachedToKernel() {
 		return attached;
@@ -2301,7 +2241,7 @@ public class AlgebraViewW extends Tree implements LayerView, AlgebraView,
 	 *            The width to expand.
 	 */
 	public void expandWidth(int width) {
-		if (app.isUnbundled()) {
+		if (app.isUnbundled() || width < getOffsetWidth()) {
 			return;
 		}
 

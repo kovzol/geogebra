@@ -28,9 +28,9 @@ import org.geogebra.web.full.util.SaveCallback.SaveState;
 import org.geogebra.web.html5.euclidian.EuclidianViewWInterface;
 import org.geogebra.web.html5.gui.tooltip.ToolTipManagerW;
 import org.geogebra.web.html5.main.AppW;
+import org.geogebra.web.html5.util.StringConsumer;
 import org.geogebra.web.shared.ggtapi.models.MaterialCallback;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -102,10 +102,14 @@ public class SaveControllerW implements SaveController {
 	}
 
 	@Override
-	public void showDialogIfNeeded(AsyncOperation<Boolean> examCallback) {
-		SaveDialogI saveDialog = ((DialogManagerW) app.getDialogManager()).getSaveDialog();
-		showDialogIfNeeded(examCallback, !app.isSaved(), null);
-		saveDialog.setDiscardMode();
+	public void showDialogIfNeeded(AsyncOperation<Boolean> examCallback, boolean addTempCheckBox) {
+		SaveDialogI saveDialog = ((DialogManagerW) app.getDialogManager())
+				.getSaveDialog(true, addTempCheckBox);
+		showDialogIfNeeded(examCallback, !app.isSaved(), null,
+				true, addTempCheckBox);
+		if (!addTempCheckBox) {
+			saveDialog.setDiscardMode();
+		}
 	}
 
 	/**
@@ -115,24 +119,27 @@ public class SaveControllerW implements SaveController {
 	 *         whether to show the dialog
 	 * @param anchor
 	 *         UI element to be used for positioning the save dialog
+	 * @param doYouWantSaveChanges
+	 * 		  true if doYouWantToSaveYourChanges should be shown
+	 * @param addTempCheckBox
+	 * 		  true if checkbox should be visible
 	 */
 	public void showDialogIfNeeded(final AsyncOperation<Boolean> runnable, boolean needed,
-								   Widget anchor) {
+								   Widget anchor, boolean doYouWantSaveChanges,
+									boolean addTempCheckBox) {
 		if (needed && !app.getLAF().isEmbedded()) {
 			final Material oldActiveMaterial = app.getActiveMaterial();
 			final String oldTitle = app.getKernel().getConstruction().getTitle();
 			ensureTypeOtherThan(Material.MaterialType.ggsTemplate);
-			setRunAfterSave(new AsyncOperation<Boolean>() {
-				@Override
-				public void callback(Boolean saved) {
-					if (!saved) {
-						app.setActiveMaterial(oldActiveMaterial);
-						app.getKernel().getConstruction().setTitle(oldTitle);
-					}
-					runnable.callback(saved);
+			setRunAfterSave(saved -> {
+				if (!saved) {
+					app.setActiveMaterial(oldActiveMaterial);
+					app.getKernel().getConstruction().setTitle(oldTitle);
 				}
+				runnable.callback(saved);
 			});
-			((DialogManagerW) app.getDialogManager()).getSaveDialog().showAndPosition(anchor);
+			((DialogManagerW) app.getDialogManager())
+					.getSaveDialog(doYouWantSaveChanges, addTempCheckBox).show();
 		} else {
 			setRunAfterSave(null);
 			runnable.callback(true);
@@ -147,7 +154,9 @@ public class SaveControllerW implements SaveController {
 			app.getKernel().getConstruction().setTitle(name);
 			app.getFileManager().export(app);
 		} else if (app.isOffline() || !app.getLoginOperation().isLoggedIn()) {
-			saveLocal();
+			ToolTipManagerW.sharedInstance().showBottomMessage(loc
+					.getMenu("phone_loading_materials_offline"), true, app);
+			getAppW().getGuiManager().exportGGB(true);
 		} else if (app.getFileManager().getFileProvider() == Provider.GOOGLE) {
 			uploadToDrive();
 		} else {
@@ -176,19 +185,6 @@ public class SaveControllerW implements SaveController {
 	}
 
 	/**
-	 * Offline saving
-	 */
-	private void saveLocal() {
-		ToolTipManagerW.sharedInstance().showBottomMessage(loc.getMenu("Saving"), false, app);
-		if (!fileName.equals(app.getKernel().getConstruction().getTitle())) {
-			app.setTubeId(null);
-			app.setLocalID(-1);
-		}
-		app.getKernel().getConstruction().setTitle(fileName);
-		app.getGgbApi().getBase64(true, newBase64Callback());
-	}
-
-	/**
 	 * Handles the upload of the file and closes the dialog. If there are
 	 * sync-problems with a file, a new one is generated on ggt.
 	 */
@@ -203,29 +199,26 @@ public class SaveControllerW implements SaveController {
 			syncIdAndType(mat);
 		}
 
-		final AsyncOperation<String> handler = new AsyncOperation<String>() {
-			@Override
-			public void callback(String base64) {
-				if (titleChanged && (isWorksheet() || savedAsTemplate())) {
-					Log.debug("SAVE filename changed");
-					getAppW().updateMaterialURL(0, null, null);
-					doUploadToGgt(getAppW().getTubeId(), visibility, base64,
-							newMaterialCB(base64, false));
-				} else if (StringUtil.emptyOrZero(getAppW().getTubeId())
-						|| isMacro()) {
-					Log.debug("SAVE had no Tube ID or tool is saved");
-					doUploadToGgt(null, visibility, base64,
-							newMaterialCB(base64, false));
-				} else {
-					handleSync(base64, visibility);
-				}
+		final StringConsumer handler = base64 -> {
+			if (titleChanged && (isWorksheet() || savedAsTemplate())) {
+				Log.debug("SAVE filename changed");
+				getAppW().updateMaterialURL(0, null, null);
+				doUploadToGgt(getAppW().getTubeId(), visibility, base64,
+						newMaterialCB(base64, false));
+			} else if (StringUtil.emptyOrZero(getAppW().getTubeId())
+					|| isMacro()) {
+				Log.debug("SAVE had no Tube ID or tool is saved");
+				doUploadToGgt(null, visibility, base64,
+						newMaterialCB(base64, false));
+			} else {
+				handleSync(base64, visibility);
 			}
 		};
 
 		ToolTipManagerW.sharedInstance().showBottomMessage(loc.getMenu("Saving"), false, app);
 
 		if (saveType == MaterialType.ggt) {
-			app.getGgbApi().getMacrosBase64(true, handler);
+			app.getGgbApi().getMacrosBase64(true, handler::consume);
 		} else {
 			app.getGgbApi().getBase64(true, handler);
 		}
@@ -236,13 +229,7 @@ public class SaveControllerW implements SaveController {
 
 	private void uploadToDrive() {
 		ToolTipManagerW.sharedInstance().showBottomMessage(loc.getMenu("Saving"), false, app);
-		app.getGoogleDriveOperation().afterLogin(new Runnable() {
-
-			@Override
-			public void run() {
-				doUploadToDrive();
-			}
-		});
+		app.getGoogleDriveOperation().afterLogin(() -> doUploadToDrive());
 	}
 
 	/**
@@ -259,7 +246,7 @@ public class SaveControllerW implements SaveController {
 			app.getKernel().getConstruction()
 					.setTitle(saveName.substring(0, saveName.length() - prefix.length()));
 		}
-		JavaScriptObject callback = ((GoogleDriveOperationW) app.getGoogleDriveOperation())
+		StringConsumer callback = ((GoogleDriveOperationW) app.getGoogleDriveOperation())
 				.getPutFileCallback(saveName, "GeoGebra", saveType == MaterialType.ggb);
 		if (saveType == MaterialType.ggt) {
 			app.getGgbApi().getMacrosBase64(true, callback);
@@ -395,8 +382,7 @@ public class SaveControllerW implements SaveController {
 
 						newMat.setSyncStamp(newMat.getModified());
 
-						getAppW().updateMaterialURL(newMat.getId(),
-								newMat.getSharingKeyOrId(), getFileName());
+						getAppW().updateMaterialURL(newMat);
 
 						getAppW().setActiveMaterial(newMat);
 						getAppW().setSyncStamp(newMat.getModified());
@@ -458,11 +444,11 @@ public class SaveControllerW implements SaveController {
 		};
 	}
 
-	private AsyncOperation<String> newBase64Callback() {
-		return new AsyncOperation<String>() {
+	private StringConsumer newBase64Callback() {
+		return new StringConsumer() {
 
 			@Override
-			public void callback(String s) {
+			public void consume(String s) {
 				((FileManager) getAppW().getFileManager()).saveFile(s,
 						getCurrentTimestamp(getAppW()),
 						new SaveCallback(getAppW(), SaveState.OK) {

@@ -85,6 +85,8 @@ import org.geogebra.common.kernel.matrix.Coords;
 import org.geogebra.common.plugin.GeoClass;
 import org.geogebra.common.plugin.Operation;
 
+import com.google.j2objc.annotations.Weak;
+
 /**
  * Class that for manage all 3D methods in AbstractKernel.
  * 
@@ -93,7 +95,9 @@ import org.geogebra.common.plugin.Operation;
  */
 public class Manager3D implements Manager3DInterface {
 
+	@Weak
 	private Kernel kernel;
+	@Weak
 	private Construction cons;
 	private Coords tmpCoords;
 	private Coords tmpCoords2;
@@ -360,16 +364,17 @@ public class Manager3D implements Manager3DInterface {
 
 	@Override
 	final public GeoLineND line3D(String label, GeoPointND P, GeoLineND l) {
-		AlgoLinePointLine3D algo = new AlgoLinePointLine3D(cons, label, P, l);
+		AlgoLinePointLine3D algo = new AlgoLinePointLine3D(cons, P, l);
 		GeoLineND g = algo.getLine();
+		g.setLabel(label);
 		return g;
 	}
 
 	@Override
 	final public GeoLineND line3D(String label, GeoPointND P, GeoVectorND v) {
-		AlgoLinePointVector3D algo = new AlgoLinePointVector3D(cons, label, P,
-				v);
+		AlgoLinePointVector3D algo = new AlgoLinePointVector3D(cons, P,	v);
 		GeoLineND g = algo.getLine();
+		g.setLabel(label);
 		return g;
 	}
 
@@ -823,7 +828,7 @@ public class Manager3D implements Manager3DInterface {
 	public GeoConicND circle3D(String label, GeoPointND A, GeoPointND B,
 			GeoDirectionND orientation) {
 
-        if (!A.isGeoElement3D() && !B.isGeoElement3D() // 2D geos
+		if (!A.isGeoElement3D() && !B.isGeoElement3D() // 2D geos
 				&& orientation == kernel.getXOYPlane()) { // xOy plane is
 															// default
 															// orientation for
@@ -1127,23 +1132,9 @@ public class Manager3D implements Manager3DInterface {
 	// 3D SURFACE (2 VARS)
 
 	@Override
-	public GeoElement surfaceCartesian3D(String label, ExpressionNode point,
-			GeoNumberValue[] coords,
-			GeoNumeric uVar, GeoNumberValue uFrom, GeoNumberValue uTo,
-			GeoNumeric vVar, GeoNumberValue vFrom, GeoNumberValue vTo) {
-
-		AlgoSurfaceCartesian3D algo = new AlgoSurfaceCartesian3D(cons, label,
-				point, coords,
-				new GeoNumeric[] { uVar, vVar },
-				new GeoNumberValue[] { uFrom, vFrom },
-				new GeoNumberValue[] { uTo, vTo });
-		return algo.getSurface();
-	}
-
-	@Override
-    public GeoElement surfaceOfRevolution(Path function,
-                                          GeoNumberValue angle, GeoLineND line) {
-        AlgoSurfaceOfRevolution algo = new AlgoSurfaceOfRevolution(cons,
+	public GeoElement surfaceOfRevolution(Path function,
+			GeoNumberValue angle, GeoLineND line) {
+		AlgoSurfaceOfRevolution algo = new AlgoSurfaceOfRevolution(cons,
 				function, angle, line);
 		return algo.getSurface();
 	}
@@ -1618,7 +1609,7 @@ public class Manager3D implements Manager3DInterface {
 		}
 
 		// rotate B around A using angle alpha
-        GeoPointND C = (GeoPointND) rotate3D(pointLabel, B, alpha,
+		GeoPointND C = (GeoPointND) rotate3D(pointLabel, B, alpha,
 				A, orientation)[0];
 
 		// create angle according to orientation
@@ -1989,15 +1980,15 @@ public class Manager3D implements Manager3DInterface {
 	}
 
 	@Override
-    final public GeoElement[] rotate3D(String label, GeoElementND geoRot,
-                                       GeoNumberValue phi, GeoPointND center, GeoDirectionND orientation) {
+	final public GeoElement[] rotate3D(String label, GeoElementND geoRot,
+			GeoNumberValue phi, GeoPointND center, GeoDirectionND orientation) {
 		Transform t = new TransformRotate3D(cons, phi, center, orientation);
 		return t.transform(geoRot, label);
 	}
 
 	@Override
-    final public GeoElement[] rotate3D(String label, GeoElementND geoRot,
-                                       GeoNumberValue phi, GeoLineND line) {
+	final public GeoElement[] rotate3D(String label, GeoElementND geoRot,
+			GeoNumberValue phi, GeoLineND line) {
 		Transform t = new TransformRotate3D(cons, phi, line);
 		return t.transform(geoRot, label);
 	}
@@ -2170,9 +2161,9 @@ public class Manager3D implements Manager3DInterface {
 	@Override
 	final public GeoConicPartND circleArcSector3D(String label, GeoPointND A,
 			GeoPointND B, GeoPointND C, GeoDirectionND orientation, int type) {
-        if (A.isGeoElement3D()
-                || B.isGeoElement3D() || C.isGeoElement3D()) { // at least one
-            // 3D geo
+		if (A.isGeoElement3D()
+				|| B.isGeoElement3D() || C.isGeoElement3D()) { // at least one
+																// 3D geo
 			if (orientation == kernel.getSpace()) { // space is default
 													// orientation for 3D
 													// objects
@@ -2209,16 +2200,17 @@ public class Manager3D implements Manager3DInterface {
 				false);
 		AlgoDependentVector3D vec = new AlgoDependentVector3D(cons, v.wrap());
 		cons.removeFromConstructionList(vec);
-		AlgoLinePointVector3D algo = new AlgoLinePointVector3D(cons, label,
+		AlgoLinePointVector3D algo = new AlgoLinePointVector3D(cons,
 				pt.getPoint3D(), vec.getVector3D());
 		GeoLine3D g = algo.getLine();
+		g.setLabel(label);
 		return g;
 	}
 
 	@Override
 	final public GeoConicPartND semicircle3D(String label, GeoPointND A,
 			GeoPointND B, GeoDirectionND orientation) {
-        if (A.isGeoElement3D() || B.isGeoElement3D()) { // at least one 3D geo
+		if (A.isGeoElement3D() || B.isGeoElement3D()) { // at least one 3D geo
 			// use view orientation
 			AlgoSemicircle3D algo = new AlgoSemicircle3D(cons, label, A, B,
 					orientation);
@@ -2398,7 +2390,7 @@ public class Manager3D implements Manager3DInterface {
 
 	@Override
 	final public GeoElement locus3D(String label, GeoPointND Q, GeoPointND P) {
-        if (!AlgoDispatcher.locusCheck(P, Q)) {
+		if (!AlgoDispatcher.locusCheck(P, Q)) {
 			return null;
 		}
 

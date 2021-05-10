@@ -17,8 +17,9 @@ import org.geogebra.common.factories.AwtFactory;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.main.App;
-import org.geogebra.common.main.Feature;
 import org.geogebra.common.main.SelectionManager;
+
+import com.google.j2objc.annotations.Weak;
 
 /**
  * dynamic stylebar positioner logic, also used for preview point popup
@@ -27,11 +28,14 @@ import org.geogebra.common.main.SelectionManager;
 public class StylebarPositioner {
 
 	private static final int MARGIN = 4;
+	@Weak
 	private final App app;
 	/**
 	 * euclidian view
 	 */
+	@Weak
 	protected final EuclidianView euclidianView;
+	@Weak
 	private final SelectionManager selectionManager;
 	private boolean center;
 
@@ -246,13 +250,6 @@ public class StylebarPositioner {
 			}
 		}
 
-		if (app.getMode() == EuclidianConstants.MODE_SELECT) {
-			if (!app.has(Feature.SELECT_TOOL_NEW_BEHAVIOUR)) {
-				return getPositionForSelection(stylebarHeight, stylebarWidth,
-						canvasRect);
-			}
-		}
-
 		GeoElement geo = activeGeoList.get(0);
 		if (geo.isEuclidianVisible()) {
 			if (geo instanceof GeoFunction) {
@@ -345,39 +342,22 @@ public class StylebarPositioner {
 	private GPoint getPositionForFunction(GeoElement geo, int stylebarHeight,
 			int stylebarWidth, GRectangle canvasRect) {
 		if (euclidianView.getHits().contains(geo)) {
-			GPoint position = getStylebarPositionForDrawable(null, true, false,
+			return getStylebarPositionForDrawable(null, true, false,
 					true, stylebarHeight, stylebarWidth, canvasRect);
-			if (position != null) {
-				return position;
-			}
 		} else {
 			// with select tool, it happens that first selected geo is a
 			// function, and then
 			// the user select another geo (e.g. a point). Then we still want to
 			// show style bar.
-			if (app.has(Feature.SELECT_TOOL_NEW_BEHAVIOUR)
-					&& app.getMode() == EuclidianConstants.MODE_SELECT) {
+			if (app.getMode() == EuclidianConstants.MODE_SELECT) {
 				DrawableND dr = euclidianView.getDrawableND(geo);
 				if (dr != null) {
-					GPoint position = getStylebarPositionForDrawable(
+					return getStylebarPositionForDrawable(
 							dr.getBoundsForStylebarPosition(),
 							!(dr instanceof DrawLine), false, true,
 							stylebarHeight, stylebarWidth, canvasRect);
-					if (position != null) {
-						return position;
-					}
 				}
 			}
-		}
-		return null;
-	}
-
-	private GPoint getPositionForSelection(int stylebarHeight,
-			int stylebarWidth, GRectangle canvasRect) {
-		GRectangle selectionRectangle = euclidianView.getSelectionRectangle();
-		if (selectionRectangle != null) {
-			return getStylebarPositionForDrawable(selectionRectangle, true,
-					false, false, stylebarHeight, stylebarWidth, canvasRect);
 		}
 		return null;
 	}

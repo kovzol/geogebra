@@ -56,13 +56,13 @@ abstract public class Format {
 	 * 
 	 * @param sb
 	 *            output builder
-     * @param isFlat
-     *            all geometries are in the same plane
-     * @param isCurve
-     *            geometry is a curve
+	 * @param isFlat
+	 *            all geometries are in the same plane
+	 * @param isCurve
+	 *            geometry is a curve
 	 */
-    abstract public void getPolyhedronStart(StringBuilder sb, boolean isFlat,
-                                            boolean isCurve);
+	abstract public void getPolyhedronStart(StringBuilder sb, boolean isFlat,
+			boolean isCurve);
 
 	/**
 	 * end for polyhedron
@@ -225,23 +225,25 @@ abstract public class Format {
 	 * 
 	 * @return true if this format can export surfaces
 	 */
-    abstract public boolean handlesSurfacesDirectly();
+	abstract public boolean handlesSurfacesDirectly();
 
 	/**
 	 * 
 	 * @return true if needs closed objects (for stl export)
 	 */
-    abstract public boolean needsClosedObjectsForCurves();
+	abstract public boolean needsClosedObjectsForCurves();
 
-    /**
-     * @return true if needs closed objects (for stl export)
-     */
-    abstract public boolean needsClosedObjectsForSurfaces();
+	/**
+	 * 
+	 * @return true if needs closed objects (for stl export)
+	 */
+	abstract public boolean needsClosedObjectsForSurfaces();
 
-    /**
-     * @return true if needs scaling (for stl export)
-     */
-    abstract public boolean needsScale();
+	/**
+	 * 
+	 * @return true if needs scaling (for stl export)
+	 */
+	abstract public boolean needsScale();
 
 	/**
 	 * 
@@ -282,32 +284,37 @@ abstract public class Format {
 		sb.append(newline);
 	}
 
-    /**
-     * @return true if it needs both-sided surfaces
-     */
-    abstract boolean needsBothSided();
+	/**
+	 * 
+	 * @return true if it needs both-sided surfaces
+	 */
+	abstract boolean needsBothSided();
 
-    /**
-     * set if it wants filled solids
-     *
-     * @param flag flag
-     */
-    abstract public void setWantsFilledSolids(boolean flag);
+	/**
+	 * set if it wants filled solids
+	 * 
+	 * @param flag
+	 *            flag
+	 */
+	abstract public void setWantsFilledSolids(boolean flag);
 
-    /**
-     * @return true if wants "filled solids"
-     */
-    abstract public boolean wantsFilledSolids();
+	/**
+	 * 
+	 * @return true if wants "filled solids"
+	 */
+	abstract public boolean wantsFilledSolids();
 
-    /**
-     * set if it exports lines and points
-     *
-     * @param flag flag
-     */
-    abstract public void setExportsPointsAndLines(boolean flag);
+	/**
+	 * set if it exports lines and points
+	 * 
+	 * @param flag
+	 *            flag
+	 */
+	abstract public void setExportsPointsAndLines(boolean flag);
 
-    /**
-     * @return true if exports lines and points
-     */
-    abstract public boolean exportsPointsAndLines();
+	/**
+	 * 
+	 * @return true if exports lines and points
+	 */
+	abstract public boolean exportsPointsAndLines();
 }

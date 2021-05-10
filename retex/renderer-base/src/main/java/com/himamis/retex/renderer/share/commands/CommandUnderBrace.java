@@ -11,7 +11,7 @@ public class CommandUnderBrace extends Command1A {
 	@Override
 	public Atom newI(TeXParser tp, Atom a) {
 		return new OverUnderDelimiter(a, null, Symbols.RBRACE,
-                Unit.EX, 0, false);
+				Unit.EX, 0, false);
 	}
 
 }

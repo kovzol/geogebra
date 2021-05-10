@@ -920,9 +920,9 @@ public class GeoConicPart extends GeoConic
 		return false;
 	}
 
-    @Override
-    public void toGeoCurveCartesian(GeoCurveCartesianND curve) {
-        super.toGeoCurveCartesian(curve);
-        parameters.updateCurve(curve);
-    }
+	@Override
+	public void toGeoCurveCartesian(GeoCurveCartesianND curve) {
+		super.toGeoCurveCartesian(curve);
+		parameters.updateCurve(curve);
+	}
 }

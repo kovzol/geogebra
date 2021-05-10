@@ -70,7 +70,7 @@ public class ToolsMenuW extends Submenu {
 							toolManageDialog.center();
 						}
 					});
-        }
+		}
 	}
 
 	@Override

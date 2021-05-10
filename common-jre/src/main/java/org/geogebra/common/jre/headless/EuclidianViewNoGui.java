@@ -47,7 +47,7 @@ public class EuclidianViewNoGui extends EuclidianView {
 		g2Dtemp = AwtFactory.getPrototype().newBufferedImage(5, 5, 1)
 				.createGraphics();
 		ec.getApplication().getKernel().attach(this);
-        settingsChanged(settings);
+		settingsChanged(settings);
 	}
 
 	@Override

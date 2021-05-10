@@ -12,6 +12,8 @@ the Free Software Foundation.
 
 package org.geogebra.common.kernel.kernelND;
 
+import java.util.Arrays;
+
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
@@ -166,8 +168,8 @@ public abstract class GeoQuadricND extends GeoElement
 		GeoQuadricND quadric = (GeoQuadricND) geo;
 		if (quadric.hasChangeableParent3D()) {
 			setChangeableParent(quadric.changeableParent.getNumber(),
-                    quadric.changeableParent.getDirector().toGeoElement(),
-                    quadric.changeableParent.getConverter());
+					quadric.changeableParent.getDirector().toGeoElement(),
+					quadric.changeableParent.getConverter());
 		}
 		reuseDefinition(geo);
 	}
@@ -407,6 +409,9 @@ public abstract class GeoQuadricND extends GeoElement
 		defined = false;
 		empty();
 		resetDefinition();
+		if (matrix != null) {
+			Arrays.fill(matrix, Double.NaN);
+		}
 	}
 
 	/**
@@ -609,8 +614,8 @@ public abstract class GeoQuadricND extends GeoElement
 	 * 
 	 */
 	final public void setChangeableParent(GeoNumeric number,
-                                          GeoElement direction, CoordConverter converter) {
-        changeableParent = new ChangeableParent(number, direction, converter);
+			GeoElement direction, CoordConverter converter) {
+		changeableParent = new ChangeableParent(number, direction, converter);
 	}
 
 	@Override

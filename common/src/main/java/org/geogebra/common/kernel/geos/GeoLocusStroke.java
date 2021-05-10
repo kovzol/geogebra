@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.geogebra.common.awt.GRectangle;
 import org.geogebra.common.awt.GRectangle2D;
+import org.geogebra.common.euclidian.DrawableND;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.factories.AwtFactory;
 import org.geogebra.common.kernel.Construction;
@@ -129,8 +130,7 @@ public class GeoLocusStroke extends GeoLocus
 		for (MyPoint pt : getPoints()) {
 			double x = pt.x;
 			double y = pt.y;
-			pt.x = a00 * x + a01 * y;
-			pt.y = a10 * x + a11 * y;
+			pt.setLocation(a00 * x + a01 * y, a10 * x + a11 * y);
 		}
 	}
 
@@ -141,8 +141,8 @@ public class GeoLocusStroke extends GeoLocus
 			double x = pt.x;
 			double y = pt.y;
 			double z = a20 * x + a21 * y + a22;
-			pt.x = (a00 * x + a01 * y + a02) / z;
-			pt.y = (a10 * x + a11 * y + a12) / z;
+			pt.setLocation((a00 * x + a01 * y + a02) / z,
+					(a10 * x + a11 * y + a12) / z);
 		}
 	}
 
@@ -152,16 +152,15 @@ public class GeoLocusStroke extends GeoLocus
 		double crval = 1 - rval;
 
 		for (MyPoint pt : getPoints()) {
-			pt.x = rval * pt.x + crval * S.getX();
-			pt.y = rval * pt.y + crval * S.getY();
+			pt.setLocation(rval * pt.x + crval * S.getX(),
+					rval * pt.y + crval * S.getY());
 		}
 	}
 
 	@Override
 	public void mirror(Coords Q) {
 		for (MyPoint pt : getPoints()) {
-			pt.x = 2 * Q.getX() - pt.x;
-			pt.y = 2 * Q.getY() - pt.y;
+			pt.setLocation(2 * Q.getX() - pt.x, 2 * Q.getY() - pt.y);
 		}
 	}
 
@@ -191,16 +190,11 @@ public class GeoLocusStroke extends GeoLocus
 
 		for (MyPoint pt : getPoints()) {
 			// translate -Q
-			pt.x -= qx;
-			pt.y -= qy;
-
-			double x0 = pt.x * cos + pt.y * sin;
-			pt.y = pt.x * sin - pt.y * cos;
-			pt.x = x0;
-
-			// translate back +Q
-			pt.x += qx;
-			pt.y += qy;
+			double x = pt.x - qx;
+			double y = pt.y - qy;
+			// mirror and translate Q
+			pt.setLocation(x * cos + y * sin + qx,
+					x * sin - y * cos + qy);
 		}
 	}
 
@@ -219,8 +213,8 @@ public class GeoLocusStroke extends GeoLocus
 			double x = pt.x;
 			double y = pt.y;
 
-			pt.x = (x - qx) * cos + (qy - y) * sin + qx;
-			pt.y = (x - qx) * sin + (y - qy) * cos + qy;
+			pt.setLocation((x - qx) * cos + (qy - y) * sin + qx,
+					(x - qx) * sin + (y - qy) * cos + qy);
 		}
 		resetXMLPointBuilder();
 	}
@@ -235,8 +229,7 @@ public class GeoLocusStroke extends GeoLocus
 			double x = pt.x;
 			double y = pt.y;
 
-			pt.x = x * cos - y * sin;
-			pt.y = x * sin + y * cos;
+			pt.setLocation(x * cos - y * sin, x * sin + y * cos);
 		}
 		resetXMLPointBuilder();
 	}
@@ -249,8 +242,7 @@ public class GeoLocusStroke extends GeoLocus
 	@Override
 	public void translate(Coords v) {
 		for (MyPoint pt : getPoints()) {
-			pt.x += v.getX();
-			pt.y += v.getY();
+			pt.setLocation(pt.x + v.getX(), pt.y + v.getY());
 		}
 
 		resetXMLPointBuilder();
@@ -375,10 +367,14 @@ public class GeoLocusStroke extends GeoLocus
 		EuclidianView view = this.getKernel().getApplication().getActiveEuclidianView();
 
 		List<GeoElement> splits = new ArrayList<>();
-		if (view.getDrawableFor(this).getPartialHitClip() == null) {
+		DrawableND drawable = view.getDrawableFor(this);
+		if (drawable == null) {
+			return super.getPartialSelection(removeOriginal);
+		}
+		if (drawable.getPartialHitClip() == null) {
 			splits.add(this);
 		} else {
-			GRectangle viewRectangle = view.getDrawableFor(this).getPartialHitClip();
+			GRectangle viewRectangle = drawable.getPartialHitClip();
 			GRectangle2D realRectangle = AwtFactory.getPrototype().newRectangle2D();
 			realRectangle.setRect(
 					view.toRealWorldCoordX(viewRectangle.getX()),
@@ -668,22 +664,6 @@ public class GeoLocusStroke extends GeoLocus
 				|| DoubleUtil.isEqual(segStart, segEnd);
 	}
 
-	// data has to have at least 2 defined points after each other
-	private static boolean canBeBezierCurve(List<MyPoint> data) {
-		boolean firstDefFound = false;
-		for (MyPoint datum : data) {
-			if (datum.isDefined()) {
-				if (firstDefFound) {
-					return true;
-				}
-				firstDefFound = true;
-			} else {
-				firstDefFound = false;
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * Append the given points to the locus stroke
 	 *
@@ -697,37 +677,24 @@ public class GeoLocusStroke extends GeoLocus
 			clearPoints();
 			doAppendPointArray(densePoints);
 		}
-
-		updateCascade();
 	}
 
 	private void doAppendPointArray(ArrayList<MyPoint> data) {
 		resetXMLPointBuilder();
 		setDefined(true);
-		// to use bezier curve we need at least 2 points
-		// stroke is: (A),(?),(A),(B) -> size 4
-		if (canBeBezierCurve(data)) {
-			addBezierCurve(data);
-		} else {
-			addNonBezierPoints(data);
-		}
-	}
 
-	private void addBezierCurve(ArrayList<MyPoint> data) {
 		int index = 0;
 		while (index <= data.size()) {
-			List<MyPoint> partOfStroke = getPartOfPenStroke(index, data);
+			int strokeSize = getPartOfPenStroke(index, data);
 
-			int strokeSize = partOfStroke.size();
-
-			if (!partOfStroke.isEmpty()) {
-				addPointMoveTo(partOfStroke.get(0));
+			if (strokeSize != 0) {
+				addPointMoveTo(data.get(index));
 				if (strokeSize < 3) {
 					// if we found single point
 					// just add it to the list without control points
-					addPointLineTo(partOfStroke.get(partOfStroke.size() - 1));
+					addPointLineTo(data.get(index + strokeSize - 1));
 				} else {
-					addBezierCurveWithControlPoints(partOfStroke);
+					addBezierCurveWithControlPoints(data, index, strokeSize);
 				}
 			}
 
@@ -735,13 +702,13 @@ public class GeoLocusStroke extends GeoLocus
 				ensureTrailingNaN(getPoints());
 			}
 
-			index = index + Math.max(partOfStroke.size(), 1);
+			index = index + Math.max(strokeSize, 1);
 		}
 	}
 
-	private void addBezierCurveWithControlPoints(List<MyPoint> partOfStroke) {
-		ArrayList<double[]> controlPoints = getControlPoints(partOfStroke);
-		for (int i = 1; i < partOfStroke.size(); i++) {
+	private void addBezierCurveWithControlPoints(List<MyPoint> stroke, int start, int length) {
+		ArrayList<double[]> controlPoints = getControlPoints(stroke, start, length);
+		for (int i = 1; i < length; i++) {
 			MyPoint ctrl1 = new MyPoint(controlPoints.get(0)[i - 1],
 					controlPoints.get(1)[i - 1],
 					SegmentType.CONTROL);
@@ -749,8 +716,8 @@ public class GeoLocusStroke extends GeoLocus
 					controlPoints.get(3)[i - 1],
 					SegmentType.CONTROL);
 
-			MyPoint startPoint = partOfStroke.get(i - 1);
-			MyPoint endPoint = partOfStroke.get(i);
+			MyPoint startPoint = stroke.get(start + i - 1);
+			MyPoint endPoint = stroke.get(start + i);
 
 			if (angle(startPoint, ctrl1, endPoint) > MIN_CURVE_ANGLE
 					|| angle(startPoint, ctrl2, endPoint) > MIN_CURVE_ANGLE) {
@@ -760,16 +727,6 @@ public class GeoLocusStroke extends GeoLocus
 			} else {
 				addPointLineTo(endPoint);
 			}
-		}
-	}
-
-	private void addNonBezierPoints(ArrayList<MyPoint> data) {
-		if (data.size() > 0) {
-			addPointMoveTo(data.get(0));
-			for (int i = 1; i < data.size(); i++) {
-				addPointLineTo(data.get(i));
-			}
-			ensureTrailingNaN(getPoints());
 		}
 	}
 
@@ -794,53 +751,53 @@ public class GeoLocusStroke extends GeoLocus
 		return Math.PI - MyMath.angle(dx1, dy1, dx2, dy2);
 	}
 
-	// returns the part of array started at index until first undef point
-	private static List<MyPoint> getPartOfPenStroke(int index,
+	// returns the length of array started at index until first undef point
+	private static int getPartOfPenStroke(int index,
 			List<MyPoint> data) {
-		ArrayList<MyPoint> partOfStroke = new ArrayList<>(
-				data.size() - index + 1);
-		for (int i = index; i < data.size() && data.get(i).isDefined()
+		int i = index;
+		while (i < data.size() && data.get(i).isDefined()
 				&& (data.get(i).getSegmentType() != SegmentType.MOVE_TO
-				|| i == index); i++) {
-			partOfStroke.add(data.get(i));
+				|| i == index)) {
+			i++;
 		}
-		return partOfStroke;
+		return i - index;
 	}
 
 	// calculate control points for bezier curve
-	private static ArrayList<double[]> getControlPoints(List<MyPoint> data) {
+	private static ArrayList<double[]> getControlPoints(List<MyPoint> stroke, int start,
+			int length) {
 		ArrayList<double[]> values = new ArrayList<>();
 
-		if (data.size() == 0) {
+		if (length == 0) {
 			return values;
 		}
 
-		double[] a = new double[data.size() - 1];
-		double[] b = new double[data.size() - 1];
-		double[] c = new double[data.size() - 1];
-		double[] rX = new double[data.size() - 1];
-		double[] rY = new double[data.size() - 1];
-		int n = data.size() - 1;
+		int n = length - 1;
+		double[] a = new double[n];
+		double[] b = new double[n];
+		double[] c = new double[n];
+		double[] rX = new double[n];
+		double[] rY = new double[n];
 		/* left most segment */
 		a[0] = 0;
 		b[0] = 2;
 		c[0] = 1;
-		rX[0] = data.get(0).getX() + 2 * data.get(1).getX();
-		rY[0] = data.get(0).getY() + 2 * data.get(1).getY();
+		rX[0] = stroke.get(start).getX() + 2 * stroke.get(start + 1).getX();
+		rY[0] = stroke.get(start).getY() + 2 * stroke.get(start + 1).getY();
 		/* internal segments */
 		for (int i = 1; i < n - 1; i++) {
 			a[i] = 1;
 			b[i] = 4;
 			c[i] = 1;
-			rX[i] = 4 * data.get(i).getX() + 2 * data.get(i + 1).getX();
-			rY[i] = 4 * data.get(i).getY() + 2 * data.get(i + 1).getY();
+			rX[i] = 4 * stroke.get(start + i).getX() + 2 * stroke.get(start + i + 1).getX();
+			rY[i] = 4 * stroke.get(start + i).getY() + 2 * stroke.get(start + i + 1).getY();
 		}
 		/* right segment */
 		a[n - 1] = 2;
 		b[n - 1] = 7;
 		c[n - 1] = 0;
-		rX[n - 1] = 8 * data.get(n - 1).getX() + data.get(n).getX();
-		rY[n - 1] = 8 * data.get(n - 1).getY() + data.get(n).getY();
+		rX[n - 1] = 8 * stroke.get(start + n - 1).getX() + stroke.get(start + n).getX();
+		rY[n - 1] = 8 * stroke.get(start + n - 1).getY() + stroke.get(start + n).getY();
 
 		/* solves Ax=b with the Thomas algorithm (from Wikipedia) */
 		for (int i = 1; i < n; i++) {
@@ -850,10 +807,10 @@ public class GeoLocusStroke extends GeoLocus
 			rY[i] = rY[i] - m * rY[i - 1];
 		}
 
-		double[] xCoordsP1 = new double[data.size() - 1];
-		double[] xCoordsP2 = new double[data.size() - 1];
-		double[] yCoordsP1 = new double[data.size() - 1];
-		double[] yCoordsP2 = new double[data.size() - 1];
+		double[] xCoordsP1 = new double[n];
+		double[] xCoordsP2 = new double[n];
+		double[] yCoordsP1 = new double[n];
+		double[] yCoordsP2 = new double[n];
 		xCoordsP1[n - 1] = rX[n - 1] / b[n - 1];
 		yCoordsP1[n - 1] = rY[n - 1] / b[n - 1];
 		for (int i = n - 2; i >= 0; --i) {
@@ -863,11 +820,11 @@ public class GeoLocusStroke extends GeoLocus
 
 		/* we have p1, now compute p2 */
 		for (int i = 0; i < n - 1; i++) {
-			xCoordsP2[i] = 2 * data.get(i + 1).getX() - xCoordsP1[i + 1];
-			yCoordsP2[i] = 2 * data.get(i + 1).getY() - yCoordsP1[i + 1];
+			xCoordsP2[i] = 2 * stroke.get(start + i + 1).getX() - xCoordsP1[i + 1];
+			yCoordsP2[i] = 2 * stroke.get(start + i + 1).getY() - yCoordsP1[i + 1];
 		}
-		xCoordsP2[n - 1] = 0.5 * (data.get(n).getX() + xCoordsP1[n - 1]);
-		yCoordsP2[n - 1] = 0.5 * (data.get(n).getY() + yCoordsP1[n - 1]);
+		xCoordsP2[n - 1] = 0.5 * (stroke.get(start + n).getX() + xCoordsP1[n - 1]);
+		yCoordsP2[n - 1] = 0.5 * (stroke.get(start + n).getY() + yCoordsP1[n - 1]);
 
 		values.add(xCoordsP1);
 		values.add(yCoordsP1);

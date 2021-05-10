@@ -26,7 +26,7 @@ public class PackageSize {
 
 	private void checkModule(String string) throws JSONException {
 		packages.clear();
-        String html = FileIO.load(
+		String html = FileIO.load(
 				"build/gwt/extra/" + string
 						+ "/soycReport/compile-report/initial-0-packageBreakdown.html");
 		if (html == null) {
@@ -55,7 +55,7 @@ public class PackageSize {
 		updateSelfSizes(packages.get(""));
 
 		if (addUnattributed) {
-            html = FileIO.load(
+			html = FileIO.load(
 					"build/gwt/extra/" + string
 							+ "/soycReport/compile-report/initial-0-codeTypeBreakdown.html");
 			String bytes = html.split("<p class=\"soyc-breakdown-strings\">")[2]

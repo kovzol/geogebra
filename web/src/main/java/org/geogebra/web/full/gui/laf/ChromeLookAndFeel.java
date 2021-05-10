@@ -23,13 +23,13 @@ public class ChromeLookAndFeel extends GLookAndFeel {
 		return true;
 	}
 
-    @Override
-    public String getClientId() {
-        return GeoGebraConstants.CHROME_APP_CLIENT_ID;
-    }
+	@Override
+	public String getClientId() {
+		return GeoGebraConstants.CHROME_APP_CLIENT_ID;
+	}
 
-    @Override
-    public boolean supportsGoogleDrive() {
-        return false;
-    }
+	@Override
+	public boolean supportsGoogleDrive() {
+		return false;
+	}
 }

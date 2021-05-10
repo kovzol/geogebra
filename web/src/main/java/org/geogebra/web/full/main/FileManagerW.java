@@ -1,6 +1,5 @@
 package org.geogebra.web.full.main;
 
-import java.util.ArrayList;
 import java.util.TreeSet;
 
 import org.geogebra.common.main.App;
@@ -11,7 +10,6 @@ import org.geogebra.common.move.ggtapi.models.JSONParserGGT;
 import org.geogebra.common.move.ggtapi.models.Material;
 import org.geogebra.common.move.ggtapi.models.Material.MaterialType;
 import org.geogebra.common.move.ggtapi.models.MaterialFilter;
-import org.geogebra.common.move.ggtapi.models.SyncEvent;
 import org.geogebra.common.plugin.Event;
 import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.util.AsyncOperation;
@@ -19,7 +17,9 @@ import org.geogebra.common.util.debug.Log;
 import org.geogebra.web.full.util.SaveCallback;
 import org.geogebra.web.full.util.SaveCallback.SaveState;
 import org.geogebra.web.html5.Browser;
+import org.geogebra.web.html5.gui.util.BrowserStorage;
 import org.geogebra.web.html5.main.AppW;
+import org.geogebra.web.html5.util.StringConsumer;
 
 import com.google.gwt.storage.client.Storage;
 
@@ -36,7 +36,7 @@ public class FileManagerW extends FileManager {
 
 	private static final String TIMESTAMP = "timestamp";
 	/** locale storage */
-	Storage stockStore = Storage.getLocalStorageIfSupported();
+	BrowserStorage stockStore = BrowserStorage.LOCAL;
 	private int freeBytes = -1;
 	private TreeSet<Integer> offlineIDs = new TreeSet<>();
 
@@ -142,33 +142,6 @@ public class FileManagerW extends FileManager {
 	}
 
 	@Override
-	public void uploadUsersMaterials(final ArrayList<SyncEvent> events) {
-		if (this.stockStore == null || this.stockStore.getLength() <= 0) {
-			return;
-		}
-		ArrayList<String> keys = new ArrayList<>();
-		for (int i = 0; i < this.stockStore.getLength(); i++) {
-			keys.add(this.stockStore.key(i));
-		}
-		setNotSyncedFileCount(keys.size(), events);
-		for (int i = 0; i < keys.size(); i++) {
-			final String key = keys.get(i);
-			if (key.startsWith(FILE_PREFIX)) {
-				final Material mat = JSONParserGGT
-				        .parseMaterial(this.stockStore.getItem(key));
-				if (getApp().getLoginOperation().owns(mat)) {
-						sync(mat, events);
-
-				} else {
-					ignoreNotSyncedFile(events);
-				}
-			} else {
-				ignoreNotSyncedFile(events);
-			}
-		}
-	}
-
-	@Override
 	public boolean shouldKeep(int id) {
 		if (!getApp().has(Feature.LOCALSTORAGE_FILES)) {
 			return false;
@@ -216,9 +189,9 @@ public class FileManagerW extends FileManager {
 		if (this.stockStore == null || counter % 30 != 0) {
 			return;
 		}
-		final AsyncOperation<String> base64saver = new AsyncOperation<String>() {
+		final StringConsumer base64saver = new StringConsumer() {
 			@Override
-			public void callback(final String s) {
+			public void consume(final String s) {
 				final Material mat = createMaterial(s,
 				        System.currentTimeMillis() / 1000);
 				try {
@@ -246,10 +219,11 @@ public class FileManagerW extends FileManager {
 		if (Browser.supportsSessionStorage()) {
 
 			if (stockStore != null) {
-				if (stockStore.getItem(TIMESTAMP) != null) {
+				String timestamp = stockStore.getItem(TIMESTAMP);
+				if (timestamp != null) {
 					long l = 0;
 					try {
-						l = Long.parseLong(stockStore.getItem(TIMESTAMP));
+						l = Long.parseLong(timestamp);
 					} catch (Exception e) {
 						Log.warn("Invalid timestamp.");
 					}
@@ -291,6 +265,7 @@ public class FileManagerW extends FileManager {
 
 	@Override
 	public void saveLoggedOut(App app1) {
+		showOfflineErrorTooltip((AppW) app1);
 		((AppW) app1).getGuiManager().exportGGB(true);
 	}
 	

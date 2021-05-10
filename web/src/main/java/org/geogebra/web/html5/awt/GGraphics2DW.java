@@ -24,20 +24,18 @@ import org.geogebra.ggbjdk.java.awt.geom.Shape;
 import org.geogebra.web.html5.euclidian.GGraphics2DWI;
 import org.geogebra.web.html5.gawt.GBufferedImageW;
 import org.geogebra.web.html5.main.MyImageW;
-import org.geogebra.web.html5.util.ImageLoadCallback;
-import org.geogebra.web.html5.util.ImageWrapper;
 
 import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.canvas.dom.client.CanvasPattern;
-import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.canvas.dom.client.Context2d.Repetition;
-import com.google.gwt.canvas.dom.client.ImageData;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayNumber;
-import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.ImageElement;
 import com.himamis.retex.renderer.web.graphics.JLMContext2d;
+import com.himamis.retex.renderer.web.graphics.JLMContextHelper;
+
+import elemental2.dom.CanvasPattern;
+import elemental2.dom.CanvasRenderingContext2D;
+import elemental2.dom.HTMLImageElement;
+import elemental2.dom.ImageData;
 
 public class GGraphics2DW implements GGraphics2DWI {
 
@@ -70,8 +68,10 @@ public class GGraphics2DW implements GGraphics2DWI {
 	public GGraphics2DW(Canvas canvas) {
 		this.canvas = canvas;
 		setDirection();
-        this.context = JLMContext2d.forCanvas(canvas);
-		this.context.initTransform();
+		this.context = JLMContextHelper.as(canvas.getContext2d());
+		if (context != null) { // check for 3D view
+			this.context.initTransform();
+		}
 		preventContextMenu(canvas.getElement());
 	}
 
@@ -81,13 +81,13 @@ public class GGraphics2DW implements GGraphics2DWI {
 	 * @param ctx
 	 *            context; doesn't belong to canvas
 	 */
-	public GGraphics2DW(Context2d ctx) {
+	public GGraphics2DW(CanvasRenderingContext2D ctx) {
 		// HACK
 		this.canvas = null;
 		// could also try this if necessary
 		// this.canvas = Canvas.createIfSupported();
 
-		this.context = (JLMContext2d) ctx.cast();
+		this.context = JLMContextHelper.as(ctx);
 		this.context.initTransform();
 	}
 
@@ -104,13 +104,13 @@ public class GGraphics2DW implements GGraphics2DWI {
 	public void setImageInterpolation(boolean interpolate) {
 		// canvas.getContext2d() doesn't work with canvas2svg.js
 		try {
-            setImageInterpolationNative(context, interpolate);
+			setImageInterpolationNative(context, interpolate);
 		} catch (Exception e) {
 			// do nothing
 		}
 	}
 
-	private native void setImageInterpolationNative(Context2d ctx, boolean b) /*-{
+	private native void setImageInterpolationNative(JLMContext2d ctx, boolean b) /*-{
 		ctx['imageSmoothingEnabled'] = b;
 		// IE11+ only
 		ctx['msImageSmoothingEnabled'] = b;
@@ -122,7 +122,7 @@ public class GGraphics2DW implements GGraphics2DWI {
 	 * will probably fail * labels are malformed, eg )A=(1,2
 	 */
 	private void setDirection() {
-        getElement().setDir("ltr");
+		getElement().setDir("ltr");
 	}
 
 	/**
@@ -308,7 +308,7 @@ public class GGraphics2DW implements GGraphics2DWI {
 
 	@Override
 	public void setComposite(GComposite comp) {
-		context.setGlobalAlpha(((GAlphaCompositeW) comp).getAlpha());
+		context.globalAlpha = (((GAlphaCompositeW) comp).getAlpha());
 	}
 
 	/**
@@ -351,30 +351,25 @@ public class GGraphics2DW implements GGraphics2DWI {
 				CanvasPattern ptr;
 				if (bi.hasCanvas()) {
 					currentPaint = new GTexturePaintW((GTexturePaintW) paint);
-					ptr = context.createPattern(bi.getCanvas()
-					        .getCanvasElement(), Repetition.REPEAT);
+					ptr = context.createPattern(bi.getCanvasElement(),
+							"repeat");
 					context.setFillStyle(ptr);
 					color = null;
 				} else if (bi.isLoaded()) {
 					currentPaint = new GTexturePaintW((GTexturePaintW) paint);
 					ptr = context.createPattern(bi.getImageElement(),
-					        Repetition.REPEAT);
+					        "repeat");
 					context.setFillStyle(ptr);
 					color = null;
 				} else {
-					ImageWrapper.nativeon(bi.getImageElement(), "load",
-					        new ImageLoadCallback() {
-						        @Override
-								public void onLoad() {
-							        currentPaint = new GTexturePaintW(
-							                (GTexturePaintW) paint);
-									CanvasPattern ptr1 = context.createPattern(
-							                bi.getImageElement(),
-							                Repetition.REPEAT);
-									context.setFillStyle(ptr1);
-							        color = null;
-						        }
-					        });
+					bi.getImageElement().addEventListener("load", (event) -> {
+							currentPaint = new GTexturePaintW(
+									(GTexturePaintW) paint);
+							CanvasPattern ptr1 = context.createPattern(
+									bi.getImageElement(), "repeat");
+							context.setFillStyle(ptr1);
+							color = null;
+					});
 				}
 			} catch (Throwable e) {
 				Log.error(e.getMessage());
@@ -406,7 +401,7 @@ public class GGraphics2DW implements GGraphics2DWI {
 		}
 	}
 
-	public native void setStrokeDash(Context2d ctx, JsArrayNumber dasharray) /*-{
+	public native void setStrokeDash(JLMContext2d ctx, JsArrayNumber dasharray) /*-{
 		if (dasharray === undefined || dasharray === null) {
 			dasharray = [];
 		}
@@ -446,7 +441,7 @@ public class GGraphics2DW implements GGraphics2DWI {
 
 	@Override
 	public GComposite getComposite() {
-		return new GAlphaCompositeW(context.getGlobalAlpha());
+		return new GAlphaCompositeW(context.globalAlpha);
 	}
 
 	@Override
@@ -484,7 +479,9 @@ public class GGraphics2DW implements GGraphics2DWI {
 	@Override
 	public void setCoordinateSpaceSize(int width, int height) {
 		setCanvasSize(width, height);
-		context.resetTransform(getDevicePixelRatio());
+		if (context != null) { // check for 3D view
+			context.resetTransform(getDevicePixelRatio());
+		}
 		setPixelSize(width, height);
 		this.updateCanvasColor();
 	}
@@ -502,18 +499,18 @@ public class GGraphics2DW implements GGraphics2DWI {
 
 	@Override
 	public int getOffsetWidth() {
-        if (canvas == null) {
-            return canvasWidth;
-        }
+		if (canvas == null) {
+			return canvasWidth;
+		}
 		int width = canvas.getOffsetWidth();
 		return width == 0 ? canvasWidth : width;
 	}
 
 	@Override
 	public int getOffsetHeight() {
-        if (canvas == null) {
-            return canvasHeight;
-        }
+		if (canvas == null) {
+			return canvasHeight;
+		}
 		int height = canvas.getOffsetHeight();
 		return height == 0 ? canvasHeight : height;
 	}
@@ -620,29 +617,18 @@ public class GGraphics2DW implements GGraphics2DWI {
 	}
 
 	@Override
-	public void setClip(GShape shape, boolean restoreSaveContext) {
+	public void setClip(GShape shape, boolean saveContext) {
 		if (shape == null) {
-			Log.warn("Set clip should not be called with null, use resetClip instead");
 			resetClip();
 			return;
 		}
-		Shape shape2 = (Shape) shape;
 
-		doDrawShape(shape2);
-		// quick hack to make sure this is called only from
-		// DrawPoint.drawClippedSection()
-		// TODO: add boolean parameter to setClip()
-		// old hack
-		// if (shape instanceof Ellipse2D.Double) {
-		// needed for dropdowns on iOS after scrolling for some reason
-		if (restoreSaveContext) {
-			// we should call this only if no clip was set or just after another
-			// clip to overwrite
-			// in this case we don't want to double-clip something so let's
-			// restore the context
-			context.restoreTransform();
+		if (saveContext) {
 			context.saveTransform();
 		}
+
+		doDrawShape((Shape) shape);
+
 		context.clip();
 	}
 
@@ -714,13 +700,13 @@ public class GGraphics2DW implements GGraphics2DWI {
 
 	@Override
 	public void setClip(int x, int y, int width, int height,
-			boolean restoreSaveContext) {
+			boolean saveContext) {
 
 		double[] dashArraySave = dashArray;
 		dashArray = null;
 		GShape sh = AwtFactory.getPrototype().newRectangle(x, y,
 		        width, height);
-		setClip(sh, restoreSaveContext);
+		setClip(sh, saveContext);
 		dashArray = dashArraySave;
 
 		/*
@@ -762,10 +748,10 @@ public class GGraphics2DW implements GGraphics2DWI {
 		return this.canvas;
 	}
 
-    @Override
-    public Element getElement() {
-        return this.canvas.getElement();
-    }
+	@Override
+	public Element getElement() {
+		return this.canvas.getElement();
+	}
 
 	@Override
 	public void drawRoundRect(int x, int y, int width, int height,
@@ -818,7 +804,7 @@ public class GGraphics2DW implements GGraphics2DWI {
 	@Override
 	public void fillRoundRect(int x, int y, int width, int height,
 	        int arcWidth, int arcHeight) {
-		roundRect(x, y, width, height, arcHeight - arcHeight / 2);
+		roundRect(x, y, width, height, arcHeight / 2d);
 		context.fill("evenodd");
 	}
 
@@ -831,7 +817,7 @@ public class GGraphics2DW implements GGraphics2DWI {
 	 *            Imagedata to put on the canvas
 	 */
 	public void putImageData(ImageData data, double x, double y) {
-		context.putImageData(data, x, y);
+		context.putImageData(data, (int) x, (int) y);
 	}
 
 	@Override
@@ -896,16 +882,16 @@ public class GGraphics2DW implements GGraphics2DWI {
 			return;
 		}
 		try {
-            if (bi.hasCanvas() && canvas != null) {
-                int width = bi.getCanvas().getCoordinateSpaceWidth();
-                int height = bi.getCanvas().getCoordinateSpaceHeight();
+			if (bi.hasCanvas() && canvas != null) {
+				int width = bi.getCanvas().getCoordinateSpaceWidth();
+				int height = bi.getCanvas().getCoordinateSpaceHeight();
 
 				// zero width canvas throws error in FF
-                if (width > 0) {
-                    context.drawImage(bi.getCanvas().getCanvasElement(), 0, 0, width, height, x, y,
-                            checkSize(width, bi, getCoordinateSpaceWidth()),
-                            checkSize(height, bi, getCoordinateSpaceHeight()));
-                }
+				if (width > 0) {
+					context.drawImage(bi.getCanvasElement(), 0, 0, width, height, x, y,
+							checkSize(width, bi, getCoordinateSpaceWidth()),
+							checkSize(height, bi, getCoordinateSpaceHeight()));
+				}
 			} else {
 				context.drawImage(bi.getImageElement(), 0, 0, bi.getWidth(),
 						bi.getHeight(), x, y, this.getOffsetWidth(),
@@ -925,38 +911,6 @@ public class GGraphics2DW implements GGraphics2DWI {
 		return realSize;
 	}
 
-	/**
-	 * @param img
-	 *            image
-	 * @param x
-	 *            left offset
-	 * @param y
-	 *            top offset
-	 */
-	public void drawImage(ImageElement img, int x, int y) {
-		try {
-			context.drawImage(img, x, y);
-		} catch (Exception e) {
-			Log.error(e.getMessage());
-		}
-	}
-
-	/**
-	 * @param canvasImg
-	 *            canvas image
-	 * @param x
-	 *            left offset
-	 * @param y
-	 *            top offset
-	 */
-	public void drawImage(CanvasElement canvasImg, int x, int y) {
-		try {
-			context.drawImage(canvasImg, x, y);
-		} catch (Exception e) {
-			Log.error(e.getMessage());
-		}
-	}
-
 	@Override
 	public void drawImage(MyImage img, int x, int y) {
 		context.drawImage(((MyImageW) img).getImage(), x, y);
@@ -974,6 +928,10 @@ public class GGraphics2DW implements GGraphics2DWI {
 		context.drawImage(((MyImageW) img).getImage(), dx, dy, dw, dh);
 	}
 
+	public void drawImage(HTMLImageElement img, int x, int y) {
+		context.drawImage(img, x, y);
+	}
+
 	@Override
 	public void saveTransform() {
 		color = null; // saveTransform changes color in context, cached color needs reset too
@@ -987,14 +945,12 @@ public class GGraphics2DW implements GGraphics2DWI {
 	}
 
 	@Override
-	public boolean setAltText(String altStr) {
-        boolean ret = !(getElement().getInnerText() + "").equals(altStr);
-        getElement().setInnerText(altStr);
-		return ret;
+	public void setAltText(String altStr) {
+		getElement().setInnerText(altStr);
 	}
 
 	public String getAltText() {
-        return getElement().getInnerText();
+		return getElement().getInnerText();
 	}
 
 	@Override
@@ -1032,10 +988,10 @@ public class GGraphics2DW implements GGraphics2DWI {
 		}
 	}
 
-    @Override
-    public boolean isAttached() {
-        return canvas != null && canvas.isAttached();
-    }
+	@Override
+	public boolean isAttached() {
+		return canvas != null && canvas.isAttached();
+	}
 
 	@Override
 	public int embed() {

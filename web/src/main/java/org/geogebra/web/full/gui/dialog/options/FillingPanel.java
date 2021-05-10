@@ -8,14 +8,12 @@ import org.geogebra.common.gui.dialog.options.model.FillingModel;
 import org.geogebra.common.gui.dialog.options.model.FillingModel.IFillingListener;
 import org.geogebra.common.gui.util.SelectionTable;
 import org.geogebra.common.kernel.Construction;
-import org.geogebra.common.kernel.algos.AlgoBarChart;
 import org.geogebra.common.kernel.geos.GeoImage;
 import org.geogebra.common.kernel.geos.properties.FillType;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.web.full.css.MaterialDesignResources;
 import org.geogebra.web.full.gui.dialog.FileInputDialog;
-import org.geogebra.web.full.gui.images.AppResources;
 import org.geogebra.web.full.gui.properties.OptionPanel;
 import org.geogebra.web.full.gui.util.BarList;
 import org.geogebra.web.full.gui.util.GeoGebraIconW;
@@ -29,24 +27,23 @@ import org.geogebra.web.html5.gui.util.NoDragImage;
 import org.geogebra.web.html5.gui.util.SliderPanel;
 import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.html5.util.ImageManagerW;
+import org.geogebra.web.resources.SVGResource;
 
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.himamis.retex.editor.share.util.Unicode;
 
-//import org.geogebra.common.euclidian.event.KeyHandler;
+import elemental2.dom.File;
+import elemental2.dom.FileReader;
+import jsinterop.base.Js;
 
 public class FillingPanel extends OptionPanel implements IFillingListener {
 	FillingModel model;
@@ -69,9 +66,8 @@ public class FillingPanel extends OptionPanel implements IFillingListener {
 	// button for removing turtle's image
 	private GPushButton btnClearImage;
 	private Label lblSymbols;
-	ArrayList<ImageResource> iconList;
+	ArrayList<SVGResource> iconList;
 	private ArrayList<String> iconNameList;
-	// private PopupMenuButton btInsertUnicode;
 
 	ListBox lbFillType;
 	CheckBox cbFillInverse;
@@ -93,56 +89,44 @@ public class FillingPanel extends OptionPanel implements IFillingListener {
 		@Override
 		protected void createGUI() {
 			super.createGUI();
-			addGgbChangeHandler(getInputWidget().getElement());
+			addGgbChangeHandler(Js.uncheckedCast(getInputWidget().getElement()));
 		}
 
-		public native void addGgbChangeHandler(Element el) /*-{
-			var dialog = this;
+		public void addGgbChangeHandler(elemental2.dom.HTMLInputElement el) {
 			el.setAttribute("accept", "image/*");
-			el.onchange = function(event) {
-				var files = this.files;
-				if (files.length) {
-					var fileTypes = /^image.*$/;
-					for (var i = 0, j = files.length; i < j; ++i) {
-						if (!files[i].type.match(fileTypes)) {
-							continue;
-						}
-						var fileToHandle = files[i];
-						dialog.@org.geogebra.web.full.gui.dialog.options.FillingPanel.MyImageFileInputDialog::openFileAsImage(Lcom/google/gwt/core/client/JavaScriptObject;Lcom/google/gwt/core/client/JavaScriptObject;)(fileToHandle,
-						dialog.@org.geogebra.web.full.gui.dialog.FileInputDialog::getNativeHideAndFocus()());				
+			el.onchange = (event) -> {
+				for (int i = 0; i < el.files.length; ++i) {
+					if (el.files.getAt(i).type.matches("^image.*$")) {
+						openFileAsImage(el.files.getAt(i));
 						break;
 					}
 				}
+
+				return null;
 			};
-		}-*/;
+		}
 
-		public native boolean openFileAsImage(JavaScriptObject fileToHandle,
-				JavaScriptObject callback) /*-{
+		public void openFileAsImage(File fileToHandle) {
+			String imageRegEx = ".*\\.(png|jpg|jpeg|gif|bmp|svg)$";
+			if (!fileToHandle.name.toLowerCase().matches(imageRegEx)) {
+				return;
+			}
 
-			var imageRegEx = /\.(png|jpg|jpeg|gif|bmp|svg)$/i;
-			if (!fileToHandle.name.toLowerCase().match(imageRegEx))
-				return false;
+			FileReader reader = new FileReader();
 
-			var appl = this;
-			var reader = new FileReader();
-			reader.onloadend = function(ev) {
-				if (reader.readyState === reader.DONE) {
-					var fileData = reader.result;
-					var fileName = fileToHandle.name;
-					appl.@org.geogebra.web.full.gui.dialog.options.FillingPanel.MyImageFileInputDialog::applyFillImage(Ljava/lang/String;Ljava/lang/String;)(fileName, fileData);
-					if (callback != null) {
-						callback();
-					}
+			reader.addEventListener("load", (ev) -> {
+				if (reader.readyState == FileReader.DONE) {
+					applyFillImage(fileToHandle.name, reader.result.asString());
+					hideAndFocus();
 				}
-			};
+			});
+
 			reader.readAsDataURL(fileToHandle);
-			return true;
-		}-*/;
+		}
 
 		public void applyFillImage(String name, String url) {
 			applyImage(name, url);
 		}
-
 	}
 
 	/**
@@ -355,45 +339,46 @@ public class FillingPanel extends OptionPanel implements IFillingListener {
 		iconList = new ArrayList<>();
 		iconList.add(null); // for delete
 		GuiResourcesSimple res = GuiResourcesSimple.INSTANCE;
-		iconList.add(res.icons_fillings_arrow_big_down());
-		iconList.add(res.icons_fillings_arrow_big_up());
-		iconList.add(res.icons_fillings_arrow_big_left());
-		iconList.add(res.icons_fillings_arrow_big_right());
-		iconList.add(res.icons_fillings_fastforward());
-		iconList.add(res.icons_fillings_rewind());
-		iconList.add(res.icons_fillings_skipback());
-		iconList.add(res.icons_fillings_skipforward());
-		iconList.add(res.icons_fillings_play());
-		iconList.add(res.icons_fillings_pause());
-
-		iconList.add(res.icons_fillings_cancel());
+		iconList.add(res.pause());
+		iconList.add(res.play());
+		iconList.add(res.stop());
+		iconList.add(res.replay());
+		iconList.add(res.skip_next());
+		iconList.add(res.skip_previous());
+		iconList.add(res.loop());
+		iconList.add(res.zoom_in());
+		iconList.add(res.zoom_out());
+		iconList.add(res.close());
+		iconList.add(res.arrow_up());
+		iconList.add(res.arrow_down());
+		iconList.add(res.arrow_forward());
+		iconList.add(res.arrow_back());
+		iconList.add(res.fast_forward());
+		iconList.add(res.fast_rewind());
 
 		iconNameList = new ArrayList<>();
-		for (ImageResource ir : iconList) {
-
+		for (SVGResource ir : iconList) {
 			iconNameList.add(ir != null ? ir.getName() : "");
 		}
 
 		final ImageOrText[] iconArray = new ImageOrText[iconList.size()];
 		iconArray[0] = GeoGebraIconW.createNullSymbolIcon();
 		for (int i = 1; i < iconArray.length; i++) {
-			iconArray[i] = new ImageOrText(iconList.get(i));
+			iconArray[i] = new ImageOrText(iconList.get(i), 24);
 		}
 		// // ============================================
 		//
 		// // panel for button to open external file
 		//
 		btnImage = new PopupMenuButtonW(app, iconArray, -1, 4,
-				SelectionTable.MODE_ICON,
-				app.isUnbundledOrWhiteboard()) {
+				SelectionTable.MODE_ICON) {
 			@Override
 			public void handlePopupActionEvent() {
 				super.handlePopupActionEvent();
-				ImageResource resource = null;
 				int idx = getSelectedIndex();
-				resource = iconList.get(idx);
+				SVGResource resource = iconList.get(idx);
 				if (resource != null) {
-					applyImage(resource.getName(), resource.getSafeUri()
+					applyImage(resource + ".svg", resource.getSafeUri()
 							.asString());
 					Log.debug("Applying " + resource.getName() + " at index "
 							+ idx);
@@ -406,10 +391,7 @@ public class FillingPanel extends OptionPanel implements IFillingListener {
 		btnImage.setSelectedIndex(-1);
 		btnImage.setKeepVisible(false);
 		btnClearImage = new GPushButton(
-				new NoDragImage(app.isUnbundledOrWhiteboard()
-						? 
-						MaterialDesignResources.INSTANCE.delete_black()
-						: AppResources.INSTANCE.delete_small(), 24));
+				new NoDragImage(MaterialDesignResources.INSTANCE.delete_black(), 24));
 		btnClearImage.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -419,10 +401,8 @@ public class FillingPanel extends OptionPanel implements IFillingListener {
 
 		});
 		btnOpenFile = new Button();
-		if (app.isUnbundledOrWhiteboard()) {
-			btnOpenFile.addStyleName("openFileBtn");
-			btnClearImage.addStyleName("clearImgBtn");
-		}
+		btnOpenFile.addStyleName("openFileBtn");
+		btnClearImage.addStyleName("clearImgBtn");
 		btnOpenFile.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -517,16 +497,15 @@ public class FillingPanel extends OptionPanel implements IFillingListener {
 		opacityPanel.setVisible(true);
 		hatchFillPanel.setVisible(false);
 		imagePanel.setVisible(true);
-		this.btnImage.setVisible(true);
-		this.btnClearImage.setVisible(true);
+		btnImage.setVisible(model.hasGeoButton());
+		btnClearImage.setVisible(true);
 
 		// for GeoButtons only show the image file button
 		if (model.hasGeoButton() || model.hasGeoTurtle()) {
 			fillTypePanel.setVisible(false);
 			opacityPanel.setVisible(false);
 			if (model.hasGeoTurtle()) {
-				this.btnImage.setVisible(false);
-				this.btnClearImage.setVisible(true);
+				btnClearImage.setVisible(true);
 			}
 		}
 		setSymbolsVisible(false);
@@ -564,10 +543,7 @@ public class FillingPanel extends OptionPanel implements IFillingListener {
 		fillingSliderTitle.setText(loc.getMenu("Opacity"));
 		angleSliderTitle.setText(loc.getMenu("Angle"));
 		distanceSliderTitle.setText(loc.getMenu("Spacing"));
-		btnOpenFile.setText(
-				app.isUnbundledOrWhiteboard()
-				? loc.getMenu("ChooseFromFile")
-				: loc.getMenu("ChooseFromFile") + Unicode.ELLIPSIS);
+		btnOpenFile.setText(loc.getMenu("ChooseFromFile"));
 	}
 
 	@Override
@@ -592,12 +568,10 @@ public class FillingPanel extends OptionPanel implements IFillingListener {
 
 		int itemIndex = -1;
 		if (imageFileName != null) {
-			String fileName = imageFileName.substring(imageFileName
-					.indexOf('/') + 1);
-			Log.debug("Filling with " + fileName);
+			String fileName = imageFileName.substring(imageFileName.indexOf('/') + 1);
 
 			int idx = iconNameList.lastIndexOf(fileName);
-			itemIndex = idx > 0 ? idx : 0;
+			itemIndex = Math.max(idx, 0);
 		}
 
 		btnImage.setSelectedIndex(itemIndex);
@@ -666,11 +640,8 @@ public class FillingPanel extends OptionPanel implements IFillingListener {
 	}
 
 	@Override
-	public void setBarChart(AlgoBarChart algo) {
-		if (algo != null) {
-			lbBars.setBarCount(algo.getIntervals());
-		}
-
-		lbBars.update(algo != null);
+	public void setBarChart(int cols) {
+		lbBars.updateTranslationKeys(model.getGeos());
+		lbBars.setBarCount(cols);
 	}
 }

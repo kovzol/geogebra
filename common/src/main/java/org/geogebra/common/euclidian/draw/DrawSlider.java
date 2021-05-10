@@ -26,7 +26,6 @@ import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianStatic;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.factories.AwtFactory;
-import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.main.App;
 
@@ -186,7 +185,7 @@ public class DrawSlider extends Drawable {
 				g2.setPaint(geo.getSelColor());
 			}
 
-            if (isHighlighted()) {
+			if (isHighlighted()) {
 				g2.fill(circleHighlight);
 				g2.setStroke(borderStroke);
 				g2.draw(circleHighlight);
@@ -262,13 +261,6 @@ public class DrawSlider extends Drawable {
 	public boolean hitSlider(int x, int y, int hitThreshold) {
 		int r = hitThreshold
 				+ Math.max(lineThickness, GeoNumeric.DEFAULT_SLIDER_THICKNESS);
-		// changed: we want click on fixed slider to increment/decrement the
-		// slider a bit
-		// return !number.isSliderFixed() && line.intersects(x-2, y-2, 4,4);
-
-		// Log.debug("x = "+x+", min = "+line.getP1().getX()+", max =
-		// "+line.getP2().getX());
-
 		return line.intersects(x - r, y - r, 2 * r, 2 * r);
 	}
 
@@ -292,11 +284,6 @@ public class DrawSlider extends Drawable {
 				+ Math.max(diameter, GeoNumeric.DEFAULT_SLIDER_BLOB_SIZE);
 		return (x < coords[0] - r2 || x > coords[0] + r2)
 				|| (y < coords[1] - r2 || y > coords[1] + r2);
-	}
-
-	@Override
-	public GeoElement getGeoElement() {
-		return geo;
 	}
 
 	/**

@@ -9,6 +9,6 @@ public class CommandJlmSelection extends Command1A {
 
 	@Override
 	public Atom newI(TeXParser tp, Atom a) {
-        return new SelectionAtom(a, Colors.SELECTION, null);
+		return new SelectionAtom(a, Colors.SELECTION, null);
 	}
 }

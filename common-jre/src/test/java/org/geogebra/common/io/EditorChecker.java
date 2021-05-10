@@ -17,6 +17,7 @@ import com.himamis.retex.editor.share.meta.MetaModel;
 import com.himamis.retex.editor.share.model.MathFormula;
 import com.himamis.retex.editor.share.model.MathSequence;
 import com.himamis.retex.editor.share.serializer.GeoGebraSerializer;
+import com.himamis.retex.editor.share.util.JavaKeyCodes;
 
 class EditorChecker {
 	private MathFieldCommon mathField;
@@ -29,7 +30,7 @@ class EditorChecker {
 
 	protected EditorChecker(App app, MetaModel model) {
 		this.app = app;
-		mathField = new MathFieldCommon(model);
+		mathField = new MathFieldCommon(model, null);
 		typer = new EditorTyper(mathField);
 	}
 
@@ -75,6 +76,19 @@ class EditorChecker {
 		return this;
 	}
 
+	public EditorChecker left(int count) {
+		return repeatKey(JavaKeyCodes.VK_LEFT, count);
+	}
+
+	public EditorChecker right(int count) {
+		return repeatKey(JavaKeyCodes.VK_RIGHT, count);
+	}
+
+	public EditorChecker setModifiers(int modifiers) {
+		typer.setModifiers(modifiers);
+		return this;
+	}
+
 	public EditorChecker repeatKey(int key, int count) {
 		typer.repeatKey(key, count);
 		return this;
@@ -91,6 +105,20 @@ class EditorChecker {
 		try {
 			formula = parser.parse(input);
 			mathField.getInternal().setFormula(formula);
+		} catch (Exception e) {
+			Assert.fail("Problem parsing: " + input);
+		}
+		return this;
+	}
+
+	public EditorChecker matrixFromParser(String input) {
+		Parser parser = new Parser(mathField.getMetaModel());
+		MathFormula formula;
+		try {
+			formula = parser.parse(input);
+			mathField.getInternal().setFormula(formula);
+			mathField.getInternal().getFormula().getRootComponent().setProtected();
+			mathField.getInternal().setLockedCaretPath();
 		} catch (Exception e) {
 			Assert.fail("Problem parsing: " + input);
 		}

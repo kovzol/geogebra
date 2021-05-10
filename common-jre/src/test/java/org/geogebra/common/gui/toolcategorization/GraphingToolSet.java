@@ -22,8 +22,6 @@ public class GraphingToolSet {
         EuclidianConstants.MODE_ANGULAR_BISECTOR,
         EuclidianConstants.MODE_TANGENTS,
         EuclidianConstants.MODE_LOCUS,
-        EuclidianConstants.MODE_LOCUS_EQUATION,
-        EuclidianConstants.MODE_ENVELOPE,
         EuclidianConstants.MODE_SEGMENT_FIXED,
         EuclidianConstants.MODE_POLAR_DIAMETER,
         EuclidianConstants.MODE_POLYLINE,
@@ -53,10 +51,7 @@ public class GraphingToolSet {
         EuclidianConstants.MODE_TRANSLATE_BY_VECTOR,
         EuclidianConstants.MODE_DILATE_FROM_POINT,
         EuclidianConstants.MODE_MIRROR_AT_CIRCLE,
-        EuclidianConstants.MODE_RELATION,
-        EuclidianConstants.MODE_DISCOVER,
-        EuclidianConstants.MODE_INCIRCLE_CENTER,
-        EuclidianConstants.MODE_INCIRCLE);
+        EuclidianConstants.MODE_RELATION);
 
     public static boolean isInGraphingToolSet(int tool) {
         return notAllowedToolsGraphingCalc.contains(tool);

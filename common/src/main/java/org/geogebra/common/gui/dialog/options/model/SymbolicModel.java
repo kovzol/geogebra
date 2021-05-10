@@ -16,16 +16,16 @@ public class SymbolicModel extends BooleanOptionModel {
 	public boolean isValidAt(int index) {
 		GeoElement geo = getGeoAt(index).getGeoElementForPropertiesDialog();
 
-        return geo.isGeoNumeric() || geo.isGeoText() ||
-                isSymbolicGeoInputBox(geo);
-    }
+		return geo.isGeoNumeric() || geo.isGeoText() ||
+				isSymbolicGeoInputBox(geo);
+	}
 
-    private boolean isSymbolicGeoInputBox(GeoElement geo) {
-        if (!(app.has(Feature.SYMBOLIC_INPUTFIELDS))) {
-            return false;
-        }
+	private boolean isSymbolicGeoInputBox(GeoElement geo) {
+		if (!(app.has(Feature.SYMBOLIC_INPUTFIELDS))) {
+			return false;
+		}
 
-        return geo.isGeoInputBox() && ((GeoInputBox) geo).canBeSymbolic();
+		return geo.isGeoInputBox() && ((GeoInputBox)geo).canBeSymbolic();
 	}
 
 	@Override

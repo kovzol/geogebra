@@ -128,7 +128,7 @@ public class AnimationExporter {
 					step,
 					scale, rotate, frameFormat);
 		} catch (Exception ex) {
-            app.showError(Errors.SaveFileFailed);
+			app.showError(Errors.SaveFileFailed);
 			Log.debug(ex.getMessage());
 			ex.printStackTrace();
 		} finally {
@@ -150,7 +150,7 @@ public class AnimationExporter {
 			return new WebMEncoderW(timeBetweenFrames, isLoop, filename);
 
 		case PDF_HTML5:
-            return new PDFEncoderW(ev);
+			return new PDFEncoderW(ev);
 		}
 
 	}

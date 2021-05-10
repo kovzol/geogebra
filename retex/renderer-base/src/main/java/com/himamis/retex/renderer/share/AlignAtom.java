@@ -74,19 +74,19 @@ public class AlignAtom extends ArrayAtom {
 
 	@Override
 	public double[] getColumnSep(TeXEnvironment env, double width) {
-		final int row = matrix.row;
 		final int col = matrix.col;
 		final double[] seps = new double[col + 1];
 		final double w = aligned ? Double.POSITIVE_INFINITY
-                : env.lengthSettings().getTextwidth(env);
+				: env.lengthSettings().getTextwidth(env);
 
 		// Align env. : hsep=(textwidth-matWidth)/(2n+1) and hsep eq_lft
 		// \medskip el_rgt hsep ... hsep elem hsep
 		final double alignW = align.createBox(env).getWidth();
 		double alignSep;
 		if (w != Double.POSITIVE_INFINITY) {
-			alignSep = Math.max((w - width - (col / 2) * alignW)
-					/ Math.floor((col + 3) / 2), 0.);
+			int halfcol = col / 2;
+			int tmp = (col + 3) / 2;
+			alignSep = Math.max((w - width - halfcol * alignW) / tmp, 0);
 		} else {
 			alignSep = hsep.createBox(env).getWidth();
 		}

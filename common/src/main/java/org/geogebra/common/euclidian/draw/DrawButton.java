@@ -87,7 +87,7 @@ public final class DrawButton extends Drawable {
 	@Override
 	public void draw(GGraphics2D g2) {
 		if (isVisible) {
-            myButton.setSelected(isHighlighted());
+			myButton.setSelected(isHighlighted());
 			myButton.paintComponent(g2, geoButton.getFontSizeMultiplier(),
 					true);
 		}
@@ -118,11 +118,6 @@ public final class DrawButton extends Drawable {
 	@Override
 	public boolean hitLabel(int x, int y) {
 		return false;
-	}
-
-	@Override
-	public GeoElement getGeoElement() {
-		return geo;
 	}
 
 	@Override

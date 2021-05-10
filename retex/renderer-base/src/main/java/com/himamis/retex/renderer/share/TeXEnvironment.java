@@ -59,11 +59,11 @@ import com.himamis.retex.renderer.share.platform.graphics.Color;
 public class TeXEnvironment {
 
 	// colors
-    private Color background;
-    private Color color;
+	private Color background;
+	private Color color;
 
 	// current style
-    private int style;
+	private int style;
 
 	// TeXFont used
 	private TeXFont tf;
@@ -72,35 +72,35 @@ public class TeXEnvironment {
 	private Font javaFont;
 
 	// last used font
-    private FontInfo lastFont;
+	private FontInfo lastFont;
 
-    private int textStyle;
+	private int textStyle;
 
 	private boolean smallCap;
 	private double scaleFactor = 1.;
 	public boolean isColored = false;
 
-    private TeXLengthSettings lengthSettings;
+	private TeXLengthSettings lengthSettings;
 
 	public TeXEnvironment(int style, TeXFont tf, int textStyle) {
 		this.style = style;
 		this.tf = tf;
 		this.textStyle = textStyle;
-        this.lengthSettings = new TeXLengthSettings();
+		this.lengthSettings = new TeXLengthSettings();
 	}
 
 	private TeXEnvironment(int style, double scaleFactor, TeXFont tf, Color bg,
-                           Color c, int textStyle, boolean smallCap, Font javaFont,
-                           TeXLengthSettings lengthSettings) {
+			Color c, int textStyle, boolean smallCap, Font javaFont,
+			TeXLengthSettings lengthSettings) {
 		this.style = style;
 		this.scaleFactor = scaleFactor;
 		this.tf = tf;
-        this.background = bg;
-        this.color = c;
+		this.background = bg;
+		this.color = c;
 		this.textStyle = textStyle;
 		this.smallCap = smallCap;
 		this.javaFont = javaFont;
-        this.lengthSettings = lengthSettings;
+		this.lengthSettings = lengthSettings;
 	}
 
 	public void setScaleFactor(double f) {
@@ -113,12 +113,12 @@ public class TeXEnvironment {
 
 	protected TeXEnvironment copy() {
 		return new TeXEnvironment(style, scaleFactor, tf, background, color,
-                textStyle, smallCap, javaFont, lengthSettings);
+				textStyle, smallCap, javaFont, lengthSettings);
 	}
 
 	protected TeXEnvironment copy(TeXFont tf) {
-        return new TeXEnvironment(style, scaleFactor, tf,
-                background, color, textStyle, smallCap, javaFont, lengthSettings);
+		return new TeXEnvironment(style, scaleFactor, tf,
+				background, color, textStyle, smallCap, javaFont, lengthSettings);
 	}
 
 	/**
@@ -298,7 +298,7 @@ public class TeXEnvironment {
 		return lastFont == null ? TeXFont.MUFONT : lastFont;
 	}
 
-    public TeXLengthSettings lengthSettings() {
-        return lengthSettings;
-    }
+	public TeXLengthSettings lengthSettings() {
+		return lengthSettings;
+	}
 }

@@ -95,7 +95,7 @@ public class AlgoFunctionInvert extends AlgoElement {
 		}
 
 		ExpressionValue root = f.getFunctionExpression();
-		if (root == null || root.isConstant()) {
+		if (root == null) {
 			// eg f(x) = 2
 			g.setUndefined();
 			return;
@@ -125,39 +125,42 @@ public class AlgoFunctionInvert extends AlgoElement {
 	}
 
 	/**
-     * @param root0  root element
-     * @param oldFV  x variable of inverted function
-     * @param x      x variable of target
-     * @param kernel kernel
+	 * @param root0  root element
+	 * @param oldFV  x variable of inverted function
+	 * @param x      x variable of target
+	 * @param kernel kernel
 	 * @return inverted expression
 	 */
 	public static ExpressionNode invert(ExpressionValue root0,
 			FunctionVariable oldFV, FunctionVariable x, Kernel kernel) {
+		if (root0.isConstant()) {
+			return null;
+		}
 		boolean fvLeft;
 		ExpressionNode newRoot = x.wrap();
 		ExpressionValue root = root0.unwrap();
 
-        // f(x)=Simplify(0x+3)
-        if (root == null || root instanceof GeoNumeric) {
-            return null;
-        }
+		// f(x)=Simplify(0x+3)
+		if (root == null || root instanceof GeoNumeric) {
+			return null;
+		}
 
-        // f(x)=x
-        if (root instanceof FunctionVariable) {
-            return newRoot;
-        }
+		// f(x)=x
+		if (root instanceof FunctionVariable) {
+			return newRoot;
+		}
 
-        if (root.isLeaf() || !root.isExpressionNode()) {
-            Log.debug("Problem with Invert()");
-            return null;
-        }
+		if (root.isLeaf() || !root.isExpressionNode()) {
+			Log.debug("Problem with Invert()");
+			return null;
+		}
 
 		while (root != null && !root.isLeaf() && root.isExpressionNode()) {
 			ExpressionValue left = ((ExpressionNode) root).getLeft().unwrap();
 			ExpressionValue right = ((ExpressionNode) root).getRight().unwrap();
 
-            Operation op = ((ExpressionNode) root).getOperation();
-            switch (op) {
+			Operation op = ((ExpressionNode) root).getOperation();
+			switch (op) {
 			case SIN:
 			case COS:
 			case TAN:

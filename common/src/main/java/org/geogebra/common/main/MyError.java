@@ -22,7 +22,7 @@ import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 
 /**
- *
+ * 
  * @author Markus
  */
 public class MyError extends Error {
@@ -37,7 +37,7 @@ public class MyError extends Error {
 
 	/**
 	 * Creates new MyError
-	 *
+	 * 
 	 * @param loc0
 	 *            localization
 	 * @param errorName
@@ -170,13 +170,13 @@ public class MyError extends Error {
 	}
 
 	private String getError() {
-
+		
 		// using new Errors enum
 		if (message != null) {
 			String ret = message.getError(loc, strs);
 			return ret;
 		}
-
+		
 		// using old string method
 		return getError(getMessage());
 	}
@@ -208,9 +208,9 @@ public class MyError extends Error {
 	}
 
 	/**
-	 *
+	 * 
 	 * Errors and default translations
-	 *
+	 * 
 	 * (defaults needed eg in webSimple)
 	 *
 	 */
@@ -260,7 +260,7 @@ public class MyError extends Error {
 		UnbalancedBrackets("UnbalancedBrackets", "Unbalanced brackets"),
 
 		ReplaceFailed("ReplaceFailed", "Redefinition failed"),
-
+		
 		CircularDefinition("CircularDefinition", "Circular Definition"),
 
 		LoadFileFailed("LoadFileFailed", "Opening file failed"),
@@ -354,7 +354,7 @@ public class MyError extends Error {
 
 		/**
 		 * Builds error message from current key and given arguments
-		 *
+		 * 
 		 * @param loc
 		 *            localization
 		 * @param strs
@@ -381,16 +381,16 @@ public class MyError extends Error {
 					sb.append(" ");
 				}
 			}
-
+			
 			return sb.toString();
 		}
 
 		/**
 		 * remove null: as label eg 3/(x^2=1) gives Illegal division 3 / null:
 		 * (-x - 1) (-x + 1) = 0
-		 *
+		 * 
 		 * if label really is null, doesn't matter if removed
-		 *
+		 * 
 		 * @param s
 		 *            input
 		 * @return input with "null:" / "undefined:" removed
@@ -407,7 +407,7 @@ public class MyError extends Error {
 		}
 
 		/**
-		 *
+		 * 
 		 * @return ggbtrans translation key eg "LoadFileFailed"
 		 */
 		public String getKey() {

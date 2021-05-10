@@ -33,6 +33,8 @@ import org.geogebra.common.main.MyError;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.util.debug.Log;
 
+import com.google.j2objc.annotations.Weak;
+
 /**
  * Runs commands and handles string to command processor conversion.
  *
@@ -40,11 +42,14 @@ import org.geogebra.common.util.debug.Log;
 public abstract class CommandDispatcher {
 
 	/** kernel **/
+	@Weak
 	protected Kernel kernel;
+	@Weak
 	private Construction cons;
 	/**
 	 * Application
 	 */
+	@Weak
 	protected App app;
 
 	/**
@@ -401,7 +406,7 @@ public abstract class CommandDispatcher {
 			// advanced
 			case IntersectPath:
 			case IntersectRegion:
-
+			case IsVertexForm:
 			case Difference:
 
 			case TaylorPolynomial:
@@ -438,6 +443,8 @@ public abstract class CommandDispatcher {
 			case ScientificText:
 			case VerticalText:
 			case RotateText:
+			case ReplaceAll:
+			case Split:
 			case Ordinal:
 			case Parameter:
 			case Incircle:
@@ -521,7 +528,7 @@ public abstract class CommandDispatcher {
 			case LocusEquation:
 			case Envelope:
 			case Discover:
-                case Compare:
+			case Compare:
 				return getProverDispatcher().dispatch(command, kernel);
 
 			// basic
@@ -530,7 +537,7 @@ public abstract class CommandDispatcher {
 			case Length:
 			case UnitPerpendicularVector:
 			case UnitOrthogonalVector:
-
+			case Surface:
 			case Sort:
 			case BarChart:
 			case Product:
@@ -542,7 +549,7 @@ public abstract class CommandDispatcher {
 			case Object:
 			case CountIf:
 			case Extremum:
-			case Holes:
+			case RemovableDiscontinuity:
 			case UnitVector:
 			case Direction:
 			case Text:
@@ -669,8 +676,8 @@ public abstract class CommandDispatcher {
 
 			case FormulaText:
 			case LaTeX:
-				case InputBox:
-				case Textfield:
+			case InputBox:
+			case Textfield:
 			case Normalize:
 			case ExportImage:
 				return getBasicDispatcher().dispatch(command, kernel);
@@ -758,6 +765,7 @@ public abstract class CommandDispatcher {
 			case InverseTDistribution:
 			case InverseWeibull:
 			case InverseZipf:
+			case LineGraph:
 			case LogNormal:
 			case Logistic:
 			case Mean:
@@ -771,6 +779,7 @@ public abstract class CommandDispatcher {
 			case OrdinalRank:
 			case PMCC:
 			case Pascal:
+			case PieChart:
 			case Percentile:
 			case Poisson:
 			case Q1:
@@ -843,7 +852,6 @@ public abstract class CommandDispatcher {
 			case Trilinear:
 			case Cubic:
 			case TriangleCurve:
-
 			case Voronoi:
 			case Hull:
 			case ConvexHull:
@@ -857,7 +865,7 @@ public abstract class CommandDispatcher {
 			case Solutions:
 			case NSolutions:
 			case CASLoaded:
-				return getCASDispatcher().dispatch(command, kernel);
+			case PlotSolve:
 			case Expand:
 			case Factor:
 			case IFactor:

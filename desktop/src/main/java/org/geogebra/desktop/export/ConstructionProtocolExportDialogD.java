@@ -12,7 +12,10 @@ the Free Software Foundation.
 
 package org.geogebra.desktop.export;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -26,7 +29,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.gui.view.consprotocol.ConstructionProtocolView;
@@ -38,12 +44,13 @@ import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.awt.GBufferedImageD;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.TitlePanel;
+import org.geogebra.desktop.gui.dialog.Dialog;
 import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolViewD;
 import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.plugin.GgbAPID;
 import org.geogebra.desktop.util.UtilD;
 
-public class ConstructionProtocolExportDialogD extends JDialog
+public class ConstructionProtocolExportDialogD extends Dialog
 		implements KeyListener {
 
 	private static final long serialVersionUID = -2626950140196416416L;
@@ -191,7 +198,7 @@ public class ConstructionProtocolExportDialogD extends JDialog
 							clipboard.setContents(stringSelection, null);
 						} catch (Exception ex) {
 							ex.printStackTrace();
-                            app.showError(Errors.SaveFileFailed);
+							app.showError(Errors.SaveFileFailed);
 							Log.debug(ex.toString());
 						}
 					}
@@ -303,7 +310,7 @@ public class ConstructionProtocolExportDialogD extends JDialog
 						((GuiManagerD) app.getGuiManager())
 								.showURLinBrowser(HTMLfile.toURI().toURL());
 					} catch (Exception ex) {
-                        app.showError(Errors.SaveFileFailed);
+						app.showError(Errors.SaveFileFailed);
 						Log.debug(ex.toString());
 					}
 				}
@@ -311,7 +318,7 @@ public class ConstructionProtocolExportDialogD extends JDialog
 			runner.start();
 
 		} catch (IOException ex) {
-            app.showError(Errors.SaveFileFailed);
+			app.showError(Errors.SaveFileFailed);
 			Log.debug(ex.toString());
 		}
 

@@ -2,9 +2,9 @@ package org.geogebra.common.geogebra3D.euclidian3D.draw;
 
 import org.geogebra.common.euclidian3D.EuclidianView3DInterface;
 import org.geogebra.common.geogebra3D.euclidian3D.EuclidianView3D;
-import org.geogebra.common.geogebra3D.euclidian3D.ar.ARManagerInterface;
 import org.geogebra.common.geogebra3D.euclidian3D.openGL.PlotterBrush;
 import org.geogebra.common.geogebra3D.euclidian3D.openGL.Renderer;
+import org.geogebra.common.geogebra3D.euclidian3D.xr.XRManagerInterface;
 import org.geogebra.common.geogebra3D.kernel3D.geos.GeoClippingCube3D;
 import org.geogebra.common.kernel.matrix.Coords;
 
@@ -38,7 +38,7 @@ public class DrawClippingCube3D extends Drawable3DCurves {
     /**
      * enlarging factor from minMax values to minMaxLarge values
      */
-    final static public double REDUCTION_ENLARGE = 1.5;
+	final static public double REDUCTION_ENLARGE = 1.5;
 
 	static private double[] REDUCTION_VALUES = { (1 - 1. / Math.sqrt(3)) / 2, // small
 			(1 - 1. / Math.sqrt(2)) / 2, // medium
@@ -126,10 +126,23 @@ public class DrawClippingCube3D extends Drawable3DCurves {
 	}
 
 	/**
+	 * @param minmax
+	 *            min/max values for bounds
+	 */
+	public void setXYZMinMax(double[][] minmax) {
+		minMax[0][0] = minmax[0][0];
+		minMax[0][1] = minmax[0][1];
+		minMax[1][0] = minmax[1][0];
+		minMax[1][1] = minmax[1][1];
+		minMax[2][0] = minmax[2][0];
+		minMax[2][1] = minmax[2][1];
+	}
+
+	/**
 	 * update the x,y,z min/max values
 	 *
 	 */
-	private void doUpdateMinMax() {
+	public void doUpdateMinMax() {
 
         EuclidianView3D view = getView3D();
 
@@ -143,19 +156,19 @@ public class DrawClippingCube3D extends Drawable3DCurves {
 		double y0 = -view.getYZero();
 		double z0 = -view.getZZero();
 
-        double halfWidth = renderer.getWidth() / 2.0;
-        double bottom = renderer.getBottom();
-        double top = renderer.getTop();
+		double halfWidth = renderer.getWidth() / 2.0;
+		double bottom = renderer.getBottom();
+		double top = renderer.getTop();
 
-        if (view.isAREnabled()) {
-            ARManagerInterface<?> arManager = renderer.getARManager();
-            if (arManager != null) {
-                double arScaleFactor = renderer.getARManager().getArScaleFactor();
-                halfWidth *= arScaleFactor;
-                bottom *= arScaleFactor;
-                top *= arScaleFactor;
-            }
-        }
+		if (view.isXREnabled()) {
+			XRManagerInterface<?> arManager = renderer.getXRManager();
+			if (arManager != null) {
+				double arScaleFactor = renderer.getXRManager().getXRScaleFactor();
+				halfWidth *= arScaleFactor;
+				bottom *= arScaleFactor;
+				top *= arScaleFactor;
+			}
+		}
 
         currentBounds[X][MIN] = -halfWidth / xscale + x0;
         currentBounds[X][MAX] = halfWidth / xscale + x0;
@@ -182,7 +195,7 @@ public class DrawClippingCube3D extends Drawable3DCurves {
         double yr = (currentBounds[Y][MAX] - currentBounds[Y][MIN]);
         double zr = (currentBounds[Z][MAX] - currentBounds[Z][MIN]);
 
-        if (view.isAREnabled()) {
+        if (view.isXREnabled()) {
             for (int i = 0; i < 3; i++) {
                 mayEnlarge(currentBounds[i], minMaxObjects[i]);
             }
@@ -204,7 +217,7 @@ public class DrawClippingCube3D extends Drawable3DCurves {
         double scaleMax = Math.max(Math.max(xscale, yscale), zscale);
         double scaleMin = Math.min(Math.min(xscale, yscale), zscale);
         double w, h, d;
-        if (view.isAREnabled()) {
+        if (view.isXREnabled()) {
             w = (currentBounds[X][MAX] - currentBounds[X][MIN]) * xscale;
             h = (currentBounds[Y][MAX] - currentBounds[Y][MIN]) * yscale;
             d = (currentBounds[Z][MAX] - currentBounds[Z][MIN]) * zscale;
@@ -239,10 +252,14 @@ public class DrawClippingCube3D extends Drawable3DCurves {
 
     private void standsOnFloorIfAR(double[][] mm) {
         EuclidianView3D view = getView3D();
-        if (view.isAREnabled()) {
-            mm[Z][MIN] = view.getARMinZ();
+        if (view.isXREnabled()) {
+			mm[Z][MIN] = view.getARMinZ();
         }
     }
+
+    public double getRV(int index) {
+		return REDUCTION_VALUES[index];
+	}
 
     /**
      * update the x,y,z min/max values
@@ -268,8 +285,8 @@ public class DrawClippingCube3D extends Drawable3DCurves {
 		if (v[MIN] > enlarge[MIN]) {
 			v[MIN] = enlarge[MIN];
 		}
-        mayEnlargeMax(v, enlarge);
-    }
+		mayEnlargeMax(v, enlarge);
+	}
 
     private static void mayEnlargeMax(double[] v, double[] enlarge) {
         if (v[MAX] < enlarge[MAX]) {

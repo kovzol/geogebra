@@ -10,17 +10,17 @@ import org.junit.Test;
  */
 public class CopyFreeObjectTest extends BaseUnitTest {
 
-    /**
-     * Check that all properties are maintained for points
-     */
-    @Test
-    public void copyShouldHaveSameXML() {
-        add("A=(1,1)");
-        lookup("A").setAnimationStep(2.0);
-        String aXml = lookup("A").getXML();
-        add("B=CopyFreeObject(A)");
-        add("Delete(A)");
-        add("Rename(B,A)");
-        assertEquals(aXml, lookup("A").getXML());
-    }
+	/**
+	 * Check that all properties are maintained for points
+	 */
+	@Test
+	public void copyShouldHaveSameXML() {
+		add("A=(1,1)");
+		lookup("A").setAnimationStep(2.0);
+		String aXml = lookup("A").getXML();
+		add("B=CopyFreeObject(A)");
+		add("Delete(A)");
+		add("Rename(B,A)");
+		assertEquals(aXml, lookup("A").getXML());
+	}
 }

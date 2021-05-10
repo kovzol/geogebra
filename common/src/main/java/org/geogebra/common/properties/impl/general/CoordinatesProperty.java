@@ -2,13 +2,16 @@ package org.geogebra.common.properties.impl.general;
 
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.main.Localization;
-import org.geogebra.common.properties.AbstractEnumerableProperty;
+import org.geogebra.common.properties.impl.AbstractEnumerableProperty;
+
+import com.google.j2objc.annotations.Weak;
 
 /**
  * Property for setting the coordinates.
  */
 public class CoordinatesProperty extends AbstractEnumerableProperty {
 
+    @Weak
     private Kernel kernel;
 
     /**

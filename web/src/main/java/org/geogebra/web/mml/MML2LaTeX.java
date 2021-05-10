@@ -17,10 +17,10 @@ public class MML2LaTeX implements EntryPoint {
 	final private static MathMLParser MATHML_PARSER_LATEX = new MathMLParser(
 			false);
 
-    @ExternalAccess
-    private static String convert(String mml) {
-        return MATHML_PARSER_LATEX.parse(mml, false, false);
-    }
+	@ExternalAccess
+	private static String convert(String mml) {
+		return MATHML_PARSER_LATEX.parse(mml, false, false);
+	}
 
 	@Override
 	public void onModuleLoad() {

@@ -1,13 +1,14 @@
 package org.geogebra.web.full.cas.view;
 
-import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.kernel.geos.GeoCasCell;
+import org.geogebra.common.util.CopyPaste;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.web.full.gui.view.spreadsheet.CopyPasteCutW;
 import org.geogebra.web.full.html5.AttachedToDOM;
 import org.geogebra.web.full.javax.swing.GPopupMenuW;
 import org.geogebra.web.html5.gui.util.AriaMenuItem;
 import org.geogebra.web.html5.main.AppW;
+import org.geogebra.web.html5.util.CopyPasteW;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
@@ -140,6 +141,7 @@ public class RowHeaderPopupMenuW extends
 			return;
 		}
 
+		CopyPaste copyPaste = app.getCopyPaste();
 		boolean undoNeeded = true;
 
 		switch (ac) {
@@ -187,7 +189,7 @@ public class RowHeaderPopupMenuW extends
 					toBeCopied = toBeCopied.substring(0,
 							toBeCopied.length() - 13);
 				}
-				app.copyTextToSystemClipboard(toBeCopied);
+				copyPaste.copyTextToSystemClipboard(toBeCopied);
 			}
 			break;
 		case COPY:
@@ -196,7 +198,7 @@ public class RowHeaderPopupMenuW extends
 			// and if this is the case, the formula ends by:
 			// \\ undefined \\
 			if (toBeCopied != null) {
-				app.copyTextToSystemClipboard(toBeCopied);
+				copyPaste.copyTextToSystemClipboard(toBeCopied);
 			}
 			break;
 		case COPY_INPUT:
@@ -205,18 +207,19 @@ public class RowHeaderPopupMenuW extends
 			// and if this is the case, the formula ends by:
 			// \\ undefined \\
 			if (toBeCopied != null) {
-				app.copyTextToSystemClipboard(toBeCopied);
+				copyPaste.copyTextToSystemClipboard(toBeCopied);
 			}
 			break;
 		case PASTE:
-			toBeCopied = CopyPasteCutW.getClipboardContents(null);
-			// it's possible that the last row is the input bar,
-			// and if this is the case, the formula ends by:
-			// \\ undefined \\
-			Log.debug("Pasting" + toBeCopied);
-			if (toBeCopied != null) {
-				table.setCellInput(selRows[0], toBeCopied);
-			}
+			CopyPasteW.pasteNative(app, (content) -> {
+				// it's possible that the last row is the input bar,
+				// and if this is the case, the formula ends by:
+				// \\ undefined \\
+				Log.debug("Pasting" + content);
+				if (content != null) {
+					table.setCellInput(selRows[0], content);
+				}
+			});
 		}
 
 		if (undoNeeded) {
@@ -233,12 +236,13 @@ public class RowHeaderPopupMenuW extends
 	/**
 	 * show the popup
 	 * 
-	 * @param gPoint
-	 *            point where the popup should appear
+	 * @param x
+	 *            x-coord of the point where the popup should appear
+	 *  @param y
+	 * 	          y-coord of the point where the popup should appear
 	 */
-	public void show(GPoint gPoint) {
-		rowHeaderPopupMenu.show(gPoint);
-
+	public void show(double x, double y) {
+		rowHeaderPopupMenu.show(x, y);
 	}
 
 }

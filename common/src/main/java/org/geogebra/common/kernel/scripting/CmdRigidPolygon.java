@@ -48,7 +48,7 @@ public class CmdRigidPolygon extends CmdScripting {
 						offset, -offset, c.getLabels());
 			}
 
-            throw argErr(c, arg[0]);
+			throw argErr(c, arg[0]);
 		case 0:
 		case 2:
 			throw argNumErr(c);

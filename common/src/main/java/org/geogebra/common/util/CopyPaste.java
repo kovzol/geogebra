@@ -56,6 +56,8 @@ public abstract class CopyPaste {
 
 	public abstract void clearClipboard();
 
+	public abstract void copyTextToSystemClipboard(String text);
+
 	/**
 	 * @param app
 	 *            application
@@ -416,5 +418,9 @@ public abstract class CopyPaste {
 		}
 
 		return ret;
+	}
+
+	public void paste(App app, AsyncOperation<String> stringAsyncOperation) {
+		pasteFromXML(app);
 	}
 }

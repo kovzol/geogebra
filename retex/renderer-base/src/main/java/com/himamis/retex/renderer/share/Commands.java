@@ -1426,7 +1426,7 @@ public class Commands {
 			return new Command0A() {
 				@Override
 				public Atom newI(TeXParser tp) {
-                    final Atom sp = new SpaceAtom(Unit.MU, 5.);
+					final Atom sp = new SpaceAtom(Unit.MU, 5.);
 					final RowAtom ra = new RowAtom(sp,
 							new RomanAtom(TeXParser
 									.getAtomForLatinStr("mod", true).changeType(
@@ -1442,7 +1442,7 @@ public class Commands {
 					final RowAtom ra = new RowAtom(3);
 					// XXX was -0.169
 					ra.add(Symbols.LHOOK,
-                            new SpaceAtom(Unit.EM, -0.43),
+							new SpaceAtom(Unit.EM, -0.43),
 							Symbols.RIGHTARROW);
 					ra.setShape(true);
 					return new TypedAtom(TeXConstants.TYPE_RELATION, ra);
@@ -1455,7 +1455,7 @@ public class Commands {
 					final RowAtom ra = new RowAtom(3);
 					ra.add(Symbols.LEFTARROW,
 							// XXX was -0.169
-                            new SpaceAtom(Unit.EM, -0.43),
+							new SpaceAtom(Unit.EM, -0.43),
 							Symbols.RHOOK);
 					ra.setShape(true);
 					return new TypedAtom(TeXConstants.TYPE_RELATION, ra);
@@ -1467,7 +1467,7 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					final RowAtom ra = new RowAtom(3);
 					ra.add(Symbols.BIG_RELBAR,
-                            new SpaceAtom(Unit.EM, -0.177),
+							new SpaceAtom(Unit.EM, -0.177),
 							Symbols.BIG_RIGHTARROW);
 					ra.setShape(true);
 					return new TypedAtom(TeXConstants.TYPE_RELATION, ra);
@@ -1479,7 +1479,7 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					final RowAtom ra = new RowAtom(3);
 					ra.add(Symbols.BIG_LEFTARROW,
-                            new SpaceAtom(Unit.EM, -0.177),
+							new SpaceAtom(Unit.EM, -0.177),
 							Symbols.BIG_RELBAR);
 					ra.setShape(true);
 					return new TypedAtom(TeXConstants.TYPE_RELATION, ra);
@@ -1491,7 +1491,7 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					final RowAtom ra = new RowAtom(3);
 					ra.add(Symbols.LEFTARROW,
-                            new SpaceAtom(Unit.EM, -0.206),
+							new SpaceAtom(Unit.EM, -0.206),
 							Symbols.MINUS
 									.changeType(TeXConstants.TYPE_RELATION));
 					ra.setShape(true);
@@ -1504,7 +1504,7 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					final RowAtom ra = new RowAtom(3);
 					ra.add(Symbols.MINUS.changeType(TeXConstants.TYPE_RELATION),
-                            new SpaceAtom(Unit.EM, -0.206),
+							new SpaceAtom(Unit.EM, -0.206),
 							Symbols.RIGHTARROW);
 					ra.setShape(true);
 					return new TypedAtom(TeXConstants.TYPE_RELATION, ra);
@@ -1516,7 +1516,7 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					final RowAtom ra = new RowAtom(3);
 					ra.add(Symbols.LEFTARROW,
-                            new SpaceAtom(Unit.EM, -0.180),
+							new SpaceAtom(Unit.EM, -0.180),
 							Symbols.RIGHTARROW);
 					ra.setShape(true);
 					return new TypedAtom(TeXConstants.TYPE_RELATION, ra);
@@ -1528,7 +1528,7 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					final RowAtom ra = new RowAtom(3);
 					ra.add(Symbols.BIG_LEFTARROW,
-                            new SpaceAtom(Unit.EM, -0.180),
+							new SpaceAtom(Unit.EM, -0.180),
 							Symbols.BIG_RIGHTARROW);
 					ra.setShape(true);
 					return new TypedAtom(TeXConstants.TYPE_RELATION, ra);
@@ -1630,9 +1630,9 @@ public class Commands {
 				@Override
 				public Atom newI(TeXParser tp) {
 					final Atom integral = Symbols.INT;
-                    final SpaceAtom six = new SpaceAtom(Unit.MU, -6.,
+					final SpaceAtom six = new SpaceAtom(Unit.MU, -6.,
 							0., 0.);
-                    final SpaceAtom nine = new SpaceAtom(Unit.MU, -9.,
+					final SpaceAtom nine = new SpaceAtom(Unit.MU, -9.,
 							0., 0.);
 					final Atom choice = new MathchoiceAtom(nine, six, six, six);
 					final RowAtom ra = new RowAtom(integral, choice, integral);
@@ -1645,9 +1645,9 @@ public class Commands {
 				@Override
 				public Atom newI(TeXParser tp) {
 					final Atom integral = Symbols.INT;
-                    final SpaceAtom six = new SpaceAtom(Unit.MU, -6.,
+					final SpaceAtom six = new SpaceAtom(Unit.MU, -6.,
 							0., 0.);
-                    final SpaceAtom nine = new SpaceAtom(Unit.MU, -9.,
+					final SpaceAtom nine = new SpaceAtom(Unit.MU, -9.,
 							0., 0.);
 					final Atom choice = new MathchoiceAtom(nine, six, six, six);
 					final RowAtom ra = new RowAtom(integral, choice, integral,
@@ -1661,9 +1661,9 @@ public class Commands {
 				@Override
 				public Atom newI(TeXParser tp) {
 					final Atom integral = Symbols.INT;
-                    final SpaceAtom six = new SpaceAtom(Unit.MU, -6.,
+					final SpaceAtom six = new SpaceAtom(Unit.MU, -6.,
 							0., 0.);
-                    final SpaceAtom nine = new SpaceAtom(Unit.MU, -9.,
+					final SpaceAtom nine = new SpaceAtom(Unit.MU, -9.,
 							0., 0.);
 					final Atom choice = new MathchoiceAtom(nine, six, six, six);
 					final RowAtom ra = new RowAtom(integral, choice, integral,
@@ -1678,7 +1678,7 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					final Atom integral = Symbols.INT;
 					final Atom cdotp = Symbols.CDOTP;
-                    final SpaceAtom sa = new SpaceAtom(Unit.MU, -1.,
+					final SpaceAtom sa = new SpaceAtom(Unit.MU, -1.,
 							0., 0.);
 					final RowAtom cdots = new RowAtom(cdotp, cdotp, cdotp);
 					final RowAtom ra = new RowAtom(integral, sa,
@@ -1803,35 +1803,35 @@ public class Commands {
 			return new Command0A() {
 				@Override
 				public Atom newI(TeXParser tp) {
-                    return new SpaceAtom(Unit.EM, 0.5, 0., 0.);
+					return new SpaceAtom(Unit.EM, 0.5, 0., 0.);
 				}
 			};
 		case "enskip":
 			return new Command0A() {
 				@Override
 				public Atom newI(TeXParser tp) {
-                    return new SpaceAtom(Unit.EM, 0.5, 0., 0.);
+					return new SpaceAtom(Unit.EM, 0.5, 0., 0.);
 				}
 			};
 		case "quad":
 			return new Command0A() {
 				@Override
 				public Atom newI(TeXParser tp) {
-                    return new SpaceAtom(Unit.EM, 1., 0., 0.);
+					return new SpaceAtom(Unit.EM, 1., 0., 0.);
 				}
 			};
 		case "qquad":
 			return new Command0A() {
 				@Override
 				public Atom newI(TeXParser tp) {
-                    return new SpaceAtom(Unit.EM, 2., 0., 0.);
+					return new SpaceAtom(Unit.EM, 2., 0., 0.);
 				}
 			};
 		case "Space":
 			return new Command0A() {
 				@Override
 				public Atom newI(TeXParser tp) {
-                    return new SpaceAtom(Unit.EM, 3., 0., 0.);
+					return new SpaceAtom(Unit.EM, 3., 0., 0.);
 				}
 			};
 
@@ -1872,10 +1872,10 @@ public class Commands {
 				@Override
 				public Atom newI(TeXParser tp) {
 					final RowAtom ra = new RowAtom(
-                            new SpaceAtom(Unit.EX, -0.1, 0., 0.),
+							new SpaceAtom(Unit.EX, -0.1, 0., 0.),
 							Symbols.BAR);
 					final VRowAtom vra = new VRowAtom(new LapedAtom(ra, 'r'));
-                    vra.setRaise(Unit.EX, -0.55);
+					vra.setRaise(Unit.EX, -0.55);
 					return new RowAtom(vra, new RomanAtom(
 							new CharAtom('D', TextStyle.MATHNORMAL)));
 				}
@@ -1885,10 +1885,10 @@ public class Commands {
 				@Override
 				public Atom newI(TeXParser tp) {
 					final RowAtom ra = new RowAtom(
-                            new SpaceAtom(Unit.EX, 0.25, 0., 0.),
+							new SpaceAtom(Unit.EX, 0.25, 0., 0.),
 							Symbols.BAR);
 					final VRowAtom vra = new VRowAtom(new LapedAtom(ra, 'r'));
-                    vra.setRaise(Unit.EX, -0.1);
+					vra.setRaise(Unit.EX, -0.1);
 					return new RowAtom(vra, new RomanAtom(
 							new CharAtom('d', TextStyle.MATHNORMAL)));
 				}
@@ -1898,10 +1898,10 @@ public class Commands {
 				@Override
 				public Atom newI(TeXParser tp) {
 					final RowAtom ra = new RowAtom(
-                            new SpaceAtom(Unit.EX, 0.28, 0., 0.),
+							new SpaceAtom(Unit.EX, 0.28, 0., 0.),
 							Symbols.TEXTENDASH);
 					final VRowAtom vra = new VRowAtom(new LapedAtom(ra, 'r'));
-                    vra.setRaise(Unit.EX, 0.55);
+					vra.setRaise(Unit.EX, 0.55);
 					return new RowAtom(vra, new RomanAtom(
 							new CharAtom('H', TextStyle.MATHNORMAL)));
 				}
@@ -1911,10 +1911,10 @@ public class Commands {
 				@Override
 				public Atom newI(TeXParser tp) {
 					final RowAtom ra = new RowAtom(
-                            new SpaceAtom(Unit.EX, -0.1, 0., 0.),
+							new SpaceAtom(Unit.EX, -0.1, 0., 0.),
 							Symbols.BAR);
 					final VRowAtom vra = new VRowAtom(new LapedAtom(ra, 'r'));
-                    vra.setRaise(Unit.EX, -0.1);
+					vra.setRaise(Unit.EX, -0.1);
 					return new RowAtom(vra, new RomanAtom(
 							new CharAtom('h', TextStyle.MATHNORMAL)));
 				}
@@ -1925,7 +1925,7 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					final Atom at = new UnderOverAtom(Symbols.EQUALS,
 							Symbols.SMALLFROWN,
-                            new TeXLength(Unit.MU, -2.), true, true);
+							new TeXLength(Unit.MU, -2.), true, true);
 					return at.changeType(TeXConstants.TYPE_RELATION);
 				}
 			};
@@ -1945,8 +1945,8 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					final SymbolAtom nd = Symbols.NORMALDOT;
 					final RowAtom ddot = new RowAtom(nd,
-                            new SpaceAtom(Unit.MU, 4., 0., 0.), nd);
-                    final TeXLength l = new TeXLength(Unit.MU, -3.4);
+							new SpaceAtom(Unit.MU, 4., 0., 0.), nd);
+					final TeXLength l = new TeXLength(Unit.MU, -3.4);
 					Atom at = new UnderOverAtom(Symbols.MINUS, ddot, l, false,
 							ddot, l, false);
 					return at.changeType(TeXConstants.TYPE_RELATION);
@@ -1967,7 +1967,7 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					Atom at = new UnderOverAtom(Symbols.MINUS,
 							Symbols.NORMALDOT,
-                            new TeXLength(Unit.EX, -0.4), false,
+							new TeXLength(Unit.EX, -0.4), false,
 							true);
 					return at.changeType(TeXConstants.TYPE_BINARY_OPERATOR);
 				}
@@ -2042,38 +2042,13 @@ public class Commands {
 							Font.BOLD | Font.ITALIC);
 				}
 			};
-		case "jlmExternalFont":
-			return new Command0AImpl() {
-				@Override
-				public boolean init(TeXParser tp) {
-					final String fontname = tp.getArgAsString();
-					JavaFontRenderingBox.setFont(fontname);
-					return false;
-				}
-			};
-		// XXX
-		// case "jlmDynamic":
-		// return new Command0AImpl() {
-		// @Override
-		// public boolean init(TeXParser tp) {
-		// if (DynamicAtom.hasAnExternalConverterFactory()) {
-		// final char opt = tp.getOptionAsChar();
-		// final String arg = tp.getGroupAsArgument();
-		// tp.addToConsumer(new DynamicAtom(arg, opt));
-		//
-		// return false;
-		// }
-		// throw new ParseException(tp,
-		// "No ExternalConverterFactory set !");
-		// }
-		// };
 		case "doteq":
 			return new Command0A() {
 				@Override
 				public Atom newI(TeXParser tp) {
 					final Atom at = new UnderOverAtom(Symbols.EQUALS,
 							Symbols.LDOTP,
-                            new TeXLength(Unit.MU, 3.7), false, true);
+							new TeXLength(Unit.MU, 3.7), false, true);
 					return at.changeType(TeXConstants.TYPE_RELATION);
 				}
 			};
@@ -2082,9 +2057,9 @@ public class Commands {
 				@Override
 				public Atom newI(TeXParser tp) {
 					final VRowAtom vra = new VRowAtom(Symbols.SIM,
-                            new SpaceAtom(Unit.MU, 0., 1.5, 0.),
+							new SpaceAtom(Unit.MU, 0., 1.5, 0.),
 							Symbols.EQUALS);
-                    vra.setRaise(Unit.MU, -1.);
+					vra.setRaise(Unit.MU, -1.);
 					return vra.changeType(TeXConstants.TYPE_RELATION);
 				}
 			};
@@ -2095,7 +2070,7 @@ public class Commands {
 				@Override
 				public Atom newI(TeXParser tp) {
 					final double cs = tp.getArgAsDecimal();
-                    return new SetLengthAtom("cornersize", cs);
+					return new SetLengthAtom("cornersize", cs);
 				}
 			};
 
@@ -2127,7 +2102,7 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					final Atom at = new UnderOverAtom(Symbols.EQUALS,
 							Symbols.QUESTION,
-                            new TeXLength(Unit.MU, 2.5), true, true);
+							new TeXLength(Unit.MU, 2.5), true, true);
 					return at.changeType(TeXConstants.TYPE_RELATION);
 				}
 			};
@@ -2200,7 +2175,7 @@ public class Commands {
 			return new Command0A() {
 				@Override
 				public Atom newI(TeXParser tp) {
-                    return new SpaceAtom(Unit.MU, -3, 0, 0)
+					return new SpaceAtom(Unit.MU, -3, 0, 0)
 							.changeType(TeXConstants.TYPE_RELATION);
 				}
 			};
@@ -2287,7 +2262,7 @@ public class Commands {
 						throw new ParseException(tp,
 								"Invalid length in \\setlength");
 					}
-                    return new SetLengthAtom(name, newLength);
+					return new SetLengthAtom(name, newLength);
 				}
 			};
 		case "rule":
@@ -2335,11 +2310,11 @@ public class Commands {
 				public Atom newI(TeXParser tp) {
 					tp.skipPureWhites();
 					final Atom a = new HVruleAtom(null,
-                            new TeXLength(Unit.EX, 0.3), null, false);
-                    return new RowAtom(new SpaceAtom(Unit.EM, 0.06),
+							new TeXLength(Unit.EX, 0.3), null, false);
+					return new RowAtom(new SpaceAtom(Unit.EM, 0.06),
 							a,
 							new HVruleAtom(
-                                    new TeXLength(Unit.EM, 0.3), null,
+									new TeXLength(Unit.EM, 0.3), null,
 									null, true),
 							a);
 				}
@@ -2391,7 +2366,7 @@ public class Commands {
 					}
 					a = new StyleAtom(TeXConstants.STYLE_DISPLAY, a);
 					final VRowAtom vra = new VRowAtom(a);
-                    vra.setRaise(Unit.EX, raise);
+					vra.setRaise(Unit.EX, raise);
 					a = new SmashedAtom(vra);
 					return SubSupCom.get(SubSupCom.getBase(tp), null, a);
 				}
@@ -2404,7 +2379,7 @@ public class Commands {
 					Atom a = Symbols.BREVE;
 					a = new StyleAtom(TeXConstants.STYLE_DISPLAY, a);
 					final VRowAtom vra = new VRowAtom(a);
-                    vra.setRaise(Unit.EX, 1.1);
+					vra.setRaise(Unit.EX, 1.1);
 					a = new SmashedAtom(vra);
 					final RowAtom ra = new RowAtom(ex, a);
 					return
@@ -2434,7 +2409,7 @@ public class Commands {
 					Atom a = Symbols.NORMALDOT;
 					a = new StyleAtom(TeXConstants.STYLE_DISPLAY, a);
 					final VRowAtom vra = new VRowAtom(a);
-                    vra.setRaise(Unit.EX, 0.8);
+					vra.setRaise(Unit.EX, 0.8);
 					a = new SmashedAtom(vra);
 					return SubSupCom.get(SubSupCom.getBase(tp), null, a);
 				}
@@ -2447,7 +2422,7 @@ public class Commands {
 					final RowAtom ra = new RowAtom(a, a);
 					a = new StyleAtom(TeXConstants.STYLE_DISPLAY, ra);
 					final VRowAtom vra = new VRowAtom(a);
-                    vra.setRaise(Unit.EX, 0.8);
+					vra.setRaise(Unit.EX, 0.8);
 					a = new SmashedAtom(vra);
 					return SubSupCom.get(SubSupCom.getBase(tp), null, a);
 				}
@@ -2460,7 +2435,7 @@ public class Commands {
 					final RowAtom ra = new RowAtom(a, a, a);
 					a = new StyleAtom(TeXConstants.STYLE_DISPLAY, ra);
 					final VRowAtom vra = new VRowAtom(a);
-                    vra.setRaise(Unit.EX, 0.8);
+					vra.setRaise(Unit.EX, 0.8);
 					a = new SmashedAtom(vra);
 					return SubSupCom.get(SubSupCom.getBase(tp), null, a);
 				}
@@ -2540,7 +2515,7 @@ public class Commands {
 				@Override
 				public Atom newI(TeXParser tp) {
 					Atom a = new RomanAtom(new CharAtom('c', false));
-                    a = new RaiseAtom(a, new TeXLength(Unit.EX, 0.2),
+					a = new RaiseAtom(a, new TeXLength(Unit.EX, 0.2),
 							TeXLength.getZero(), TeXLength.getZero());
 					return new TextCircledAtom(a);
 				}
@@ -2667,7 +2642,7 @@ public class Commands {
 			return new Command0A() {
 				@Override
 				public Atom newI(TeXParser tp) {
-                    return new SpaceAtom(Unit.PT, 0., 8.6, 3.);
+					return new SpaceAtom(Unit.PT, 0., 8.6, 3.);
 				}
 			};
 

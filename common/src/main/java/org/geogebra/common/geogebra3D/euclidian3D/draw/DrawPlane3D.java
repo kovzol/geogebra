@@ -518,7 +518,7 @@ public class DrawPlane3D extends Drawable3DSurfaces {
 			return;
 		}
 
-        if (getView3D().isAREnabled()) {
+		if (getView3D().isXREnabled()) {
 			setMinMax(getView3D().getClippingCubeDrawable().getVerticesLarge());
 		} else if (getView3D().useClippingCube()
 				|| !getView3D().getSettings().hasSameScales()) {
@@ -698,11 +698,11 @@ public class DrawPlane3D extends Drawable3DSurfaces {
 			boolean exportSurface) {
 		if (isVisible()) {
 			if (exportSurface) {
-                exportToPrinter3D.exportSurface(this, true, false);
+				exportToPrinter3D.exportSurface(this, true, false);
 			} else {
-                if (isGridVisible()) {
-                    exportToPrinter3D.exportCurve(this, Type.CURVE);
-                }
+				if (isGridVisible()) {
+					exportToPrinter3D.exportCurve(this, Type.CURVE);
+				}
 			}
 		}
 	}

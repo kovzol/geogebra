@@ -2,7 +2,6 @@ package org.geogebra.web.full.gui.toolbarpanel.tableview;
 
 import java.util.List;
 
-import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.gui.view.table.TableValuesDimensions;
 import org.geogebra.common.gui.view.table.TableValuesListener;
 import org.geogebra.common.gui.view.table.TableValuesModel;
@@ -20,13 +19,10 @@ import org.geogebra.web.html5.util.StickyTable;
 import org.geogebra.web.html5.util.TestHarness;
 
 import com.google.gwt.cell.client.SafeHtmlCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.safecss.shared.SafeStyles;
 import com.google.gwt.safecss.shared.SafeStylesBuilder;
-import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.Column;
@@ -48,8 +44,6 @@ public class StickyValuesTable extends StickyTable<TVRowData> implements TableVa
 	private static final int X_LEFT_PADDING = 16;
 	private static final int MIN_COLUMN_WIDTH = 72;
 
-	/** Template to create a cell */
-	static final CellTemplates TEMPLATES = GWT.create(CellTemplates.class);
 	private TableValuesModel tableModel;
 	private TableValuesDimensions dimensions;
 	private TableValuesView view;
@@ -68,7 +62,7 @@ public class StickyValuesTable extends StickyTable<TVRowData> implements TableVa
 			p.add(new Label("%s"));
 			MyToggleButtonW btn = new MyToggleButtonW(
 					new NoDragImage(MaterialDesignResources.INSTANCE.more_vert_black(), 24));
-            TestHarness.setAttr(btn, "btn_tvHeader3dot");
+			TestHarness.setAttr(btn, "btn_tvHeader3dot");
 			p.add(btn);
 			value = p.getElement().getInnerHTML();
 		}
@@ -124,7 +118,7 @@ public class StickyValuesTable extends StickyTable<TVRowData> implements TableVa
 	@Override
 	protected void onHeaderClick(Element source, int column) {
 		new ContextMenuTV(app, column > 0 ? view.getGeoAt(column - 1) : null, column - 1)
-				.show(new GPoint(source.getAbsoluteLeft(), source.getAbsoluteTop() - 8));
+				.show(source.getAbsoluteLeft(), source.getAbsoluteTop() - 8);
 	}
 
 	@Override
@@ -178,7 +172,8 @@ public class StickyValuesTable extends StickyTable<TVRowData> implements TableVa
 		SafeStylesBuilder sb = new SafeStylesBuilder();
 		sb.width(width, Unit.PX).height(height, Unit.PX).trustedNameAndValue("line-height", height,
 				Unit.PX);
-		return TEMPLATES.cell(content, sb.toSafeStyles());
+		return  () -> "<div style=\"" + sb.toSafeStyles().asString() + "\" class=\"cell\">"
+				+ "<div class=\"content\">" + content.asString() + "</div></div>";
 	}
 
 	/**
@@ -214,23 +209,6 @@ public class StickyValuesTable extends StickyTable<TVRowData> implements TableVa
 			}
 		};
 		return column;
-	}
-
-	/**
-	 * @author Balazs
-	 *
-	 */
-	public interface CellTemplates extends SafeHtmlTemplates {
-		/**
-		 * @param message
-		 *            of the cell.
-		 * @param style
-		 *            of the cell.
-		 * @return HTML representation of the cell content.
-		 */
-		@SafeHtmlTemplates.Template("<div style=\"{1}\""
-				+ "class=\"cell\"><div class=\"content\">{0}</div></div>")
-		SafeHtml cell(SafeHtml message, SafeStyles style);
 	}
 
 	/**

@@ -176,7 +176,7 @@ public class AlgoPolyhedronPointsPrism extends AlgoPolyhedronPoints {
 					polygon.setLabel(null);
 				}
 				outputPolygonsSide.addOutput(polygon, false);
-                addToOutputIf3D(outputSegmentsSide, polygon.getSegments()[3]);
+				addToOutputIf3D(outputSegmentsSide, polygon.getSegments()[3]);
 				outputSegmentsTop.addOutput(
 						(GeoSegment3D) polygon.getSegments()[2], false);
 			}
@@ -368,7 +368,7 @@ public class AlgoPolyhedronPointsPrism extends AlgoPolyhedronPoints {
 
 			// sides
 			outputPolygonsSide.addOutput((GeoPolygon3D) polygon, false);
-            addToOutputIf3D(outputSegmentsSide, polygon.getSegments()[3]);
+			addToOutputIf3D(outputSegmentsSide, polygon.getSegments()[3]);
 			step++;
 		}
 

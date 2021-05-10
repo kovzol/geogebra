@@ -5,8 +5,7 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.spotbugs' version '1.6.9'
-    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id "com.github.spotbugs" version "4.6.0"
 }
 
 project.setDescription('Parts of GeoGebra related to desktop platforms')
@@ -69,8 +68,15 @@ for (location in ['lib/jfxrt.jar', 'jre/lib/jfxrt.jar', 'jre/lib/ext/jfxrt.jar']
     }
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+compileJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+compileTestJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
 
 List ext = [
     'netscape.javascript:jsobject:1', 
@@ -102,16 +108,17 @@ dependencies {
         "com.jogamp:gluegen-rt:$joglVersion:natives-linux-i586"
     runtime "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-amd64",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-i586",
+        "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-windows-amd64", // 201503271100 should have been used (for some strange reason versions cannot be mixed)
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-arm",
-        "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-windows-amd64",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-windows-i586",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-macosx-universal"
 
     testCompile project(':keyboard-base')
     testCompile "junit:junit:$junitVersion"
     testCompile "org.mockito:mockito-core:$mockitoVersion"
+    testCompile "org.hamcrest:hamcrest:$hamcrestVersion"
     testCompile project(':ggbjdk')
-    testCompile project(':common-jre').sourceSets.test.output
+    testCompile project(path: ':common-jre', configuration: 'testArtifacts')
 }
 
 mainClassName = "org.geogebra.desktop.GeoGebra3D"
@@ -159,6 +166,17 @@ eclipse {
         }
     }
 }
+
+checkstyle {
+    configFile file("config/checkstyle/checkstyle.xml")
+}
+
+task e2eTest(type: Test) {
+    description 'Run end-to-end tests'
+    testClassesDirs = sourceSets.e2eTest.output.classesDirs
+    classpath = sourceSets.e2eTest.runtimeClasspath
+}
+
 checkstyle {
     configDir = file("config/checkstyle/")
     toolVersion = "8.8"

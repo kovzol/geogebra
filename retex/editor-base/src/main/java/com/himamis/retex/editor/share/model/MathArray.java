@@ -212,6 +212,10 @@ public class MathArray extends MathContainer {
 		return meta.isMatrix();
 	}
 
+	public boolean separatorIsComma() {
+		return meta.getField().getTexName().equals(",");
+	}
+
 	@Override
 	public MathArray copy() {
 		MathArray array = new MathArray(meta, columns, rows);
@@ -326,12 +330,10 @@ public class MathArray extends MathContainer {
 	}
 
 	/**
-	 *
 	 * @param container a MathFieldContainer
-	 * @return true if container is a matrix.
+	 * @return true if the cursor should be locked inside the container
 	 */
-	public static boolean isMatrix(MathComponent container) {
-		return container instanceof MathArray
-				&& ((MathArray) container).isMatrix();
+	public static boolean isLocked(MathComponent container) {
+		return container instanceof MathArray && container.getParent().isProtected();
 	}
 }

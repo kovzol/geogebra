@@ -45,8 +45,6 @@
 
 package com.himamis.retex.renderer.share;
 
-import java.util.Map;
-
 public final class CharMapping {
 
 	public static final char APOSTROPHE = '\'';
@@ -193,9 +191,14 @@ public final class CharMapping {
 		@Override
 		public void map(final TeXParser tp, final boolean mathMode) {
 			if (sup) {
-				tp.cumSupSymbols(new CharAtom(c, tp.isMathMode()));
+				tp.processSubSup('^');
 			} else {
-				tp.cumSubSymbols(new CharAtom(c, tp.isMathMode()));
+				tp.processSubSup('_');
+			}
+			if (defaultMappings.hasMapping(c)) {
+				tp.addToConsumer(defaultMappings.get(c, tp));
+			} else {
+				tp.addToConsumer(new CharAtom(c));
 			}
 		}
 	}
@@ -203,8 +206,6 @@ public final class CharMapping {
 	private final static CharMapping defaultMappings = new CharMapping();
 
 	private final Mapping[] mapToSym;
-	// for unicode after 0xFFFF
-	private Map<Integer, Mapping> mapToSymExtra;
 
 	private CharMapping() {
 		mapToSym = new Mapping[65536];
@@ -244,10 +245,6 @@ public final class CharMapping {
 		return replace(c, tp, tp.isMathMode());
 	}
 
-	public boolean replace(final int c, final TeXParser tp) {
-		return replace(c, tp, tp.isMathMode());
-	}
-
 	public boolean replace(final char c, final TeXParser tp,
 			final boolean mathMode) {
 		final Mapping m = mapToSym[c];
@@ -259,34 +256,11 @@ public final class CharMapping {
 		return false;
 	}
 
-	public boolean replace(final int c, final TeXParser tp,
-			final boolean mathMode) {
-		if (mapToSymExtra != null) {
-			final Mapping m = mapToSymExtra.get(c);
-			if (m != null) {
-				m.map(tp, mathMode);
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public boolean hasMapping(final char c) {
 		return mapToSym[c] != null;
 	}
 
 	public Atom getAtom(final char c, final boolean mathMode) {
-		final TeXParser tp = new TeXParser(true);
-		final SingleAtomConsumer cons = new SingleAtomConsumer();
-		tp.addConsumer(cons);
-		if (replace(c, tp, mathMode)) {
-			tp.parse();
-			return cons.get();
-		}
-		return null;
-	}
-
-	public Atom getAtom(final int c, final boolean mathMode) {
 		final TeXParser tp = new TeXParser(true);
 		final SingleAtomConsumer cons = new SingleAtomConsumer();
 		tp.addConsumer(cons);
@@ -360,7 +334,7 @@ public final class CharMapping {
 		putForm('\u00C3', "\\~A");
 		putForm('\u00C4', "\\\"A");
 		putForm('\u00C5', "\\r{A}");
-		putForm('\u00C7', "\\c[C}");
+		putForm('\u00C7', "\\c{C}");
 		putForm('\u00C8', "\\`E");
 		putForm('\u00C9', "\\'E");
 		putForm('\u00CA', "\\^E");
@@ -391,11 +365,10 @@ public final class CharMapping {
 		putForm('\u00E9', "\\'e");
 		putForm('\u00EA', "\\^e");
 		putForm('\u00EB', "\\\"e");
-		// Hotfix to prevent showing iacute with a starting space and an italic style:
-		putForm('\u00EC', "\\!\\textrm{\\`\\i}");
-		putForm('\u00ED', "\\!\\textrm{\\'\\i}");
-		putForm('\u00EE', "\\!\\textrm{\\^\\i}");
-		putForm('\u00EF', "\\!\\textrm{\\\"\\i}");
+		putForm('\u00EC', "\\`\\i");
+		putForm('\u00ED', "\\'\\i");
+		putForm('\u00EE', "\\^\\i");
+		putForm('\u00EF', "\\\"\\i");
 		putForm('\u00F1', "\\~n");
 		putForm('\u00F2', "\\`o");
 		putForm('\u00F3', "\\'o");
@@ -449,11 +422,11 @@ public final class CharMapping {
 		putForm('\u0126', "\\Hstrok");
 		putForm('\u0127', "\\hstrok");
 		putForm('\u0128', "\\~I");
-		putForm('\u0129', "\\!\\textrm{\\~\\i}");
+		putForm('\u0129', "\\~\\i");
 		putForm('\u012A', "\\=I");
-		putForm('\u012B', "\\!\\textrm{\\=\\i}");
+		putForm('\u012B', "\\=\\i");
 		putForm('\u012C', "\\u{I}");
-		putForm('\u012D', "\\!\\textrm{\\u\\i}");
+		putForm('\u012D', "\\u{\\i}");
 		putForm('\u012E', "\\k{I}");
 		putForm('\u012F', "\\k{i}");
 		putForm('\u0130', "\\.I");

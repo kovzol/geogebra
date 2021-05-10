@@ -5,16 +5,18 @@ import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.EuclidianViewInterfaceSlim;
 import org.geogebra.common.gui.AccessibilityGroup;
 import org.geogebra.common.kernel.geos.ScreenReaderBuilder;
-import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.web.html5.Browser;
+import org.geogebra.web.html5.css.GuiResourcesSimple;
 import org.geogebra.web.html5.css.ZoomPanelResources;
 import org.geogebra.web.html5.gui.FastClickHandler;
+import org.geogebra.web.html5.gui.util.GToggleButton;
 import org.geogebra.web.html5.gui.util.NoDragImage;
 import org.geogebra.web.html5.gui.view.button.StandardButton;
 import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.html5.main.LocalizationW;
-import org.geogebra.web.html5.util.ArticleElementInterface;
+import org.geogebra.web.html5.util.AppletParameters;
 import org.geogebra.web.html5.util.Dom;
+import org.geogebra.web.html5.util.GeoGebraElement;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -35,7 +37,7 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 	/**
 	 * enter/exit fullscreen mode
 	 */
-	private StandardButton fullscreenBtn;
+	private GToggleButton fullscreenBtn;
 
 	/** application */
 	private AppW app;
@@ -66,9 +68,9 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 			view.getEuclidianController().addZoomerListener(this);
 		}
 		setStyleName("zoomPanel");
-		addStyleName(app.isWhiteboardActive()
-				? "zoomPanelWithPageControl" : "zoomPanelPosition");
-		if (ZoomPanel.needsZoomButtons(app) && zoomable) {
+		updatePosition(false);
+		if (ZoomPanel.needsZoomButtons(app)
+				&& !app.isWhiteboardActive() && zoomable) {
 			addZoomButtons();
 		}
 
@@ -77,6 +79,14 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 		}
 
 		setLabels();
+	}
+
+	/**
+	 * @param isAbovePageControlButton whether page control button is showing
+	 */
+	public void updatePosition(boolean isAbovePageControlButton) {
+		Dom.toggleClass(this, "zoomPanelWithPageControl",
+				"zoomPanelPosition", isAbovePageControlButton);
 	}
 
 	/**
@@ -90,10 +100,11 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 	 * Updates fullscreen button and article.
 	 */
 	public void updateFullscreen() {
-		ArticleElementInterface ae = app.getArticleElement();
+		AppletParameters ae = app.getAppletParameters();
+		GeoGebraElement element = app.getGeoGebraElement();
 		if (!ae.getDataParamApp() && isFullScreen()) {
-			getZoomController().scaleApplet(ae.getParentElement(),
-					ae.getParentElement().getParentElement(),
+			getZoomController().scaleApplet(element.getParentElement(),
+					element.getParentElement().getParentElement(),
 					getPanelElement());
 		}
 		if (ae.getDataParamApp() && fullscreenBtn != null) {
@@ -106,40 +117,25 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 	 * add fullscreen button
 	 */
 	public void addFullscreenButton() {
-		fullscreenBtn = new StandardButton(
-				ZoomPanelResources.INSTANCE.fullscreen_black18(), null, 24,
-				app);
+		fullscreenBtn = new GToggleButton();
+
+		fullscreenBtn.getUpFace().setImage(
+				new NoDragImage(ZoomPanelResources.INSTANCE.fullscreen_black18(), 24));
+		fullscreenBtn.getDownFace().setImage(
+				new NoDragImage(ZoomPanelResources.INSTANCE.fullscreen_exit_black18(), 24));
 		registerFocusable(fullscreenBtn, AccessibilityGroup.ViewControlId.FULL_SCREEN);
-		NoDragImage exitFullscreenImage = new NoDragImage(ZoomPanelResources.INSTANCE
-				.fullscreen_exit_black18(), 24);
-		exitFullscreenImage.setPresentation();
-		fullscreenBtn.getDownFace()
-				.setImage(exitFullscreenImage);
 
 		fullscreenBtn.setStyleName("zoomPanelBtn");
 
-		FastClickHandler handlerFullscreen = new FastClickHandler.Typed() {
-			@Override
-			public void onClick(Widget source) {
-				// never called - do nothing
-			}
+		fullscreenBtn.addValueChangeHandler(source -> {
+			getZoomController().onFullscreenPressed(getPanelElement(),
+					fullscreenBtn);
+			setFullScreenAuralText();
+		});
 
-			@Override
-			public void onClick(String type) {
-				getZoomController().onFullscreenPressed(getPanelElement(),
-						fullscreenBtn, type);
-				setFullScreenAuralText();
-			}
-		};
-
-		fullscreenBtn.addFastClickHandler(handlerFullscreen);
-		Browser.addFullscreenListener(new AsyncOperation<String>() {
-
-			@Override
-			public void callback(String obj) {
-				if (!"true".equals(obj)) {
-					onExitFullscreen();
-				}
+		Browser.addFullscreenListener(obj -> {
+			if (!"true".equals(obj)) {
+				onExitFullscreen();
 			}
 		});
 		add(fullscreenBtn);
@@ -169,7 +165,7 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 	public void addZoomButtons() {
 		homeBtn = new StandardButton(
 				ZoomPanelResources.INSTANCE.home_zoom_black18(),
-				null, 20, app);
+				null, 20);
 		homeBtn.setStyleName("zoomPanelBtn");
 		homeBtn.addStyleName("zoomPanelBtnSmall");
 		getZoomController().hideHomeButton(homeBtn);
@@ -191,14 +187,14 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 		}
 	}
 
-	private void registerFocusable(StandardButton btn, AccessibilityGroup.ViewControlId group) {
+	private void registerFocusable(Widget btn, AccessibilityGroup.ViewControlId group) {
 		new FocusableWidget(AccessibilityGroup.getViewGroup(getViewID()), group, btn).attachTo(app);
 	}
 
 	private void addZoomOutButton() {
 		zoomOutBtn = new StandardButton(
-					ZoomPanelResources.INSTANCE.zoomout_black24(), null, 24,
-					app);
+					GuiResourcesSimple.INSTANCE.zoom_out(), null, 24
+		);
 		zoomOutBtn.setStyleName("zoomPanelBtn");
 
 		FastClickHandler handlerZoomOut = new FastClickHandler() {
@@ -213,8 +209,8 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 
 	private void addZoomInButton() {
 		zoomInBtn = new StandardButton(
-					ZoomPanelResources.INSTANCE.zoomin_black24(), null, 24,
-					app);
+					GuiResourcesSimple.INSTANCE.zoom_in(), null, 24
+		);
 		zoomInBtn.setStyleName("zoomPanelBtn");
 
 		FastClickHandler handlerZoomIn = new FastClickHandler() {
@@ -257,18 +253,18 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 		if (fullscreenBtn == null) {
 			return;
 		}
-		ScreenReaderBuilder sb = new ScreenReaderBuilder();
+		ScreenReaderBuilder sb = new ScreenReaderBuilder(loc);
 		if (isFullScreen()) {
-			sb.append(loc.getMenuDefault("FullscreenExitButtonSelected",
-					"Full screen button selected (currently full screen)"));
+			sb.appendMenuDefault("FullscreenExitButtonSelected",
+					"Full screen button selected (currently full screen)");
 		} else {
-			sb.append(loc.getMenuDefault("FullscreenButtonSelected",
-					"Full screen button selected (currently not full screen)"));
+			sb.appendMenuDefault("FullscreenButtonSelected",
+					"Full screen button selected (currently not full screen)");
 		}
 		if (!Browser.needsAccessibilityView()) {
 			addFullscreenKeyboardControls(sb);
 		}
-		setButtonTitleAndAltText(fullscreenBtn, sb.toString());
+		setButtonTitleAndAltText(fullscreenBtn, loc.getMenu("Fullscreen"), sb.toString());
 	}
 
 	private void addFullscreenKeyboardControls(ScreenReaderBuilder sb) {
@@ -282,44 +278,47 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 		if (btn == null) {
 			return;
 		}
-		ScreenReaderBuilder sb = new ScreenReaderBuilder();
-		sb.append(loc.getMenuDefault(transKey, auralDefault));
+		String title = loc.getMenuDefault(transKey, auralDefault);
+
+		ScreenReaderBuilder sb = new ScreenReaderBuilder(loc);
+		sb.append(title);
 		if (!Browser.needsAccessibilityView()) {
 			addZoomKeyboardControls(sb, controlNext);
 		}
 
-		setButtonTitleAndAltText(btn, sb.toString());
+		setButtonTitleAndAltText(btn, title, sb.toString());
 	}
 
 	private void addZoomKeyboardControls(ScreenReaderBuilder sb, boolean controlNext) {
 		addSpaceControl(sb);
 		if (controlNext) {
-			sb.append(loc.getMenuDefault("PressTabToSelectControls",
-					"Press tab to select controls"));
+			sb.appendMenuDefault("PressTabToSelectControls",
+					"Press tab to select controls");
 		} else {
-			sb.append(loc.getMenuDefault("PressTabToSelectNext",
-					"Press tab to select next object"));
+			sb.appendMenuDefault("PressTabToSelectNext",
+					"Press tab to select next object");
 		}
 	}
 
 	private void addSpaceControl(ScreenReaderBuilder sb) {
 		sb.appendSpace();
-		sb.append(loc.getMenuDefault("PressSpaceToActivate", "press space to activate"));
+		sb.appendMenuDefault("PressSpaceToActivate", "press space to activate");
 		sb.endSentence();
 	}
 
-	private static void setButtonTitleAndAltText(StandardButton btn, String string) {
+	private static void setButtonTitleAndAltText(Widget btn, String dataTitle,
+			String ariaLabel) {
 		if (btn != null) {
-			btn.setTitle(string);
-			btn.setAltText(string);
+			btn.getElement().setAttribute("data-title", dataTitle);
+			btn.getElement().setAttribute("aria-label", ariaLabel);
 		}
 	}
 
 	private static boolean needsFullscreenButton(AppW app) {
-		if (app.getArticleElement().getDataParamApp()) {
+		if (app.getAppletParameters().getDataParamApp()) {
 			return ZoomController.isRunningInIframe() || !Browser.isMobile();
 		} else {
-			if (!app.getArticleElement().getDataParamShowFullscreenButton()) {
+			if (!app.getAppletParameters().getDataParamShowFullscreenButton()) {
 				return false;
 			}
 
@@ -327,10 +326,15 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 		}
 	}
 
-	private static boolean needsZoomButtons(AppW app) {
-		return (app.getArticleElement().getDataParamShowZoomButtons()
-				|| app.getArticleElement().getDataParamApp())
-				&& app.isShiftDragZoomEnabled() && !app.isWhiteboardActive();
+	/**
+	 *
+	 * @param app see {@link AppW}
+	 * @return whether zoom buttons needed
+	 */
+	public static boolean needsZoomButtons(AppW app) {
+		return (app.getAppletParameters().getDataParamShowZoomButtons()
+				|| app.getAppletParameters().getDataParamApp())
+				&& app.isShiftDragZoomEnabled();
 	}
 
 	/**
@@ -341,7 +345,8 @@ public class ZoomPanel extends FlowPanel implements CoordSystemListener {
 	 * @return true if app needs zoom panel.
 	 */
 	public static boolean neededFor(AppW app) {
-		return needsZoomButtons(app) || needsFullscreenButton(app);
+		return (needsZoomButtons(app) && !app.isWhiteboardActive())
+			|| needsFullscreenButton(app);
 	}
 
 	/** Focus the first available button on zoom panel. */

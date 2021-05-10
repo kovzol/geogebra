@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.geogebra.common.euclidian.event.PointerEventType;
 import org.geogebra.common.main.App;
-import org.geogebra.common.main.Feature;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.SyntaxAdapterImpl;
 import org.geogebra.web.editor.MathFieldProcessing;
@@ -33,11 +32,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.himamis.retex.editor.share.event.MathFieldListener;
-import com.himamis.retex.editor.share.model.MathSequence;
-import com.himamis.retex.editor.share.serializer.GeoGebraSerializer;
 import com.himamis.retex.editor.share.serializer.TeXSerializer;
 import com.himamis.retex.editor.share.util.Unicode;
-import com.himamis.retex.editor.web.MathFieldScroller;
 import com.himamis.retex.editor.web.MathFieldW;
 
 /**
@@ -57,7 +53,6 @@ public class CASLaTeXEditor extends FlowPanel implements CASEditorW,
 	private Widget dummy;
 	private Canvas canvas;
 	private boolean editAsText;
-	private MathFieldScroller scroller;
 
 	/**
 	 * @param app
@@ -71,8 +66,7 @@ public class CASLaTeXEditor extends FlowPanel implements CASEditorW,
 		this.controller = controller;
 		canvas = Canvas.createIfSupported();
 		mf = new MathFieldW(new SyntaxAdapterImpl(app.getKernel()), this,
-				canvas, this,
-				app.has(Feature.MOW_DIRECT_FORMULA_CONVERSION));
+				canvas, this);
 		retexListener = new RetexKeyboardListener(canvas, mf);
 		mf.setOnBlur(this);
 		add(mf);
@@ -219,6 +213,7 @@ public class CASLaTeXEditor extends FlowPanel implements CASEditorW,
 	@Override
 	public void ensureEditing() {
 		final GuiManagerInterfaceW gui = app.getGuiManager();
+		app.showKeyboard(retexListener, true);
 		app.getKeyboardManager().setOnScreenKeyboardTextField(retexListener);
 		CancelEventTimer.keyboardSetVisible();
 		ClickStartHandler.init(this, new ClickStartHandler(false, false) {
@@ -260,7 +255,8 @@ public class CASLaTeXEditor extends FlowPanel implements CASEditorW,
 
 	@Override
 	public void insertString(String text) {
-		new MathFieldProcessing(mf).autocomplete(text);
+		new MathFieldProcessing(mf).autocomplete(
+				app.getParserFunctions().toEditorAutocomplete(text, app.getLocalization()));
 	}
 
 	@Override
@@ -316,7 +312,7 @@ public class CASLaTeXEditor extends FlowPanel implements CASEditorW,
 	}
 
 	@Override
-	public void onKeyTyped() {
+	public void onKeyTyped(String key) {
 		getInputSuggestions().popupSuggestions();
 		onCursorMove();
 	}
@@ -328,10 +324,7 @@ public class CASLaTeXEditor extends FlowPanel implements CASEditorW,
 
 	@Override
 	public void onCursorMove() {
-		if (scroller == null) {
-			scroller = new MathFieldScroller(this);
-		}
-		scroller.scrollHorizontallyToCursor(20);
+		mf.scrollParentHorizontally(this, 20);
 	}
 
 	@Override
@@ -349,13 +342,8 @@ public class CASLaTeXEditor extends FlowPanel implements CASEditorW,
 	}
 
 	@Override
-	public String serialize(MathSequence selectionText) {
-		return GeoGebraSerializer.serialize(selectionText);
-	}
-
-	@Override
 	public void onInsertString() {
-		mf.setFormula(GeoGebraSerializer.reparse(this.mf.getFormula()));
+		// nothing to do
 	}
 
 	@Override

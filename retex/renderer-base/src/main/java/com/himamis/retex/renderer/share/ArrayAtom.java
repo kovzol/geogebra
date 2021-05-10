@@ -50,16 +50,16 @@ import java.util.List;
 
 public class ArrayAtom extends Atom {
 
-    public static final SpaceAtom hsep = new SpaceAtom(Unit.EM, 1.0,
+	public static final SpaceAtom hsep = new SpaceAtom(Unit.EM, 1.0,
 			0.0, 0.0);
-    public static final SpaceAtom semihsep = new SpaceAtom(Unit.EM,
+	public static final SpaceAtom semihsep = new SpaceAtom(Unit.EM,
 			0.5, 0.0, 0.0);
-    public static final SpaceAtom vsep_in = new SpaceAtom(Unit.EX,
+	public static final SpaceAtom vsep_in = new SpaceAtom(Unit.EX,
 			0.0, 1., 0.0);
 	public static final SpaceAtom vsep_ext_top = new SpaceAtom(
-            Unit.EX, 0.0, 0.4, 0.0);
+			Unit.EX, 0.0, 0.4, 0.0);
 	public static final SpaceAtom vsep_ext_bot = new SpaceAtom(
-            Unit.EX, 0.0, 0.4, 0.0);
+			Unit.EX, 0.0, 0.4, 0.0);
 
 	protected ArrayOfAtoms matrix;
 	protected ArrayOptions options;
@@ -159,8 +159,8 @@ public class ArrayAtom extends Atom {
 		double hinit = Double.NEGATIVE_INFINITY;
 		double dinit = Double.NEGATIVE_INFINITY;
 
-        double arraystretch = env.lengthSettings().getFactor("arraystretch");
-        final double tabcolsep = env.lengthSettings().getLength("tabcolsep", env);
+		double arraystretch = env.lengthSettings().getFactor("arraystretch");
+		final double tabcolsep = env.lengthSettings().getLength("tabcolsep", env);
 
 		for (final Box b : separatorBoxes) {
 			hinit = Math.max(hinit, b.getHeight());
@@ -181,7 +181,7 @@ public class ArrayAtom extends Atom {
 
 				if (b.type != TeXConstants.TYPE_MULTICOLUMN) {
 					colWidth[j] = Math.max(b.getWidth(), colWidth[j]);
-                    colWidth[j] += tabcolsep;
+					colWidth[j] += tabcolsep;
 				} else {
 					final MulticolumnAtom mcat = (MulticolumnAtom) at;
 					mcat.setRowColumn(i, j);
@@ -193,7 +193,7 @@ public class ArrayAtom extends Atom {
 					}
 				}
 			}
-            rowHeight[i] *= arraystretch;
+			rowHeight[i] *= arraystretch;
 		}
 
 		final double[] seps = getColumnSep(env, 0. /* not used */);
@@ -234,7 +234,7 @@ public class ArrayAtom extends Atom {
 		vb.add(vsep_ext_top.createBox(env));
 		final double vsepH = Vsep.getHeight();
 		final double halfVsepH = vsepH / 2.;
-        final double textwidth = env.lengthSettings().getTextwidth(env);
+		final double textwidth = env.lengthSettings().getTextwidth(env);
 
 		for (int i = 0; i < row; ++i) {
 			final HorizontalBox hb = new HorizontalBox();

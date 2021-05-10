@@ -7,10 +7,8 @@ import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 import org.geogebra.common.kernel.arithmetic.FunctionVariable;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.arithmetic.MySpecialDouble;
-import org.geogebra.common.kernel.commands.EvalInfo;
-import org.geogebra.common.kernel.geos.GeoVec2D;
 import org.geogebra.common.kernel.parser.FunctionParser;
-import org.geogebra.common.kernel.parser.ParseException;
+import org.geogebra.common.kernel.parser.function.ParserFunctions;
 import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.StringUtil;
 
@@ -45,21 +43,23 @@ public class VariableReplacerAlgorithm {
 	}
 
 	private ExpressionValue tokenize(String expressionString) {
-		InputTokenizer tokenizer = new InputTokenizer(kernel, expressionString);
+		ParserFunctions parserFunctions = kernel.getApplication()
+			.getParserFunctions(multipleUnassignedAllowed);
+		InputTokenizer tokenizer = new InputTokenizer(kernel, parserFunctions, expressionString);
 		String next = expressionString;
 		if (tokenizer.hasToken()) {
 			next = tokenizer.next();
 			if (next.startsWith("log_")) {
 				ExpressionValue logIndex = FunctionParser.getLogIndex(expressionString, kernel);
 				if (logIndex != null) {
-					ExpressionValue logArg = getLogArg(expressionString);
+					ExpressionValue logArg = tokenize(getLogArg(expressionString));
 					return new ExpressionNode(kernel, logIndex, Operation.LOGB, logArg);
 				}
 			}
-			Operation op = kernel.getApplication().getParserFunctions().getSingleArgumentOp(next);
+			Operation op = parserFunctions.getSingleArgumentOp(next);
 			op = ArcTrigReplacer.getDegreeInverseTrigOp(op);
 			if (op != null) {
-				ExpressionValue arg =  tokenize(tokenizer.getInputRemaining());
+				ExpressionValue arg = tokenize(tokenizer.getInputRemaining());
 				return arg.wrap().apply(op);
 			}
 			ExpressionValue v1 = replaceToken(next);
@@ -92,7 +92,7 @@ public class VariableReplacerAlgorithm {
 	private ExpressionValue buildReverseProduct(String expressionString, int suffixLength) {
 		int length = expressionString.length() - suffixLength;
 		ExpressionValue left = parseReverse(expressionString.substring(0, length));
-		return left.wrap().multiply(replaceToken(expressionString.substring(length)));
+		return left.wrap().multiplyR(replaceToken(expressionString.substring(length)));
 	}
 
 	private ExpressionNode leftProduct(ExpressionValue v1, ExpressionValue v2) {
@@ -130,7 +130,7 @@ public class VariableReplacerAlgorithm {
 		}
 
 		if (InputTokenizer.isImaginaryUnit(expressionString)) {
-			return getImaginaryUnit();
+			return kernel.getImaginaryUnit();
 		}
 
 		if (isCharVariableName(expressionString)) {
@@ -138,12 +138,6 @@ public class VariableReplacerAlgorithm {
 		}
 
 		return new Variable(kernel, expressionString);
-	}
-
-	private GeoVec2D getImaginaryUnit() {
-		GeoVec2D imaginary = new GeoVec2D(kernel, 0, 1);
-		imaginary.setMode(Kernel.COORD_COMPLEX);
-		return imaginary;
 	}
 
 	private ExpressionValue getDerivative(String expressionString) {
@@ -169,7 +163,7 @@ public class VariableReplacerAlgorithm {
 	}
 
 	private ExpressionValue lookupOrProduct(String nameNoX) {
-		if (kernel.getConstruction().isRegistredFunctionVariable(nameNoX)
+		if (kernel.getConstruction().isRegisteredFunctionVariable(nameNoX)
 				&& !isCharVariableName(nameNoX)) {
 			return new FunctionVariable(kernel, nameNoX);
 		}
@@ -192,34 +186,18 @@ public class VariableReplacerAlgorithm {
 		}
 		char charAtIndex = token.charAt(0);
 		boolean isTheta = charAtIndex == Unicode.theta;
-        boolean isT = charAtIndex == 't';
+		boolean isT = charAtIndex == 't';
 		boolean isXYZ = charAtIndex >= 'x' && charAtIndex <= 'z';
 		return isTheta || isXYZ || isT;
 	}
 
-	private ExpressionValue getLogArg(String logString) {
+	private String getLogArg(String logString) {
 		int indexOfArg = getIndexOfArg(logString);
 		if (indexOfArg == -1) {
 			return null;
 		}
 
-		String arg = logString.substring(indexOfArg);
-		if (!arg.isEmpty()) {
-			try {
-				return parseAndReplace(arg);
-			} catch (ParseException ignored) {
-				// just return null bellow
-			}
-		}
-		return null;
-	}
-
-	private ExpressionValue parseAndReplace(String arg) throws ParseException {
-		ExpressionValue parsedArg = kernel.getParser()
-				.parseGeoGebraExpression(arg);
-		parsedArg.resolveVariables(new EvalInfo(false, false)
-				.withSymbolicMode(kernel.getSymbolicMode()));
-		return parsedArg;
+		return logString.substring(indexOfArg);
 	}
 
 	private static int getIndexOfArg(String logString) {

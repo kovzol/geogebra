@@ -48,6 +48,8 @@ abstract public class MathContainer extends MathComponent {
 	 */
 	protected ArrayList<MathComponent> arguments = null;
 
+	private boolean isProtected;
+
 	/**
 	 * @param size
 	 *            number of children
@@ -127,17 +129,6 @@ abstract public class MathContainer extends MathComponent {
 		return false;
 
 	}
-
-	// private String toFlatString() {
-	// StringBuilder sb = new StringBuilder();
-	// Iterator<MathComponent> it = arguments.iterator();
-	//
-	// while (it.hasNext()) {
-	// sb.append(((MathCharacter) it.next()).getUnicode());
-	// }
-	//
-	// return sb.toString();
-	// }
 
 	/**
 	 * Extend arguments array to given size
@@ -424,7 +415,10 @@ abstract public class MathContainer extends MathComponent {
 	 */
 	public void delArgument(int i) {
 		if (i >= 0 && i < arguments.size()) {
-			arguments.remove(i);
+			MathComponent removed = arguments.remove(i);
+			if (removed != null) {
+				removed.setParent(null);
+			}
 		}
 	}
 
@@ -449,4 +443,39 @@ abstract public class MathContainer extends MathComponent {
 		return getClass().getSimpleName();
 	}
 
+	/**
+	 * Is i'th argument script.
+	 *
+	 * @param i
+	 *            index
+	 * @return whether given argument is a sub/super-script
+	 */
+	public boolean isScript(int i) {
+		return i >= 0 && i < size() && MathFunction.isScript(getArgument(i));
+	}
+
+	/**
+	 * @return the child math container, if the current container is protected
+	 */
+	public MathContainer extractLocked() {
+		if (size() == 1 && isProtected) {
+			MathComponent argument = getArgument(0);
+			if (argument instanceof MathContainer) {
+				return (MathContainer) argument;
+			}
+		}
+
+		return this;
+	}
+
+	public void setProtected() {
+		isProtected = true;
+	}
+
+	/**
+	 * @return true if sequence is protected from deletion
+	 */
+	public boolean isProtected() {
+		return isProtected;
+	}
 }

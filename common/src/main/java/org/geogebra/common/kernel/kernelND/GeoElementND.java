@@ -1203,12 +1203,13 @@ public interface GeoElementND extends ExpressionValue, GeoElementConvertable {
 	void setShowObjectCondition(GeoBoolean cond)
 			throws CircularDefinitionException;
 
-    /**
-     * @param useChangeable        if false, point on path is ignored
-     * @param useOutputValueString if true, use outputValueString rather than valueString
-     * @return Calls the 2 parametrized version of the function, with the third parameter: StringTemplate.editTemplate
-     */
-    String getRedefineString(boolean useChangeable, boolean useOutputValueString);
+	/**
+	 *
+	 * @param useChangeable if false, point on path is ignored
+	 * @param useOutputValueString if true, use outputValueString rather than valueString
+	 * @return Calls the 2 parametrized version of the function, with the third parameter: StringTemplate.editTemplate
+	 */
+	String getRedefineString(boolean useChangeable, boolean useOutputValueString);
 
 	/**
 	 * Returns definition or value string of this object. Automatically
@@ -1220,9 +1221,9 @@ public interface GeoElementND extends ExpressionValue, GeoElementConvertable {
 	 * @param useOutputValueString
 	 *            if true, use outputValueString rather than valueString
 	 * @return definition or value string of this object
-     */
-    String getRedefineString(boolean useChangeable, boolean useOutputValueString,
-                             StringTemplate tpl);
+	 */
+	String getRedefineString(boolean useChangeable, boolean useOutputValueString,
+							 StringTemplate tpl);
 
 	/**
 	 * @return true for auxiliary objects
@@ -1466,42 +1467,33 @@ public interface GeoElementND extends ExpressionValue, GeoElementConvertable {
 	/**
 	 * add geo type for reader.
 	 * 
-	 * @param loc
-	 *            The Localization object
-	 * 
 	 * @param sb
 	 *            StringBuilder to add to.
 	 */
-	void addAuralType(Localization loc, ScreenReaderBuilder sb);
+	void addAuralType(ScreenReaderBuilder sb);
 
 	/**
 	 * add geo type and its label for reader.
 	 * 
-	 * @param loc
-	 *            The Localization object
-	 * 
 	 * @param sb
 	 *            StringBuilder to add to.
 	 */
-	void addAuralLabel(Localization loc, ScreenReaderBuilder sb);
+	void addAuralLabel(ScreenReaderBuilder sb);
 
 	/**
 	 * add Caption for reader if defined, type and label otherwise.
 	 * 
-	 * @param loc
-	 *            The Localization object
-	 * 
 	 * @param sb
 	 *            StringBuilder to add to.
 	 */
-	void addAuralName(Localization loc, ScreenReaderBuilder sb);
+	void addAuralName(ScreenReaderBuilder sb);
 
 	/**
 	 * Add content aural description if any.
 	 * 
 	 * @param loc
 	 *            The Localization object
-	 * 
+	 *
 	 * @param sb
 	 *            StringBuilder to add to.
 	 */
@@ -1612,4 +1604,15 @@ public interface GeoElementND extends ExpressionValue, GeoElementConvertable {
 	 *         command or tool)
 	 */
 	boolean isFunctionOrEquationFromUser();
+
+	/**
+	 * @return true for cartesian surfaces
+	 */
+	boolean isGeoSurfaceCartesian();
+
+	/**
+	 * @return if it requires a special editing mode in symbolic input boxes
+	 * (vector, matrix, point whose elements can be edited, as opposed to sth like A+B)
+	 */
+	boolean hasSpecialEditor();
 }

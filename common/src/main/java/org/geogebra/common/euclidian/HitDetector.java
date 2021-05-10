@@ -12,10 +12,13 @@ import org.geogebra.common.kernel.geos.GeoElement.HitType;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.TestGeo;
 
+import com.google.j2objc.annotations.Weak;
+
 public class HitDetector {
 	private ArrayList<GeoElement> hitPointOrBoundary;
 	private ArrayList<GeoElement> hitFilling;
 	private ArrayList<GeoElement> hitLabel;
+	@Weak
 	private final EuclidianView view;
 	private Hits hits;
 
@@ -39,7 +42,7 @@ public class HitDetector {
 		}
 		boolean hitMask = false;
 
-		for (Drawable d : view.allDrawableList) {
+		for (Drawable d : view.getAllDrawableList()) {
 			if (d.isEuclidianVisible()) {
 				if (d.hit(p.x, p.y, hitThreshold)) {
 					GeoElement geo = d.getGeoElement();
@@ -167,9 +170,10 @@ public class HitDetector {
 			return;
 		}
 
-		for (Drawable d : view.allDrawableList) {
+		for (Drawable d : view.getAllDrawableList()) {
 			GeoElement geo = d.getGeoElement();
-			if (geo.isEuclidianVisible() && filter.check(geo) && !hits.contains(geo)
+			if (geo.isEuclidianVisible() && geo.isSelectionAllowed(view)
+					&& filter.check(geo) && !hits.contains(geo)
 					&& d.intersectsRectangle(rect)) {
 				d.setPartialHitClip(rect);
 				hits.add(geo);
@@ -197,7 +201,7 @@ public class HitDetector {
 			return;
 		}
 
-		for (Drawable d : view.allDrawableList) {
+		for (Drawable d : view.getAllDrawableList()) {
 			GeoElement geo = d.getGeoElement();
 			if (geo.isEuclidianVisible() && d.isInside(rect)) {
 				hits.add(geo);

@@ -1,7 +1,5 @@
 package org.geogebra.web.full.css;
 
-import org.geogebra.web.html5.util.LessResource;
-import org.geogebra.web.resources.LessReference;
 import org.geogebra.web.resources.SVGResource;
 import org.geogebra.web.resources.SassResource;
 
@@ -28,15 +26,6 @@ public interface GuiResources extends ClientBundle, StylesProvider {
 	@Source("org/geogebra/common/icons/png/web/toolbar-further-tools-icon.png")
 	ImageResource toolbar_further_tools();
 
-	// HEADER MENU
-
-	// SMART MENUBAR
-	@Source("org/geogebra/common/icons/png/web/menuBarSubMenuIconRTL.png")
-	ImageResource menuBarSubMenuIconRTL();
-
-	@Source("org/geogebra/common/icons/png/web/menuBarSubMenuIconLTR.png")
-	ImageResource menuBarSubMenuIconLTR();
-
 	// Icons
 	@Source("org/geogebra/common/menu_icons/p20/menu-file-export.png")
 	ImageResource menu_icons_file_export();
@@ -44,29 +33,8 @@ public interface GuiResources extends ClientBundle, StylesProvider {
 	@Source("org/geogebra/common/icons/png/web/menu_icons24/menu_view_exam.png")
 	ImageResource menu_icon_exam24();
 
-	@Source("org/geogebra/common/menu_icons/p20/menu-edit.png")
-	ImageResource menu_icon_edit();
-
-	@Source("org/geogebra/common/menu_icons/p20/menu-edit-copy.png")
-	ImageResource menu_icon_edit_copy();
-
-	@Source("org/geogebra/common/menu_icons/p20/menu-edit-paste.png")
-	ImageResource menu_icon_edit_paste();
-
-	@Source("org/geogebra/common/menu_icons/p20/menu-edit-delete.png")
-	ImageResource menu_icon_edit_delete();
-
 	@Source("org/geogebra/common/menu_icons/p20/menu-options.png")
 	ImageResource menu_icon_options();
-
-	@Source("org/geogebra/common/menu_icons/p20/menu-options-point-capturing.png")
-	ImageResource menu_icon_options_point_capturing();
-
-	@Source("org/geogebra/common/menu_icons/p20/menu-options-labeling.png")
-	ImageResource menu_icon_options_labeling();
-
-	@Source("org/geogebra/common/menu_icons/p20/menu-options-font-size.png")
-	ImageResource menu_icon_options_font_size();
 
 	@Source("org/geogebra/common/icons/png/web/menu-help.png")
 	ImageResource icon_help();
@@ -74,18 +42,10 @@ public interface GuiResources extends ClientBundle, StylesProvider {
 	@Source("org/geogebra/common/menu_icons/p20/menu-tools.png")
 	ImageResource menu_icon_tools();
 
-	// Menu icons views and perspectives
-
-	@Source("org/geogebra/common/icons_view_perspectives/p20/menu_view_input_bar.png")
-	ImageResource menu_icon_input_bar();
-
 	// OTHER MENUICONS
 
 	@Source("org/geogebra/common/stylingbar/p20/stylingbar_dots.png")
 	ImageResource menu_dots();
-
-	@Source("org/geogebra/common/stylingbar/p20/stylingbar_dots_hover.png")
-	ImageResource menu_dots_hover();
 
 	// SUBMENUS
 	@Source("org/geogebra/common/icons/png/web/arrow-submenu-right.png")
@@ -93,13 +53,6 @@ public interface GuiResources extends ClientBundle, StylesProvider {
 
 	@Source("org/geogebra/common/icons/png/web/arrow-submenu-left.png")
 	ImageResource arrow_submenu_left();
-
-	// ALGEBRA INPUT
-	@Source("org/geogebra/common/icons/png/web/dockbar_triangle_left_darker.png")
-	ImageResource input_help_left();
-
-	@Source("org/geogebra/common/icons/png/web/dockbar_triangle_up_darker.png")
-	ImageResource input_help_up();
 
 	// DIALOGS
 	@Source("org/geogebra/common/icons/png/web/triangle_right.png")
@@ -121,15 +74,9 @@ public interface GuiResources extends ClientBundle, StylesProvider {
 	@Source("org/geogebra/common/menu_icons/p20/menu-view-close.png")
 	ImageResource dockbar_close();
 
-	@Source("org/geogebra/common/menu_icons/p20/menu-file-new.png")
-	ImageResource dockbar_open();
-
 	// PROPABILITY CALCULATOR
 	@Source("org/geogebra/common/icons/png/web/probability_calculator_cumulative_distribution.png")
 	ImageResource cumulative_distribution();
-
-	@Source("org/geogebra/common/icons/png/web/probability_calculator_export.png")
-	ImageResource prob_calc_export();
 
 	@Source("org/geogebra/common/icons/png/web/probability_calculator_interval_between.png")
 	ImageResource interval_between();
@@ -140,180 +87,94 @@ public interface GuiResources extends ClientBundle, StylesProvider {
 	@Source("org/geogebra/common/icons/png/web/probability_calculator_interval_right.png")
 	ImageResource interval_right();
 
-	@Source("org/geogebra/common/icons/png/web/probability_calculator_line_graph.png")
-	ImageResource line_graph();
-
 	@Source("org/geogebra/common/icons/png/web/probability_calculator_normal_overlay.png")
 	ImageResource normal_overlay();
 
-	@Source("org/geogebra/common/icons/png/web/probability_calculator_step_graph.png")
-	ImageResource step_graph();
-
 	// OBJECT PROPERTIES
-	@Source("org/geogebra/common/icons/png/web/little-triangle-down.png")
-	ImageResource little_triangle_down();
-
-	@Source("org/geogebra/common/icons/png/web/little-triangle-down-active.png")
-	ImageResource little_triangle_down_active();
-
 	@Source("org/geogebra/common/icons/png/web/stylingbar/stylingbar_properties_object.png")
 	ImageResource properties_object();
 
-	/*
-	 * @Source(
-	 * "org/geogebra/common/icons/png/web/stylingbar/stylingbar_properties_graphics_view.png"
-	 * ) ImageResource properties_graphics();
-	 * 
-	 * @Source(
-	 * "org/geogebra/common/icons/png/web/stylingbar/stylingbar_properties_graphics_view2.png"
-	 * ) ImageResource properties_graphics2();
-	 */
-
 	// DECORATIONS
 	// ANGLE
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_angle_1line.png")
-	ImageResource deco_angle_1line();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_angle_1line.svg")
+	SVGResource deco_angle_1line();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_angle_2lines.png")
-	ImageResource deco_angle_2lines();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_angle_2lines.svg")
+	SVGResource deco_angle_2lines();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_angle_3lines.png")
-	ImageResource deco_angle_3lines();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_angle_3lines.svg")
+	SVGResource deco_angle_3lines();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_angle_1stroke.png")
-	ImageResource deco_angle_1stroke();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_angle_1stroke.svg")
+	SVGResource deco_angle_1stroke();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_angle_2strokes.png")
-	ImageResource deco_angle_2strokes();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_angle_2strokes.svg")
+	SVGResource deco_angle_2strokes();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_angle_3strokes.png")
-	ImageResource deco_angle_3strokes();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_angle_3strokes.svg")
+	SVGResource deco_angle_3strokes();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_angle_arrow-up.png")
-	ImageResource deco_angle_arrow_up();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_angle_arrow-up.svg")
+	SVGResource deco_angle_arrow_up();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_angle_arrow-down.png")
-	ImageResource deco_angle_arrow_down();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_angle_arrow-down.svg")
+	SVGResource deco_angle_arrow_down();
 
 	// SEGMENT
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_segment_line.png")
-	ImageResource deco_segment_none();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_segment_line.svg")
+	SVGResource deco_segment_none();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_segment_1stroke.png")
-	ImageResource deco_segment_1stroke();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_segment_1stroke.svg")
+	SVGResource deco_segment_1stroke();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_segment_2strokes.png")
-	ImageResource deco_segment_2strokes();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_segment_2strokes.svg")
+	SVGResource deco_segment_2strokes();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_segment_3strokes.png")
-	ImageResource deco_segment_3strokes();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_segment_3strokes.svg")
+	SVGResource deco_segment_3strokes();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_segment_1arrow.png")
-	ImageResource deco_segment_1arrow();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_segment_1arrow.svg")
+	SVGResource deco_segment_1arrow();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_segment_2arrows.png")
-	ImageResource deco_segment_2arrows();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_segment_2arrows.svg")
+	SVGResource deco_segment_2arrows();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_segment_3arrows.png")
-	ImageResource deco_segment_3arrows();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_segment_3arrows.svg")
+	SVGResource deco_segment_3arrows();
 
 	// AXES
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_axes_line.png")
-	ImageResource deco_axes_none();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_axes_line.svg")
+	SVGResource deco_axes_none();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_axes_arrow.png")
-	ImageResource deco_axes_arrow();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_axes_arrow.svg")
+	SVGResource deco_axes_arrow();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_axes_arrows.png")
-	ImageResource deco_axes_arrows();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_axes_arrows.svg")
+	SVGResource deco_axes_arrows();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_axes_arrow_filled.png")
-	ImageResource deco_axes_arrow_filled();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_axes_arrow_filled.svg")
+	SVGResource deco_axes_arrow_filled();
 
-	@Source("org/geogebra/common/icons/png/web/decoration_icons/decoration_axes_arrows_filled.png")
-	ImageResource deco_axes_arrows_filled();
+	@Source("org/geogebra/common/icons/svg/web/decoration/decoration_axes_arrows_filled.svg")
+	SVGResource deco_axes_arrows_filled();
 
 	/*
 	 * STYLINGBARS
 	 * 
 	 */
-	// General stylingbar icons
-	@Source("org/geogebra/common/stylingbar/p24/stylingbar_dots.png")
-	ImageResource dots();
-
-	@Source("org/geogebra/common/stylingbar/p24/stylingbar_dots_hover.png")
-	ImageResource dots_hover();
 
 	@Source("org/geogebra/common/stylingbar/p24/stylebar_more.png")
 	ImageResource stylebar_more();
-
-	// ALGEBRA VIEW SPECIAL EDITING
-	@Source("org/geogebra/common/icons/png/web/stylingbar/algebra_matrix_size.png")
-	ImageResource algebra_matrix_size();
-
-	@Source("org/geogebra/common/icons/png/web/stylingbar/algebra_matrix_size_hover.png")
-	ImageResource algebra_matrix_size_hover();
-
-	@Source("org/geogebra/common/menu_icons/p20/menu-remove.png")
-	ImageResource algebra_remove();
-
-	@Source("org/geogebra/common/icons/png/web/menu_icons/stylingbar_algebraview_new_matrix.png")
-	ImageResource algebra_new_matrix();
-
-	@Source("org/geogebra/common/icons/png/web/menu_icons/stylingbar_algebraview_new_piecewise_function.png")
-	ImageResource algebra_new_piecewise();
-
-	@Source("org/geogebra/common/icons/png/web/menu_icons/stylingbar_algebraview_new_parametric_curve.png")
-	ImageResource algebra_new_parametric();
-
-	// PLAY, PAUSE, REWIND, ETC. USED IN ALGEBRA VIEW, EV AND IN NAVIGATION BAR
-
-	@Source("org/geogebra/common/icons_play/p24/nav_skipback.png")
-	ImageResource icons_play_skipback();
-
-	@Source("org/geogebra/common/icons_play/p24/nav_skipback_hover.png")
-	ImageResource icons_play_skipback_hover();
-
-	@Source("org/geogebra/common/icons_play/p24/nav_rewind.png")
-	ImageResource icons_play_rewind();
-
-	@Source("org/geogebra/common/icons_play/p24/nav_rewind_hover.png")
-	ImageResource icons_play_rewind_hover();
-
-	@Source("org/geogebra/common/icons_play/p24/nav_fastforward.png")
-	ImageResource icons_play_fastforward();
-
-	@Source("org/geogebra/common/icons_play/p24/nav_fastforward_hover.png")
-	ImageResource icons_play_fastforward_hover();
-
-	@Source("org/geogebra/common/icons_play/p24/nav_skipforward.png")
-	ImageResource icons_play_skipforward();
-
-	@Source("org/geogebra/common/icons_play/p24/nav_skipforward_hover.png")
-	ImageResource icons_play_skipforward_hover();
 
 	// Show construction protocol icon in navigation bar
 	@Source("org/geogebra/common/icons_view_perspectives/p24/menu_view_construction_protocol.png")
 	ImageResource icons_view_construction_protocol_p24();
 
-	@Source("org/geogebra/common/icons/png/web/general/collapse24.png")
-	ImageResource collapse();
-
-	@Source("org/geogebra/common/icons/png/web/general/expand24.png")
-	ImageResource expand();
-
 	@Source("org/geogebra/web/resources/css/fonts.css")
 	TextResource fonts();
 
-	// New less resources for GEOGEBRA EXAM
-	@Source("org/geogebra/web/exam/css/exam.ltr.less")
-	LessResource examStyleLTR();
-
-	@Source("org/geogebra/web/exam/css/exam.rtl.less")
-	LessResource examStyleRTL();
-
-	@Source("org/geogebra/web/exam/css/exam.less")
-	LessReference examStyle();
+	@Source("org/geogebra/web/resources/scss/exam.scss")
+	SassResource examStyle();
 
 	@Override
 	@Source("org/geogebra/web/resources/scss/mow.scss")
@@ -323,8 +184,8 @@ public interface GuiResources extends ClientBundle, StylesProvider {
 	@Source("org/geogebra/web/resources/scss/mow-toolbar.scss")
 	SassResource mowToolbarStyle();
 
-	@Source("org/geogebra/web/resources/css/web-styles.less")
-	LessResource modernStyle();
+	@Source("org/geogebra/web/resources/scss/web-styles.scss")
+	SassResource modernStyle();
 
 	@Source("org/geogebra/web/resources/scss/spreadsheet.scss")
 	SassResource spreadsheetStyle();
@@ -336,35 +197,17 @@ public interface GuiResources extends ClientBundle, StylesProvider {
 	@Source("org/geogebra/web/resources/scss/av-styles.scss")
 	SassResource avStyleScss();
 
-	@Source("org/geogebra/web/resources/css/definitions.less")
-	LessReference lessDefinitions();
+	@Source("org/geogebra/web/resources/scss/context-menu.scss")
+	SassResource contextMenuStyles();
 
-	@Source("org/geogebra/web/resources/css/general.ltr.less")
-	LessResource generalStyleLTR();
+	@Source("org/geogebra/web/resources/scss/general.scss")
+	SassResource generalStyle();
 
-	@Source("org/geogebra/web/resources/css/general.rtl.less")
-	LessResource generalStyleRTL();
+	@Source("org/geogebra/web/resources/scss/headerbar.scss")
+	SassResource headerbarStyle();
 
-	@Source("org/geogebra/web/resources/css/general.less")
-	LessReference generalStyle();
-
-	@Source("org/geogebra/web/resources/css/headerbar.ltr.less")
-	LessResource headerbarStyleLTR();
-
-	@Source("org/geogebra/web/resources/css/headerbar.rtl.less")
-	LessResource headerbarStyleRTL();
-
-	@Source("org/geogebra/web/resources/css/headerbar.less")
-	LessReference headerbarStyle();
-
-	@Source("org/geogebra/web/resources/css/av.ltr.less")
-	LessResource avStyleLTR();
-
-	@Source("org/geogebra/web/resources/css/av.rtl.less")
-	LessResource avStyleRTL();
-
-	@Source("org/geogebra/web/resources/css/av.less")
-	LessReference avStyle();
+	@Source("org/geogebra/web/resources/scss/av.scss")
+	SassResource avStyle();
 
 	@Source("org/geogebra/web/resources/scss/toolbar-styles.scss")
 	SassResource toolBarStyleScss();

@@ -85,10 +85,10 @@ public class SmartLookAndFeel extends GLookAndFeel {
 	@Override
     public boolean registerHandlers(Widget evPanel, EuclidianControllerW euclidiancontroller) {
 		SmartTouchHandler sh = new SmartTouchHandler(euclidiancontroller);
-        evPanel.addBitlessDomHandler(sh, TouchStartEvent.getType());
-        evPanel.addBitlessDomHandler(sh, TouchEndEvent.getType());
-        evPanel.addBitlessDomHandler(sh, TouchMoveEvent.getType());
-        evPanel.addBitlessDomHandler(CancelEvents.INSTANCE, TouchCancelEvent.getType());
+		evPanel.addBitlessDomHandler(sh, TouchStartEvent.getType());
+		evPanel.addBitlessDomHandler(sh, TouchEndEvent.getType());
+		evPanel.addBitlessDomHandler(sh, TouchMoveEvent.getType());
+		evPanel.addBitlessDomHandler(CancelEvents.INSTANCE, TouchCancelEvent.getType());
 		return true;
 	}
 	
@@ -113,8 +113,8 @@ public class SmartLookAndFeel extends GLookAndFeel {
 	}
 
 	@Override
-    public Platform getPlatform(int dim, String appName) {
-        return Platform.SMART;
+	public Platform getPlatform(int dim, String appName) {
+		return Platform.SMART;
 	}
 
 	@Override

@@ -112,7 +112,7 @@ public class MoveGeos {
 					movedGeo = p.movePoint(rwTransVec, endPosition);
 					geo = (GeoElement) p;
 				} else {
-					movedGeo = geo1.movePoint(rwTransVec, endPosition);
+					movedGeo = ((GeoPointND) geo1).movePoint(rwTransVec, endPosition);
 				}
 			}
 
@@ -141,13 +141,11 @@ public class MoveGeos {
 					DrawableND drawable = view.getDrawableFor(geo);
 					// https://play.google.com/apps/publish/?dev_acc=05873811091523087820#ErrorClusterDetailsPlace:p=org.geogebra.android&et=CRASH&lr=LAST_7_DAYS&ecn=java.lang.NullPointerException&tf=SourceFile&tc=org.geogebra.common.kernel.geos.GeoElement&tm=moveObject&nid&an&c&s=new_status_desc
 					if (drawable != null) {
-						drawable.move();
 						screenLoc.setAbsoluteScreenLoc(x, y);
 						movedGeo = true;
 					}
 				} else if (geo1.isGeoNumeric()) {
-					view.getDrawableFor(geo).move();
-					if (!((GeoNumeric) geo).isSliderFixed()) {
+					if (!geo.isLockedPosition()) {
 						// real world screen position - GeoNumeric
 						((GeoNumeric) geo).setRealWorldLoc(
 								((GeoNumeric) geo).getRealWorldLocX()
@@ -202,7 +200,7 @@ public class MoveGeos {
 							.getParentAlgorithm();
 					GeoElement p = (GeoElement) algoVector.getP();
 					if (p.isIndependent()) {
-						movedGeo = p.movePoint(rwTransVec, endPosition);
+						movedGeo = ((GeoPointND) p).movePoint(rwTransVec, endPosition);
 						GeoElement.addParentToUpdateList(p, updateGeos,
 								tempMoveObjectList);
 					}

@@ -125,7 +125,7 @@ public class GeoGebraGlobal implements IdFunctionCall {
 		Context.getSourcePositionFromStack(linep); // line number of error
 		sb.append(loc.getPlain("ErrorInJavaScriptAtLineA", linep[0] + ""));
 		sb.append("\n");
-        sb.append(Errors.IllegalArgumentNumber.getError(loc));
+		sb.append(Errors.IllegalArgumentNumber.getError(loc));
 		sb.append(": ");
 		sb.append(argNumber);
 		sb.append("\n\n");

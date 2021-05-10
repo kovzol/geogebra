@@ -112,7 +112,7 @@ public class KeyboardManager
 	 * @return height inside of the geogebra window
 	 */
 	public int estimateKeyboardHeight() {
-		ensureKeyboardExists();
+		ensureKeyboardsExist();
 		int realHeight = keyboard.getOffsetHeight();
 		if (realHeight > 0) {
 			return realHeight;
@@ -127,7 +127,7 @@ public class KeyboardManager
 	 *            frame of the applet
 	 */
 	public void addKeyboard(Panel appFrame) {
-		ensureKeyboardExists();
+		ensureKeyboardsExist();
 		if (!shouldDetach()) {
 			appFrame.add(keyboard);
 		} else {
@@ -151,7 +151,7 @@ public class KeyboardManager
 	}
 
 	private Element getAppletContainer() {
-		Element scaler = app.getArticleElement().getParentElement();
+		Element scaler = app.getGeoGebraElement().getParentElement();
 		Element container = scaler == null ? null : scaler.getParentElement();
 		if (container == null) {
 			return RootPanel.getBodyElement();
@@ -176,7 +176,8 @@ public class KeyboardManager
 	 */
 	public void setListeners(MathKeyboardListener textField,
 			UpdateKeyBoardListener listener) {
-		ensureKeyboardExists();
+		ensureKeyboardsExist();
+		((OnscreenTabbedKeyboard) keyboard).clearAndUpdate();
 		if (textField != null) {
 			setOnScreenKeyboardTextField(textField);
 		}
@@ -189,28 +190,29 @@ public class KeyboardManager
 	 */
 	@Nonnull
 	public VirtualKeyboardGUI getOnScreenKeyboard() {
-		ensureKeyboardExists();
+		ensureKeyboardsExist();
 		return keyboard;
 	}
 
-	private void ensureKeyboardExists() {
+	private void ensureKeyboardsExist() {
 		if (keyboard == null) {
 			boolean showMoreButton = app.getConfig().showKeyboardHelpButton()
 					&& !shouldDetach();
-			keyboard = new OnscreenTabbedKeyboard((HasKeyboard) app,
-					showMoreButton);
+			keyboard = new OnscreenTabbedKeyboard((HasKeyboard) app, showMoreButton);
 		}
-	}
-
-	@Override
-	public boolean shouldKeyboardBeShown() {
-		return keyboard != null && keyboard.shouldBeShown();
 	}
 
 	@Override
 	public void updateKeyboardLanguage() {
 		if (keyboard != null) {
 			keyboard.checkLanguage();
+		}
+	}
+
+	@Override
+	public void clearAndUpdateKeyboard() {
+		if (keyboard != null) {
+			keyboard.clearAndUpdate();
 		}
 	}
 
@@ -270,9 +272,7 @@ public class KeyboardManager
 		}
 	}
 
-	/**
-	 * @return whether keyboard was closed by clicking the X button
-	 */
+	@Override
 	public boolean isKeyboardClosedByUser() {
 		return this.keyboard != null && !this.keyboard.shouldBeShown();
 	}

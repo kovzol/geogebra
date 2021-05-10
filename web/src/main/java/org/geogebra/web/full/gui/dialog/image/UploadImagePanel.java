@@ -14,7 +14,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class UploadImagePanel extends VerticalPanel {
-	
 	private String fileData;
 	private String fileName;
 
@@ -113,35 +112,35 @@ public class UploadImagePanel extends VerticalPanel {
 		}
 	}-*/;
 
-    @ExternalAccess
-    private void setMoveMode() {
-        if (uploadImageWithoutDialog != null) {
-            uploadImageWithoutDialog.setSelectMode();
-        }
-    }
+	@ExternalAccess
+	private void setMoveMode() {
+		if (uploadImageWithoutDialog != null) {
+			uploadImageWithoutDialog.setSelectMode();
+		}
+	}
 
-    @ExternalAccess
-    private void fileSelected(String fData, String fName) {
-        this.fileData = fData;
-        this.fileName = fName;
-        if (previewImg == null) {
-            try {
-                previewImg = new Image(fileData);
-                previewImg.setWidth(previewWidth + "px");
-                previewImg.setHeight(previewHeight + "px");
-                add(previewImg);
-            } catch (Throwable e) {
-                Log.debug("ImageProblem" + e.getMessage());
-            }
-        } else {
-            previewImg.setUrl(fileData);
-        }
-        if (dialog == null) {
-            uploadImageWithoutDialog.insertImage();
-        } else {
-            dialog.imageAvailable();
-        }
-    }
+	@ExternalAccess
+	private void fileSelected(String fData, String fName) {
+		this.fileData = fData;
+		this.fileName = fName;
+		if (previewImg == null) {
+			try {
+				previewImg = new Image(fileData);
+				previewImg.setWidth(previewWidth + "px");
+				previewImg.setHeight(previewHeight + "px");
+				add(previewImg);
+			} catch (Throwable e) {
+				Log.debug("ImageProblem" + e.getMessage());
+			}
+		} else {
+			previewImg.setUrl(fileData);
+		}
+		if (dialog == null) {
+			uploadImageWithoutDialog.insertImage();
+		} else {
+			dialog.imageAvailable();
+		}
+	}
 
 	/**
 	 * @return image data

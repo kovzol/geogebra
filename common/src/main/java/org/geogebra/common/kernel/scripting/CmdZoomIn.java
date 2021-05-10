@@ -65,7 +65,7 @@ public class CmdZoomIn extends CmdScripting {
 			return zoomIn2(arg, c, arg[0].evaluateDouble(), this);
 		case 4:
 			arg = resArgs(c);
-            for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 4; i++) {
 				if (!(arg[i] instanceof NumberValue)) {
 					throw argErr(c, arg[i]);
 				}

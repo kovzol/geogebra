@@ -36,50 +36,50 @@ public class SuggestionRootExtremum extends Suggestion {
 		// reported typecast error
 		// reported NPE
 		boolean[] neededAlgos = getNeededAlgos(geo);
-        boolean isSymbolicMode = geo.getKernel().getSymbolicMode() == SymbolicMode.SYMBOLIC_AV;
-        String cmd;
+		boolean isSymbolicMode = geo.getKernel().getSymbolicMode() == SymbolicMode.SYMBOLIC_AV;
+		String cmd;
 
-        new LabelController().ensureHasLabel(geo);
+		new LabelController().ensureHasLabel(geo);
 		checkDependentAlgo(geo, INSTANCE, neededAlgos);
-        AlgebraProcessor algebraProcessor = geo.getKernel().getAlgebraProcessor();
+		AlgebraProcessor algebraProcessor = geo.getKernel().getAlgebraProcessor();
 
 		if (neededAlgos[0]) {
-            if (!isSymbolicMode) {
-                processCommand(algebraProcessor, "Root[" + geo.getLabelSimple() + "]", false);
-            } else {
-                cmd = "Intersect[" + geo.getLabelSimple() + ","
-                        + geo.getKernel().getLocalization().getMenu("xAxis")
-                        + "]";
-                processCommand(algebraProcessor, cmd, true);
-            }
+			if (!isSymbolicMode) {
+				processCommand(algebraProcessor, "Root[" + geo.getLabelSimple() + "]", false);
+			} else {
+				cmd = "Intersect[" + geo.getLabelSimple() + ","
+						+ geo.getKernel().getLocalization().getMenu("xAxis")
+						+ "]";
+				processCommand(algebraProcessor, cmd, true);
+			}
 		}
 		if (neededAlgos[1]) {
-            cmd = "Extremum[" + geo.getLabelSimple() + "]";
-            processCommand(algebraProcessor, cmd, isSymbolicMode);
+			cmd = "Extremum[" + geo.getLabelSimple() + "]";
+			processCommand(algebraProcessor, cmd, isSymbolicMode);
 		}
 		if (neededAlgos[2]) {
-            cmd = "Intersect[" + geo.getLabelSimple() + ","
-                    + geo.getKernel().getLocalization().getMenu("yAxis")
-                    + "]";
-            processCommand(algebraProcessor, cmd, isSymbolicMode);
-        }
-    }
+			cmd = "Intersect[" + geo.getLabelSimple() + ","
+					+ geo.getKernel().getLocalization().getMenu("yAxis")
+					+ "]";
+			processCommand(algebraProcessor, cmd, isSymbolicMode);
+		}
+	}
 
-    protected void processCommand(AlgebraProcessor algebraProcessor, String cmd,
-                                  boolean isSymbolicMode) {
-        if (isSymbolicMode) {
-            GeoElementND[] pointLists = algebraProcessor.processAlgebraCommand(
-                    cmd, false, new LabelHiderCallback());
-            setPointsColorToGray(pointLists);
-        } else {
-            algebraProcessor.processAlgebraCommand(cmd, false);
-        }
-    }
+	protected void processCommand(AlgebraProcessor algebraProcessor, String cmd,
+								  boolean isSymbolicMode) {
+		if (isSymbolicMode) {
+			GeoElementND[] pointLists = algebraProcessor.processAlgebraCommand(
+					cmd, false, new LabelHiderCallback());
+			setPointsColorToGray(pointLists);
+		} else {
+			algebraProcessor.processAlgebraCommand(cmd, false);
+		}
+	}
 
-    private void setPointsColorToGray(GeoElementND[] pointLists) {
-        for (int i = 0; i < pointLists.length; i++) {
-            pointLists[i].setObjColor(ConstructionDefaults.colDepPointG);
-            pointLists[i].updateRepaint();
+	private void setPointsColorToGray(GeoElementND[] pointLists) {
+		for (int i = 0; i < pointLists.length; i++) {
+			pointLists[i].setObjColor(ConstructionDefaults.colDepPointG);
+			pointLists[i].updateRepaint();
 		}
 	}
 
@@ -103,8 +103,8 @@ public class SuggestionRootExtremum extends Suggestion {
 			algosMissing[1] = true;
 		}
 
-        if ((geo instanceof GeoSymbolic && isVerticalLine(((GeoSymbolic) geo).getTwinGeo()))
-                || isVerticalLine(geo)) {
+		if ((geo instanceof GeoSymbolic && isVerticalLine(((GeoSymbolic) geo).getTwinGeo()))
+				|| isVerticalLine(geo)) {
 			algosMissing[2] = false;
 		}
 		return algosMissing;
@@ -135,31 +135,31 @@ public class SuggestionRootExtremum extends Suggestion {
 	 *         line or conic)
 	 */
 	private static boolean mayHaveSpecialPoints(GeoElement geo) {
-        return geo.isRealValuedFunction() && !geo.isNumberValue();
+		return geo.isRealValuedFunction() && !geo.isNumberValue();
 	}
 
 	@Override
 	protected boolean allAlgosExist(GetCommand className, GeoElement[] input,
 			boolean[] algosMissing) {
-        if (className == Commands.Roots || className == Commands.Root
-                || (className == Commands.Intersect && containsLabel(input, "xAxis"))) {
+		if (className == Commands.Roots || className == Commands.Root
+				|| (className == Commands.Intersect && containsLabel(input, "xAxis"))) {
 			algosMissing[0] = false;
 		}
 		if (className == Commands.Extremum) {
 			algosMissing[1] = false;
 		}
-        if (className == Commands.Intersect && containsLabel(input, "yAxis")) {
+		if (className == Commands.Intersect && containsLabel(input, "yAxis")) {
 			algosMissing[2] = false;
 		}
 		return !algosMissing[0] && !algosMissing[1] && !algosMissing[2];
 	}
 
-    private boolean containsLabel(GeoElement[] input, String axis) {
-        for (int i = 0; i < input.length; i++) {
-            if (axis.equals(input[i].getLabelSimple())) {
-                return true;
-            }
-        }
-        return false;
-    }
+	private boolean containsLabel(GeoElement[] input, String axis) {
+		for (int i = 0; i < input.length; i++) {
+			if (axis.equals(input[i].getLabelSimple())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

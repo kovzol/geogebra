@@ -23,6 +23,7 @@ import org.geogebra.common.gui.dialog.options.model.CoordsModel;
 import org.geogebra.common.gui.dialog.options.model.DecoAngleModel;
 import org.geogebra.common.gui.dialog.options.model.DecoAngleModel.IDecoAngleListener;
 import org.geogebra.common.gui.dialog.options.model.DecoSegmentModel;
+import org.geogebra.common.gui.dialog.options.model.DrawArrowsModel;
 import org.geogebra.common.gui.dialog.options.model.FillingModel;
 import org.geogebra.common.gui.dialog.options.model.IComboListener;
 import org.geogebra.common.gui.dialog.options.model.ISliderListener;
@@ -47,12 +48,13 @@ import org.geogebra.common.gui.dialog.options.model.TextFieldSizeModel;
 import org.geogebra.common.gui.dialog.options.model.TextOptionsModel;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
-import org.geogebra.common.kernel.algos.AlgoBarChart;
+import org.geogebra.common.kernel.algos.ChartStyle;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoImage;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.StringUtil;
+import org.geogebra.ggbjdk.java.awt.geom.Dimension;
 import org.geogebra.web.full.gui.GuiManagerW;
 import org.geogebra.web.full.gui.images.AppResources;
 import org.geogebra.web.full.gui.properties.AnimationSpeedPanelW;
@@ -70,7 +72,6 @@ import org.geogebra.web.full.gui.util.PointStylePopup;
 import org.geogebra.web.full.gui.util.PopupMenuButtonW;
 import org.geogebra.web.full.gui.util.PopupMenuHandler;
 import org.geogebra.web.full.gui.view.algebra.InputPanelW;
-import org.geogebra.web.html5.awt.GDimensionW;
 import org.geogebra.web.html5.gui.inputfield.AutoCompleteTextFieldW;
 import org.geogebra.web.html5.gui.util.FormLabel;
 import org.geogebra.web.html5.gui.util.ImageOrText;
@@ -129,11 +130,7 @@ public class OptionsTab extends FlowPanel {
 		this.loc = loc;
 		this.tabPanel = tabPanel;
 		models = new ArrayList<>();
-		if (app.isUnbundledOrWhiteboard()) {
-			setStyleName("propMaterialTab");
-		} else {
-			setStyleName("propertiesTab");
-		}
+		setStyleName("propertiesTab");
 	}
 
 	/**
@@ -351,6 +348,9 @@ public class OptionsTab extends FlowPanel {
 		if (m instanceof TextFieldAlignmentModel) {
 			return new TextFieldAlignmentPanel((TextFieldAlignmentModel) m, app);
 		}
+		if (m instanceof DrawArrowsModel) {
+			return new CheckboxPanel("DrawArrows", loc, (DrawArrowsModel) m);
+		}
 
 		return null;
 	}
@@ -390,7 +390,7 @@ public class OptionsTab extends FlowPanel {
 			model.setListener(this);
 			setModel(model);
 
-			final GDimensionW colorIconSizeW = new GDimensionW(20, 20);
+			final Dimension colorIconSizeW = new Dimension(20, 20);
 
 			colorChooserW = new ColorChooserW(app, 350, 210, colorIconSizeW, 4);
 			colorChooserW.addChangeHandler(new ColorChangeHandler() {
@@ -436,7 +436,7 @@ public class OptionsTab extends FlowPanel {
 				}
 			});
 			colorChooserW.setColorPreviewClickable();
-			inlineTextFormatter = new InlineTextFormatter(app);
+			inlineTextFormatter = new InlineTextFormatter();
 			mainPanel = new FlowPanel();
 			mainPanel.add(colorChooserW);
 
@@ -482,7 +482,8 @@ public class OptionsTab extends FlowPanel {
 				boolean hasBackground, boolean hasOpacity) {
 
 			GeoElement geo0 = model.getGeoAt(0);
-			colorChooserW.setAlgoBarChart(model.getAlgoBarChart());
+			colorChooserW.setChartAlgo(model.getBarChartIntervals(),
+					model.getGeos());
 
 			if (updateChooserFromBarChart(geo0)) {
 				return;
@@ -538,9 +539,9 @@ public class OptionsTab extends FlowPanel {
 		 * @return whether this is a barchart
 		 */
 		public boolean updateChooserFromBarChart(GeoElement geo0) {
-			AlgoBarChart algo = model.getAlgoBarChart();
+			ChartStyle chartStyle = model.getChartStyle();
 
-			if (algo == null) {
+			if (chartStyle == null) {
 				return false;
 			}
 
@@ -549,12 +550,12 @@ public class OptionsTab extends FlowPanel {
 			int barIdx = colorChooserW.getSelectedBar();
 
 			if (barIdx == ColorObjectModel.ALL_BARS
-					|| algo.getBarColor(barIdx) == null) {
+					|| chartStyle.getBarColor(barIdx) == null) {
 				selectedColor = geo0.getObjectColor();
 
 			} else {
-				selectedColor = algo.getBarColor(barIdx);
-				alpha = algo.getBarAlpha(barIdx);
+				selectedColor = chartStyle.getBarColor(barIdx);
+				alpha = chartStyle.getBarAlpha(barIdx);
 				if (selectedColor == null) {
 					selectedColor = geo0.getObjectColor();
 				}
@@ -729,8 +730,7 @@ public class OptionsTab extends FlowPanel {
 			mainPanel.setStyleName("optionsPanel");
 			titleLabel = new Label("-");
 			mainPanel.add(titleLabel);
-			btnPointStyle = PointStylePopup.create(app, -1, false,
-					model, app.isUnbundledOrWhiteboard());
+			btnPointStyle = PointStylePopup.create(app, -1, false, model);
 			if (btnPointStyle != null) {
 				btnPointStyle.setKeepVisible(false);
 				mainPanel.add(btnPointStyle);
@@ -830,8 +830,7 @@ public class OptionsTab extends FlowPanel {
 			stylePanel.setStyleName("optionsPanel");
 			popupLabel = new Label();
 			stylePanel.add(popupLabel);
-			btnLineStyle = LineStylePopup.create(app, -1, false,
-					app.isUnbundledOrWhiteboard());
+			btnLineStyle = LineStylePopup.create(app, false);
 			// slider.setSnapToTicks(true);
 			btnLineStyle.addPopupHandler(new PopupMenuHandler() {
 

@@ -15,18 +15,18 @@ import org.geogebra.common.geogebra3D.main.VertexShader;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.web.html5.gawt.GBufferedImageW;
 
-import com.google.gwt.canvas.dom.client.ImageData;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.ImageElement;
-import com.googlecode.gwtgl.array.Uint8Array;
-import com.googlecode.gwtgl.binding.WebGLBuffer;
-import com.googlecode.gwtgl.binding.WebGLFramebuffer;
-import com.googlecode.gwtgl.binding.WebGLProgram;
-import com.googlecode.gwtgl.binding.WebGLRenderbuffer;
-import com.googlecode.gwtgl.binding.WebGLRenderingContext;
-import com.googlecode.gwtgl.binding.WebGLShader;
-import com.googlecode.gwtgl.binding.WebGLTexture;
-import com.googlecode.gwtgl.binding.WebGLUniformLocation;
+import elemental2.core.Uint8Array;
+import elemental2.dom.HTMLImageElement;
+import elemental2.dom.ImageData;
+import elemental2.webgl.WebGLBuffer;
+import elemental2.webgl.WebGLFramebuffer;
+import elemental2.webgl.WebGLProgram;
+import elemental2.webgl.WebGLRenderbuffer;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLShader;
+import elemental2.webgl.WebGLTexture;
+import elemental2.webgl.WebGLUniformLocation;
+import jsinterop.base.Js;
 
 /**
  * Renderer using shaders
@@ -43,10 +43,10 @@ public class RendererImplShadersW extends RendererImplShaders {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param renderer
 	 *            GL renderer
-	 * 
+	 *
 	 * @param view
 	 *            view
 	 */
@@ -57,7 +57,7 @@ public class RendererImplShadersW extends RendererImplShaders {
 
 	/**
 	 * set GL context
-	 * 
+	 *
 	 * @param glContext
 	 *            GL context
 	 */
@@ -76,8 +76,8 @@ public class RendererImplShadersW extends RendererImplShaders {
 		glContext.shaderSource(shader, source);
 		glContext.compileShader(shader);
 
-		if (!glContext.getShaderParameterb(shader,
-				WebGLRenderingContext.COMPILE_STATUS)) {
+		if (Js.isFalsy(glContext.getShaderParameter(shader,
+				WebGLRenderingContext.COMPILE_STATUS))) {
 			Log.debug("ERROR COMPILING SHADER: "
 					+ glContext.getShaderInfoLog(shader));
 			throw new RuntimeException(glContext.getShaderInfoLog(shader));
@@ -117,8 +117,8 @@ public class RendererImplShadersW extends RendererImplShaders {
 	protected final void glLinkProgram() {
 		glContext.linkProgram((WebGLProgram) shaderProgram);
 
-		if (!glContext.getProgramParameterb((WebGLProgram) shaderProgram,
-				WebGLRenderingContext.LINK_STATUS)) {
+		if (Js.isFalsy(glContext.getProgramParameter((WebGLProgram) shaderProgram,
+				WebGLRenderingContext.LINK_STATUS))) {
 			throw new RuntimeException("Could not initialise shaders");
 		}
 
@@ -169,7 +169,8 @@ public class RendererImplShadersW extends RendererImplShaders {
 
 	@Override
 	protected void glUniform3fv(Object location, float[] values) {
-		glContext.uniform3fv((WebGLUniformLocation) location, values);
+		glContext.uniform3fv((WebGLUniformLocation) location,
+				WebGLRenderingContext.Uniform3fvValueUnionType.of(values));
 	}
 
 	@Override
@@ -209,12 +210,6 @@ public class RendererImplShadersW extends RendererImplShaders {
 		case TRIANGLE_STRIP:
 			return WebGLRenderingContext.TRIANGLE_STRIP;
 		case TRIANGLE_FAN:
-			// if (Browser.supportsWebGLTriangleFan()) { // no TRIANGLE_FAN for
-			// internet explorer
-			// return WebGLRenderingContext.TRIANGLE_FAN;
-			// }
-
-			// wait for fix : detect webGL support correctly
 			return WebGLRenderingContext.TRIANGLE_STRIP;
 		case TRIANGLES:
 			return WebGLRenderingContext.TRIANGLES;
@@ -230,7 +225,7 @@ public class RendererImplShadersW extends RendererImplShaders {
 	@Override
 	protected final void glUniformMatrix4fv(Object location, float[] values) {
 		glContext.uniformMatrix4fv((WebGLUniformLocation) location, false,
-				values);
+				Js.<double[]>uncheckedCast(values));
 	}
 
 	@Override
@@ -264,12 +259,14 @@ public class RendererImplShadersW extends RendererImplShaders {
 
 	@Override
 	protected final void glUniform4fv(Object location, float[] values) {
-		glContext.uniform4fv((WebGLUniformLocation) location, values);
+		glContext.uniform4fv((WebGLUniformLocation) location,
+				WebGLRenderingContext.Uniform4fvValueUnionType.of(values));
 	}
 
 	@Override
 	protected final void glUniform2fv(Object location, float[] values) {
-		glContext.uniform2fv((WebGLUniformLocation) location, values);
+		glContext.uniform2fv((WebGLUniformLocation) location,
+				WebGLRenderingContext.Uniform2fvValueUnionType.of(values));
 	}
 
 	@Override
@@ -289,7 +286,8 @@ public class RendererImplShadersW extends RendererImplShaders {
 
 	@Override
 	protected void glUniform1fv(Object location, int length, float[] values) {
-		glContext.uniform1fv((WebGLUniformLocation) location, values);
+		glContext.uniform1fv((WebGLUniformLocation) location,
+				Js.<double[]>uncheckedCast(values));
 	}
 
 	@Override
@@ -413,16 +411,16 @@ public class RendererImplShadersW extends RendererImplShaders {
 	}
 
 	/**
-	 * create alpha texture from image for the label
-	 * 
-	 * @param label
-	 *            label
-	 * @param image
-	 *            image
-	 * @param bimg
-	 *            buffered image
-	 */
-	public void createAlphaTexture(DrawLabel3D label, ImageElement image,
+	* create alpha texture from image for the label
+	* 
+	* @param label
+	*            label
+	* @param image
+	*            image
+	* @param bimg
+	*            buffered image
+	*/
+	public void createAlphaTexture(DrawLabel3D label, HTMLImageElement image,
 			GBufferedImageW bimg) {
 
 		if (label.isPickable()) {
@@ -436,18 +434,18 @@ public class RendererImplShadersW extends RendererImplShaders {
 	}
 
 	/**
-	 * create alpha texture from image
-	 * 
-	 * @param index
-	 *            reusable index
-	 * @param image
-	 *            image
-	 * @param bimg
-	 *            buffered image
-	 * @return new index if needed
-	 */
-	public int createAlphaTexture(int index, ImageElement image, GBufferedImageW bimg) {
+	* create alpha texture from image
+	* 
+	* @param index
+	*            reusable index
+	* @param image
+	*            image
+	* @param bimg
+	*            buffered image
+	* @return new index if needed
+	*/
 
+	public int createAlphaTexture(int index, HTMLImageElement image, GBufferedImageW bimg) {
 		// create texture
 		WebGLTexture texture;
 
@@ -461,27 +459,27 @@ public class RendererImplShadersW extends RendererImplShaders {
 		}
 
 		glContext.bindTexture(WebGLRenderingContext.TEXTURE_2D, texture);
-		JavaScriptObject data = image == null
+		Object data = image == null
 				? bimg.getCanvas().getCanvasElement() : image;
 		glContext.texImage2D(WebGLRenderingContext.TEXTURE_2D, 0,
 				WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA,
-				WebGLRenderingContext.UNSIGNED_BYTE, data);
-
+				WebGLRenderingContext.UNSIGNED_BYTE,
+				Js.<elemental2.dom.ImageData>uncheckedCast(data));
 		glContext.generateMipmap(WebGLRenderingContext.TEXTURE_2D);
 
 		return newIndex;
 	}
 
 	/**
-	 * 
-	 * @param sizeX
-	 *            width
-	 * @param sizeY
-	 *            height
-	 * @param buf
-	 *            buffer
-	 * @return a texture for alpha channel
-	 */
+	* 
+	* @param sizeX
+	*            width
+	* @param sizeY
+	*            height
+	* @param buf
+	*            buffer
+	* @return a texture for alpha channel
+	*/
 	public int createAlphaTexture(int sizeX, int sizeY, byte[] buf) {
 
 		// create texture
@@ -492,9 +490,9 @@ public class RendererImplShadersW extends RendererImplShaders {
 		texturesArray.add(texture);
 
 		// create array with alpha channel
-		Uint8Array array = Uint8Array.create(buf.length * 4);
+		Uint8Array array = new Uint8Array(buf.length * 4);
 		for (int i = 0; i < buf.length; i++) {
-			array.set(i * 4 + 3, buf[i]);
+			array.setAt(i * 4 + 3, (double) buf[i]);
 		}
 		
 		glContext.bindTexture(WebGLRenderingContext.TEXTURE_2D, texture);
@@ -517,8 +515,8 @@ public class RendererImplShadersW extends RendererImplShaders {
 				ymax = 0;
 		for (int y = 0; y < label.getHeight(); y++) {
 			for (int x = 0; x < label.getWidth(); x++) {
-				int alpha = data.getAlphaAt(x, y);
-				if (alpha != 0) {
+				Double alpha = data.data.getAt(4 * (x + y * data.width) + 3);
+				if (alpha != null && alpha != 0) {
 					if (x < xmin) {
 						xmin = x;
 					}
@@ -605,9 +603,9 @@ public class RendererImplShadersW extends RendererImplShaders {
 
 	@Override
 	protected boolean checkFramebufferStatus() {
-		return getGL()
-				.checkFramebufferStatus(
-				WebGLRenderingContext.FRAMEBUFFER) == WebGLRenderingContext.FRAMEBUFFER_COMPLETE;
+		int status = getGL().checkFramebufferStatus(
+						WebGLRenderingContext.FRAMEBUFFER);
+		return status == WebGLRenderingContext.FRAMEBUFFER_COMPLETE;
 	}
 
 	@Override

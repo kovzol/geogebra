@@ -16,7 +16,7 @@ public class CommandUnderTilde extends Command1A {
 		return new UnderOverAtom(a,
 				new AccentedAtom(new PhantomAtom(a, true, false, false),
 						Symbols.WIDETILDE),
-                new TeXLength(Unit.MU, 0.3), true, false);
+				new TeXLength(Unit.MU, 0.3), true, false);
 	}
 
 }

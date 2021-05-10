@@ -104,7 +104,7 @@ public class AccentedAtom extends Atom {
 		}
 
 		if (!Double.isNaN(skew)) {
-            s = skew * Unit.MU.getFactor(env) - s;
+			s = skew * Unit.MU.getFactor(env) - s;
 		}
 
 		// TODO: maybe we've a bug here
@@ -134,7 +134,7 @@ public class AccentedAtom extends Atom {
 		vBox.setDepth(d);
 		vBox.setHeight(total - d);
 
-		return vBox;
+		return vBox.setAtom(this);
 	}
 
 	@Override

@@ -8,7 +8,6 @@ import java.util.Locale;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.commands.Commands;
-import org.geogebra.common.kernel.commands.CommandsConstants;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.localization.CommandErrorMessageBuilder;
 import org.geogebra.common.main.syntax.LocalizedCommandSyntax;
@@ -26,13 +25,13 @@ public abstract class Localization {
 	public final static String syntax3D = ".Syntax3D";
 	/** syntax suffix for keys in command bundle */
 	public final static String syntaxStr = ".Syntax";
-    private final LocalizedCommandSyntax commandSyntax = new LocalizedCommandSyntax(this);
+	private final LocalizedCommandSyntax commandSyntax = new LocalizedCommandSyntax(this);
 	/** used when a secondary language is being used for tooltips. */
 	private String[] fontSizeStrings = null;
 
 	static final public String ROUNDING_MENU_SEPARATOR = "---";
 
-    protected Locale currentLocale = Locale.ENGLISH;
+	protected Locale currentLocale = Locale.ENGLISH;
 
 	// Giac works to 13 sig digits (for "double" calculations)
 	private int dimension = 2;
@@ -503,7 +502,6 @@ public abstract class Localization {
 	/**
 	 * Translates the key and replaces "%0" by args[0], "%1" by args[1], etc
 	 * 
-	 * @version 2008-09-18
 	 * @author Michael Borcherds, Markus Hohenwarter
 	 * @param key
 	 *            key
@@ -893,10 +891,7 @@ public abstract class Localization {
 	 * @return whether 0 is plural
 	 */
 	public boolean isZeroPlural(String lang) {
-		if (lang.startsWith("fr")) {
-			return false;
-		}
-		return true;
+		return !lang.startsWith("fr");
 	}
 
 	/**
@@ -1020,7 +1015,7 @@ public abstract class Localization {
 	 * @return command syntax TODO check whether getSyntaxString works here
 	 */
 	public String getCommandSyntax(String key) {
-        return commandSyntax.getCommandSyntax(key, dimension);
+		return commandSyntax.getCommandSyntax(key, dimension);
 	}
 
 	/**
@@ -1032,7 +1027,7 @@ public abstract class Localization {
 	 */
 	public String getCommandSyntax(String key, int dim) {
 
-        return commandSyntax.getCommandSyntax(key, dim);
+		return commandSyntax.getCommandSyntax(key, dim);
 	}
 
 	/**
@@ -1095,7 +1090,7 @@ public abstract class Localization {
 	 * @return CAS syntax
 	 */
 	public String getCommandSyntaxCAS(String key) {
-        return commandSyntax.getCommandSyntaxCAS(key);
+		return commandSyntax.getCommandSyntaxCAS(key);
 	}
 
 	/**
@@ -1390,16 +1385,13 @@ public abstract class Localization {
 		for (Commands c : Commands.values()) {
 			Commands cInternal = Commands.englishToInternal(c);
 
-			// check for Commands.TABLE_ENGLISH to avoid
-			// InfiniteCone -> ConeInfinite
-			if (c.getTable() != CommandsConstants.TABLE_ENGLISH
-					&& toTest.equals(cInternal)
+			if (toTest.equals(cInternal)
 					&& !c.name().equals(cInternal.toString())) {
 				return c.name();
 			}
 		}
 
-        // nothing found, English name must be internalName
+		// nothing found, English name must be internalName
 		return internalName;
 	}
 
@@ -1531,17 +1523,26 @@ public abstract class Localization {
 		String ret = getMenu(altText);
 
 		// just in case translations not loaded
-		if (ret.indexOf("altText.") > -1) {
+		if (ret.contains("altText.")) {
 			ret = ret.replace("altText.", "");
 		}
 		return ret;
 	}
 
-    /**
-     * @return Translation of "Please check your Input"
-     */
-    public String getInvalidInputError() {
-        return Errors.InvalidInput.getError(this);
-    }
+	public boolean isUsingDecimalComma() {
+		return Language.isUsingDecimalComma(getLanguage());
+	}
+
+	/**
+	 * 
+	 * @return Translation of "Please check your Input"
+	 */
+	public String getInvalidInputError() {
+		return Errors.InvalidInput.getError(this);
+	}
+
+	protected LocalizedCommandSyntax getCommandSyntax() {
+		return commandSyntax;
+	}
 
 }

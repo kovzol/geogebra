@@ -28,8 +28,6 @@ import org.geogebra.web.html5.gui.util.GToggleButton;
 import org.geogebra.web.html5.gui.util.NoDragImage;
 import org.geogebra.web.html5.main.AppW;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.impl.ImageResourcePrototype;
@@ -72,7 +70,7 @@ class TextOptionsPanelW extends OptionPanel implements ITextOptionsListener,
 
 	public TextOptionsPanelW(TextOptionsModel model, AppW app) {
 		createGUI(model, app);
-		inlineFormatter = new InlineTextFormatter(app);
+		inlineFormatter = new InlineTextFormatter();
 	}
 
 	public void createGUI(TextOptionsModel model0, final AppW appw) {
@@ -89,85 +87,60 @@ class TextOptionsPanelW extends OptionPanel implements ITextOptionsListener,
 			lbFont.addItem(item);
 		}
 
-		lbFont.addChangeHandler(new ChangeHandler() {
-
-			@Override
-			public void onChange(ChangeEvent event) {
-				model.setEditGeoText(editor.getText());
-				model.applyFont(lbFont.getSelectedIndex() == 1);
-			}
+		lbFont.addChangeHandler(event -> {
+			model.setEditGeoText(editor.getText());
+			model.applyFont(lbFont.getSelectedIndex() == 1);
 		});
 		lbSize = new ListBox();
 
-		lbSize.addChangeHandler(new ChangeHandler() {
+		lbSize.addChangeHandler(event -> {
+			model.setEditGeoText(editor.getText());
+			boolean isCustom = (lbSize.getSelectedIndex() == 7);
+			if (isCustom) {
+				String currentSize = Math
+						.round(model.getTextPropertiesAt(0)
+								.getFontSizeMultiplier() * 100)
+						+ "%";
 
-			@Override
-			public void onChange(ChangeEvent event) {
-				model.setEditGeoText(editor.getText());
-				boolean isCustom = (lbSize.getSelectedIndex() == 7);
-				if (isCustom) {
-					String currentSize = Math
-							.round(model.getTextPropertiesAt(0)
-									.getFontSizeMultiplier() * 100)
-							+ "%";
+				AsyncOperation<String[]> customSizeHandler =
+						dialogResult -> model.applyFontSizeFromString(dialogResult[1]);
+				appw.getGuiManager()
+						.getOptionPane()
+						.showInputDialog(
+								appw
+										.getLocalization()
+										.getMenu("EnterPercentage"),
+								currentSize, null,
+								customSizeHandler);
 
-					AsyncOperation<String[]> customSizeHandler = new AsyncOperation<String[]>() {
-						@Override
-						public void callback(String[] dialogResult) {
-							model.applyFontSizeFromString(dialogResult[1]);
-						}
-					};
-					appw.getGuiManager()
-							.getOptionPane()
-							.showInputDialog(
-									appw
-											.getLocalization()
-											.getMenu("EnterPercentage"),
-									currentSize, null,
-									customSizeHandler);
-
-				} else {
-					model.applyFontSizeFromIndex(lbSize.getSelectedIndex());
-					double size = GeoText
-							.getRelativeFontSize(lbSize.getSelectedIndex())
-							* app.getActiveEuclidianView().getFontSize();
-					inlineFormat("size", size);
-				}
-				updatePreviewPanel();
+			} else {
+				model.applyFontSizeFromIndex(lbSize.getSelectedIndex());
+				double size = GeoText
+						.getRelativeFontSize(lbSize.getSelectedIndex())
+						* app.getActiveEuclidianView().getFontSize();
+				inlineFormat("size", size);
 			}
+			updatePreviewPanel();
 		});
 
-		// font size
-		// TODO require font phrases F.S.
-		// toggle buttons for bold and italic
-		if (appw.isUnbundledOrWhiteboard()) {
-			btnItalic = new MyToggleButtonW(
-					new ImageResourcePrototype(
-							null, MaterialDesignResources.INSTANCE
-									.text_italic_black().getSafeUri(),
-							0, 0, 24, 24, false, false));
-			btnItalic.addStyleName("btnItalic");
+		btnItalic = new MyToggleButtonW(
+				new ImageResourcePrototype(
+						null, MaterialDesignResources.INSTANCE
+								.text_italic_black().getSafeUri(),
+						0, 0, 24, 24, false, false));
+		btnItalic.addStyleName("btnItalic");
 
-			btnBold = new MyToggleButtonW(
-					new ImageResourcePrototype(
-							null, MaterialDesignResources.INSTANCE
-									.text_bold_black().getSafeUri(),
-							0, 0, 24, 24, false, false));
-			btnBold.addStyleName("btnBold");
-			if (app.isWhiteboardActive()) {
-				btnUnderline = new MyToggleButtonW(new NoDragImage(
-						MaterialDesignResources.INSTANCE.text_underline_black(), 24));
-				btnUnderline.addStyleName("btnUnderline");
-			}
-		} else {
-			btnBold = new MyToggleButtonW(loc.getMenu("Bold.Short"));
-			btnBold.addStyleName("btnBold");
+		btnBold = new MyToggleButtonW(
+				new ImageResourcePrototype(
+						null, MaterialDesignResources.INSTANCE
+								.text_bold_black().getSafeUri(),
+						0, 0, 24, 24, false, false));
+		btnBold.addStyleName("btnBold");
 
-			btnItalic = new MyToggleButtonW(loc.getMenu("Italic.Short"));
-			btnItalic.addStyleName("btnItalic");
-
-			btnBold.setToolTipText(loc.getPlainTooltip("stylebar.Bold"));
-			btnItalic.setToolTipText(loc.getPlainTooltip("stylebar.Italic"));
+		if (app.isWhiteboardActive()) {
+			btnUnderline = new MyToggleButtonW(new NoDragImage(
+					MaterialDesignResources.INSTANCE.text_underline_black(), 24));
+			btnUnderline.addStyleName("btnUnderline");
 		}
 
 		btnLatex = new MyToggleButtonW("LaTeX");
@@ -178,16 +151,12 @@ class TextOptionsPanelW extends OptionPanel implements ITextOptionsListener,
 			addStyleClickListener("underline", GFont.UNDERLINE, btnUnderline);
 		}
 
-		btnLatex.addClickHandler(new ClickHandler() {
+		btnLatex.addClickHandler(event -> {
+			model.setLaTeX(isLatex(), true);
+			// manual override -> ignore autodetect
+			mayDetectLaTeX = isLatex();
 
-			@Override
-			public void onClick(ClickEvent event) {
-				model.setLaTeX(isLatex(), true);
-				// manual override -> ignore autodetect
-				mayDetectLaTeX = isLatex();
-
-				updatePreviewPanel();
-			}
+			updatePreviewPanel();
 		});
 		btnLatex.addStyleName("btnLatex");
 
@@ -197,14 +166,10 @@ class TextOptionsPanelW extends OptionPanel implements ITextOptionsListener,
 			lbDecimalPlaces.addItem(item);
 		}
 
-		lbDecimalPlaces.addChangeHandler(new ChangeHandler() {
-
-			@Override
-			public void onChange(ChangeEvent event) {
-				model.setEditGeoText(editor.getText());
-				model.applyDecimalPlaces(lbDecimalPlaces.getSelectedIndex());
-				updatePreviewPanel();
-			}
+		lbDecimalPlaces.addChangeHandler(event -> {
+			model.setEditGeoText(editor.getText());
+			model.applyDecimalPlaces(lbDecimalPlaces.getSelectedIndex());
+			updatePreviewPanel();
 		});
 
 		// font, size
@@ -255,10 +220,8 @@ class TextOptionsPanelW extends OptionPanel implements ITextOptionsListener,
 
 		btnCancel = new Button();
 		btnPanel.add(btnCancel);
-		if (appw.isUnbundledOrWhiteboard()) {
-			btnOk.addStyleName("okBtn");
-			btnCancel.addStyleName("cancelBtn");
-		}
+		btnOk.addStyleName("okBtn");
+		btnCancel.addStyleName("cancelBtn");
 		btnCancel.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -337,16 +300,9 @@ class TextOptionsPanelW extends OptionPanel implements ITextOptionsListener,
 
 		decimalLabel.setText(loc.getMenu("Rounding") + ":");
 
-		if (!app.isUnbundledOrWhiteboard()) {
-			btnBold.setText(loc.getMenu("Bold.Short"));
-			btnItalic.setText(loc.getMenu("Italic.Short"));
-		}
-
 		btnLatex.setText(loc.getMenu("LaTeXFormula"));
-		if (!app.isUnbundledOrWhiteboard()) {
-			btnBold.setToolTipText(loc.getPlainTooltip("stylebar.Bold"));
-			btnItalic.setToolTipText(loc.getPlainTooltip("stylebar.Italic"));
-		}
+		btnBold.setToolTipText(loc.getPlainTooltip("stylebar.Bold"));
+		btnItalic.setToolTipText(loc.getPlainTooltip("stylebar.Italic"));
 
 		if (advancedPanel != null) {
 			advancedPanel.setLabels();
@@ -390,7 +346,7 @@ class TextOptionsPanelW extends OptionPanel implements ITextOptionsListener,
 	public void updateWidgetVisibility() {
 		secondLine.setVisible(model.hasRounding());
 		editorPanel.setVisible(model.isTextEditable());
-		lbFont.setVisible(model.hasFontStyle());
+		lbFont.setVisible(model.hasGeos());
 		btnBold.setVisible(model.hasFontStyle());
 		btnItalic.setVisible(model.hasFontStyle());
 		btnLatex.setVisible(model.isTextEditable());

@@ -29,11 +29,8 @@ public class CommandDispatcherBasic implements CommandDispatcherInterface {
 			return new CmdProduct(kernel);
 		case Extremum:
 			return new CmdExtremum(kernel);
-		case Holes:
-			if (kernel.getApplication().has(Feature.COMMAND_HOLES)) {
-				return new CmdHoles(kernel);
-			}
-			return null;
+		case RemovableDiscontinuity:
+			return new CmdRemovableDiscontinuity(kernel);
 		case Join:
 			return new CmdJoin(kernel);
 		case LCM:
@@ -246,9 +243,9 @@ public class CommandDispatcherBasic implements CommandDispatcherInterface {
 		case Div:
 			return new CmdDiv(kernel);
 		case Min:
-			return new CmdMin(kernel);
+			return new CmdMinMax(kernel, Commands.Min);
 		case Max:
-			return new CmdMax(kernel);
+			return new CmdMinMax(kernel, Commands.Max);
 		case Append:
 			return new CmdAppend(kernel);
 		case First:
@@ -285,9 +282,11 @@ public class CommandDispatcherBasic implements CommandDispatcherInterface {
 		case FormulaText:
 		case LaTeX:
 			return new CmdLaTeX(kernel);
-            case InputBox:
-            case Textfield:
-                return new CmdTextfield(kernel);
+		case InputBox:
+		case Textfield:
+			return new CmdTextfield(kernel);
+		case Surface:
+			return new CmdSurfaceCartesian(kernel);
 		default:
 			break;
 		}

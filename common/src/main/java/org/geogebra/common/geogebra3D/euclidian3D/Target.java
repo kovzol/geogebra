@@ -143,7 +143,7 @@ public class Target {
 		 */
 		public void setValue(double v) {
 			value = v;
-            isDefined = MyDouble.isFinite(value);
+			isDefined = MyDouble.isFinite(value);
 		}
 
 	}

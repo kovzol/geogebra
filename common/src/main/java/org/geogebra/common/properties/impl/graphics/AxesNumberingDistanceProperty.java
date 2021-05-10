@@ -5,16 +5,21 @@ import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.error.ErrorHelper;
 import org.geogebra.common.main.settings.EuclidianSettings;
-import org.geogebra.common.properties.AbstractProperty;
 import org.geogebra.common.properties.BooleanProperty;
+import org.geogebra.common.properties.impl.AbstractProperty;
+
+import com.google.j2objc.annotations.Weak;
 
 /**
  * This property controls the distance of the axes numbering.
  */
 public class AxesNumberingDistanceProperty extends AbstractProperty implements BooleanProperty {
 
+    @Weak
     private EuclidianSettings euclidianSettings;
+    @Weak
     private Kernel kernel;
+    @Weak
     private EuclidianView euclidianView;
 
     /**

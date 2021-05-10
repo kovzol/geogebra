@@ -19,8 +19,9 @@ the Free Software Foundation.
 package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
-import java.util.TreeMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeMap;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Construction;
@@ -78,7 +79,10 @@ public class AlgoJoinPoints extends AlgoElement
 		// compute line through P, Q
 		compute();
 		addIncidence();
-		g.setMode(cons.getApplication().getConfig().getLineDisplayStyle(), true);
+		int mode = cons.getApplication().getConfig().getLineDisplayStyle();
+		if (mode != -1) {
+			g.setMode(mode, true);
+		}
 	}
 
 	/**

@@ -110,14 +110,6 @@ public interface EmbedManager {
 	void executeAction(EventType action);
 
 	/**
-	 * @param action
-	 *            event type
-	 * @param embedId
-	 *            ID of embedded element
-	 */
-	void executeAction(EventType action, int embedId);
-
-	/**
 	 * Move embeds to chache so that they don't need rebuilding during undo
 	 */
 	void storeEmbeds();
@@ -132,6 +124,13 @@ public interface EmbedManager {
 	 */
 	void openGraspableMTool();
 
+	/**
+	 * opens the H5P tool
+	 * @param onError error handler
+	 * @return embed element
+	 */
+	GeoEmbed openH5PTool(Runnable onError);
+
 	void initAppEmbed(GeoEmbed ge);
 
 	/**
@@ -139,4 +138,28 @@ public interface EmbedManager {
 	 * @param layer z-index
 	 */
 	void setLayer(DrawWidget embed, int layer);
+
+	/**
+	 * @param embedID embed ID
+	 * @return embed content as JSON
+	 */
+	String getContent(int embedID);
+
+	/**
+	 * @param embedID embed ID
+	 * @param content embed content as JSON
+	 */
+	void setContent(int embedID, String content);
+
+	/**
+	 * @param action
+	 *            action to be executed
+	 * @param id
+	 *            embed ID
+	 */
+	void embeddedAction(EventType action, String id);
+
+	void setContentSync(String label, String base64);
+
+	void onError(GeoEmbed geoEmbed);
 }

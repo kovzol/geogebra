@@ -24,15 +24,18 @@ import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.DoubleUtil;
 import org.geogebra.common.util.debug.HasDebugString;
 
+import com.google.j2objc.annotations.Weak;
+
 /**
  * An Polynomial is a list of Terms
  */
 
 public class Polynomial implements HasDebugString {
 
-    private static final int MAX_ALLOWED_DEGREE = 1000;
+	private static final int MAX_ALLOWED_DEGREE = 1000;
 
 	private ArrayList<Term> terms = new ArrayList<>();
+	@Weak
 	private Kernel kernel;
 
 	/**
@@ -669,8 +672,8 @@ public class Polynomial implements HasDebugString {
 			} else if (this.degree() == 0) {
 				terms.get(0).coefficient = terms.get(0).coefficient.wrap()
 						.power(rt);
-            } else if (!DoubleUtil.isInteger(power) || DoubleUtil.isGreater(0, power)
-                    || DoubleUtil.isGreater(power, MAX_ALLOWED_DEGREE)) {
+			} else if (!DoubleUtil.isInteger(power) || DoubleUtil.isGreater(0, power)
+					|| DoubleUtil.isGreater(power, MAX_ALLOWED_DEGREE)) {
 				equ.setIsPolynomial(false);
 			} else {
 				this.power((int) power, equ, keepFraction);

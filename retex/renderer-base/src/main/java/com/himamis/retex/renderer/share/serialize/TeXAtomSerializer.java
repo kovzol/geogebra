@@ -4,6 +4,7 @@ import com.himamis.retex.renderer.share.AccentedAtom;
 import com.himamis.retex.renderer.share.ArrayAtom;
 import com.himamis.retex.renderer.share.ArrayOfAtoms;
 import com.himamis.retex.renderer.share.Atom;
+import com.himamis.retex.renderer.share.BigDelimiterAtom;
 import com.himamis.retex.renderer.share.BigOperatorAtom;
 import com.himamis.retex.renderer.share.BreakMarkAtom;
 import com.himamis.retex.renderer.share.CharAtom;
@@ -31,14 +32,14 @@ import com.himamis.retex.renderer.share.platform.FactoryProvider;
  *
  */
 public class TeXAtomSerializer {
-	private BracketsAdapterI adapter;
+	private SerializationAdapter adapter;
 
 	/**
 	 * @param ad
 	 *            adapter
 	 */
-	public TeXAtomSerializer(BracketsAdapterI ad) {
-		this.adapter = ad == null ? new DefaultBracketsAdapter() : ad;
+	public TeXAtomSerializer(SerializationAdapter ad) {
+		this.adapter = ad == null ? new DefaultSerializationAdapter() : ad;
 	}
 
 	/**
@@ -47,24 +48,19 @@ public class TeXAtomSerializer {
 	 * @return expression in GeoGebra syntax
 	 */
 	public String serialize(Atom root) {
-
-        // FactoryProvider.debugS("root = " + root.getClass());
 		if (root instanceof FractionAtom) {
-			FractionAtom frac = (FractionAtom) root;
-			return "(" + serialize(frac.getNumerator()) + ")/("
-					+ serialize(frac.getDenominator()) + ")";
+			return serializeFractionAtom((FractionAtom) root);
 		}
 		if (root instanceof NthRoot) {
 			NthRoot nRoot = (NthRoot) root;
 			if (nRoot.getRoot() == null) {
-				return "sqrt(" + serialize(nRoot.getTrueBase()) + ")";
+				return adapter.sqrt(serialize(nRoot.getTrueBase()));
 			}
-			return "nroot(" + serialize(nRoot.getTrueBase()) + ","
-					+ serialize(nRoot.getRoot()) + ")";
+			return adapter.nroot(serialize(nRoot.getTrueBase()), serialize(nRoot.getRoot()));
 		}
 		if (root instanceof CharAtom) {
 			CharAtom ch = (CharAtom) root;
-			return ch.getCharacter() + "";
+			return adapter.convertCharacter(ch.getCharacter());
 		}
 		if (root instanceof TypedAtom) {
 			TypedAtom ch = (TypedAtom) root;
@@ -76,9 +72,12 @@ public class TeXAtomSerializer {
 		}
 		if (root instanceof FencedAtom) {
 			FencedAtom ch = (FencedAtom) root;
+			String base = serialize(ch.getTrueBase());
+			if (isBinomial(ch.getTrueBase())) {
+				return base;
+			}
 			String left = serialize(ch.getLeft());
 			String right = serialize(ch.getRight());
-			String base = serialize(ch.getTrueBase());
 			return adapter.transformBrackets(left, base, right);
 		}
 		if (root instanceof SpaceAtom) {
@@ -91,7 +90,7 @@ public class TeXAtomSerializer {
 		if (root instanceof SymbolAtom) {
 
 			SymbolAtom ch = (SymbolAtom) root;
-			String out = ch.getUnicode() + "";
+			String out = adapter.convertCharacter(ch.getUnicode());
 			if ("\u00b7".equals(out)) {
 				return "*";
 			}
@@ -119,7 +118,7 @@ public class TeXAtomSerializer {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; row.getElement(i) != null; i++) {
 				sb.append(serialize(row.getElement(i)));
-				sb.append(" new line ");
+				sb.append(' ');
 			}
 			return sb.toString();
 		}
@@ -137,9 +136,9 @@ public class TeXAtomSerializer {
 			return sb.toString();
 		}
 
-        if (root instanceof JavaFontRenderingAtom) {
-            return ((JavaFontRenderingAtom) root).getString();
-        }
+		if (root instanceof JavaFontRenderingAtom) {
+			return ((JavaFontRenderingAtom) root).getString();
+		}
 
 		// serialise table to eg {{1,2,3},{3,4,5}}
 		if (root instanceof ArrayAtom) {
@@ -170,37 +169,63 @@ public class TeXAtomSerializer {
 			return sb.toString();
 		}
 
-        if (root instanceof BigOperatorAtom) {
-            BigOperatorAtom bigOp = (BigOperatorAtom) root;
-            return serialize(bigOp.getTrueBase()) + " from " + serialize(bigOp.getBottom()) + " to "
-                    + serialize(bigOp.getTop());
-        }
+		if (root instanceof BigOperatorAtom) {
+			return serializeBigOperator((BigOperatorAtom) root);
+		}
 		
 		// BoldAtom, ItAtom, TextStyleAtom, StyleAtom, RomanAtom
 		// TODO: probably more atoms need to implement HasTrueBase
 		if (root instanceof HasTrueBase) {
 			return serialize(((HasTrueBase) root).getTrueBase());
 		}
+		if (root instanceof BigDelimiterAtom) {
+			return serialize(((BigDelimiterAtom) root).getDelimiter());
+		}
 
-        FactoryProvider.debugS("Unhandled atom:"
-                + (root == null ? "null" : (root.getClass() + " " + root.toString())));
+		FactoryProvider.debugS("Unhandled atom:"
+				+ (root == null ? "null" : (root.getClass() + " " + root.toString())));
 		// FactoryProvider.getInstance().printStacktrace();
 
 		return "?";
 	}
 
+	private String serializeFractionAtom(FractionAtom frac) {
+		if (isBinomial(frac)) {
+			return "nCr(" + serialize(frac.getNumerator()) + ","
+					+ serialize(frac.getDenominator()) + ")";
+		}
+		return adapter.fraction(serialize(frac.getNumerator()),
+				serialize(frac.getDenominator()));
+	}
+
+	private boolean isBinomial(Atom frac) {
+		return frac instanceof FractionAtom && ((FractionAtom) frac).isRuleHidden();
+	}
+
+	private String serializeBigOperator(BigOperatorAtom bigOp) {
+		String op = serialize(bigOp.getTrueBase());
+
+		if ("log".equals(op)) {
+			return "log_" + serialize(bigOp.getBottom());
+		}
+
+		// eg sum/product
+		return serialize(bigOp.getTrueBase()) + " from " + serialize(bigOp.getBottom()) + " to "
+				+ serialize(bigOp.getTop());
+	}
+
 	private String subSup(ScriptsAtom script) {
-		StringBuilder sb = new StringBuilder(serialize(script.getTrueBase()));
+		String base = serialize(script.getTrueBase());
+		String sub = null;
+		String sup = null;
+		serialize(script.getTrueBase());
 		if (script.getSub() != null) {
-			String sub = serialize(script.getSub());
-			sb.append(adapter.subscriptContent(sub));
+			sub = serialize(script.getSub());
 		}
 		if (script.getSup() != null) {
-			sb.append("^(");
-			sb.append(serialize(script.getSup()));
-			sb.append(")");
+			sup = serialize(script.getSup());
 		}
-		return sb.toString();
+		return adapter.subscriptContent(base, sub, sup);
 	}
 
 }

@@ -44,6 +44,7 @@ import org.geogebra.common.main.localization.CommandErrorMessageBuilder;
 import org.geogebra.common.plugin.GeoClass;
 import org.geogebra.common.util.debug.Log;
 
+import com.google.j2objc.annotations.Weak;
 import com.himamis.retex.editor.share.util.Unicode;
 
 /**
@@ -53,15 +54,19 @@ import com.himamis.retex.editor.share.util.Unicode;
 public abstract class CommandProcessor {
 
 	/** application */
+	@Weak
 	protected App app;
 	/** localization */
 	protected Localization loc;
 	/** kernel */
+	@Weak
 	protected Kernel kernel;
 	/** construction */
+	@Weak
 	protected Construction cons;
-	private AlgebraProcessor algProcessor;
-	private CommandErrorMessageBuilder commandErrorMessageBuilder;
+	@Weak
+	private final AlgebraProcessor algProcessor;
+	private final CommandErrorMessageBuilder commandErrorMessageBuilder;
 
 	/**
 	 * Creates new command processor
@@ -750,7 +755,7 @@ public abstract class CommandProcessor {
 	}
 
 	public GeoList wrapInList(Kernel kernel, GeoElement[] args,
-							  int length, GeoClass type) {
+			int length, GeoClass type) {
 		return wrapInList(args, length, type, null);
 	}
 
@@ -769,7 +774,7 @@ public abstract class CommandProcessor {
 	 *            number of arguments
 	 */
 	public GeoList wrapInList(GeoElement[] args,
-							  int length, GeoClass type, Command cmd) {
+			int length, GeoClass type, Command cmd) {
 		boolean correctType = true;
 		ArrayList<GeoElement> geoElementList = new ArrayList<>();
 		for (int i = 0; i < length; i++) {
@@ -918,4 +923,14 @@ public abstract class CommandProcessor {
 				!kernel.getConstruction().isFileLoading() && value);
 	}
 
+	public Localization getLocalization() {
+		return loc;
+	}
+
+	protected GeoElement validate(GeoElement arg, boolean ok, Command c) throws MyError {
+		if (ok) {
+			return arg;
+		}
+		throw argErr(arg, c);
+	}
 }

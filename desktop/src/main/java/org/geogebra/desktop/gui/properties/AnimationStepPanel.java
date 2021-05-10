@@ -1,12 +1,16 @@
 package org.geogebra.desktop.gui.properties;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.common.gui.UpdateFonts;
@@ -34,39 +38,41 @@ public class AnimationStepPanel extends JPanel
 
 	private Kernel kernel;
 
-    /**
-     * @param app application
-     */
-    public AnimationStepPanel(AppD app) {
-        this(new AnimationStepModel(app), app);
-    }
+	/**
+	 * @param app
+	 *            application
+	 */
+	public AnimationStepPanel(AppD app) {
+		this(new AnimationStepModel(app), app);
+	}
 
-    /**
-     * @param m   model
-     * @param app application
-     */
-    public AnimationStepPanel(AnimationStepModel m, AppD app) {
-        kernel = app.getKernel();
-        model = m;
-        model.setListener(this);
-        // text field for animation step
-        label = new JLabel();
-        tfAnimStep = new AngleTextField(6, app);
-        label.setLabelFor(tfAnimStep);
-        tfAnimStep.addActionListener(this);
-        tfAnimStep.addFocusListener(this);
+	/**
+	 *
+	 * @param m model
+	 * @param app application
+	 */
+	public AnimationStepPanel(AnimationStepModel m, AppD app) {
+		kernel = app.getKernel();
+		model = m;
+		model.setListener(this);
+		// text field for animation step
+		label = new JLabel();
+		tfAnimStep = new AngleTextField(6, app);
+		label.setLabelFor(tfAnimStep);
+		tfAnimStep.addActionListener(this);
+		tfAnimStep.addFocusListener(this);
 
-        // put it all together
-        JPanel animPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        animPanel.add(label);
-        animPanel.add(tfAnimStep);
+		// put it all together
+		JPanel animPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		animPanel.add(label);
+		animPanel.add(tfAnimStep);
 
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        animPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        add(animPanel);
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		animPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		add(animPanel);
 
-        setLabels();
-    }
+		setLabels();
+	}
 
 	@Override
 	public void setLabels() {

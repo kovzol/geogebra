@@ -41,6 +41,8 @@ import org.geogebra.common.util.MaxSizeHashMap;
 import org.geogebra.common.util.MyMath;
 import org.geogebra.common.util.StringUtil;
 
+import com.google.j2objc.annotations.Weak;
+
 /**
  * Function of N variables that returns either a number or a boolean. This
  * depends on the expression this function is based on.
@@ -63,12 +65,15 @@ public class FunctionNVar extends ValidExpression
 	protected boolean isConstantFunction = false;
 
 	/** kernel */
+	@Weak
 	protected Kernel kernel;
 	private final static int MAX_CAS_EVAL_MAP_SIZE = 100;
 	private MaxSizeHashMap<String, FunctionNVar> casEvalMap;
 	private String shortLHS;
 	private ExpressionNode casEvalExpression;
 	private String casEvalStringSymbolic;
+
+	private boolean forceInequality;
 
 	private static ArrayList<ExpressionNode> undecided = new ArrayList<>();
 
@@ -79,8 +84,8 @@ public class FunctionNVar extends ValidExpression
 
 		@Override
 		public boolean check(ExpressionValue v) {
-			return (v.isGeoElement() && ((GeoElement) v).isRandomGeo()) || (v.isExpressionNode()
-					&& ((ExpressionNode) v).getOperation() == Operation.RANDOM);
+			return (v.isGeoElement() && ((GeoElement) v).isRandomGeo())
+					|| v.isOperation(Operation.RANDOM);
 		}
 	}
 
@@ -169,8 +174,8 @@ public class FunctionNVar extends ValidExpression
 			return false;
 		}
 
-		for (int i = 0; i < fVars.length; i++) {
-			if (fVars[i].toString(StringTemplate.defaultTemplate).equals(var)) {
+		for (FunctionVariable fVar : fVars) {
+			if (fVar.toString(StringTemplate.defaultTemplate).equals(var)) {
 				return true;
 			}
 		}
@@ -193,7 +198,7 @@ public class FunctionNVar extends ValidExpression
 	/**
 	 * @return function expression
 	 */
-	final public ExpressionNode getExpression() {
+	public ExpressionNode getExpression() {
 		return expression;
 	}
 
@@ -357,11 +362,6 @@ public class FunctionNVar extends ValidExpression
 		// we got this far)
 		// by an instance of MyDouble
 
-		// simplify constant parts in expression
-		if (info.isSimplifyingIntegers()) {
-			expression.simplifyConstantIntegers();
-		}
-
 		// evaluate expression to find out about the type of function
 		ExpressionValue ev;
 		try {
@@ -389,9 +389,27 @@ public class FunctionNVar extends ValidExpression
 	 * structure to x*(x+1) for example.
 	 */
 	private void fixStructure() {
+		FunctionVariable[] xyzVars = getXYZVars(fVars);
+
+		// try to replace x(x+1) by x*(x+1)
+		undecided.clear();
+		expression.replaceXYZnodes(xyzVars[0], xyzVars[1], xyzVars[2], undecided);
+		for (ExpressionNode en : undecided) {
+			en.setOperation(Operation.MULTIPLY);
+		}
+		undecided.clear();
+	}
+
+	/**
+	 * Returns the last x, y and z variables from the input var array, if they exist.
+	 *
+	 * @param vars input array
+	 * @return x, y and z variables from the input, if they exist
+	 */
+	public static FunctionVariable[] getXYZVars(FunctionVariable[] vars) {
 		// get function variables for x, y, z
 		FunctionVariable xVar = null, yVar = null, zVar = null;
-		for (FunctionVariable fVar : fVars) {
+		for (FunctionVariable fVar : vars) {
 			if ("x".equals(fVar.toString(StringTemplate.defaultTemplate))) {
 				xVar = fVar;
 			} else if ("y".equals(fVar.toString(StringTemplate.defaultTemplate))) {
@@ -400,14 +418,7 @@ public class FunctionNVar extends ValidExpression
 				zVar = fVar;
 			}
 		}
-
-		// try to replace x(x+1) by x*(x+1)
-		undecided.clear();
-		expression.replaceXYZnodes(xVar, yVar, zVar, undecided);
-		for (ExpressionNode en : undecided) {
-			en.setOperation(Operation.MULTIPLY);
-		}
-		undecided.clear();
+		return new FunctionVariable[] { xVar, yVar, zVar };
 	}
 
 	/**
@@ -420,15 +431,21 @@ public class FunctionNVar extends ValidExpression
 			isBooleanFunction = true;
 		} else if (ev instanceof NumberValue) {
 			isBooleanFunction = false;
-		} else if (ev instanceof FunctionNVar) {
-			expression = ((FunctionNVar) ev).getExpression();
-			fVars = ((FunctionNVar) ev).getFunctionVariables();
-		} else if (ev instanceof GeoFunction) {
-			expression = ((GeoFunction) ev).getFunctionExpression();
-			fVars = ((GeoFunction) ev).getFunction().getFunctionVariables();
-		} else if (ev instanceof GeoFunctionNVar) {
-			expression = ((GeoFunctionNVar) ev).getFunctionExpression();
-			fVars = ((GeoFunctionNVar) ev).getFunction().getFunctionVariables();
+		}  else if (ev instanceof GeoFunction && ((GeoFunction) ev).isLabelSet()) {
+			// f(x) should be a dependent function
+			expression = new ExpressionNode(kernel, ev, Operation.FUNCTION, fVars[0]);
+		} else if (ev instanceof GeoFunctionNVar && ((GeoFunctionNVar) ev).isLabelSet()) {
+			// f(x, y) should be a dependent function
+			MyList args = new MyList(kernel, fVars.length);
+			for (FunctionVariable fVar: fVars) {
+				args.addListElement(fVar);
+			}
+			expression = new ExpressionNode(kernel, ev, Operation.FUNCTION_NVAR, args);
+		} else if (ev instanceof FunctionalNVar) {
+			expression = ((FunctionalNVar) ev).getFunctionExpression();
+			fVars = ((FunctionalNVar) ev).getFunctionVariables();
+		} else if (ev instanceof MyList && ((MyList) ev).isMatrix()) {
+			return true;
 		} else {
 			return false;
 		}
@@ -453,8 +470,8 @@ public class FunctionNVar extends ValidExpression
 		if (isConstantFunction) {
 			return true;
 		}
-		for (int i = 0; i < fVars.length; i++) {
-			if (expression.contains(fVars[i])) {
+		for (FunctionVariable fVar : fVars) {
+			if (expression.contains(fVar)) {
 				return false;
 			}
 		}
@@ -593,7 +610,7 @@ public class FunctionNVar extends ValidExpression
 		// exists in GeoGebra
 		// see TRAC-2547
 
-		StringTemplate tpl = StringTemplate.prefixedDefault;
+		StringTemplate tpl = StringTemplate.numericNoLocal;
 		// did expression change since last time?
 		// or did symbolic falg change?
 		if (casEvalExpression != expression
@@ -664,13 +681,8 @@ public class FunctionNVar extends ValidExpression
 				resultFun = ensureVarsAreNotNull(resultFun);
 			}
 			resultFun.initFunction();
-		} catch (Error err) {
-			err.printStackTrace();
-			resultFun = null;
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultFun = null;
 		} catch (Throwable e) {
+			e.printStackTrace();
 			resultFun = null;
 		}
 
@@ -757,13 +769,11 @@ public class FunctionNVar extends ValidExpression
 
 	@Override
 	public String getLabelForAssignment() {
-		StringBuilder sb = new StringBuilder();
 		// function, e.g. f(x) := 2*x
-		sb.append(getLabel());
-		sb.append("(");
-		sb.append(getVarString(StringTemplate.defaultTemplate));
-		sb.append(")");
-		return sb.toString();
+		return getLabel()
+				+ "("
+				+ getVarString(StringTemplate.defaultTemplate)
+				+ ")";
 	}
 
 	@Override
@@ -776,20 +786,18 @@ public class FunctionNVar extends ValidExpression
 	 * 
 	 * @param fe
 	 *            expression node
-	 * @param functional
-	 *            function to which ineqs are associated
 	 * @return true if the functions consists of inequalities
 	 */
-	public boolean initIneqs(ExpressionNode fe, FunctionalNVar functional) {
+	public boolean initIneqs(ExpressionNode fe) {
 		if (ineqs == null || fe == getExpression()) {
 			ineqs = new IneqTree();
 		}
-		boolean b = initIneqs(fe, functional, ineqs, false);
+		boolean b = initIneqs(fe, ineqs, false);
 		ineqs.recomputeSize();
 		return b;
 	}
 
-	private boolean initIneqs(ExpressionNode fe, FunctionalNVar functional,
+	private boolean initIneqs(ExpressionNode fe,
 			IneqTree tree, boolean negate) {
 		Operation op = fe.getOperation();
 		ExpressionNode leftTree = fe.getLeftTree();
@@ -813,17 +821,17 @@ public class FunctionNVar extends ValidExpression
 			tree.setOperation(adjustOp(op, negate));
 			tree.setLeft(new IneqTree());
 			tree.setRight(new IneqTree());
-			return initIneqs(leftTree, functional, tree.getLeft(), negate)
-					&& initIneqs(rightTree, functional, tree.getRight(),
+			return initIneqs(leftTree,  tree.getLeft(), negate)
+					&& initIneqs(rightTree,  tree.getRight(),
 							negate);
 		} else if (op.equals(Operation.NOT)) {
-			return initIneqs(leftTree, functional, tree, !negate);
+			return initIneqs(leftTree,  tree, !negate);
 		} else if (op.equals(Operation.IMPLICATION)) {
 			tree.setOperation(adjustOp(Operation.OR, negate));
 			tree.setLeft(new IneqTree());
 			tree.setRight(new IneqTree());
-			return initIneqs(leftTree, functional, tree.getLeft(), !negate)
-					&& initIneqs(rightTree, functional, tree.getRight(),
+			return initIneqs(leftTree,  tree.getLeft(), !negate)
+					&& initIneqs(rightTree,  tree.getRight(),
 							negate);
 		} else if (op.equals(Operation.FUNCTION_NVAR)) {
 			FunctionalNVar nv = (FunctionalNVar) leftTree.getLeft();
@@ -835,7 +843,7 @@ public class FunctionNVar extends ValidExpression
 				subExpr.replace(subVars[i],
 						((MyList) rightTree.getLeft()).getListElement(i));
 			}
-			return initIneqs(subExpr, functional, tree, negate);
+			return initIneqs(subExpr,  tree, negate);
 		} else {
 			return false;
 		}
@@ -1201,7 +1209,7 @@ public class FunctionNVar extends ValidExpression
 			expression = expression.replace(fVars[0], newX).wrap();
 			expression = expression.replace(fVars[1], newY).wrap();
 			expression = expression.replace(fVars[zIndex], newZ).wrap();
-			this.initIneqs(expression, this);
+			this.initIneqs(expression);
 			this.translate(s.getX(), s.getY(), s.getZ());
 		} else {
 			this.translate(-s.getX(), -s.getY());
@@ -1300,7 +1308,7 @@ public class FunctionNVar extends ValidExpression
 		expression = expression.traverse(
 				CopyReplacer.getReplacer(dummy, newX.divide(newZ), kernel))
 				.wrap();
-		this.initIneqs(expression, this);
+		this.initIneqs(expression);
 	}
 
 	@Override
@@ -1347,7 +1355,7 @@ public class FunctionNVar extends ValidExpression
 		for (int i = 0; i < n; i++) {
 			expDeriv = expDeriv.derivative(fv, kernel);
 		}
-		expDeriv.simplifyConstantIntegers();
+		expDeriv = expDeriv.shallowCopy();
 		return new FunctionNVar(expDeriv, fVars);
 	}
 
@@ -1527,4 +1535,13 @@ public class FunctionNVar extends ValidExpression
 		getExpression().setSecret(algo);
 	}
 
+	@Override
+	public boolean isForceInequality() {
+		return forceInequality;
+	}
+
+	@Override
+	public void setForceInequality(boolean forceInequality) {
+		this.forceInequality = forceInequality;
+	}
 }

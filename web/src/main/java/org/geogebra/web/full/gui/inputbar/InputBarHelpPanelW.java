@@ -83,10 +83,10 @@ public class InputBarHelpPanelW extends VerticalPanel implements SetLabels, Bool
 
 		// button panel
 		FlowPanel pnlButton = new FlowPanel();
-        pnlButton.getElement().getStyle().setFloat(Style.Float.RIGHT);
+		pnlButton.getElement().getStyle().setFloat(Style.Float.RIGHT);
 
-        // create help button
-        btnOnlineHelp = new Button(app.getLocalization().getMenu("ShowOnlineHelp"));
+		// create help button
+		btnOnlineHelp = new Button(app.getLocalization().getMenu("ShowOnlineHelp"));
 			btnOnlineHelp.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
@@ -137,7 +137,7 @@ public class InputBarHelpPanelW extends VerticalPanel implements SetLabels, Bool
 				onSelectionNative(item, fireEvents);
 			}
 
-            private native void onSelectionNative(TreeItem item, boolean fireEvents) /*-{
+			private native void onSelectionNative(TreeItem item, boolean fireEvents) /*-{
 				this.@com.google.gwt.user.client.ui.Tree::onSelection(Lcom/google/gwt/user/client/ui/TreeItem;ZZ)(item, fireEvents, false);
 			}-*/;
 		};
@@ -146,8 +146,8 @@ public class InputBarHelpPanelW extends VerticalPanel implements SetLabels, Bool
 		indexTree.setAnimationEnabled(true);
 
 		// show only mathematical functions for exam simple calculator
-		if (app.getArticleElement().hasDataParamEnableGraphing()
-				&& !app.getArticleElement().getDataParamEnableGraphing(true)) {
+		if (app.getAppletParameters().hasDataParamEnableGraphing()
+				&& !app.getAppletParameters().getDataParamEnableGraphing(true)) {
 			detailScroller = new ScrollPanel(detailPanel);
 			detailScroller.setStyleName("AVHelpDetailScroller");
 			add(detailScroller);
@@ -172,7 +172,7 @@ public class InputBarHelpPanelW extends VerticalPanel implements SetLabels, Bool
 		btnOnlineHelp.setEnabled(online);
 	}
 
-    void showOnlineHelpButton(boolean show) {
+	void showOnlineHelpButton(boolean show) {
 		btnOnlineHelp.setVisible(show);
 	}
 
@@ -185,14 +185,14 @@ public class InputBarHelpPanelW extends VerticalPanel implements SetLabels, Bool
 	 */
 	protected void openOnlineHelp() {
 		if (getSelectedCommand() == null) {
-            app.getGuiManager().openHelp("InputBar");
+			app.getGuiManager().openHelp("InputBar");
 
 		} else if (getSelectedCommand().equals(
 		        app.getLocalization().getMenu("MathematicalFunctions"))) {
-            app.getGuiManager().openHelp(App.WIKI_OPERATORS);
+			app.getGuiManager().openHelp(App.WIKI_OPERATORS);
 
 		} else {
-            app.getGuiManager()
+			app.getGuiManager()
 			        .openCommandHelp(getSelectedCommand());
 		}
 	}
@@ -223,7 +223,7 @@ public class InputBarHelpPanelW extends VerticalPanel implements SetLabels, Bool
 		indexTree.setSelectedItem(itmFunction);
 		updateDetailPanel();
 		btnOnlineHelp.setText(app.getLocalization().getMenu("ShowOnlineHelp"));
-        btnClose.setText(app.getLocalization().getMenu("Close"));
+		btnClose.setText(app.getLocalization().getMenu("Close"));
 	}
 
 	/**
@@ -232,19 +232,19 @@ public class InputBarHelpPanelW extends VerticalPanel implements SetLabels, Bool
 	 * @param maxOffsetHeight
 	 *            max height
 	 */
-    public void updateGUI(int maxOffsetHeight) {
-        showOnlineHelpButton(!app.isExam() && app.showMenuBar());
-        int height = maxOffsetHeight - 60;
+	public void updateGUI(int maxOffsetHeight) {
+		showOnlineHelpButton(!app.isExam() && app.showMenuBar());
+		int height = maxOffsetHeight - 60;
 		double width = ((GuiManagerW) app.getGuiManager()).getRootComponent()
-                .getOffsetWidth() - 60;
+				.getOffsetWidth() - 60;
 
-		if (app.getArticleElement().hasDataParamEnableGraphing()
-				&& !app.getArticleElement().getDataParamEnableGraphing(true)) {
+		if (app.getAppletParameters().hasDataParamEnableGraphing()
+				&& !app.getAppletParameters().getDataParamEnableGraphing(true)) {
 			int w = (int) Math.min(400, width);
-            detailScroller.setPixelSize(w, height);
+			detailScroller.setPixelSize(w, height);
 		} else {
 			int w = (int) Math.min(700, width);
-            sp.setPixelSize(w, height);
+			sp.setPixelSize(w, height);
 		}
 	}
 	
@@ -257,8 +257,8 @@ public class InputBarHelpPanelW extends VerticalPanel implements SetLabels, Bool
 		double width = ((GuiManagerW) app.getGuiManager()).getRootComponent()
 				.getOffsetWidth() * scale - 60;
 
-		if (app.getArticleElement().hasDataParamEnableGraphing()
-				&& !app.getArticleElement().getDataParamEnableGraphing(true)) {
+		if (app.getAppletParameters().hasDataParamEnableGraphing()
+				&& !app.getAppletParameters().getDataParamEnableGraphing(true)) {
 			return (int) Math.min(400, width);
 		}
 		
@@ -308,7 +308,7 @@ public class InputBarHelpPanelW extends VerticalPanel implements SetLabels, Bool
 	}
 
 	private void addCmdNames(TreeItem item, TreeSet<String> names) {
-        for (String cmdName : names) {
+		for (String cmdName : names) {
 			if (cmdName != null && cmdName.length() > 0) {
 				MyTreeItem cmd = new MyTreeItem();
 				cmd.setWidget(new TreeItemButton(cmdName, cmd, true));
@@ -438,8 +438,8 @@ public class InputBarHelpPanelW extends VerticalPanel implements SetLabels, Bool
 			}
 			// don't show cas specific syntax for exam graphing
 			boolean supportsCAS = app.getSettings().getCasSettings().isEnabled();
-			if (!app.getArticleElement().hasDataParamEnableGraphing()
-					|| (app.getArticleElement().hasDataParamEnableGraphing() && supportsCAS)) {
+			if (!app.getAppletParameters().hasDataParamEnableGraphing()
+					|| (app.getAppletParameters().hasDataParamEnableGraphing() && supportsCAS)) {
 
 				Label headCAS = new Label(loc.getMenu("Type.CAS") + ":");
 				headCAS.addStyleName("inputHelp-headerCAS");

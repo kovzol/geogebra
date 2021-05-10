@@ -89,12 +89,12 @@ public class SpreadsheetRowHeaderW implements SpreadsheetHeader {
 	// ============================================
 
 	private void registerListeners() {
-        grid.addBitlessDomHandler(headerController, MouseDownEvent.getType());
-        grid.addBitlessDomHandler(headerController, MouseUpEvent.getType());
-        grid.addBitlessDomHandler(headerController, MouseMoveEvent.getType());
-        grid.addBitlessDomHandler(this, TouchStartEvent.getType());
-        grid.addBitlessDomHandler(this, TouchMoveEvent.getType());
-        grid.addBitlessDomHandler(this, TouchEndEvent.getType());
+		grid.addBitlessDomHandler(headerController, MouseDownEvent.getType());
+		grid.addBitlessDomHandler(headerController, MouseUpEvent.getType());
+		grid.addBitlessDomHandler(headerController, MouseMoveEvent.getType());
+		grid.addBitlessDomHandler(this, TouchStartEvent.getType());
+		grid.addBitlessDomHandler(this, TouchMoveEvent.getType());
+		grid.addBitlessDomHandler(this, TouchEndEvent.getType());
 	}
 
 	private void prepareGUI() {
@@ -116,7 +116,7 @@ public class SpreadsheetRowHeaderW implements SpreadsheetHeader {
 
 		focusPanel = new AdvancedFocusPanel();
 		// focusPanel.addKeyDownHandler(this);
-        focusPanel.addBitlessDomHandler(this, KeyDownEvent.getType());
+		focusPanel.addBitlessDomHandler(this, KeyDownEvent.getType());
 		addPasteHandlerTo(focusPanel.getTextarea());
 
 		Style s = focusPanel.getElement().getStyle();
@@ -669,7 +669,7 @@ public class SpreadsheetRowHeaderW implements SpreadsheetHeader {
 		if (relative) {
 			popup.show(grid, x, y);
 		} else {
-			popup.show(new GPoint(x, y));
+			popup.show(x, y);
 		}
 	}
 

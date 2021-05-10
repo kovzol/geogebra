@@ -9,22 +9,12 @@ import org.geogebra.web.html5.gui.util.FormLabel;
 import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.html5.util.Dom;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
 /**
- * @author csilla
- * 
- *         input field material design component
- *
+ * input field material design component
  */
 public class ComponentInputField extends FlowPanel implements SetLabels, Input {
 	private Localization loc;
@@ -51,17 +41,22 @@ public class ComponentInputField extends FlowPanel implements SetLabels, Input {
 	 *            default text of input text field
 	 * @param width
 	 *            of input text field
+	 * @param height
+	 * 			 of input text field
+	 * @param showSymbolPopup
+	 * 			 if button for symbol popup should be shown
 	 * @param suffixTxt
 	 *            suffix at end of text field
 	 */
 	public ComponentInputField(AppW app, String placeholder, String labelTxt,
-			String errorTxt, String defaultValue, int width, String suffixTxt) {
+			String errorTxt, String defaultValue, int width, int height,
+			boolean showSymbolPopup, String suffixTxt) {
 		this.loc = app.getLocalization();
 		this.labelTextKey = labelTxt;
 		this.errorTextKey = errorTxt;
 		this.placeholderTextKey = placeholder;
 		this.suffixTextKey = suffixTxt;
-		buildGui(width, app);
+		buildGui(width, height, showSymbolPopup, app);
 		if (!StringUtil.empty(defaultValue)) {
 			setInputText(defaultValue);
 		}
@@ -82,10 +77,16 @@ public class ComponentInputField extends FlowPanel implements SetLabels, Input {
 	 *            default text of input text field
 	 * @param width
 	 *            of input text field
+	 * @param height
+	 * 	 		 of input text field
+	 * @param showSymbolPopup
+	 * 			 if button for symbol popup should be shown
 	 */
 	public ComponentInputField(AppW app, String placeholder, String labelTxt,
-			String errorTxt, String defaultValue, int width) {
-		this(app, placeholder, labelTxt, errorTxt, defaultValue, width, null);
+			String errorTxt, String defaultValue, int width, int height,
+			boolean showSymbolPopup) {
+		this(app, placeholder, labelTxt, errorTxt, defaultValue,
+				width, height, showSymbolPopup, null);
 	}
 
 	/**
@@ -95,11 +96,11 @@ public class ComponentInputField extends FlowPanel implements SetLabels, Input {
 		return contentPanel;
 	}
 
-	private void buildGui(int width, AppW app) {
+	private void buildGui(int width, int height, boolean showSymbolPopup, AppW app) {
 		contentPanel = new FlowPanel();
 		contentPanel.setStyleName("inputTextField");
 		// input text field
-		inputTextField = new InputPanelW("", app, 1, width, false);
+		inputTextField = new InputPanelW("", app, height, width, showSymbolPopup);
 		inputTextField.addStyleName("textField");
 		// label of text field
 		labelText = new FormLabel().setFor(inputTextField.getTextComponent());
@@ -128,7 +129,7 @@ public class ComponentInputField extends FlowPanel implements SetLabels, Input {
 			}
 			errorLabel.setText(errorTextKey);
 			errorLabel.setStyleName("errorLabel");
-			root.add(errorLabel); // root.getWidgetIndex(inputTextField)
+			root.add(errorLabel);
 		} else if (errorLabel != null) {
 			errorLabel.removeFromParent();
 		}
@@ -149,21 +150,9 @@ public class ComponentInputField extends FlowPanel implements SetLabels, Input {
 
 	private void addFocusBlurHandlers() {
 		inputTextField.getTextComponent().getTextBox()
-				.addFocusHandler(new FocusHandler() {
-
-					@Override
-					public void onFocus(FocusEvent event) {
-						setFocusState();
-					}
-				});
+				.addFocusHandler(event -> setFocusState());
 		inputTextField.getTextComponent().getTextBox()
-				.addBlurHandler(new BlurHandler() {
-
-					@Override
-					public void onBlur(BlurEvent event) {
-						resetInputField();
-					}
-				});
+				.addBlurHandler(event -> resetInputField());
 	}
 
 	/**
@@ -171,21 +160,9 @@ public class ComponentInputField extends FlowPanel implements SetLabels, Input {
 	 */
 	private void addHoverHandlers() {
 		inputTextField.getTextComponent().getTextBox()
-				.addMouseOverHandler(new MouseOverHandler() {
-
-					@Override
-					public void onMouseOver(MouseOverEvent event) {
-						getContentPanel().addStyleName("hoverState");
-					}
-				});
+				.addMouseOverHandler(event -> getContentPanel().addStyleName("hoverState"));
 		inputTextField.getTextComponent().getTextBox()
-				.addMouseOutHandler(new MouseOutHandler() {
-
-					@Override
-					public void onMouseOut(MouseOutEvent event) {
-						getContentPanel().removeStyleName("hoverState");
-					}
-				});
+				.addMouseOutHandler(event -> getContentPanel().removeStyleName("hoverState"));
 	}
 
 	/**
@@ -261,5 +238,13 @@ public class ComponentInputField extends FlowPanel implements SetLabels, Input {
 	 */
 	public boolean hasError() {
 		return !StringUtil.empty(errorTextKey);
+	}
+
+	/**
+	 * focus input text field
+	 */
+	public void focusDeferred() {
+		Scheduler.get().scheduleDeferred(
+				() -> this.getTextField().getTextComponent().setFocus(true));
 	}
 }

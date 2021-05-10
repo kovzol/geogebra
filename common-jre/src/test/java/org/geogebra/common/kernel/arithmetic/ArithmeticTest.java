@@ -5,6 +5,7 @@ import org.geogebra.common.jre.headless.LocalizationCommon;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.commands.AlgebraProcessor;
+import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.main.AppCommon3D;
 import org.geogebra.test.TestStringUtil;
@@ -207,24 +208,24 @@ public class ArithmeticTest extends Assert {
 								+ " x^2 + y^2 = 4, x^2 + y^2 = 5}"),
 				StringTemplate.editTemplate);
 		t("f(r)=(r,sin(r)*(1..5))",
-				"{(r, sin(r)), (r, (sin(r) * 2)), (r, (sin(r) * 3)),"
+				"{(r, (sin(r) * 1)), (r, (sin(r) * 2)), (r, (sin(r) * 3)),"
 						+ " (r, (sin(r) * 4)), (r, (sin(r) * 5))}");
 		t("f(r)=(r+(1..5),sin(r)*(1..5))",
-				"{(r + 1, sin(r)), (r + 2, (sin(r) * 2)), (r + 3, (sin(r) * 3)),"
+				"{(r + 1, (sin(r) * 1)), (r + 2, (sin(r) * 2)), (r + 3, (sin(r) * 3)),"
 						+ " (r + 4, (sin(r) * 4)), (r + 5, (sin(r) * 5))}");
 		t("f(r)=((1..5)*r,sin(r)+1)",
-				"{(r, sin(r) + 1), ((2 * r), sin(r) + 1), ((3 * r), sin(r) + 1),"
+				"{((1 * r), sin(r) + 1), ((2 * r), sin(r) + 1), ((3 * r), sin(r) + 1),"
 						+ " ((4 * r), sin(r) + 1), ((5 * r), sin(r) + 1)}");
 	}
 
 	@Test
 	public void functionsList() {
-		t("(1..2)+x*(1..2)", "{1 + x, 2 + (x * 2)}");
+		t("(1..2)+x*(1..2)", "{1 + (x * 1), 2 + (x * 2)}");
 		t("x+y+(1..3)", "{x + y + 1, x + y + 2, x + y + 3}");
 		t("list1=(-2..2)", "{-2, -1, 0, 1, 2}");
 		t("(list1*t,(1-t)*(1-list1))",
-				"{((-2 * t), ((1 - t) * 3)), ((-t), ((1 - t) * 2)), ((0 * t), (1 - t)),"
-						+ " (t, ((1 - t) * 0)), ((2 * t), ((1 - t) * (-1)))}");
+				"{((-2 * t), ((1 - t) * 3)), ((-1 * t), ((1 - t) * 2)), ((0 * t), "
+						+ "((1 - t) * 1)), ((1 * t), ((1 - t) * 0)), ((2 * t), ((1 - t) * (-1)))}");
 	}
 
 	@Test
@@ -236,9 +237,9 @@ public class ArithmeticTest extends Assert {
 	public void absFunction() {
 		AlgebraTestHelper.enableCAS(app, false);
 		t("f:abs(x+2)", "abs(x + 2)");
-		Assert.assertTrue(((GeoFunction) app.getKernel().lookupLabel("f"))
+		Assert.assertTrue(((GeoFunction) lookup("f"))
 				.isPolynomialFunction(true));
-		Assert.assertFalse(((GeoFunction) app.getKernel().lookupLabel("f"))
+		Assert.assertFalse(((GeoFunction) lookup("f"))
 				.isPolynomialFunction(false));
 	}
 
@@ -258,15 +259,23 @@ public class ArithmeticTest extends Assert {
 
 	@Test
 	public void crossProductMissingBracketsTest() {
-		t("A = (1,2)", "(1, 2)");
-		t("B = (2,3)", "(2, 3)");
-		t("C = (6,3)", "(6, 3)");
-		t("D = (0,4)", "(0, 4)");
-		t("E=Cross(A-B, C-D)", "7");
-		assertEquals(
-				app.getKernel().lookupLabel("E")
-						.getDefinition(StringTemplate.defaultTemplate),
-				"(A - B) " + Unicode.VECTOR_PRODUCT + " (C - D)");
+		t("A = (1, 2)", "(1, 2)");
+		t("B = (2, 3)", "(2, 3)");
+		t("C = (6, 3)", "(6, 3)");
+		t("D = (0, 4)", "(0, 4)");
+		t("E = Cross(A - B, C - D)", "7");
+		assertEquals("(A - B) " + Unicode.VECTOR_PRODUCT + " (C - D)",
+				lookup("E").getDefinition(StringTemplate.defaultTemplate));
+
+		t("F = Cross(A, B)^2", "1");
+		assertEquals("(A " + Unicode.VECTOR_PRODUCT + " B)" + Unicode.SUPERSCRIPT_2,
+				lookup("F").getDefinition(StringTemplate.defaultTemplate));
+
+		t("G = (1, 2, 3)", "(1, 2, 3)");
+		t("H = (2, 3, 4)", "(2, 3, 4)");
+		t("I = Cross(G, H)^2", "6");
+		assertEquals("(G " + Unicode.VECTOR_PRODUCT + " H)" + Unicode.SUPERSCRIPT_2,
+				lookup("I").getDefinition(StringTemplate.defaultTemplate));
 	}
 
 	@Test
@@ -286,4 +295,51 @@ public class ArithmeticTest extends Assert {
 		t("g((1, 1))", "NaN");
 	}
 
+	@Test
+	public void functionCopySHouldBeDependent() {
+		t("f:x", "x");
+		t("g(x)=f", "x");
+		assertEquals("f(x)",
+				lookup("g").getDefinition(StringTemplate.defaultTemplate));
+		t("ff(x,y)=x+y", "x + y");
+		t("gg(a,b)=ff", "a + b");
+		assertEquals("ff(a, b)",
+				lookup("gg").getDefinition(StringTemplate.defaultTemplate));
+	}
+
+	@Test
+	public void inequalityShouldNotHaveExtraBrackets() {
+		t("r:4 < x < 5", "4 < x < 5");
+		t("a = 1", "1");
+		t("b = 2", "2");
+		t("p1:a < x", "1 < x");
+		t("p2:a < x < b", "1 < x < 2");
+		t("p3:(a < x) + (x < b)", "(1 < x) + (x < 2)");
+		t("p4:a < (x + x) < b", "1 < x + x < 2");
+	}
+
+	@Test
+	public void complexPowers() {
+		t("real((1+i)^(0..8))",
+				"{1, 1, 0, -2, -4, -4, 0, 8, 16}", StringTemplate.editTemplate);
+		t("imaginary((1+i)^(0..8))",
+				"{0, 1, 2, 2, 0, -4, -8, -8, 0}", StringTemplate.editTemplate);
+	}
+
+	@Test
+	public void powerWithNegativeFractionAsExponent() {
+		t("(-8)^(-(1/3))", "-0.5");
+		t("-8^(-1/3)", "-0.5");
+		t("-8^(-2/3)", "-0.25");
+		t("32^(-1/5)", "0.5");
+	}
+
+	@Test
+	public void testAVShortIf() {
+		t("3,5>x", "If[5 > x, 3]");
+	}
+
+	private GeoElement lookup(String g) {
+		return app.getKernel().lookupLabel(g);
+	}
 }

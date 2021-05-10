@@ -7,26 +7,23 @@ import java.util.List;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.gui.dialog.handler.ColorChangeHandler;
 import org.geogebra.common.gui.dialog.options.model.ColorObjectModel;
-import org.geogebra.common.kernel.algos.AlgoBarChart;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
+import org.geogebra.ggbjdk.java.awt.geom.Dimension;
 import org.geogebra.web.full.css.MaterialDesignResources;
 import org.geogebra.web.full.gui.dialog.CustomColorDialog;
 import org.geogebra.web.full.gui.dialog.CustomColorDialog.ICustomColor;
 import org.geogebra.web.full.gui.images.AppResources;
-import org.geogebra.web.html5.awt.GDimensionW;
 import org.geogebra.web.html5.awt.GFontW;
 import org.geogebra.web.html5.gui.util.GPushButton;
 import org.geogebra.web.html5.gui.util.NoDragImage;
 import org.geogebra.web.html5.gui.util.Slider;
 import org.geogebra.web.html5.gui.util.SliderInputHandler;
+import org.geogebra.web.html5.util.Dom;
 
 import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
-import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -35,10 +32,14 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.himamis.retex.renderer.web.graphics.JLMContext2d;
+import com.himamis.retex.renderer.web.graphics.JLMContextHelper;
+
+import elemental2.dom.HTMLImageElement;
+import jsinterop.base.Js;
 
 public class ColorChooserW extends FlowPanel implements ICustomColor {
 
@@ -57,8 +58,8 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 	public static final double BORDER_WIDTH = 2;
 	public static final double PREVIEW_BORDER_WIDTH = 14;
 	Canvas canvas;
-	Context2d ctx;
-	GDimensionW colorIconSize;
+	JLMContext2d ctx;
+	Dimension colorIconSize;
 	int padding;
 	List<ColorTable> tables;
 	private ColorTable leftTable;
@@ -76,7 +77,7 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 	private CustomColorDialog dialog;
 	BarList lbBars;
 	private int selectedBar;
-	private AlgoBarChart algoBarChart;
+	private int chartBars;
 	private GColor allBarsColor;
 
 	private class ColorTable {
@@ -89,7 +90,7 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 		private List<GColor> palette;
 		private int width;
 		private int height;
-		private ImageElement checkMark;
+		private HTMLImageElement checkMark;
 		private int checkX;
 		private int checkY;
 		private boolean checkNeeded;
@@ -123,9 +124,9 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 			setWidth(col * colorIconSize.getWidth() + padding);
 			setHeight(row * colorIconSize.getHeight() + padding);
 
-			checkMark = ImageElement.as(new Image(
-					AppResources.INSTANCE.color_chooser_check().getSafeUri())
-							.getElement());
+			checkMark = Dom.createImage();
+			checkMark.src = AppResources.INSTANCE.color_chooser_check().getSafeUri().asString();
+
 			final int checkSize = 12;
 			checkX = (colorIconSize.getWidth() - checkSize) / 2 + padding;
 			checkY = (colorIconSize.getHeight() - checkSize) / 2 + padding;
@@ -139,7 +140,7 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 			ctx.save();
 			ctx.translate(left, top);
 
-			ctx.setTextBaseline(TextBaseline.TOP);
+			ctx.setTextBaseline("top");
 			ctx.clearRect(0, 0, width, TITLE_HEIGHT);
 			ctx.setFont(TITLE_FONT);
 			ctx.fillText(title, titleOffsetX, titleOffsetY);
@@ -384,7 +385,7 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 	private class PreviewPanel extends FlowPanel {
 		private Label titleLabel;
 		Canvas previewCanvas;
-		private Context2d previewCtx;
+		private JLMContext2d previewCtx;
 		private Label rgb;
 
 		public PreviewPanel() {
@@ -395,7 +396,7 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 			previewCanvas.setSize(PREVIEW_WIDTH + "px", PREVIEW_HEIGHT + "px");
 			previewCanvas.setCoordinateSpaceHeight(PREVIEW_HEIGHT);
 			previewCanvas.setCoordinateSpaceWidth(PREVIEW_WIDTH);
-			previewCtx = previewCanvas.getContext2d();
+			previewCtx = Js.uncheckedCast(previewCanvas.getContext2d());
 			rgb = new Label();
 			add(titleLabel);
 			m.add(previewCanvas);
@@ -416,12 +417,12 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 
 			previewCtx.setFillStyle(htmlColor);
 
-			previewCtx.setGlobalAlpha(getAlphaValue());
+			previewCtx.globalAlpha = getAlphaValue();
 			previewCtx.fillRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 
 			previewCtx.setStrokeStyle(htmlColor);
 
-			previewCtx.setGlobalAlpha(1.0);
+			previewCtx.globalAlpha = 1.0;
 			previewCtx.setLineWidth(PREVIEW_BORDER_WIDTH);
 			previewCtx.strokeRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 		}
@@ -496,13 +497,9 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 			foregroundButton = new RadioButton("fg");
 			backgroundButton.setName("bgfg");
 			foregroundButton.setName("bgfg");
-			if (app.isUnbundled()) {
-				btnClearBackground = new GPushButton(new NoDragImage(
-						MaterialDesignResources.INSTANCE.delete_black(), 24));
-			} else {
-				btnClearBackground = new GPushButton(
-						new Image(AppResources.INSTANCE.delete_small()));
-			}
+
+			btnClearBackground = new GPushButton(new NoDragImage(
+					MaterialDesignResources.INSTANCE.delete_black(), 24));
 			btnClearBackground.setStyleName("ClearBackgroundButton");
 
 			updateBackgroundButtons(false);
@@ -573,7 +570,7 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 	 *            padding
 	 */
 	public ColorChooserW(final App app, int width, int height,
-			GDimensionW colorIconSize, int padding) {
+			Dimension colorIconSize, int padding) {
 		this.app = app;
 		lbBars = new BarList(app);
 		lbBars.setVisible(false);
@@ -582,7 +579,7 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 		canvas.setSize(width + "px", height + "px");
 		canvas.setCoordinateSpaceHeight(height);
 		canvas.setCoordinateSpaceWidth(width);
-		ctx = canvas.getContext2d();
+		ctx = JLMContextHelper.as(canvas.getContext2d());
 
 		changeHandler = null;
 		lastSource = null;
@@ -689,14 +686,6 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 				if (changeHandler != null) {
 					changeHandler.onBarSelected();
 				}
-
-				// if (idx > 0) {
-				// setSelectedColor(algoBarChart.getBarColor(idx));
-				// setAlphaValue(algoBarChart.getBarAlpha(idx));
-				// updateTables();
-				//
-				// }
-
 			}
 		});
 	}
@@ -892,18 +881,17 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 	 * @return whether this is for a barchart
 	 */
 	public boolean isBarChart() {
-		return algoBarChart != null;
+		return chartBars > 0;
 	}
 
 	/**
-	 * @param algo
-	 *            barchart
+	 * @param chartBars
+	 *            number of bars/slices in a chart
 	 */
-	public void setAlgoBarChart(AlgoBarChart algo) {
-		algoBarChart = algo;
-		if (algo != null) {
-			lbBars.setBarCount(algo.getIntervals());
-		}
+	public void setChartAlgo(int chartBars, Object[] geos) {
+		this.chartBars = chartBars;
+		lbBars.updateTranslationKeys(geos);
+		lbBars.setBarCount(chartBars);
 	}
 
 	public int getBarCount() {

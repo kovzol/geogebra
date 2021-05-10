@@ -11,7 +11,9 @@ the Free Software Foundation.
  */
 package org.geogebra.desktop.gui.dialog;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -19,7 +21,12 @@ import java.awt.event.WindowFocusListener;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.text.JTextComponent;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -38,7 +45,7 @@ import org.geogebra.desktop.main.LocalizationD;
  * Dialog to create a GeoBoolean object (checkbox) that determines the
  * visibility of a list of objects.
  */
-public class CheckboxCreationDialog extends JDialog implements
+public class CheckboxCreationDialog extends Dialog implements
 		WindowFocusListener, ActionListener, GeoElementSelectionListener {
 
 	private static final long serialVersionUID = 1L;
@@ -200,7 +207,7 @@ public class CheckboxCreationDialog extends JDialog implements
 				geo.setShowObjectCondition(geoBoolean);
 			}
 		} catch (CircularDefinitionException e) {
-            app.showError(Errors.CircularDefinition);
+			app.showError(Errors.CircularDefinition);
 		}
 
 		// set caption text

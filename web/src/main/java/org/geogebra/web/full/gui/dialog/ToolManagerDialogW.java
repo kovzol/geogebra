@@ -212,13 +212,13 @@ public class ToolManagerDialogW extends DialogBoxW implements ClickHandler,
 		String question = "";
 		String message = "";
 		if (macroNamesDel.length() == 0) {
-            appw.showError(Errors.ToolDeleteUsed, macroNamesNoDel.toString());
+			appw.showError(Errors.ToolDeleteUsed, macroNamesNoDel.toString());
 		} else {
 			question = loc.getMenu("Question");
 			message = loc.getMenu("Tool.DeleteQuestion") + macroNamesDel;
 
 			if (macroNamesNoDel.length() != 0) {
-                message += "\n" + Errors.ToolDeleteUsed.getError(loc)
+				message += "\n" + Errors.ToolDeleteUsed.getError(loc)
 						+ macroNamesNoDel;
 			}
 			String[] options = { loc.getMenu("DeleteTool"),
@@ -387,7 +387,7 @@ public class ToolManagerDialogW extends DialogBoxW implements ClickHandler,
 	private void saveTools() {
 		applyChanges();
 		SaveDialogI dlg = ((DialogManagerW) appw.getDialogManager())
-				.getSaveDialog();
+				.getSaveDialog(false, true);
 		dlg.setSaveType(MaterialType.ggt);
 		dlg.show();
 	}

@@ -1,21 +1,29 @@
 package org.geogebra.web.editor;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.geogebra.common.GeoGebraConstants;
+import org.geogebra.common.factories.CASFactory;
 import org.geogebra.common.gui.view.algebra.AlgebraView;
+import org.geogebra.common.kernel.geos.inputbox.InputBoxType;
 import org.geogebra.common.main.AppKeyboardType;
 import org.geogebra.common.main.DialogManager;
 import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.keyboard.web.HasKeyboard;
 import org.geogebra.web.html5.Browser;
+import org.geogebra.web.html5.factories.NoCASFactory;
 import org.geogebra.web.html5.gui.GeoGebraFrameW;
 import org.geogebra.web.html5.gui.laf.SignInControllerI;
 import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.html5.main.FontManagerW;
-import org.geogebra.web.html5.util.ArticleElementInterface;
+import org.geogebra.web.html5.util.AppletParameters;
+import org.geogebra.web.html5.util.GeoGebraElement;
 import org.geogebra.web.shared.GlobalHeader;
 import org.geogebra.web.shared.ShareLinkDialog;
 import org.geogebra.web.shared.SignInController;
+import org.geogebra.web.shared.components.DialogData;
 import org.geogebra.web.shared.ggtapi.LoginOperationW;
 
 import com.google.gwt.dom.client.Element;
@@ -42,8 +50,8 @@ public class AppWsolver extends AppW implements HasKeyboard {
      *            frame
 
      */
-    public AppWsolver(ArticleElementInterface ae, GeoGebraFrameW gf) {
-        super(ae, 2, null);
+    public AppWsolver(GeoGebraElement ae, AppletParameters parameters, GeoGebraFrameW gf) {
+        super(ae, parameters, 2, null);
         this.frame = gf;
         setAppletHeight(frame.getComputedHeight());
         setAppletWidth(frame.getComputedWidth());
@@ -59,7 +67,7 @@ public class AppWsolver extends AppW implements HasKeyboard {
         initCoreObjects();
 
 		getSettingsUpdater().getFontSettingsUpdater().resetFonts();
-		Browser.removeDefaultContextMenu(this.getArticleElement().getElement());
+		Browser.removeDefaultContextMenu(getGeoGebraElement());
 
 		initSignInEventFlow(new LoginOperationW(this));
 
@@ -75,7 +83,8 @@ public class AppWsolver extends AppW implements HasKeyboard {
 			public void callback(Widget share) {
 				String url = Location.getHref().replaceAll("\\?.*", "")
 						+ getRelativeURLforEqn(getMathField().getText());
-				ShareLinkDialog sd = new ShareLinkDialog(AppWsolver.this, url,
+				DialogData data = new DialogData("Share", null, null);
+				ShareLinkDialog sd = new ShareLinkDialog(AppWsolver.this, data, url,
 						share);
 				sd.setVisible(true);
 				sd.center();
@@ -97,6 +106,7 @@ public class AppWsolver extends AppW implements HasKeyboard {
 	@Override
     protected void initCoreObjects() {
         kernel = newKernel(this);
+		kernel.setAngleUnit(kernel.getApplication().getConfig().getDefaultAngleUnit());
 		initSettings();
         fontManager = new FontManagerW();
     }
@@ -187,6 +197,16 @@ public class AppWsolver extends AppW implements HasKeyboard {
 	}
 
 	@Override
+	public InputBoxType getInputBoxType() {
+		return null;
+	}
+
+	@Override
+	public List<String> getInputBoxFunctionVars() {
+		return Collections.emptyList();
+	}
+
+	@Override
 	public boolean attachedToEqEditor() {
 		return false;
 	}
@@ -199,5 +219,13 @@ public class AppWsolver extends AppW implements HasKeyboard {
 	@Override
 	public SignInControllerI getSignInController() {
 		return new SignInController(this, 0, null);
+	}
+
+	@Override
+	public void initFactories() {
+		super.initFactories();
+		if (!CASFactory.isInitialized()) {
+			CASFactory.setPrototype(new NoCASFactory());
+		}
 	}
 }

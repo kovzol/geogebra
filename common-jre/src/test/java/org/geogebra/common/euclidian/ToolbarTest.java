@@ -1,4 +1,3 @@
-
 package org.geogebra.common.euclidian;
 
 import org.geogebra.common.gui.toolbar.ToolBar;
@@ -21,4 +20,3 @@ public class ToolbarTest {
 				ToolBar.getAllToolsNoMacros(true, false, true)));
 	}
 }
-

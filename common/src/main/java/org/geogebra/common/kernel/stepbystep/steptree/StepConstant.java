@@ -32,7 +32,7 @@ public final class StepConstant extends StepExpression {
 
 	@Override
 	public int hashCode() {
-        return DoubleUtil.hashCode(value);
+		return DoubleUtil.hashCode(value);
 	}
 
 	@Override

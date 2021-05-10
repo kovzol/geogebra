@@ -108,9 +108,6 @@ public class ListPopupPanel<T extends ListDataModel> extends GPopupPanel
 		this.comboBox = selectionTextBox;
 
 		setStyleName("advanced-ListPopupPanel");
-		if (app.isUnbundledOrWhiteboard()) {
-			addStyleName("matDesign");
-		}
 
 		setWidget(getScrollPanel());
 
@@ -399,11 +396,11 @@ public class ListPopupPanel<T extends ListDataModel> extends GPopupPanel
 	protected void resetPosition() {
 		int absTop = (int) ((getComboBox().getAbsoluteTop()
 				- ((AppW) app).getAbsTop())
-				/ ((AppW) app).getArticleElement().getScaleX());
+				/ ((AppW) app).getGeoGebraElement().getScaleX());
 
 		int absLeft = (int) ((getComboBox().getAbsoluteLeft()
 				- ((AppW) app).getAbsLeft())
-				/ ((AppW) app).getArticleElement().getScaleX());
+				/ ((AppW) app).getGeoGebraElement().getScaleX());
 		if (getDropDownPosition() == DropDownPosition.ABOVE
 				|| getDropDownPosition() == DropDownPosition.AUTO
 						&& Window.getClientHeight()

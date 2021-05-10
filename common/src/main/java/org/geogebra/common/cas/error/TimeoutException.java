@@ -28,7 +28,7 @@ public class TimeoutException extends CASException {
 
 	@Override
 	public String getKey() {
-        return Errors.CASTimeoutError.getKey();
+		return Errors.CASTimeoutError.getKey();
 	}
 
 }

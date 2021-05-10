@@ -49,8 +49,8 @@ import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
 
-import com.google.gwt.regexp.shared.MatchResult;
-import com.google.gwt.regexp.shared.RegExp;
+import org.gwtproject.regexp.shared.MatchResult;
+import org.gwtproject.regexp.shared.RegExp;
 
 /**
  * Platform (Java / GWT) independent part of giac CAS
@@ -174,6 +174,12 @@ public abstract class CASgiac implements CASGenericInterface {
 		GGB_IS_VARIABLE("ggb_is_variable", "ggb_is_variable(a):=when(length(lvar(a))==1,lvar(a)[0],?)"),
 
 		/**
+		 * Returns 1 if the parameter is a number (float, rational or integer). Returns 0 otherwise.
+		 */
+		GGB_IS_NUMBER("ggb_is_number", "ggb_is_number(a):=[[ggbtype:=type(a)], "
+				+ "when(ggbtype==DOM_INT||ggbtype==DOM_FLOAT||ggbtype==DOM_RAT,1,0)][1]"),
+
+		/**
 		 * Used by Zip.N
 		 * 
 		 * TODO check if it's easier to implement with giac's zip command
@@ -285,7 +291,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * 
 		 * eg sin(x)^2+cos(x)^2==1
 		 */
-		IS_ZERO("ggbIsZero", "ggbIsZero(x):=when(x==0 || simplify(texpand(x))==0 || exp2pow(lin(pow2exp(x)))==0,true,when(type(x)=='DOM_LIST',max(flatten({x,0}))==min(flatten({x,0}))&&min(flatten({x,0}))==0,when(x[0]=='=',lhs(x)==0&&rhs(x)==0,x[0]=='pnt' && x[1] == ggbvect[0,0,0])))"),
+		IS_ZERO("ggbIsZero", "ggbIsZero(ggbx):=when(ggbx==0 || simplify(texpand(ggbx))==0 || exp2pow(lin(pow2exp(ggbx)))==0,true,when(type(ggbx)=='DOM_LIST',max(flatten({ggbx,0}))==min(flatten({ggbx,0}))&&min(flatten({ggbx,0}))==0,when(ggbx[0]=='=',lhs(ggbx)==0&&rhs(ggbx)==0,ggbx[0]=='pnt' && ggbx[1] == ggbvect[0,0,0])))"),
 		/**
 		 * Convert the polys into primitive polys in the input list (contains
 		 * temporary fix for primpart also):
@@ -407,8 +413,8 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * Giac uses round(x):=floor(x+0.5) but we want "round half up" to be
 		 * consistent with the Algebra View
 		 */
-        GGB_ROUND("ggbround",
-                "ggbround(x):=when(type(evalf(x))==DOM_LIST,seq(ggbround(x[j]),j,0,length(x)-1),when(type(evalf(x))==DOM_COMPLEX, ggbround(real(x))+i*ggbround(im(x)), when(x<0,-round(-x),round(x))))"),
+		GGB_ROUND("ggbround",
+				"ggbround(x):=when(type(evalf(x))==DOM_LIST,seq(ggbround(x[j]),j,0,length(x)-1),when(type(evalf(x))==DOM_COMPLEX, ggbround(real(x))+i*ggbround(im(x)), when(x<0,-round(-x),round(x))))"),
 
 		/**
 		 * Minimal polynomial of cos(2pi/n), see GGB-2137 for details.

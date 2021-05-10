@@ -168,17 +168,35 @@ public class RowAtom extends Atom implements Row {
 
 	public final void add(Atom... atoms) {
 		for (Atom a : atoms) {
-			if (a != null) {
-				elements.add(a);
-				if (a instanceof TypedAtom) {
-					// TODO: check this stuff (added for back comp)
-					final int rtype = a.getRightType();
-					if (rtype == TeXConstants.TYPE_BINARY_OPERATOR
-							|| rtype == TeXConstants.TYPE_RELATION) {
-						elements.add(BreakMarkAtom.get());
-					}
-				}
+			addAtom(a);
+		}
+	}
+
+	private void addAtom(Atom atom) {
+		if (atom == null) {
+			return;
+		}
+
+		if (atom instanceof RowAtom) {
+			addRowAtom((RowAtom) atom);
+		} else {
+			elements.add(atom);
+			if (atom instanceof TypedAtom) {
+				addTypedAtom(atom);
 			}
+		}
+	}
+
+	private void addRowAtom(RowAtom row) {
+		elements.addAll(row.getElements());
+	}
+
+	private void addTypedAtom(Atom a) {
+		// TODO: check this stuff (added for back comp)
+		final int rtype = a.getRightType();
+		if (rtype == TeXConstants.TYPE_BINARY_OPERATOR
+				|| rtype == TeXConstants.TYPE_RELATION) {
+			elements.add(BreakMarkAtom.get());
 		}
 	}
 
@@ -212,8 +230,8 @@ public class RowAtom extends Atom implements Row {
 		TeXFont tf = env.getTeXFont();
 
 		Stack<HorizontalBox> hBox = new Stack<>();
-		hBox.push(new HorizontalBox(env.getColor(),
-				env.getBackground()));
+		hBox.push((HorizontalBox) new HorizontalBox(env.getColor(),
+				env.getBackground()).setAtom(this));
 
 		env.resetColors();
 
@@ -227,7 +245,8 @@ public class RowAtom extends Atom implements Row {
 			if (at instanceof SelectionAtom) {
 				SelectionAtom ca = (SelectionAtom) at;
 
-				hBox.push(new HorizontalBox(ca.getColor(), ca.getBackground()));
+				hBox.push((HorizontalBox) new HorizontalBox(ca.getColor(),
+						ca.getBackground()).setAtom(this));
 
 				elementsCopy.remove(i);
 				elementsCopy.addAll(i, ca.elements.elements);

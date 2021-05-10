@@ -15,7 +15,7 @@ public class RegroupUnitTests {
 
     @BeforeClass
     public static void setupApp() {
-        app = AlgebraTest.createApp();
+		app = AlgebraTest.createApp();
     }
 
     @Test

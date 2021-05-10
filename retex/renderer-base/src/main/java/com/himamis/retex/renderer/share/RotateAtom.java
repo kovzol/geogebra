@@ -57,8 +57,8 @@ public class RotateAtom extends Atom implements HasTrueBase {
 	private Atom base;
 	private double angle;
 	private int option = -1;
-    private Unit xunit;
-    private Unit yunit;
+	private Unit xunit;
+	private Unit yunit;
 	private double x, y;
 
 	public RotateAtom() {
@@ -79,7 +79,7 @@ public class RotateAtom extends Atom implements HasTrueBase {
 				this.xunit = lenX.getUnit();
 				this.x = lenX.getL();
 			} else {
-                this.xunit = Unit.POINT;
+				this.xunit = Unit.POINT;
 				this.x = 0.;
 			}
 			if (map.containsKey("y")) {
@@ -91,7 +91,7 @@ public class RotateAtom extends Atom implements HasTrueBase {
 				this.xunit = lenY.getUnit();
 				this.x = lenY.getL();
 			} else {
-                this.yunit = Unit.POINT;
+				this.yunit = Unit.POINT;
 				this.y = 0.;
 			}
 		}
@@ -103,8 +103,8 @@ public class RotateAtom extends Atom implements HasTrueBase {
 			return new RotateBox(base.createBox(env), angle, option);
 		}
 		return new RotateBox(base.createBox(env), angle,
-                x * xunit.getFactor(env),
-                y * yunit.getFactor(env));
+				x * xunit.getFactor(env),
+				y * yunit.getFactor(env));
 	}
 
 	@Override

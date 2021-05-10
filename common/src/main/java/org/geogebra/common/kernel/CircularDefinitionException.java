@@ -13,7 +13,7 @@ public class CircularDefinitionException extends Exception {
 	 * Creates new circular definition exception
 	 */
 	public CircularDefinitionException() {
-        super(Errors.CircularDefinition.getKey());
+		super(Errors.CircularDefinition.getKey());
 	}
 
 }

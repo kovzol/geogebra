@@ -56,7 +56,7 @@ public class GeoSurfaceCartesian3D extends GeoSurfaceCartesianND
 	private Coords normal = new Coords(3);
 	private CoordsDouble3 p1 = new CoordsDouble3();
 	private CoordsDouble3 p2 = new CoordsDouble3();
-    private ChangeableParent changeableParent;
+	private ChangeableParent changeableParent;
 
 	/**
 	 * empty constructor (for ConstructionDefaults3D)
@@ -751,24 +751,25 @@ public class GeoSurfaceCartesian3D extends GeoSurfaceCartesianND
 
 	@Override
 	public AutoColor getAutoColorScheme() {
-        return AutoColor.SURFACES;
-    }
+		return AutoColor.SURFACES;
+	}
 
-    @Override
-    public boolean hasChangeableParent3D() {
-        return changeableParent != null;
-    }
+	@Override
+	public boolean hasChangeableParent3D() {
+		return changeableParent != null;
+	}
 
-    @Override
-    public ChangeableParent getChangeableParent3D() {
-        return changeableParent;
-    }
+	@Override
+	public ChangeableParent getChangeableParent3D() {
+		return changeableParent;
+	}
 
-    /**
-     * @param cp changeable parent
-     */
-    final public void setChangeableParent(ChangeableParent cp) {
-        changeableParent = cp;
+	/**
+	 * @param cp
+	 *            changeable parent
+	 */
+	final public void setChangeableParent(ChangeableParent cp) {
+		changeableParent = cp;
 	}
 
 }

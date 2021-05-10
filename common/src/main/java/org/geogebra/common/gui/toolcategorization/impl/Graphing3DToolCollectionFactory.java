@@ -61,13 +61,13 @@ public class Graphing3DToolCollectionFactory extends AbstractToolCollectionFacto
 				EuclidianConstants.MODE_SEGMENT_FIXED,
 				EuclidianConstants.MODE_JOIN,
                 EuclidianConstants.MODE_RAY,
-                EuclidianConstants.MODE_VECTOR,
+				EuclidianConstants.MODE_VECTOR,
                 EuclidianConstants.MODE_POLYGON,
-                EuclidianConstants.MODE_REGULAR_POLYGON,
-                EuclidianConstants.MODE_ORTHOGONAL_THREE_D,
-                EuclidianConstants.MODE_PARALLEL,
-                EuclidianConstants.MODE_ANGULAR_BISECTOR,
-                EuclidianConstants.MODE_TANGENTS);
+				EuclidianConstants.MODE_REGULAR_POLYGON,
+				EuclidianConstants.MODE_ORTHOGONAL_THREE_D,
+				EuclidianConstants.MODE_PARALLEL,
+				EuclidianConstants.MODE_ANGULAR_BISECTOR,
+				EuclidianConstants.MODE_TANGENTS);
 
         impl.addCategory(ToolCategory.SOLIDS,
                 EuclidianConstants.MODE_PYRAMID,

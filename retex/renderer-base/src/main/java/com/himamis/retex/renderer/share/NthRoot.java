@@ -86,7 +86,7 @@ public class NthRoot extends Atom implements HasTrueBase {
 		// cramped style for the formula under the root sign
 		Box bs = base.createBox(env.crampStyle());
 		HorizontalBox b = new HorizontalBox(bs);
-        b.add(new SpaceAtom(Unit.MU, 1., 0., 0.)
+		b.add(new SpaceAtom(Unit.MU, 1., 0., 0.)
 				.createBox(env.crampStyle()));
 		// create root sign
 		double totalH = b.getHeight() + b.getDepth();
@@ -121,7 +121,7 @@ public class NthRoot extends Atom implements HasTrueBase {
 			r.setShift(squareRoot.getDepth() - r.getDepth() - bottomShift);
 
 			// negative kern
-            Box negativeKern = new SpaceAtom(Unit.MU, -10., 0., 0.)
+			Box negativeKern = new SpaceAtom(Unit.MU, -10., 0., 0.)
 					.createBox(env);
 
 			// arrange both boxes together with the negative kern
@@ -134,7 +134,7 @@ public class NthRoot extends Atom implements HasTrueBase {
 			res.add(r);
 			res.add(negativeKern);
 			res.add(squareRoot);
-			return res;
+			return res.setAtom(this);
 		}
 	}
 

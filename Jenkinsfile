@@ -24,14 +24,18 @@ def s3uploadDefault = { dir, pattern, encoding ->
 }
 
 pipeline {
+    options {
+        gitLabConnection('git.geogebra.org')
+    }
     agent any
     stages {
         stage('build') {
             steps {
+                updateGitlabCommitStatus name: 'build', state: 'pending'
                 writeFile file: 'changes.csv', text: getChangelog()
                 sh label: 'build web', script: './gradlew :web:prepareS3Upload :web:createDraftBundleZip :web:mergeDeploy -Pgdraft=true'
                 sh label: 'test', script: "./gradlew :common-jre:test :desktop:test :common-jre:jacocoTestReport :web:test"
-                sh label: 'static analysis', script: './gradlew checkPmd :editor-base:spotbugsMain :web:spotbugsMain :desktop:spotbugsMain :ggbjdk:spotbugsMain :common-jre:spotbugsMain --max-workers=1'
+                sh label: 'static analysis', script: './gradlew pmdMain :editor-base:spotbugsMain :web:spotbugsMain :desktop:spotbugsMain :ggbjdk:spotbugsMain :common-jre:spotbugsMain --max-workers=1'
                 sh label: 'spotbugs common', script: './gradlew :common:spotbugsMain'
                 sh label: 'code style', script: './gradlew :web:cpdCheck checkAllStyles'
             }
@@ -49,6 +53,7 @@ pipeline {
                 ]
                 publishCoverage adapters: [jacocoAdapter('**/build/reports/jacoco/test/*.xml')],
                     sourceFileResolver: sourceFiles('NEVER_STORE')
+
             }
         }
         stage('archive') {
@@ -61,12 +66,21 @@ pipeline {
                     s3uploadDefault("web/build/s3", "webSimple/**", "gzip")
                     s3uploadDefault("web/build/s3", "web3d/**", "gzip")
                     s3uploadDefault("web/war", "**/*.html", "")
+                    s3uploadDefault("web/war", "**/deployggb.js", "")
                     s3uploadDefault("web/war", "*.zip", "")
+                    s3uploadDefault("web/war", "geogebra-live.js", "")
+                    s3uploadDefault("web/war", "platform.js", "")
                 }
             }
         }
     }
     post {
+        unsuccessful {
+            updateGitlabCommitStatus name: 'build', state: 'failed'
+        }
+        success {
+            updateGitlabCommitStatus name: 'build', state: 'success'
+        }
         always {
            cleanAndNotify()
         }

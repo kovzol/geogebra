@@ -61,31 +61,12 @@ public class InputDialogRegularPolygonD extends InputDialogD {
 
 					}
 				});
-
-		/*
-		 * // avoid labeling of num Construction cons =
-		 * kernel.getConstruction(); boolean oldVal =
-		 * cons.isSuppressLabelsActive(); cons.setSuppressLabelCreation(true);
-		 * 
-		 * boolean ret = inputHandler.processInput(inputPanel.getText());
-		 * 
-		 * cons.setSuppressLabelCreation(oldVal);
-		 * 
-		 * if (ret) { GeoElement[] geos = kernel.RegularPolygon(null, geoPoint1,
-		 * geoPoint2, ((NumberInputHandler)inputHandler).getNum()); GeoElement[]
-		 * onlypoly = { null }; if (geos != null) { onlypoly[0] = geos[0];
-		 * app.storeUndoInfo();
-		 * kernel.getApplication().getActiveEuclidianView().
-		 * getEuclidianController().memorizeJustCreatedGeos(onlypoly); } }
-		 * 
-		 * return ret;
-		 */
 	}
 
 	@Override
 	public void windowGainedFocus(WindowEvent arg0) {
 		if (!wrappedDialog.isModal()) {
-            app.resetCurrentSelectionListener();
+			app.resetCurrentSelectionListener();
 		}
 		((GuiManagerD) app.getGuiManager()).setCurrentTextfield(this, true);
 	}

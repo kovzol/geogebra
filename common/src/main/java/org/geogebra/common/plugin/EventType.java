@@ -17,9 +17,7 @@ public enum EventType {
 	/** ADD */
 	ADD("add"),
 
-    /**
-     * when an undo point is created
-     */
+	/** when an undo point is created */
 	STOREUNDO("storeUndo"),
 
 	/** REMOVE */
@@ -85,10 +83,10 @@ public enum EventType {
 	/** DESELECT */
 	DESELECT("deselect"),
 
-    /** eg when the user presses the Undo button */
+	/** eg when the user presses the Undo button */
 	UNDO("undo"),
 
-    /** eg when the user presses the redo button */
+	/** eg when the user presses the redo button */
 	REDO("redo"),
 
 	/** EXPORT */
@@ -115,14 +113,21 @@ public enum EventType {
 	/** remove slide (whiteboard) */
 	REMOVE_SLIDE("removeSlide"),
 
+	/** rename slide (whiteboard) */
+	RENAME_SLIDE("renameSlide"),
+
 	/** duplicate slide (whiteboard): source index, target ID, source ID */
-	DUPLICATE_SLIDE("duplicateSlide"),
+	PASTE_SLIDE("pasteSlide"),
 
 	/** Move slide: sourceindex, target index */
 	MOVE_SLIDE("moveSlide"),
 
 	/** Clear slide: slide ID */
 	CLEAR_SLIDE("clearSlide"),
+
+	/** select slide */
+	SELECT_SLIDE("selectSlide"),
+
 	/** Key typed in editor */
 	EDITOR_KEY_TYPED("editorKeyTyped"),
 	/** Editing started for an object (or new input) */
@@ -131,10 +136,13 @@ public enum EventType {
 	EDITOR_STOP("editorStop"),
 	/** Undoable event happened in external object */
 	EMBEDDED_STORE_UNDO("embeddedStoreUndo"),
-    /**
-     * Prune state list in external object
-     */
-    EMBEDDED_PRUNE_STATE_LIST("embeddedPruneStateList"),
+	/** Prune state list in external object */
+	EMBEDDED_PRUNE_STATE_LIST("embeddedPruneStateList"),
+
+	/**
+	 * Change the whole content (base64) of embedded applet
+	 */
+	EMBEDDED_CONTENT_CHANGED("embeddedContentChanged"),
 
 	/** Algebra Panel selected */
 	ALGEBRA_PANEL_SELECTED("algebraPanelSelected"),
@@ -145,23 +153,58 @@ public enum EventType {
 	/** Side Panel opened */
 	SIDE_PANEL_OPENED("sidePanelOpened"),
 	/** Side Panel closed */
-    SIDE_PANEL_CLOSED("sidePanelClosed"),
+	SIDE_PANEL_CLOSED("sidePanelClosed"),
 
-    /**
-     * 2D view changed (panned, zoomed, axis scale changed)
-     */
-    VIEW_CHANGED_2D("viewChanged2D"),
-    /**
-     * 3D view changed (panned, zoomed, rotated, axis scale changed)
-     */
-    VIEW_CHANGED_3D("viewChanged3D"),
+	/** 2D view changed (panned, zoomed, axis scale changed) */
+	VIEW_CHANGED_2D("viewChanged2D"),
+	/** 3D view changed (panned, zoomed, rotated, axis scale changed) */
+	VIEW_CHANGED_3D("viewChanged3D"),
 
-    /**
-     * mouse down or touch start event
-     */
-    MOUSE_DOWN("mouseDown"),
-    /** i.e. mouse up, touch end, finished dragging a point, or segment etc. */
-	DRAG_END("dragEnd");
+	/** mouse down or touch start event */
+	MOUSE_DOWN("mouseDown"),
+	/** i.e. mouse up, touch end, finished dragging a point, or segment etc. */
+	DRAG_END("dragEnd"),
+
+	/**
+	 * keyboard opened by the user
+	 */
+	OPEN_KEYBOARD("openKeyboard"),
+	/**
+	 * keyboard closed by the user
+	 */
+	CLOSE_KEYBOARD("closeKeyboard"),
+
+	/** start animation event */
+	START_ANIMATION("startAnimation"),
+
+	/** stop animation event */
+	STOP_ANIMATION("stopAnimation"),
+
+	/** dropdown opened */
+	DROPDOWN_OPENED("dropdownOpened"),
+
+	/** dropdown closed */
+	DROPDOWN_CLOSED("dropdownClosed"),
+
+	/** dropdown item focused */
+	DROPDOWN_ITEM_FOCUSED("dropdownItemFocused"),
+
+	/** Layer change in notes*/
+	ORDERING_CHANGE("orderingChange"),
+
+	GROUP_OBJECTS("groupObjects"),
+
+	UNGROUP_OBJECTS("ungroupObjects"),
+
+	ADD_TV("addGeoToTV"),
+
+	REMOVE_TV("removeGeoFromTV"),
+
+	/** min, max and step */
+	SET_VALUES_TV("setValuesOfTV"),
+
+	/** column, true if show, false otherwise */
+	SHOW_POINTS_TV("showPointsTV");
 
 	private String eventName;
 

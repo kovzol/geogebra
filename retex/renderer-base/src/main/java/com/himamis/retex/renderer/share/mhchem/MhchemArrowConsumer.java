@@ -95,7 +95,7 @@ public class MhchemArrowConsumer implements AtomConsumer {
 	public Atom get() {
 		final Atom top = sup == null ? EmptyAtom.get() : sup;
 		final Atom bot = sub == null ? EmptyAtom.get() : sub;
-        final TeXLength minW = new TeXLength(Unit.EM, 2.);
+		final TeXLength minW = new TeXLength(Unit.EM, 2.);
 
 		switch (arrow) {
 		case left: // <-

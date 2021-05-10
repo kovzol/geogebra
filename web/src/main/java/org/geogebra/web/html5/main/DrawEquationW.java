@@ -10,7 +10,7 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.TextProperties;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.main.App;
-import org.geogebra.web.html5.awt.GDimensionW;
+import org.geogebra.ggbjdk.java.awt.geom.Dimension;
 import org.geogebra.web.html5.awt.GGraphics2DW;
 
 import com.google.gwt.canvas.client.Canvas;
@@ -26,6 +26,7 @@ import com.himamis.retex.renderer.web.FactoryProviderGWT;
 import com.himamis.retex.renderer.web.graphics.ColorW;
 import com.himamis.retex.renderer.web.graphics.Graphics2DW;
 import com.himamis.retex.renderer.web.graphics.JLMContext2d;
+import com.himamis.retex.renderer.web.graphics.JLMContextHelper;
 
 /**
  * Web LaTeX helper class
@@ -68,7 +69,7 @@ public class DrawEquationW extends DrawEquation {
 		}, g3, x, y);
 		((GGraphics2DW) g2).updateCanvasColor();
 		g3.maybeNotifyDrawingFinishedCallback(false);
-		return new GDimensionW(icon.getIconWidth(), icon.getIconHeight());
+		return new Dimension(icon.getIconWidth(), icon.getIconHeight());
 
 	}
 
@@ -162,7 +163,7 @@ public class DrawEquationW extends DrawEquation {
 			c.getContext2d().fillRect(0, 0, c.getCoordinateSpaceWidth(),
 					c.getCoordinateSpaceHeight());
 		}
-		JLMContext2d ctx = (JLMContext2d) c.getContext2d();
+		JLMContext2d ctx = JLMContextHelper.as(c.getContext2d());
 
 		app.getDrawEquation().checkFirstCall(app);
 		GFont font = AwtFactory.getPrototype().newFont("geogebra", GFont.PLAIN,

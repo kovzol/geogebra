@@ -1,4 +1,4 @@
-/*
+/* 
 GeoGebra - Dynamic Mathematics for Everyone
 http://www.geogebra.org
 
@@ -528,8 +528,7 @@ public class DrawSegment extends SetDrawable implements Previewable {
 				mx = view.toScreenCoordX(xRW);
 				my = view.toScreenCoordY(yRW);
 
-				endPoint.setX(xRW);
-				endPoint.setY(yRW);
+				endPoint.setLocation(xRW, yRW);
 				view.getEuclidianController().setLineEndPoint(endPoint);
 			} else {
 				view.getEuclidianController().setLineEndPoint(null);
@@ -569,11 +568,6 @@ public class DrawSegment extends SetDrawable implements Previewable {
 	@Override
 	public boolean intersectsRectangle(GRectangle rect) {
 		return line.intersects(rect);
-	}
-
-	@Override
-	public GeoElement getGeoElement() {
-		return geo;
 	}
 
 	@Override
@@ -641,7 +635,6 @@ public class DrawSegment extends SetDrawable implements Previewable {
 		s.getEndPoint().setCoords(view.toRealWorldCoordX(pts.get(1).getX()),
 				view.toRealWorldCoordY(pts.get(1).getY()), 1);
 		s.getParentAlgorithm().update();
-		s.updateRepaint();
 	}
 
 	@Override
@@ -658,4 +651,7 @@ public class DrawSegment extends SetDrawable implements Previewable {
 				view.toScreenCoordYd(point.getY2D())));
 	}
 
+	public GLine2D getLine() {
+		return line;
+	}
 }

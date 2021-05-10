@@ -2,6 +2,7 @@ package org.geogebra.common.kernel.geos;
 
 import static org.geogebra.test.TestStringUtil.unicode;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.geogebra.common.BaseUnitTest;
 import org.junit.Test;
@@ -79,19 +80,36 @@ public class GeoInputBoxForProductTest extends BaseUnitTest {
 		add("f(x)=?");
 		shouldBeUpdatedAs("f", "21xarctanx", "21 x tan"
 				+ Unicode.SUPERSCRIPT_MINUS_ONE_STRING + "(x)");
+		shouldBeUpdatedAs("f", "22xarctan(x)", "22 x tan"
+				+ Unicode.SUPERSCRIPT_MINUS_ONE_STRING + "(x)");
+	}
+
+	@Test
+	public void testSinPower() {
+		add("f(x)=?");
+		shouldBeUpdatedAs("f", "xsin^2(x)", unicode("x sin^2(x)"));
+		shouldBeUpdatedAs("f", "xsin^(-1)(x)", "x sin"
+				+ Unicode.SUPERSCRIPT_MINUS_ONE_STRING + "(x)");
+	}
+
+	@Test
+	public void functionPowerShouldNotBeUsedForProduct() {
+		add("f(r,t)=?");
+		shouldBeUpdatedAs("f", "t^2 r^(11t)", unicode("t^2 r^(11 t)"));
 	}
 
 	@Test
 	public void testCost7() {
 		add("g(t)=?");
-		shouldBeUpdatedAs("g", "-tcos7t/7", "(-(t cos(7 t)))/7");
+		shouldBeUpdatedAs("g", "-tcos7t/7", "(-(t cos(7 t)))/(7)");
+		shouldBeUpdatedAs("g", "-tcos(8t)/7", "(-(t cos(8 t)))/(7)");
 	}
 
 	@Test
 	public void testNpi7() {
 		add("f(x)=?");
 		add("n=6");
-		shouldBeUpdatedAs("f", "npi/7", "(n " + Unicode.PI_STRING + ")/7");
+		shouldBeUpdatedAs("f", "npi/7", "(n " + Unicode.PI_STRING + ")/(7)");
 	}
 
 	@Test
@@ -136,7 +154,7 @@ public class GeoInputBoxForProductTest extends BaseUnitTest {
 
 	@Test
 	public void testImaginaryProduct() {
-		add("a=4");
+		add("a=4+i");
 		shouldBeUpdatedAs("a", "i1", "i");
 	}
 
@@ -205,5 +223,39 @@ public class GeoInputBoxForProductTest extends BaseUnitTest {
 		inputBox.setSymbolicMode(true);
 		inputBox.updateLinkedGeo("-" + Unicode.EULER_STRING + " + 1");
 		assertEquals("-" + Unicode.EULER_STRING + " + 1", inputBox.getText());
+	}
+
+	@Test
+	public void testMultiLetterVariable() {
+		add("abc=7");
+		addAvInput("f(x)=x");
+		GeoInputBox inputBox = addAvInput("b = InputBox(f)");
+		inputBox.setSymbolicMode(true);
+		inputBox.updateLinkedGeo("x+abc");
+		assertTrue(inputBox.hasError());
+	}
+
+	@Test
+	public void testLetterApostrophesVariable() {
+		add("a''''=7");
+		addAvInput("f(x)=x");
+		GeoInputBox inputBox = addAvInput("b = InputBox(f)");
+		inputBox.setSymbolicMode(true);
+		inputBox.updateLinkedGeo("x+a''''");
+		assertEquals("x + a''''", inputBox.getText());
+	}
+
+	@Test
+	public void testLetterSubscriptVariable() {
+		add("F_{max}=7");
+		addAvInput("f(x)=x");
+		GeoInputBox inputBox = addAvInput("b = InputBox(f)");
+		inputBox.setSymbolicMode(true);
+		inputBox.updateLinkedGeo("x+F_{max}");
+		assertEquals("x + F_{max}", inputBox.getText());
+
+		add("var_{max}=7");
+		inputBox.updateLinkedGeo("x+var_{max}");
+		assertTrue(inputBox.hasError());
 	}
 }

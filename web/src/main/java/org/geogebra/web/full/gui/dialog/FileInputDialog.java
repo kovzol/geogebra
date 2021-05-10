@@ -3,7 +3,6 @@ package org.geogebra.web.full.gui.dialog;
 import org.geogebra.web.html5.gui.GPopupPanel;
 import org.geogebra.web.html5.main.AppW;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -17,7 +16,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class FileInputDialog extends GPopupPanel implements ClickHandler {
 
 	private FileUpload inputWidget;
-    private Button btCancel;
+	private Button btCancel;
 
 	/**
 	 * @param app
@@ -28,10 +27,10 @@ public class FileInputDialog extends GPopupPanel implements ClickHandler {
 		// createGUI();
 		addStyleName("GeoGebraPopup");
 		setGlassEnabled(true);
-        if (app.isUnbundledOrWhiteboard()) {
-            btCancel.addStyleName("dialogBtn");
-            setStyleName("MaterialDialogBox");
-        }
+		if (app.isUnbundledOrWhiteboard()) {
+			btCancel.addStyleName("dialogBtn");
+			setStyleName("MaterialDialogBox");
+		}
 	}
 
 	/**
@@ -57,15 +56,6 @@ public class FileInputDialog extends GPopupPanel implements ClickHandler {
 			hideAndFocus();
 		}
 	}
-
-	/**
-	 * @return JS callback that hides this
-	 */
-	public native JavaScriptObject getNativeHideAndFocus() /*-{
-		return function() {
-			this.@org.geogebra.web.full.gui.dialog.FileInputDialog::hideAndFocus()();
-		}
-	}-*/;
 
 	/**
 	 * Hide this and focus app

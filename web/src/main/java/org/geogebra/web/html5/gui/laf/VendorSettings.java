@@ -13,19 +13,19 @@ public interface VendorSettings {
 
 	/**
 	 * License URL should contain ? so that params can be appended.
-     *
+	 *
 	 * @return base URL of the license
 	 */
-    String getLicenseURL();
+	String getLicenseURL();
 
 	/**
 	 * Allows overriding the app title
-     *
+	 *
 	 * @param config
 	 *            app configuration
 	 * @return app title translation key
 	 */
-    String getAppTitle(AppConfig config);
+	String getAppTitle(AppConfig config);
 
 	/**
 	 * Gets helper for toggling emulated fullscreen when running in an iframe,
@@ -35,38 +35,33 @@ public interface VendorSettings {
 	 */
 	FullScreenHandler getFullscreenHandler();
 
-    /**
-     * Returns the primary color.
-     *
-     * @return the primary color
-     */
-    GColor getPrimaryColor();
-
-    /**
-     * @return if main menu button should be external.
-     */
-    boolean isMainMenuExternal();
-
-    /**
-     * Transforms a localization key to the vendor specific version.
-     *
-     * @param key the default menu localization key
-     * @return vendor specific localization key
-     */
-    String getMenuLocalizationKey(String key);
-
-    /**
-     * Transforms the style name to the vendor specific version.
-     *
-     * @param styleName the default style name
-     * @return the vendor specific style name
-     */
-    String getStyleName(String styleName);
+	/**
+	 * Returns the primary color.
+	 *
+	 * @return the primary color
+	 */
+	GColor getPrimaryColor();
 
 	/**
-	*   @return the graspable mode if it's enabled or not
+	 * @return if main menu button should be external.
 	 */
-	boolean isGraspableMathEnabled();
+	boolean isMainMenuExternal();
+
+	/**
+	 * Transforms a localization key to the vendor specific version.
+	 *
+	 * @param key the default menu localization key
+	 * @return vendor specific localization key
+	 */
+	String getMenuLocalizationKey(String key);
+
+	/**
+	 * Transforms the style name to the vendor specific version.
+	 *
+	 * @param styleName the default style name
+	 * @return the vendor specific style name
+	 */
+	String getStyleName(String styleName);
 
 	/**
 	 *
@@ -79,4 +74,16 @@ public interface VendorSettings {
 	 * @return if the user session can expire (only mebis)
 	 */
 	boolean canSessionExpire();
+
+	/**
+	 *
+	 * @return if bitmaps (png, jpg, etc) needs a security check.
+	 */
+	boolean hasBitmapSecurity();
+
+	/**
+	 *
+	 * @return whether inserting H5P content is enabled
+	 */
+	boolean isH5PEnabled();
 }

@@ -8,8 +8,9 @@ import com.google.gwt.event.shared.EventHandler;
  */
 public interface CompositionEndHandler extends EventHandler {
 
-    /**
-     * @param event composition end event
-     */
-    void onCompositionEnd(CompositionEndEvent event);
+	/**
+	 * @param event
+	 *            composition end event
+	 */
+	void onCompositionEnd(CompositionEndEvent event);
 }

@@ -336,7 +336,8 @@ public class AlgoDispatcher {
 	 * @return ray
 	 */
 	final public GeoRay ray(String label, GeoPoint P, GeoVector v) {
-		AlgoRayPointVector algo = new AlgoRayPointVector(cons, label, P, v);
+		AlgoRayPointVector algo = new AlgoRayPointVector(cons, P, v);
+		algo.getRay().setLabel(label);
 		return algo.getRay();
 	}
 
@@ -568,9 +569,9 @@ public class AlgoDispatcher {
 	 * @return segment
 	 */
 	final public GeoSegment segment(String label, GeoPoint P, GeoPoint Q) {
-		AlgoJoinPointsSegment algo = new AlgoJoinPointsSegment(cons, label, P,
-				Q);
+		AlgoJoinPointsSegment algo = new AlgoJoinPointsSegment(cons,  P, Q);
 		GeoSegment s = algo.getSegment();
+		s.setLabel(label);
 		return s;
 	}
 
@@ -1722,8 +1723,6 @@ public class AlgoDispatcher {
 		ale.getPoly().setLabel(null);
 		return (GeoElement) ale.getPoly().toGeoElement();
 	}
-
-
 
 	/**
 	 * @param P

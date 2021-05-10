@@ -4,16 +4,17 @@
 
 package org.geogebra.web.full.gui.layout;
 
-import org.geogebra.web.html5.util.ArticleElementInterface;
+import org.geogebra.web.html5.Browser;
+import org.geogebra.web.html5.util.GeoGebraElement;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
@@ -62,7 +63,7 @@ public class ZoomSplitLayoutPanel extends DockLayoutPanel {
 	private static Element glassElem = null;
 
 	private final int splitterSize;
-	private ArticleElementInterface ai;
+	private GeoGebraElement ai;
 
   class HSplitter extends Splitter {
     public HSplitter(Widget target, boolean reverse, ZoomSplitLayoutPanel splitPanel) {
@@ -82,10 +83,11 @@ public class ZoomSplitLayoutPanel extends DockLayoutPanel {
 
     @Override
     protected int getEventPosition(Event event) {
-    	return event.getTypeInt() == Event.ONTOUCHSTART
-		        || event.getTypeInt() == Event.ONTOUCHMOVE
-		        || event.getTypeInt() == Event.ONTOUCHEND ? (int) (event
-		        .getTouches().get(0).getClientX() * getZoom())
+    	int type = DOM.eventGetType(event);
+    	return type == Event.ONTOUCHSTART
+		        || type == Event.ONTOUCHMOVE
+		        || type == Event.ONTOUCHEND
+				? (int) (event.getTouches().get(0).getClientX() * getZoom())
 		        : (int) (event.getClientX() * getZoom());
     }
 
@@ -118,7 +120,8 @@ public class ZoomSplitLayoutPanel extends DockLayoutPanel {
 
 		private ZoomSplitLayoutPanel splitPanel;
 
-		protected SplitterImpl impl = GWT.create(SplitterImpl.class);
+		protected SplitterImpl impl = Browser.isMobile() ? new SplitterImplTouch()
+				: new SplitterImpl();
 
 		/**
 		 * @param target
@@ -150,7 +153,7 @@ public class ZoomSplitLayoutPanel extends DockLayoutPanel {
 				return;
 			}
 			Element splitter = null;
-			switch (event.getTypeInt()) {
+			switch (DOM.eventGetType(event)) {
 			default:
 				// do nothing
 				break;
@@ -364,10 +367,11 @@ public class ZoomSplitLayoutPanel extends DockLayoutPanel {
 
     @Override
     protected int getEventPosition(Event event) {
-    	return event.getTypeInt() == Event.ONTOUCHSTART
-		        || event.getTypeInt() == Event.ONTOUCHMOVE
-		        || event.getTypeInt() == Event.ONTOUCHEND ? (int) (event
-		        .getTouches().get(0).getClientY() * getZoom())
+		int type = DOM.eventGetType(event);
+    	return type == Event.ONTOUCHSTART
+		        || type == Event.ONTOUCHMOVE
+		        || type == Event.ONTOUCHEND
+				? (int) (event.getTouches().get(0).getClientY() * getZoom())
 		        : (int) (event.getClientY() * getZoom());
     }
 
@@ -415,9 +419,9 @@ public class ZoomSplitLayoutPanel extends DockLayoutPanel {
 	 * Construct a new {@link SplitLayoutPanel} with the default splitter size
 	 * of 8px.
 	 */
-	public ZoomSplitLayoutPanel(ArticleElementInterface ai) {
+	public ZoomSplitLayoutPanel(GeoGebraElement ai) {
 		this(DEFAULT_SPLITTER_SIZE, ai);
-  }
+	}
 
   /**
    * Construct a new {@link SplitLayoutPanel} with the specified splitter size
@@ -425,13 +429,12 @@ public class ZoomSplitLayoutPanel extends DockLayoutPanel {
    *
    * @param splitterSize the size of the splitter in pixels
    */
-	public ZoomSplitLayoutPanel(int splitterSize, ArticleElementInterface ai) {
-    super(Unit.PX);
-    this.splitterSize = splitterSize;
-    setStyleName("gwt-SplitLayoutPanel");
+	public ZoomSplitLayoutPanel(int splitterSize, GeoGebraElement ai) {
+		super(Unit.PX);
+		this.splitterSize = splitterSize;
+		setStyleName("gwt-SplitLayoutPanel");
 		this.ai = ai;
-
-  }
+	}
 
   /**
    * Return the size of the splitter in pixels.

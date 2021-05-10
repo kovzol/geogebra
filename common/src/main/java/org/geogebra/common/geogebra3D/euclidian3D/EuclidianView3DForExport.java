@@ -53,7 +53,7 @@ public class EuclidianView3DForExport extends EuclidianView3D {
 
 	/**
 	 * constructor
-	 *
+	 * 
 	 * @param ec
 	 *            controller
 	 * @param settings
@@ -66,7 +66,7 @@ public class EuclidianView3DForExport extends EuclidianView3D {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param xmin
 	 *            x-coord min
 	 * @param xmax
@@ -153,7 +153,7 @@ public class EuclidianView3DForExport extends EuclidianView3D {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param format
 	 *            3D format
 	 * @return 3D export
@@ -163,7 +163,7 @@ public class EuclidianView3DForExport extends EuclidianView3D {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param format
 	 *            3D format
 	 * @param dialog
@@ -244,7 +244,7 @@ public class EuclidianView3DForExport extends EuclidianView3D {
 
 	/**
 	 * set thickness and scale
-	 *
+	 * 
 	 * @param format
 	 *            export format
 	 * @param thickness
@@ -284,7 +284,7 @@ public class EuclidianView3DForExport extends EuclidianView3D {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param getter
 	 *            geometry getter
 	 */

@@ -5,7 +5,8 @@ import org.geogebra.keyboard.web.TabbedKeyboard;
 import org.geogebra.keyboard.web.UpdateKeyBoardListener;
 import org.geogebra.web.html5.gui.GeoGebraFrameSimple;
 import org.geogebra.web.html5.gui.util.MathKeyboardListener;
-import org.geogebra.web.html5.main.TestArticleElement;
+import org.geogebra.web.html5.util.AppletParameters;
+import org.geogebra.web.html5.util.GeoGebraElement;
 import org.geogebra.web.resources.StyleInjector;
 
 import com.google.gwt.canvas.client.Canvas;
@@ -14,8 +15,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.himamis.retex.editor.share.event.MathFieldListener;
-import com.himamis.retex.editor.share.model.MathSequence;
-import com.himamis.retex.editor.share.serializer.GeoGebraSerializer;
 import com.himamis.retex.editor.web.JlmEditorLib;
 import com.himamis.retex.editor.web.MathFieldW;
 import com.himamis.retex.renderer.share.platform.FactoryProvider;
@@ -38,8 +37,9 @@ public class Editor implements EntryPoint, MathFieldListener {
 
 	@Override
 	public void onModuleLoad() {
-		TestArticleElement parameters = new TestArticleElement("true", "Solver");
-		app = new AppWsolver(parameters, new GeoGebraFrameSimple(parameters));
+		GeoGebraElement element = GeoGebraElement.as(DOM.createElement("div"));
+		AppletParameters parameters = new AppletParameters(element);
+		app = new AppWsolver(element, parameters, new GeoGebraFrameSimple(element, parameters));
 
 		if (FactoryProvider.getInstance() == null) {
 			FactoryProvider.setInstance(new FactoryProviderGWT());
@@ -64,7 +64,7 @@ public class Editor implements EntryPoint, MathFieldListener {
 		el.appendChild(canvas.getCanvasElement());
 		MathFieldW fld = new MathFieldW(null, parentWidget,
 				canvas,
-				this, false);
+				this);
 		final TabbedKeyboard kb = new TabbedKeyboard(app, false);
 		kb.setListener(new UpdateKeyBoardListener() {
 
@@ -99,7 +99,7 @@ public class Editor implements EntryPoint, MathFieldListener {
 	}
 
 	@Override
-	public void onKeyTyped() {
+	public void onKeyTyped(String key) {
 		// TODO Auto-generated method stub
 	}
 
@@ -116,11 +116,6 @@ public class Editor implements EntryPoint, MathFieldListener {
 	@Override
 	public void onUpKeyPressed() {
 		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public String serialize(MathSequence selectionText) {
-		return GeoGebraSerializer.serialize(selectionText);
 	}
 
 	@Override

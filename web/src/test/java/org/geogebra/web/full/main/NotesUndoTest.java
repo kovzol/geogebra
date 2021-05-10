@@ -1,16 +1,21 @@
 package org.geogebra.web.full.main;
 
+import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.euclidian.event.AbstractEvent;
+import org.geogebra.common.euclidian.event.PointerEventType;
+import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.web.full.gui.pagecontrolpanel.PageListController;
-import org.geogebra.web.html5.main.TestArticleElement;
+import org.geogebra.web.full.gui.pagecontrolpanel.PagePreviewCard;
+import org.geogebra.web.html5.event.PointerEvent;
+import org.geogebra.web.html5.event.ZeroOffset;
+import org.geogebra.web.html5.util.AppletParameters;
 import org.geogebra.web.test.AppMocker;
+import org.geogebra.web.test.GgbMockitoTestRunner;
+import org.geogebra.web.test.ViewWMock;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import com.google.gwt.dom.client.TextAreaElement;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.gwtmockito.WithClassesToStub;
 
 /**
  * Tests for Undo with multiple slides
@@ -18,8 +23,7 @@ import com.google.gwtmockito.WithClassesToStub;
  * @author Zbynek
  *
  */
-@RunWith(GwtMockitoTestRunner.class)
-@WithClassesToStub({ TextAreaElement.class })
+@RunWith(GgbMockitoTestRunner.class)
 public class NotesUndoTest {
 	private static AppWFull app;
 
@@ -28,9 +32,6 @@ public class NotesUndoTest {
 	 */
 	@Test
 	public void undoSingle() {
-		app = AppMocker
-				.mockApplet(new TestArticleElement("canary", "notes")
-						.attr("vendor", "mebis"));
 		addObject("x");
 		addObject("-x");
 		shouldHaveUndoPoints(2);
@@ -50,8 +51,6 @@ public class NotesUndoTest {
 	 */
 	@Test
 	public void undoReorder() {
-		app = AppMocker
-				.mockApplet(new TestArticleElement("canary", "notes"));
 		addObject("x");
 		addObject("-x");
 		shouldHaveUndoPoints(2);
@@ -79,14 +78,11 @@ public class NotesUndoTest {
 	 */
 	@Test
 	public void undoDuplicate() {
-		app = AppMocker
-				.mockApplet(new TestArticleElement("canary", "notes"));
 		addObject("x");
 		shouldHaveUndoPoints(1);
 
 		app.getAppletFrame().initPageControlPanel(app);
-		app.getAppletFrame().getPageControlPanel().duplicatePage(
-				((PageListController) app.getPageController()).getCard(0));
+		duplicate(0);
 		shouldHaveSlides(2);
 		objectsPerSlideShouldBe(1, 1);
 
@@ -117,23 +113,26 @@ public class NotesUndoTest {
 		objectsPerSlideShouldBe(2, 2);
 	}
 
+	private void duplicate(int page) {
+		app.getPageController().refreshSlide(page);
+		PagePreviewCard card = ((PageListController) app.getPageController()).getCard(page);
+		String content = ViewWMock.toJson(card.getFile());
+		app.getAppletFrame().getPageControlPanel().pastePage(card, content);
+	}
+
 	/**
 	 * Make duplicate of a duplicate, add objects to all slides, undo & redo
 	 */
 	@Test
 	public void undoDuplicateChain() {
-		app = AppMocker
-				.mockApplet(new TestArticleElement("canary", "notes"));
 		addObject("x");
 		shouldHaveUndoPoints(1);
 
 		app.getAppletFrame().initPageControlPanel(app);
-		app.getAppletFrame().getPageControlPanel().duplicatePage(
-				((PageListController) app.getPageController()).getCard(0));
+		duplicate(0);
 		objectsPerSlideShouldBe(1, 1);
 
-		app.getAppletFrame().getPageControlPanel().duplicatePage(
-				((PageListController) app.getPageController()).getCard(1));
+		duplicate(1);
 		objectsPerSlideShouldBe(1, 1, 1);
 
 		selectPage(0);
@@ -171,8 +170,6 @@ public class NotesUndoTest {
 	 */
 	@Test
 	public void undoRedo() {
-		app = AppMocker
-				.mockApplet(new TestArticleElement("canary", "notes"));
 		addObject("x");
 		addObject("-x");
 		shouldHaveUndoPoints(2);
@@ -195,13 +192,59 @@ public class NotesUndoTest {
 		slideShouldHaveObjects(0, 0);
 	}
 
+	@Test
+	public void undoClearPage() {
+		app.getAppletFrame().initPageControlPanel(app);
+		addPenStroke();
+		objectsPerSlideShouldBe(1);
+		app.getAppletFrame().getPageControlPanel().removePage(0);
+		objectsPerSlideShouldBe(0);
+		app.getGgbApi().undo();
+		objectsPerSlideShouldBe(1);
+	}
+
+	private void addPenStroke() {
+		app.setMode(EuclidianConstants.MODE_PEN);
+		app.getEuclidianView1().getEuclidianController().wrapMousePressed(evt(50,50));
+		app.getEuclidianView1().getEuclidianController().wrapMouseReleased(evt(150,150));
+	}
+
+	@Test
+	public void undoRedoCreateShape() {
+		app.getAppletFrame().initPageControlPanel(app);
+		createShape();
+		objectsPerSlideShouldBe(1);
+		createShape();
+		objectsPerSlideShouldBe(2);
+		app.getGgbApi().undo();
+		objectsPerSlideShouldBe(1);
+		app.getGgbApi().redo();
+		objectsPerSlideShouldBe(2);
+		app.getGgbApi().undo();
+		objectsPerSlideShouldBe(1);
+		app.getGgbApi().undo();
+		objectsPerSlideShouldBe(0);
+	}
+
+	private void createShape() {
+		GeoConic conic = new GeoConic(app.getKernel().getConstruction(),
+				new double[6]);
+		conic.setLabel(null);
+		app.getUndoManager().storeAddGeo(conic);
+	}
+
+	private AbstractEvent evt(int x, int y) {
+		return new PointerEvent(x,y, PointerEventType.MOUSE, new ZeroOffset());
+	}
 
 	/**
 	 * Make sure asserts don't kill the tests
 	 */
 	@Before
-	public void rootPanel() {
+	public void init() {
 		this.getClass().getClassLoader().setDefaultAssertionStatus(false);
+		app = AppMocker
+				.mockApplet(new AppletParameters("notes"));
 	}
 
 	/**
@@ -209,8 +252,6 @@ public class NotesUndoTest {
 	 */
 	@Test
 	public void pageSwitch() {
-		app = AppMocker
-				.mockApplet(new TestArticleElement("canary", "notes"));
 		addObject("x");
 
 		app.getAppletFrame().initPageControlPanel(app);
@@ -264,8 +305,6 @@ public class NotesUndoTest {
 	 */
 	@Test
 	public void switchFourSlides() {
-		app = AppMocker
-				.mockApplet(new TestArticleElement("canary", "notes"));
 		addObject("x");
 
 		app.getAppletFrame().initPageControlPanel(app);
@@ -323,10 +362,6 @@ public class NotesUndoTest {
 	 */
 	@Test
 	public void singleObjectPerSlide() {
-		app = AppMocker
-				.mockApplet(new TestArticleElement("canary", "notes"));
-
-
 		app.getAppletFrame().initPageControlPanel(app);
 		app.getAppletFrame().getPageControlPanel().loadNewPage(false);
 		app.getAppletFrame().getPageControlPanel().loadNewPage(false);

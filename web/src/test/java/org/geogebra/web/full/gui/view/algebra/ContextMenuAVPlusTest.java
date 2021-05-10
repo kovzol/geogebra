@@ -1,8 +1,7 @@
 package org.geogebra.web.full.gui.view.algebra;
 
 import org.geogebra.web.full.main.AppWFull;
-import org.geogebra.web.html5.main.TestArticleElement;
-import org.geogebra.web.html5.util.ArticleElementInterface;
+import org.geogebra.web.html5.util.AppletParameters;
 import org.geogebra.web.test.AppMocker;
 import org.geogebra.web.test.GgbMockitoTestRunner;
 import org.junit.Before;
@@ -10,18 +9,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
-import com.google.gwt.dom.client.TextAreaElement;
-import com.google.gwtmockito.WithClassesToStub;
-
 @RunWith(GgbMockitoTestRunner.class)
-@WithClassesToStub({ TextAreaElement.class })
 public class ContextMenuAVPlusTest {
 
     @Test
     public void imageToolShownIfAppHasToolbar() {
-        ArticleElementInterface articleElement =
-                new TestArticleElement("prerelease", "classic")
-                    .attr("showToolBar", "true");
+        AppletParameters articleElement =
+                new AppletParameters("classic")
+                    .setAttribute("showToolBar", "true");
         AppWFull app = AppMocker.mockApplet(articleElement);
 
         RadioTreeItem radioTreeItem = new RadioTreeItem(app.getKernel());
@@ -35,9 +30,9 @@ public class ContextMenuAVPlusTest {
 
     @Test
     public void noImageToolIfShowToolbarIsFalse() {
-        ArticleElementInterface articleElement =
-                new TestArticleElement("prerelease", "classic")
-                        .attr("showToolBar", "false");
+        AppletParameters articleElement =
+                new AppletParameters("classic")
+                        .setAttribute("showToolBar", "false");
         AppWFull app = AppMocker.mockApplet(articleElement);
 
         RadioTreeItem radioTreeItem = new RadioTreeItem(app.getKernel());
@@ -51,9 +46,9 @@ public class ContextMenuAVPlusTest {
 
     @Test
     public void noImageToolIfCustomToolbarHasNoImageTool() {
-        ArticleElementInterface articleElement =
-                new TestArticleElement("prerelease", "classic")
-                        .attr("customToolBar", "1 2");
+        AppletParameters articleElement =
+                new AppletParameters("classic")
+                        .setAttribute("customToolBar", "1 2");
         AppWFull app = AppMocker.mockApplet(articleElement);
 
         RadioTreeItem radioTreeItem = new RadioTreeItem(app.getKernel());

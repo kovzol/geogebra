@@ -89,9 +89,6 @@ public class LayoutW extends Layout {
 			app.setLabelingStyle(labelingStyle);
 		}
 
-		// ignore axes & grid settings for the document perspective
-		final boolean changed = setEVsettingsFromPerspective(app, perspective);
-
 		app.getGuiManager().setGeneralToolBarDefinition(
 		        perspective.getToolbarDefinition());
 		app.setToolbarPosition(perspective.getToolBarPosition(), false);
@@ -100,16 +97,14 @@ public class LayoutW extends Layout {
 		if (app.isApplet()) {
 			app.setCustomToolBar();
 
-			app.setShowToolBarNoUpdate(app.getArticleElement()
+			app.setShowToolBarNoUpdate(app.getAppletParameters()
 					.getDataParamShowToolBar(false));
-			app.setShowAlgebraInput(app.getArticleElement()
+			app.setShowAlgebraInput(app.getAppletParameters()
 					.getDataParamShowAlgebraInput(false), false);
 		}
 
-		// app.setShowInputTop(perspective.getShowInputPanelOnTop(), false);
-
 		app.setInputPosition(
-				app.getArticleElement()
+				app.getAppletParameters()
 					.getAlgebraPosition(perspective.getInputPosition()), false);
 		String toolbar3D = "";
 
@@ -124,7 +119,6 @@ public class LayoutW extends Layout {
 
 			if (dp.getViewId() == App.VIEW_EUCLIDIAN3D) {
 				toolbar3D = dp.getToolbarString();
-				// Log.debug("TADAM " + toolbar3D);
 			}
 		}
 		dockManager.applyPerspective(perspective.getSplitPaneData(),
@@ -146,20 +140,22 @@ public class LayoutW extends Layout {
 			app.updateContentPane();
 		}
 
-        app.dispatchEvent(new Event(EventType.PERSPECTIVE_CHANGE));
-		return changed;
-		// old behaviour: just updating center, instead of updateContentPane
-		// app.refreshSplitLayoutPanel();
-	}
+		// ignore axes & grid settings for the document perspective
+		final boolean changed = setEVsettingsFromPerspective(app, perspective);
 
-    private boolean mayHaveKeyboard(DockPanelData dp) {
-        if (dp.getViewId() == App.VIEW_EUCLIDIAN) {
-            return app.getKernel().getConstruction().hasInputBoxes();
-        }
+		app.dispatchEvent(new Event(EventType.PERSPECTIVE_CHANGE));
+		return changed;
+	}
+	
+	private boolean mayHaveKeyboard(DockPanelData dp) {
+		if (dp.getViewId() == App.VIEW_EUCLIDIAN) {
+			return app.getKernel().getConstruction().hasInputBoxes();
+		}
 		return (dp.getViewId() == App.VIEW_ALGEBRA
 				|| dp.getViewId() == App.VIEW_CAS
 				|| dp.getViewId() == App.VIEW_PROBABILITY_CALCULATOR
-				|| dp.getViewId() == App.VIEW_SPREADSHEET) && !dp.isToolMode();
+				|| dp.getViewId() == App.VIEW_SPREADSHEET)
+				&& dp.getTabId() == DockPanelData.TabIds.ALGEBRA;
 	}
 
 	/**

@@ -35,8 +35,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 public final class MyDictionary {
 
 	private static Map<String, MyDictionary> cache = new HashMap<>();
-    @ExternalAccess
-    private JavaScriptObject dict;
+	@ExternalAccess
+	private JavaScriptObject dict;
 
 	private String label;
 
@@ -62,25 +62,25 @@ public final class MyDictionary {
 		return target;
 	}
 
-    @ExternalAccess
-    private static void resourceErrorBadType(String name) {
-        throw new MissingResourceException(
-                "Dictionary '" + name + "' not found.", null, name);
-    }
+	@ExternalAccess
+	private static void resourceErrorBadType(String name) {
+		throw new MissingResourceException(
+				"Dictionary '" + name + "' not found.", null, name);
+	}
 
-    @ExternalAccess
-    private void resourceError(String key) {
-        String error = "Cannot find '" + key + "' in " + this;
-        throw new MissingResourceException(error, this.toString(), key);
-    }
+	@ExternalAccess
+	private void resourceError(String key) {
+		String error = "Cannot find '" + key + "' in " + this;
+		throw new MissingResourceException(error, this.toString(), key);
+	}
 
 	/**
 	 * Constructor for <code>Dictionary</code>.
-	 *
-     * @param section
-     *            dictionary section
-     * @param language
-     *            dictionary language
+	 * 
+	 * @param section
+	 *            dictionary section
+	 * @param language
+	 *            dictionary language
 	 */
 	private MyDictionary(String section, String language)
 			throws MissingResourceException {

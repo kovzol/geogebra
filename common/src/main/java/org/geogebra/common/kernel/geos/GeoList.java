@@ -18,10 +18,14 @@ import java.util.TreeSet;
 
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GFont;
+import org.geogebra.common.euclidian.DrawableND;
 import org.geogebra.common.euclidian.EuclidianViewInterfaceCommon;
 import org.geogebra.common.euclidian.EuclidianViewInterfaceSlim;
+import org.geogebra.common.euclidian.draw.CanvasDrawable;
+import org.geogebra.common.euclidian.draw.DrawDropDownList;
 import org.geogebra.common.kernel.CircularDefinitionException;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.PathMover;
 import org.geogebra.common.kernel.PathMoverGeneric;
@@ -576,12 +580,17 @@ public class GeoList extends GeoElement
 	public MyList getMyList() {
 		final int size = elements.size();
 		final MyList myList = new MyList(kernel, size);
-
-		for (int i = 0; i < size; i++) {
-			myList.addListElement(new ExpressionNode(kernel, elements.get(i)));
-		}
-
+		copyListElements(myList);
 		return myList;
+	}
+
+	/**
+	 * @param myList list to copy into
+	 */
+	public void copyListElements(MyList myList) {
+		for (GeoElement element : elements) {
+			myList.addListElement(new ExpressionNode(kernel, element));
+		}
 	}
 
 	@Override
@@ -891,7 +900,7 @@ public class GeoList extends GeoElement
 			for (int i = 0; i < lastIndex; i++) {
 				final GeoElement geo = elements.get(i);
 				sbBuildValueString.append(geo.toOutputValueString(tpl));
-				sbBuildValueString.append(getLoc().getComma());
+				tpl.getComma(sbBuildValueString, getLoc());
 				tpl.appendOptionalSpace(sbBuildValueString);
 			}
 
@@ -923,7 +932,7 @@ public class GeoList extends GeoElement
 		// an independent list needs to add
 		// its expression itself
 		// e.g. {1,2,3}
-		if (isIndependent() && (getDefaultGeoType() < 0)) {
+		if (isDefined() && isIndependent() && (getDefaultGeoType() < 0)) {
 			sb.append("<expression");
 			sb.append(" label=\"");
 			StringUtil.encodeXML(sb, label);
@@ -938,15 +947,7 @@ public class GeoList extends GeoElement
 			sb.append("\"/>\n");
 		}
 
-		sb.append("<element");
-		sb.append(" type=\"list\"");
-		sb.append(" label=\"");
-		sb.append(label);
-		if (getDefaultGeoType() >= 0) {
-			sb.append("\" default=\"");
-			sb.append(getDefaultGeoType());
-		}
-		sb.append("\">\n");
+		getElementOpenTagXML(sb);
 		getXMLtags(sb);
 
 		if (size() == 0 && getTypeStringForXML() != null) {
@@ -986,7 +987,7 @@ public class GeoList extends GeoElement
 		}
 
 		// AngleProperties
-        XMLBuilder.appendAngleStyle(sb, angleStyle, emphasizeRightAngle);
+		XMLBuilder.appendAngleStyle(sb, angleStyle, emphasizeRightAngle);
 
 		if (isSymbolicMode()) {
 			sb.append("\t<symbolic val=\"true\" />\n");
@@ -1586,6 +1587,12 @@ public class GeoList extends GeoElement
 
 	@Override
 	public String toLaTeXString(final boolean symbolic, StringTemplate tpl) {
+		return toLaTeXString(symbolic, false, tpl);
+	}
+
+	@Override
+	public String toLaTeXString(
+			final boolean symbolic, boolean symbolicContext, StringTemplate tpl) {
 		if (isMatrix()) {
 
 			// int rows = size();
@@ -1600,10 +1607,12 @@ public class GeoList extends GeoElement
 			}
 			sb.append("}");
 			for (int i = 0; i < size(); i++) {
-				final GeoList geo = (GeoList) get(i);
-				for (int j = 0; j < geo.size(); j++) {
-					sb.append(geo.get(j).toLaTeXString(symbolic, tpl));
-					if (j < (geo.size() - 1)) {
+				final GeoList row = (GeoList) get(i);
+				for (int j = 0; j < row.size(); j++) {
+					GeoElement geo = row.get(j);
+					sb.append(symbolic ? geo.getLabel(tpl)
+							: geo.toLaTeXString(false, symbolicContext, tpl));
+					if (j < row.size() - 1) {
 						sb.append("&");
 					}
 				}
@@ -1752,18 +1761,17 @@ public class GeoList extends GeoElement
 			}
 		}
 
+		double normalized = PathNormalizer.toNormalizedPathParameter(pp.t,
+				path.getMinParameter(), path.getMaxParameter());
+		if (path.isGeoPoint()) {
+			normalized = Kernel.STANDARD_PRECISION; // to avoid rounding errors
+		}
 		if ((directionInfoArray == null)
 				|| directionInfoArray[closestPointIndex]) {
-			pp.t = closestPointIndexBack
-					+ PathNormalizer.toNormalizedPathParameter(pp.t,
-							path.getMinParameter(), path.getMaxParameter());
+			pp.t = closestPointIndexBack + normalized;
 		} else {
-			pp.t = closestPointIndexBack + 1
-					- PathNormalizer.toNormalizedPathParameter(pp.t,
-							path.getMinParameter(), path.getMaxParameter());
+			pp.t = closestPointIndexBack + 1 - normalized;
 		}
-
-		// Application.debug(pp.t);
 	}
 
 	/**
@@ -1840,8 +1848,7 @@ public class GeoList extends GeoElement
 		final PathParameter pp = PI.getPathParameter();
 
 		double t = pp.getT();
-		int n0 = (int) Math.floor(t);
-		int n = n0;
+		int n = getIndexFromParameter(t);
 
 		// check n is in a sensible range
 		if ((n >= size()) || (n < 0)) {
@@ -1900,6 +1907,10 @@ public class GeoList extends GeoElement
 		}
 
 		pp.setPathType(pt);
+	}
+
+	private int getIndexFromParameter(double t) {
+		return t < 0 ? 0 : Math.min((int) Math.floor(t), size() - 1);
 	}
 
 	@Override
@@ -3028,16 +3039,10 @@ public class GeoList extends GeoElement
 		return DescriptionMode.VALUE;
 	}
 
-	/**
-	 * Check for matrices for matrices defined per element like {{1,0},{0,1}}
-	 * (also dependent like {{a+1,1}})
-	 *
-	 * @return whether this can be eited as a matrix
-	 */
-	public boolean isEditableMatrix() {
-		if (!isMatrix()) {
-			return false;
-		}
+	@Override
+	public boolean hasSpecialEditor() {
+		// Check for lists defined per element like {{1,0},{0,1}} or {1, 2, 3}
+		// (also dependent like {{a+1,1}})
 		if (isIndependent()) {
 			return true;
 		}
@@ -3070,7 +3075,7 @@ public class GeoList extends GeoElement
 	public String getLaTeXAlgebraDescriptionWithFallback(
 			final boolean substituteNumbers, StringTemplate tpl,
 			boolean fallback) {
-		if (isEditableMatrix()) {
+		if (hasSpecialEditor()) {
 			return getLabel(tpl) + " = "
 					+ toLaTeXString(!substituteNumbers, tpl);
 		}
@@ -3185,6 +3190,10 @@ public class GeoList extends GeoElement
 		return false;
 	}
 
+	public String getSelectedItemDisplayString(StringTemplate tpl) {
+		return getItemDisplayString(getSelectedElement(), tpl);
+	}
+
 	/**
 	 *
 	 * @param geoItem
@@ -3193,19 +3202,32 @@ public class GeoList extends GeoElement
 	 *            template
 	 * @return The displayed string of item.
 	 */
-	public static String getItemDisplayString(GeoElement geoItem,
+	public String getItemDisplayString(GeoElement geoItem,
 			StringTemplate tpl) {
+		String displayString = "";
 		if (!"".equals(geoItem.getRawCaption())) {
-			return geoItem.getCaption(tpl);
+			displayString =  geoItem.getCaption(tpl);
 		} else if (geoItem.isGeoPoint() || geoItem.isGeoVector() || geoItem.isGeoList()) {
 			if (geoItem.getLabelSimple() == null) {
 				// eg Element of list
-				return geoItem.toValueString(tpl);
+				displayString = geoItem.toValueString(tpl);
+			} else {
+				displayString = geoItem.getLabel(tpl);
 			}
-			return geoItem.getLabel(tpl);
+		} else {
+			displayString = geoItem.toValueString(tpl);
+		}
+		if (tpl.hasType(StringType.SCREEN_READER) && geoItem.isGeoText()
+				&& CanvasDrawable.isLatexString(displayString)) {
+			displayString = ((GeoText) geoItem).getAuralTextLaTeX();
 		}
 
-		return geoItem.toValueString(tpl);
+		if (StringUtil.empty(displayString)
+				&& tpl.getStringType() == StringType.SCREEN_READER) {
+			return kernel.getLocalization().getMenuDefault("EmptyItem", "empty element");
+		}
+
+		return displayString;
 	}
 
 	/**
@@ -3227,56 +3249,37 @@ public class GeoList extends GeoElement
 	}
 
 	@Override
-	public void addAuralName(Localization loc, ScreenReaderBuilder sb) {
-		sb.append(loc.getMenuDefault("Dropdown", "dropdown"));
-		if (size() > MAX_ITEMS_FOR_SCREENREADER) {
-			addAuralLabelOrCaption(sb);
-		}
-	}
-
-	@Override
-	public void addAuralStatus(Localization loc, ScreenReaderBuilder sb) {
-		sb.append(loc.getMenuDefault("Selected", "selected"));
+	public void addAuralType(ScreenReaderBuilder sb) {
+		sb.appendMenuDefault("Dropdown", "dropdown");
+		sb.appendSpace();
 	}
 
 	@Override
 	public void addAuralContent(Localization loc, ScreenReaderBuilder sb) {
-		int count = size();
-		if (count > 0 && count < MAX_ITEMS_FOR_SCREENREADER) {
-			sb.append(loc.getMenuDefault("WithItems", "with items"));
-			sb.append(" ");
-			for (int idx = 0; idx < count; idx++) {
-				String item = getItemDisplayString(idx,
-						StringTemplate.screenReader);
-				if (item != null && "".equals(item.trim())) {
-					item = loc.getMenuDefault("EmptyItem", "empty item");
-				}
-				sb.append(item);
-				if (idx == count - 1) {
-					sb.endSentence();
-				} else {
-					sb.append(", ");
-				}
-			}
+		if (size() > 0) {
+			String item = getSelectedItemDisplayString(StringTemplate.screenReader);
+			sb.append(loc.getPlainDefault("ElementASelected",
+					"element %0 selected", item));
 		}
 	}
 
 	@Override
 	public void addAuralOperations(Localization loc, ScreenReaderBuilder sb) {
 		sb.append(loc.getMenuDefault("PressSpaceToOpen", "Press space to open"));
+		sb.appendSpace();
 		super.addAuralOperations(loc, sb);
 	}
 
 	@Override
 	public String getAuralTextForSpace() {
-		Localization loc = kernel.getLocalization();
-		ScreenReaderBuilder sb = new ScreenReaderBuilder();
-		sb.append(loc.getMenuDefault("Dropdown", "dropdown"));
-		addAuralLabelOrCaption(sb);
-		sb.appendSpace();
-		sb.append(loc.getMenuDefault("Closed", "closed"));
-		sb.endSentence();
-		return sb.toString();
+		DrawableND d = app.getEuclidianView1().getDrawableND(this);
+		if (d instanceof DrawDropDownList && !((DrawDropDownList) d).isOptionsVisible()) {
+			ScreenReaderBuilder sb = new ScreenReaderBuilder(kernel.getLocalization());
+			appendAuralItemSelected(sb);
+			sb.endSentence();
+			return sb.toString();
+		}
+		return null;
 	}
 
 	/**
@@ -3290,21 +3293,14 @@ public class GeoList extends GeoElement
 	}
 
 	/**
-	 *
-	 * @return the aural text of the currently selected element.
+	 * Appends the aural text of the currently selected element.
 	 */
-	public String getAuralItemSelected() {
-		GeoElement item = getSelectedElement();
+	public void appendAuralItemSelected(ScreenReaderBuilder sb) {
 		Localization loc = kernel.getLocalization();
-		String auralText = getItemDisplayString(item,
-				StringTemplate.screenReader);
-		if (StringUtil.emptyTrim(auralText)) {
-			return loc.getMenuDefault("DropDownEmptyItemSelected",
-					"Empty item selected Drop down closed");
-		}
-		return loc.getPlainArray("DropDownItemSelected",
-				"Item %0 selected Drop down closed",
-				new String[] { auralText });
+		addAuralContent(kernel.getLocalization(), sb);
+		sb.appendSpace();
+		sb.append(loc.getMenuDefault("DropdownClosed",
+					"Dropdown closed"));
 	}
 
 	/**
@@ -3312,17 +3308,27 @@ public class GeoList extends GeoElement
 	 *
 	 */
 	public String getAuralTextAsOpened() {
-		ScreenReaderBuilder sb = new ScreenReaderBuilder();
 		Localization loc = kernel.getLocalization();
-		sb.append(loc.getPlainArray("DropDownOpened", "Drop down %0 opened",
-				new String[] { getLabel(StringTemplate.defaultTemplate) }));
+		ScreenReaderBuilder sb = new ScreenReaderBuilder(loc);
+		sb.append(getSelectedItemDisplayString(StringTemplate.screenReader));
+		sb.appendSpace();
+		sb.append(getIndexDescription(getSelectedIndex()));
 		sb.endSentence();
-		sb.append(loc.getMenuDefault("PressArrowsToGo",
-				"Press up arrow and down arrow to go to different options"));
+		sb.appendMenuDefault("PressArrowsToGo",
+				"Press up arrow and down arrow to go to different options");
 		sb.endSentence();
-		sb.append(loc.getMenuDefault("PressEnterToSelect",
-				"Press enter to select"));
+		sb.appendMenuDefault("PressEnterToSelect",
+				"Press enter to select");
 		return sb.toString();
+	}
+
+	/**
+	 * @param selectedIndex index
+	 * @return localized "[index] of [size]"
+	 */
+	public String getIndexDescription(int selectedIndex) {
+		return kernel.getLocalization().getPlainDefault("AofB", "%0 of %1",
+				(selectedIndex + 1) + "", size() + "");
 	}
 
 	/**
@@ -3360,5 +3366,4 @@ public class GeoList extends GeoElement
 	public void calculateCornerPoint(GeoPoint corner, int double1) {
 		corner.setUndefined();
 	}
-
 }

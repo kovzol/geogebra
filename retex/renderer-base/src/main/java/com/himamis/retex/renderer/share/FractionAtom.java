@@ -71,8 +71,6 @@ public class FractionAtom extends Atom {
 	 *            the numerator
 	 * @param den
 	 *            the denominator
-	 * @param unit
-	 *            a unit constant for the line thickness
 	 * @param t
 	 *            the thickness of the fraction line (in the given unit)
 	 * @param numAlign
@@ -101,6 +99,11 @@ public class FractionAtom extends Atom {
 	public FractionAtom(Atom num, Atom den) {
 		this(num, den, null, TeXConstants.Align.CENTER,
 				TeXConstants.Align.CENTER);
+	}
+
+	public boolean isRuleHidden() {
+		// null represents default non-zero thickness
+		return thickness != null && thickness.getL() == 0;
 	}
 
 	/**
@@ -237,10 +240,10 @@ public class FractionAtom extends Atom {
 		vBox.setHeight(shiftUp + num.getHeight());
 		vBox.setDepth(shiftDown + denom.getDepth());
 
-        final double f = env.lengthSettings().getLength("nulldelimiterspace", env);
+		final double f = env.lengthSettings().getLength("nulldelimiterspace", env);
 
 		return new HorizontalBox(vBox, vBox.getWidth() + 2 * f,
-				TeXConstants.Align.CENTER);
+				TeXConstants.Align.CENTER).setAtom(this);
 	}
 
 	public Atom getNumerator() {

@@ -133,7 +133,7 @@ public class GeoButton extends GeoElement implements TextProperties, Locateable,
 
 	@Override
 	public void setStartPoint(GeoPointND p, int number) {
-		startPoint = p;
+		setStartPoint(p);
 	}
 
 	@Override
@@ -467,11 +467,7 @@ public class GeoButton extends GeoElement implements TextProperties, Locateable,
 			XMLBuilder.dimension(sb, Integer.toString(getWidth()), Integer.toString(getHeight()));
 		}
 		if (!isAbsoluteScreenLocActive()) {
-			sb.append("\t<startPoint x=\"");
-			sb.append(getRealWorldLocX());
-			sb.append("\" y=\"");
-			sb.append(getRealWorldLocY());
-			sb.append("\" z=\"1\"/>");
+			startPoint.appendStartPointXML(sb);
 		}
 	}
 
@@ -579,11 +575,10 @@ public class GeoButton extends GeoElement implements TextProperties, Locateable,
 
 	@Override
 	public String getAuralTextForSpace() {
-		Localization loc = kernel.getLocalization();
-		ScreenReaderBuilder sb = new ScreenReaderBuilder();
-		addAuralName(loc, sb);
+		ScreenReaderBuilder sb = new ScreenReaderBuilder(kernel.getLocalization());
+		addAuralName(sb);
 		sb.append(" ");
-		sb.append(loc.getMenuDefault("Pressed", "pressed"));
+		sb.appendMenuDefault("Pressed", "pressed");
 		sb.append(".");
 		return sb.toString();
 	}
@@ -612,6 +607,9 @@ public class GeoButton extends GeoElement implements TextProperties, Locateable,
 			return;
 		}
 		GRectangle bounds = ((Drawable) drawer).getBounds();
+		if (bounds == null) {
+			return;
+		}
 
 		double x, y;
 

@@ -52,6 +52,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
@@ -364,6 +365,7 @@ public class MyTableW implements /* FocusListener, */MyTable {
 		gridPanel.addBitlessDomHandler(ml, TouchStartEvent.getType());
 		gridPanel.addBitlessDomHandler(ml, TouchMoveEvent.getType());
 		gridPanel.addBitlessDomHandler(ml, TouchEndEvent.getType());
+		gridPanel.addDomHandler(ml, MouseOutEvent.getType());
 
 		upperLeftCorner.addBitlessDomHandler(new ClickHandler() {
 			@Override
@@ -1464,14 +1466,14 @@ public class MyTableW implements /* FocusListener, */MyTable {
 		int left, top;
 		if (scaleOffset) {
 			left = (int) ((wt.getAbsoluteLeft() - offx)
-					/ app.getArticleElement().getScaleX()) + offx;
+					/ app.getGeoGebraElement().getScaleX()) + offx;
 			top = (int) ((wt.getAbsoluteTop() - offy)
-					/ app.getArticleElement().getScaleY()) + offy;
+					/ app.getGeoGebraElement().getScaleY()) + offy;
 		} else {
 			left = (int) (wt.getAbsoluteLeft()
-					/ app.getArticleElement().getScaleX());
+					/ app.getGeoGebraElement().getScaleX());
 			top = (int) (wt.getAbsoluteTop()
-					/ app.getArticleElement().getScaleY());
+					/ app.getGeoGebraElement().getScaleY());
 		}
 		// Log.debug("-----------------------" + min);
 
@@ -1705,8 +1707,7 @@ public class MyTableW implements /* FocusListener, */MyTable {
 					KeyboardManagerInterface keyboardManager = app.getKeyboardManager();
 					if (keyboardManager != null) {
 						app.showKeyboard(textField,
-								keyboardManager
-										.shouldKeyboardBeShown());
+								!keyboardManager.isKeyboardClosedByUser());
 					} else {
 						app.showKeyboard(textField, true);
 					}

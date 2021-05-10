@@ -14,6 +14,7 @@ package org.geogebra.common.kernel.geos;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.annotation.CheckForNull;
 
@@ -40,6 +41,7 @@ import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
+import org.geogebra.common.main.MyError;
 import org.geogebra.common.main.ScreenReader;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.plugin.GeoClass;
@@ -112,6 +114,9 @@ public class GeoText extends GeoElement
 	// for absolute screen location
 	private boolean hasAbsoluteScreenLocation = false;
 
+	private GeoNumeric verticalAlignment;
+	private GeoNumeric horizontalAlignment;
+
 	/**
 	 */
 	boolean alwaysFixed = false;
@@ -122,6 +127,7 @@ public class GeoText extends GeoElement
 	private boolean symbolicMode;
 	private int totalHeight;
 	private int totalWidth;
+	private List<GeoElement> updateListeners;
 
 	/**
 	 * Creates new text
@@ -137,8 +143,7 @@ public class GeoText extends GeoElement
 		// http://benpryor.com/blog/2008/01/02/dont-call-subclass-methods-from-a-superclass-constructor/
 		setConstructionDefaults(); // init visual settings
 
-		// don't show in algebra view
-		// setAlgebraVisible(false);
+		updateListeners = new ArrayList<>();
 	}
 
 	/**
@@ -198,6 +203,12 @@ public class GeoText extends GeoElement
 		// needed for Corner[Element[text
 		boundingBox = gt.getBoundingBox();
 
+		if (gt.getHorizontalAlignment() != null) {
+			setHorizontalAlignment(gt.getHorizontalAlignment());
+			if (gt.getVerticalAlignment() != null) {
+				setVerticalAlignment(gt.getVerticalAlignment());
+			}
+		}
 		try {
 			if (gt.startPoint != null) {
 				if (gt.hasAbsoluteLocation()) {
@@ -233,7 +244,7 @@ public class GeoText extends GeoElement
 		printDecimals = text.printDecimals;
 		printFigures = text.printFigures;
 		useSignificantFigures = text.useSignificantFigures;
-        isLaTeX = text.isLaTeX;
+		isLaTeX = text.isLaTeX;
 		updateTemplate();
 	}
 
@@ -314,6 +325,7 @@ public class GeoText extends GeoElement
 
 		// check for circular definition
 		if (isParentOf(p)) {
+			app.showError(MyError.Errors.CircularDefinition);
 			throw new CircularDefinitionException();
 		}
 
@@ -326,9 +338,8 @@ public class GeoText extends GeoElement
 		if (p == null) {
 			if (startPoint != null) {
 				startPoint = startPoint.copy();
-			} else {
-				startPoint = null;
 			}
+
 			labelOffsetX = 0;
 			labelOffsetY = 0;
 		} else {
@@ -344,6 +355,15 @@ public class GeoText extends GeoElement
 
 	@Override
 	public void doRemove() {
+		List<GeoElement> listenersCopy = new ArrayList<>(updateListeners);
+		updateListeners.clear();
+
+		for (GeoElement geo : listenersCopy) {
+			HasDynamicCaption hasDynamicCaption = (HasDynamicCaption) geo;
+			hasDynamicCaption.removeDynamicCaption();
+			kernel.notifyUpdate(geo);
+		}
+
 		super.doRemove();
 		// tell startPoint
 		if (startPoint != null) {
@@ -387,10 +407,10 @@ public class GeoText extends GeoElement
 				&& getLabelSimple().startsWith("altText")) {
 			kernel.getApplication().setAltText();
 		}
-		// if (needsUpdatedBoundingBox) {
-		// kernel.notifyUpdate(this);
-		// }
 
+		for (GeoElement geo : updateListeners) {
+			geo.notifyUpdate();
+		}
 	}
 
 	/**
@@ -412,6 +432,9 @@ public class GeoText extends GeoElement
 	@Override
 	public String toValueString(StringTemplate tpl1) {
 		// https://help.geogebra.org/topic/fixed-list-list-with-text-objects
+		if (tpl1.hasType(StringType.SCREEN_READER)) {
+			return getAuralText();
+		}
 		return getTextStringSafe();
 	}
 
@@ -603,15 +626,7 @@ public class GeoText extends GeoElement
 			sb.append("\"/>\n");
 		}
 
-		sb.append("<element");
-		sb.append(" type=\"text\"");
-		sb.append(" label=\"");
-		StringUtil.encodeXML(sb, label);
-		if (getDefaultGeoType() >= 0) {
-			sb.append("\" default=\"");
-			sb.append(getDefaultGeoType());
-		}
-		sb.append("\">\n");
+		getElementOpenTagXML(sb);
 
 		if (isSymbolicMode()) {
 			sb.append("\t<symbolic val=\"true\" />\n");
@@ -679,7 +694,7 @@ public class GeoText extends GeoElement
 		} else {
 			// location of text
 			if (startPoint != null) {
-				sb.append(startPoint.getStartPointXML());
+				startPoint.appendStartPointXML(sb);
 
 				if (labelOffsetX != 0 || labelOffsetY != 0) {
 					sb.append("\t<labelOffset");
@@ -1492,22 +1507,102 @@ public class GeoText extends GeoElement
 	public String getAuralText() {
 		String ret;
 		if (isLaTeX()) {
-			kernel.getApplication().getDrawEquation()
-					.checkFirstCall(kernel.getApplication());
-			// TeXAtomSerializer makes formula human readable.
-			TeXFormula tf = new TeXFormula(getTextString());
-			ret = new TeXAtomSerializer(new ScreenReaderBracketsAdapter())
-					.serialize(tf.root);
+			ret = getAuralTextLaTeX();
 		} else {
-			ret = getTextString();
+			ret = ScreenReader.convertToReadable(getTextString(), getLoc());
 		}
+		return ret;
+	}
 
-		return ScreenReader.convertToReadable(ret);
+	/**
+	 * @return aural text assuming this is LaTeX
+	 */
+	public String getAuralTextLaTeX() {
+		kernel.getApplication().getDrawEquation()
+				.checkFirstCall(kernel.getApplication());
+		// TeXAtomSerializer makes formula human readable.
+		TeXFormula tf = getTeXFormula();
+		ScreenReaderSerializationAdapter adapter =
+				new ScreenReaderSerializationAdapter(kernel.getLocalization());
+		return new TeXAtomSerializer(adapter).serialize(tf.root);
+	}
+
+	private TeXFormula getTeXFormula() {
+		String textString = getTextString();
+		try {
+			return new TeXFormula(textString);
+		} catch (Exception e) {
+			return TeXFormula.getPartialTeXFormula(textString);
+		}
 	}
 
 	@Override
-	public void addAuralName(Localization loc, ScreenReaderBuilder sb) {
+	public void addAuralName(ScreenReaderBuilder sb) {
 		// only read content, no prefix
 	}
 
+	/**
+	 * @param geo element using this as dynamic caption
+	 */
+	public void registerUpdateListener(GeoElement geo) {
+		if (!updateListeners.contains(geo)) {
+			updateListeners.add(geo);
+		}
+	}
+
+	public void unregisterUpdateListener(GeoElement geo) {
+		updateListeners.remove(geo);
+	}
+
+	@Override
+	public void moveDependencies(GeoElement oldGeo) {
+		if (!oldGeo.isGeoText()) {
+			return;
+		}
+
+		GeoText text = (GeoText) oldGeo;
+		List<GeoElement> listenersCopy = new ArrayList<>(text.updateListeners);
+		updateListeners.clear();
+		text.updateListeners.clear();
+		for (GeoElement geo: listenersCopy) {
+			((HasDynamicCaption) geo).setDynamicCaption(this);
+			registerUpdateListener(geo);
+		}
+	}
+
+	public void setHorizontalAlignment(GeoNumeric horizAlign) {
+		horizontalAlignment = horizAlign;
+	}
+
+	public GeoNumeric getHorizontalAlignment() {
+		return horizontalAlignment;
+	}
+
+	public void setVerticalAlignment(GeoNumeric vertAlign) {
+		verticalAlignment = vertAlign;
+	}
+
+	public GeoNumeric getVerticalAlignment() {
+		return verticalAlignment;
+	}
+
+	/**
+	 *
+	 * @return original string with extra \ in order to escape special characters
+	 * 		e.g. "cos(x)" will return "cos\\(x\\)"
+	 */
+	public String getEscapedSpecialCharsString() {
+		StringBuilder b = new StringBuilder();
+		if (str != null && !str.isEmpty()) {
+			for (int i = 0; i < str.length(); ++i) {
+				char ch = str.charAt(i);
+				if ("\\.^$|?*+[]{}()".indexOf(ch) != -1) {
+					b.append('\\').append(ch);
+				} else {
+					b.append(ch);
+				}
+			}
+		}
+		return b.toString();
+	}
 }

@@ -10,14 +10,18 @@ public interface GeoGebraConstants {
 	// as it is read by the build system
 	// and updated automatically by the "Version Bump" task
 	/** last build date */
-	public static final String BUILD_DATE = "23 June 2020";
+	public static final String BUILD_DATE = "04 May 2021";
 	/** complete version string */
-	public static final String VERSION_STRING = "5.0.591.0";
+	public static final String VERSION_STRING = "5.0.641.0";
 	/** GeoGebra Discovery version string */
 	public static final String DISCOVERY_VERSION = "2021May06";
 
 	/** proper noun, should NOT be translated / transliterated */
 	public static final String APPLICATION_NAME = "GeoGebra";
+
+	/** Download update **/
+	public static final String DOWNLOAD_PACKAGE_WIN =
+			"https://download.geogebra.org/package/win";
 
 	/** App versions */
 	enum Version {
@@ -31,60 +35,50 @@ public interface GeoGebraConstants {
 		NOTES
 	}
 
-    public enum Platform {
+	public enum Platform {
 
-        DESKTOP("d"),
+		DESKTOP("d"),
 
 		/** GeoGebra Graphing Calculator */
-        ANDROID("a"),
+		ANDROID("a"),
 
-        WEB("w"),
+		WEB("w"),
 
-        ANDROID_WEBVIEW("aw"),
+		IOS("i"),
 
-        IOS("i"),
+		IOS_WEBVIEW("iw"),
 
-        IOS_WEBVIEW("iw"),
+		WEB_FOR_BROWSER_2D("w2d"),
 
-        WINDOWS_STORE("win"),
+		OFFLINE("offline"),
 
-        WEB_FOR_BROWSER_2D("w2d"),
+		SMART("smart"),
 
-        OFFLINE("offline"),
+		POWERPOINT("p");
 
-        SMART("smart"),
+		private String name;
 
-        POWERPOINT("p"),
+		Platform(String name) {
+			this.name = name;
+		}
 
-        NO_CAS("nc");
-
-        private String name;
-
-        Platform(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
+		public String getName() {
+			return name;
 		}
 
 		/**
 		 * @param prerelease
 		 *            whether we run prerelease
-		 * @param canary
-		 *            whether we run canary
 		 * @return eg X.Y.Zd-prerelease
-         */
-        public String getVersionString(boolean prerelease, boolean canary, String appCode) {
+		 */
+		public String getVersionString(boolean prerelease, String appCode) {
 
 			StringBuilder suffix = new StringBuilder(10);
-            suffix.append(name);
-            if (!"classic".equals(appCode)) {
-                suffix.append(appCode);
+			suffix.append(name);
+			if (!"classic".equals(appCode)) {
+				suffix.append(appCode);
 			}
-			if (canary) {
-				suffix.append("-canary");
-			} else if (prerelease) {
+			if (prerelease) {
 				suffix.append("-prerelease");
 			}
 
@@ -100,25 +94,32 @@ public interface GeoGebraConstants {
 		}
 
 		/**
-		 * @return whether this is android exam app
-		 */
-		public boolean isAndroidWebview() {
-			switch (this) {
-			case ANDROID_WEBVIEW:
-				return true;
-			}
-			return false;
-		}
-
-		/**
 		 * 
 		 * @return true if this is a phone version.
 		 */
 		public boolean isPhone() {
-            return "i".equals(name);
+			return "i".equals(name);
 		}
 
 	}
+
+	enum MenuType {
+		DEFAULT, EXAM
+	}
+
+	String GRAPHING_APPCODE = "graphing";
+	String GEOMETRY_APPCODE = "geometry";
+	String G3D_APPCODE = "3d";
+	String SCIENTIFIC_APPCODE = "scientific";
+	String CAS_APPCODE = "cas";
+	String SUITE_APPCODE = "suite";
+	String CLASSIC_APPCODE = "classic";
+	String EVALUATOR_APPCODE = "evaluator";
+	String NOTES_APPCODE = "notes";
+
+	String SUITE_SHORT_NAME = "CalculatorSuite.short";
+
+	String SUITE_URL_NAME = "calculator";
 
 	/**
 	 * used by version checker, so that sys admins can disable version checking
@@ -179,12 +180,6 @@ public interface GeoGebraConstants {
 
 	/** GeoGebra URL */
 	public final static String GEOGEBRA_WEBSITE = "https://www.geogebra.org/";
-	/** 4.2 desktop bug reports */
-	public final static String GEOGEBRA_REPORT_BUG_DESKTOP = "https://help.geogebra.org/bugs/?v=5.0";
-	/** web bug reports */
-	public final static String GEOGEBRA_REPORT_BUG_WEB = "https://help.geogebra.org/bugs/?v=web";
-	/** bug reports 8 */
-	public final static String GEOGEBRA_REPORT_BUG = "https://help.geogebra.org/bugs/";
 	/** GeoGebraTube beta URL, used when Feature.TUBE_BETA == true */
 	public final static String GEOGEBRA_WEBSITE_BETA = "https://beta.geogebra.org/";
 
@@ -234,12 +229,12 @@ public interface GeoGebraConstants {
 	public static final String GOOGLE_CLIENT_ID = "656990710877-g0tjpnhriv39e59f5s5ubs81sv2686m6"
 			+ ".apps.googleusercontent.com";
 
-    /**
-     * The Graphing Chrome app's client ID from the Google APIs Console
-     * (http://code.google.com/apis/console).
-     */
-    public static final String CHROME_APP_CLIENT_ID =
-            "656990710877-3uu4empvnqi7co987usqk0talj3hnt2r.apps.googleusercontent.com";
+	/**
+	 * The Graphing Chrome app's client ID from the Google APIs Console
+	 * (http://code.google.com/apis/console).
+	 */
+	public static final String CHROME_APP_CLIENT_ID =
+			"656990710877-3uu4empvnqi7co987usqk0talj3hnt2r.apps.googleusercontent.com";
 
 	// The auth scope being requested. This scope will allow the application to
 	// identify who the authenticated user is.
@@ -249,9 +244,7 @@ public interface GeoGebraConstants {
 	public static final String USERINFO_PROFILE_SCOPE = "https://www.googleapis.com/auth/userinfo.profile";
 	public static final String API_USERINFO = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=";
 
-	public static final String FORUM_URL = "https://help.geogebra.org/";
-
-	public static final String WIDGET_URL = "https://www.geogebra.org/widgetprovider/index/widgettype/";
+	public static final String FORUM_URL = "https://www.reddit.com/r/geogebra/";
 
 	public static final String EDIT_URL_BASE = "https://www.geogebra.org/material/edit/id/";
 

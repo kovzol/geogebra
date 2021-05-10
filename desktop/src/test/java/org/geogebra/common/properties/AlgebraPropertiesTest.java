@@ -18,7 +18,7 @@ public class AlgebraPropertiesTest {
 
 	@BeforeClass
 	public static void setup() {
-        app = AlgebraTest.createApp();
+		app = AlgebraTest.createApp();
 	}
 
 	private static void t(String s) {

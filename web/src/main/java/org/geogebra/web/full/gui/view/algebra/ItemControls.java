@@ -85,6 +85,7 @@ public class ItemControls extends FlowPanel
 
 				@Override
 				public void onClickStart(int x, int y, PointerEventType type) {
+					getController().preventBlur();
 					openMoreMenu();
 					DOM.setCapture(null); // reset capture from GCustomButton's mousedown handler
 				}
@@ -177,8 +178,8 @@ public class ItemControls extends FlowPanel
 
 	private void closeBurgerMenu() {
 		AppWFull app = radioTreeItem.getApplication();
-		if (app.isUnbundled() && app.isMenuShowing()) {
-			app.toggleMenu();
+		if (app.isUnbundled()) {
+			app.hideMenu();
 		}
 	}
 
@@ -217,7 +218,6 @@ public class ItemControls extends FlowPanel
 			}
 
 			add(animPanel);
-			reset();
 			updateAnimPanel();
 			showAnimPanel(true);
 		} else {
@@ -317,15 +317,6 @@ public class ItemControls extends FlowPanel
 	public void removeAnimPanel() {
 		if (hasAnimPanel()) {
 			remove(animPanel);
-		}
-	}
-
-	/**
-	 * Reset animation panel
-	 */
-	public void reset() {
-		if (hasAnimPanel()) {
-			animPanel.reset();
 		}
 	}
 

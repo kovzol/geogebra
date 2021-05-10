@@ -29,7 +29,7 @@ public class GridTest {
 	 */
 	@BeforeClass
 	public static void setup() {
-        app = AlgebraTest.createApp();
+		app = AlgebraTest.createApp();
 	}
 
 	/**

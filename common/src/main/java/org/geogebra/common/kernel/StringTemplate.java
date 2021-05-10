@@ -7,6 +7,7 @@ import org.geogebra.common.kernel.arithmetic.Equation;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.ExpressionNodeConstants;
 import org.geogebra.common.kernel.arithmetic.ExpressionValue;
+import org.geogebra.common.kernel.arithmetic.MinusOne;
 import org.geogebra.common.kernel.arithmetic.MySpecialDouble;
 import org.geogebra.common.kernel.arithmetic.MyVecNDNode;
 import org.geogebra.common.kernel.arithmetic.NumberValue;
@@ -57,7 +58,6 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 	private boolean localizeCmds;
 	private boolean usePrefix;
-	private boolean hideLHS = false;
 	private boolean questionMarkForNaN = true;
 
 	private boolean numeric = true;
@@ -65,7 +65,8 @@ public class StringTemplate implements ExpressionNodeConstants {
 	private boolean niceQuotes = false;
 
 	private boolean shouldPrintMethodsWithParenthesis;
-	private boolean useOperatorWhitespace = true;
+	private boolean forEditorParser = false;
+	private boolean allowShortLhs = true;
 
 	/**
 	 * Default template, but do not localize commands
@@ -102,6 +103,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 		prefixedDefault.localizeCmds = false;
 		prefixedDefault.internationalizeDigits = false;
 		prefixedDefault.usePrefix = true;
+		prefixedDefault.allowMoreDigits = true;
 		prefixedDefault.sf = FormatFactory.getPrototype()
 				.getScientificFormat(15, 20, false);
 	}
@@ -164,16 +166,6 @@ public class StringTemplate implements ExpressionNodeConstants {
 	static {
 		latexTemplate.setType(StringType.LATEX);
 		latexTemplate.allowPiHack = false;
-	}
-
-	/**
-	 * LaTeX string type, do not internationalize digits
-	 */
-	public static final StringTemplate latexTemplateHideLHS = new StringTemplate("latexTemplate");
-
-	static {
-		latexTemplateHideLHS.setType(StringType.LATEX);
-		latexTemplateHideLHS.hideLHS = true;
 	}
 
 	/**
@@ -346,7 +338,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 		initForEditing(editTemplate);
 		editTemplate.changeArcTrig = false;
 		initForEditing(editorTemplate);
-		editorTemplate.useOperatorWhitespace = false;
+		editorTemplate.forEditorParser = true;
 	}
 
 	/**
@@ -417,6 +409,17 @@ public class StringTemplate implements ExpressionNodeConstants {
 		maxDecimals.localizeCmds = false;
 	}
 
+	public static final StringTemplate casCompare = new StringTemplate(
+			"casCompare");
+
+	static {
+		casCompare.nf = FormatFactory.getPrototype().getNumberFormat(10);
+		casCompare.allowMoreDigits = false;
+		casCompare.forceNF = true;
+		casCompare.localizeCmds = false;
+		casCompare.allowShortLhs = false;
+	}
+
 	/**
 	 * Just used for tests
 	 */
@@ -471,11 +474,22 @@ public class StringTemplate implements ExpressionNodeConstants {
 	 * Not localized template, allow bigger precision for Numeric command
 	 */
 	public static final StringTemplate numericNoLocal = new StringTemplate(
-			"numericNoLocal");
+			"numericNoLocal") {
+
+		@Override
+		public double getRoundHalfUpFactor(double abs, NumberFormatAdapter nf2,
+				ScientificFormatAdapter sf2, boolean useSF) {
+			return 1;
+		}
+	};
 
 	static {
 		numericNoLocal.allowMoreDigits = true;
 		numericNoLocal.localizeCmds = false;
+		numericNoLocal.forceSF = true;
+		numericNoLocal.sf =
+				FormatFactory.getPrototype()
+						.getScientificFormat(15, 20, false);
 	}
 
 	/**
@@ -487,6 +501,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 	static {
 		numericLatex.stringType = StringType.LATEX;
 		numericLatex.allowMoreDigits = true;
+		numericLatex.allowPiHack = false;
 		numericLatex.useRealLabels = true;
 	}
 
@@ -550,19 +565,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 		template.nf = FormatFactory.getPrototype()
 				.getNumberFormat(GeoElement.MIN_EDITING_PRINT_PRECISION);
 		template.allowMoreDigits = true;
-		template.hideLHS = true;
 	}
-
-    /**
-     * Returns a string template with the property that the hideLHS = true
-     *
-     * @return s new String template
-     */
-    public StringTemplate makeStrTemplateForEditing() {
-        StringTemplate ret = this.copy();
-        ret.hideLHS = true;
-        return ret;
-    }
 
 	/**
 	 * Returns string type of resulting text
@@ -911,6 +914,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 		result.forceNF = forceNF;
 		result.forceSF = forceSF;
 		result.supportsFractions = supportsFractions;
+		result.questionMarkForNaN = questionMarkForNaN;
 		return result;
 	}
 
@@ -931,20 +935,20 @@ public class StringTemplate implements ExpressionNodeConstants {
 	 */
 	public String printVariableName(final String label) {
 
-        switch (getStringType()) {
-            case GIAC:
-                // make sure we don't interfere with reserved names
+		switch (getStringType()) {
+		case GIAC:
+			// make sure we don't interfere with reserved names
 			// or command names in the underlying CAS
 			// see TRAC-793
 			return addTempVariablePrefix(label.replace("$", ""));
 
-            case LATEX:
-                if ("l".equals(label)) {
-                    return "\\ell";
-                }
-
-                // eg $1 in "Keep Input" mode
-                return label.replace("$", "\\$");
+		case LATEX:
+			if ("l".equals(label)) {
+				return "\\ell";
+			}
+			
+			// eg $1 in "Keep Input" mode
+			return label.replace("$", "\\$");
 		default:
 			// standard case
 			return label;
@@ -956,11 +960,11 @@ public class StringTemplate implements ExpressionNodeConstants {
 	 *
 	 * important eg i -> ggbtmpvari, e -> ggbtmpvare so that they aren't
 	 * confused with the constants
-     */
-    private static String addTempVariablePrefix(final String label) {
+	 */
+	private static String addTempVariablePrefix(final String label) {
 
 		// keep x, y, z so that x^2+y^2=1 works in Giac
-        if (!GeoGebraCAS.needsTmpPrefix(label)) {
+		if (!GeoGebraCAS.needsTmpPrefix(label)) {
 			return label;
 		}
 
@@ -1350,7 +1354,12 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 	}
 
-	private void getPlus(StringBuilder sb, Localization loc) {
+	/**
+	 * Appends localized + to a StringBUilder
+	 * @param sb builder
+	 * @param loc localization
+	 */
+	public void getPlus(StringBuilder sb, Localization loc) {
 		if (stringType == StringType.SCREEN_READER) {
 			sb.append(ScreenReader.getPlus(loc));
 		} else {
@@ -1360,7 +1369,12 @@ public class StringTemplate implements ExpressionNodeConstants {
 		}
 	}
 
-	private void getMinus(StringBuilder sb, Localization loc) {
+	/**
+	 * Appends localized - to a StringBUilder
+	 * @param sb builder
+	 * @param loc localization
+	 */
+	public void getMinus(StringBuilder sb, Localization loc) {
 		if (stringType == StringType.SCREEN_READER) {
 			sb.append(ScreenReader.getMinus(loc));
 		} else {
@@ -1375,7 +1389,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 	 */
 	public String leftBracket() {
 		if (stringType == StringType.SCREEN_READER) {
-			return ScreenReader.getLeftBracket();
+			return ScreenReader.getOpenParenthesis();
 		}
 		return left() + "(";
 	}
@@ -1385,7 +1399,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 	 */
 	public String rightBracket() {
 		if (stringType == StringType.SCREEN_READER) {
-			return ScreenReader.getRightBracket();
+			return ScreenReader.getCloseParenthesis();
 		}
 		return right() + ")";
 	}
@@ -1771,7 +1785,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 			appendGiacMultiplication(sb, left, right, leftStr, rightStr, valueForm);
 			break;
 		default:
-			appendMultiplySpecial(sb, leftStr, rightStr, left, right, valueForm, loc);
+			appendMultiplySpecial(sb, leftStr, rightStr, left, loc);
 			if (sb.length() > 0) {
 				break;
 			}
@@ -1790,11 +1804,8 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 			// left wing
 			if (left.isLeaf() || (ExpressionNode
-					.opID(left) >= Operation.MULTIPLY.ordinal())) { // not
-				// +,
-				// -
-				if (ExpressionNode.isEqualString(left, -1, !valueForm)) { // unary
-																			// minus
+					.opID(left) >= Operation.MULTIPLY.ordinal())) { // not +, -
+				if (left instanceof MinusOne) { // unary minus
 					nounary = false;
 					sb.append('-');
 				} else {
@@ -1816,7 +1827,10 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 			// right wing
 			int opIDright = ExpressionNode.opID(right);
-			if (right.isLeaf() || (opIDright >= Operation.MULTIPLY.ordinal())) { // not
+			if (opIDright == Operation.DIVIDE.ordinal() && !nounary
+					&& stringType == StringType.LATEX) {
+				sb.append(rightStr);
+			} else  if (right.isLeaf() || (opIDright >= Operation.MULTIPLY.ordinal())) { // not
 				// +,
 				// -
 				boolean showMultiplicationSign = false;
@@ -1836,46 +1850,52 @@ public class StringTemplate implements ExpressionNodeConstants {
 						// check if we need a multiplication sign, see #414
 						// digit-digit, e.g. 3 * 5
 						// digit-fraction, e.g. 3 * \frac{5}{2}
-						char lastLeft = leftStr.charAt(leftStr.length() - 1);
-						char firstRight = rightStr.charAt(0);
-						showMultiplicationSign =
-								StringUtil.isDigit(firstRight)
-								// left is digit or ends with }, e.g. exponent,
-								// fraction
-										|| (StringUtil.isDigit(lastLeft)
-												|| lastLeft == '}')
-												&& rightStr
-														.startsWith("\\frac");
-						multiplicationSpaceNeeded = !isDegree(right);
+						if (!leftStr.isEmpty() && !rightStr.isEmpty()) {
+							char lastLeft = leftStr.charAt(leftStr.length() - 1);
+							char firstRight = rightStr.charAt(0);
+							showMultiplicationSign =
+									StringUtil.isDigit(firstRight)
+											// left is digit or ends with }, e.g. exponent,
+											// fraction
+											|| (StringUtil.isDigit(lastLeft)
+											|| lastLeft == '}')
+											&& rightStr
+											.startsWith("\\frac");
+							multiplicationSpaceNeeded = !isDegree(right);
+						}
 						break;
 
 					default: // GeoGebra syntax
-						lastLeft = leftStr.charAt(leftStr.length() - 1);
-						firstRight = rightStr.charAt(0);
-						// check if we need a multiplication sign, see #414
-						// digit-digit, e.g. 3 * 5
-						showMultiplicationSign = (Character.isDigit(lastLeft) || lastLeft == ')')
-								&& (StringUtil.isDigit(firstRight)
-										// 3*E23AB can't be written 3E23AB
-										|| (firstRight == 'E')) || StringUtil.isDigit(firstRight);
-						// check if we need a multiplication space:
-						multiplicationSpaceNeeded = showMultiplicationSign;
-						if (!multiplicationSpaceNeeded) {
+						if (!leftStr.isEmpty() && !rightStr.isEmpty()) {
+							char lastLeft = leftStr.charAt(leftStr.length() - 1);
+							char firstRight = rightStr.charAt(0);
+							// check if we need a multiplication sign, see #414
+							// digit-digit, e.g. 3 * 5
+							showMultiplicationSign =
+									(Character.isDigit(lastLeft) || lastLeft == ')')
+											&& (StringUtil.isDigit(firstRight)
+											// 3*E23AB can't be written 3E23AB
+											|| (firstRight == 'E'))
+											|| StringUtil.isDigit(firstRight);
 							// check if we need a multiplication space:
-							// it's needed except for number * character,
-							// e.g. 23x
-							// need to check start and end for eg A1 * A2
-							boolean leftIsNumber = left.wrap()
-									.endsInNumber(valueForm);
+							multiplicationSpaceNeeded = showMultiplicationSign;
+							if (!multiplicationSpaceNeeded) {
+								// check if we need a multiplication space:
+								// it's needed except for number * character,
+								// e.g. 23x
+								// need to check start and end for eg A1 * A2
+								boolean leftIsNumber = left.wrap()
+										.endsInNumber(valueForm);
 
-							// check if we need a multiplication space:
-							// all cases except number * character, e.g. 3x
-							// pi*x DOES need a multiply
-							multiplicationSpaceNeeded =
-									!leftIsNumber
-											|| Character.isDigit(firstRight)
-											|| rightStr.equals(RAD)
-											|| (!useOperatorWhitespace && !isDegree(right));
+								// check if we need a multiplication space:
+								// all cases except number * character, e.g. 3x
+								// pi*x DOES need a multiply
+								multiplicationSpaceNeeded =
+										!leftIsNumber
+												|| Character.isDigit(firstRight)
+												|| rightStr.equals(RAD)
+												|| (forEditorParser && !isDegree(right));
+							}
 						}
 					}
 
@@ -1902,9 +1922,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 					if (rtlMinus) {
 						sb.append(Unicode.RIGHT_TO_LEFT_MARK);
 					}
-					sb.append(leftBracket());
-					sb.append(rightStr);
-					sb.append(rightBracket());
+					appendWithBrackets(sb, rightStr);
 					if (rtlMinus) {
 						sb.append(Unicode.RIGHT_TO_LEFT_MARK);
 					}
@@ -2007,24 +2025,11 @@ public class StringTemplate implements ExpressionNodeConstants {
 	}
 
 	private void appendMultiplySpecial(StringBuilder sb, String leftStr, String rightStr,
-					ExpressionValue left, ExpressionValue right, boolean valueForm,
-					Localization loc) {
-		Operation operation = Operation.MULTIPLY;
-		// check for 1 at left
-		if (ExpressionNode.isEqualString(left, 1, !valueForm)
-				&& !Unicode.DEGREE_STRING.equals(rightStr)
-				&& !RAD.equals(rightStr)
-				&& stringType != StringType.SCREEN_READER) {
-			append(sb, rightStr, right, operation);
-		}
-		// check for 1 at right
-		else if (ExpressionNode.isEqualString(right, 1, !valueForm)) {
-			append(sb, leftStr, left, operation);
-		}
+					ExpressionValue left, Localization loc) {
 		// no chceck for 0: we need 0x + 1 to be a function, not number
 
 		// check for degree sign or 1degree or degree1 (eg for Arabic)
-		else if ((rightStr.length() == 2
+		if ((rightStr.length() == 2
 				&& ((rightStr.charAt(0) == Unicode.DEGREE_CHAR
 				&& rightStr.charAt(1) == (loc.getZero() + 1))
 				|| (rightStr.charAt(1) == Unicode.DEGREE_CHAR
@@ -2105,7 +2110,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 		case GEOGEBRA:
 			// space for multiplication
-			return useOperatorWhitespace ? " * " : "*";
+			return !forEditorParser ? " * " : "*";
 
 		case SCREEN_READER:
 			return ScreenReader.getTimes(loc);
@@ -2120,19 +2125,19 @@ public class StringTemplate implements ExpressionNodeConstants {
 	 * @param sb string builder
 	 */
 	public void appendOptionalSpace(StringBuilder sb) {
-		if (useOperatorWhitespace) {
+		if (!forEditorParser) {
 			sb.append(" ");
 		}
 	}
 
 	public String getOptionalSpace() {
-		return useOperatorWhitespace ? " " : "";
+		return !forEditorParser ? " " : "";
 	}
 
 	/**
 	 * @return space denoting multiplication
 	 */
-	protected String multiplicationSpace() {
+	public String multiplicationSpace() {
 		// wide space for multiplication space in LaTeX
 		return (stringType.equals(StringType.LATEX)) ? " \\; " : " ";
 	}
@@ -2205,22 +2210,11 @@ public class StringTemplate implements ExpressionNodeConstants {
 			MathmlTemplate.mathml(sb, "<divide/>", leftStr, rightStr);
 			break;
 		case LATEX:
-			if ((leftStr.charAt(0) == '-') && (left.isLeaf()
-					|| (left instanceof ExpressionNode && ExpressionNode
-							.isMultiplyOrDivide((ExpressionNode) left)))) {
-				sb.append("-\\frac{");
-				sb.append(leftStr.substring(1));
-				sb.append("}{");
-				sb.append(rightStr);
-				sb.append("}");
-			} else {
-
-				sb.append("\\frac{");
-				sb.append(leftStr);
-				sb.append("}{");
-				sb.append(rightStr);
-				sb.append("}");
-			}
+			sb.append("\\frac{");
+			sb.append(leftStr);
+			sb.append("}{");
+			sb.append(rightStr);
+			sb.append("}");
 			break;
 		case LIBRE_OFFICE:
 			sb.append("{ ");
@@ -2239,11 +2233,10 @@ public class StringTemplate implements ExpressionNodeConstants {
 			break;
 
 		default:
-			// check for 1 in denominator
-			// #5396
-			if (left.isLeaf()
-					&& ExpressionNode.isEqualString(right, 1, !valueForm)) {
-				sb.append(leftStr);
+			if (forEditorParser) {
+				appendWithBrackets(sb, leftStr);
+				sb.append('/');
+				appendWithBrackets(sb, rightStr);
 				break;
 			}
 
@@ -2263,12 +2256,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 			sb.append("/");
 			appendOptionalSpace(sb);
 			// right wing
-			append(sb, rightStr, right, Operation.POWER); // not
-
-			// +,
-			// -,
-			// *,
-			// /
+			append(sb, rightStr, right, Operation.POWER); // not +, -, *, /
 		}
 		return sb.toString();
 	}
@@ -2654,7 +2642,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 			return andString(left, right, leftStr, rightStr);
 		}
 		if (right.isExpressionNode()) {
-			sb.append(left.wrap().getCASstring(this, !valueForm));
+			sb.append(expressionToString(left, valueForm));
 			appendOptionalSpace(sb);
 			switch (((ExpressionNode) right).getOperation()) {
 			case LESS:
@@ -2692,11 +2680,15 @@ public class StringTemplate implements ExpressionNodeConstants {
 						+ " invalid in chain");
 			}
 			appendOptionalSpace(sb);
-			sb.append(((ExpressionNode) right).getRightTree().getCASstring(this,
-					!valueForm));
+			sb.append(expressionToString(((ExpressionNode) right).getRight(), valueForm));
 			return sb.toString();
 		}
 		return andString(left, right, leftStr, rightStr);
+	}
+
+	private String expressionToString(ExpressionValue left, boolean valueForm) {
+		return valueForm ? left.toValueString(this)
+				: ExpressionNode.getLabelOrDefinition(left, this);
 	}
 
 	/**
@@ -2857,8 +2849,8 @@ public class StringTemplate implements ExpressionNodeConstants {
 					// Log.debug(((ListValue)left).getListElement(0).evaluatesToList());
 					
 					// if list && !matrix
-                    if (left.evaluatesToList()
-                            && left.getListDepth() != 2) {
+					if (left.evaluatesToList()
+							&& left.getListDepth() != 2) {
 						// make sure {1,2,3}^2 gives {1,4,9} rather than 14
 						sb.append(").^(");
 					} else {
@@ -2872,14 +2864,6 @@ public class StringTemplate implements ExpressionNodeConstants {
 				break;
 
 			case LATEX:
-
-				// checks if the basis is leaf and if so
-				// omits the brackets
-				if (left.isLeaf() && (leftStr.charAt(0) != '-')) {
-					sb.append(leftStr);
-					break;
-				}
-				// else fall through
 			case LIBRE_OFFICE:
 			default:
 
@@ -2894,10 +2878,8 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 				// left wing
 				if ((leftStr.charAt(0) != '-') && // no unary
-						(left.isLeaf() || ((ExpressionNode
-								.opID(left) > Operation.POWER.ordinal())
-								&& (ExpressionNode.opID(left) != Operation.EXP
-										.ordinal())))) { // not +, -, *, /, ^,
+						isSinglePowerArg(left) || left.isOperation(Operation.NROOT)
+						|| left.isOperation(Operation.CBRT)) { // not +, -, *, /, ^,
 					// e^x
 
 					// we might need more brackets here #4764
@@ -2942,20 +2924,14 @@ public class StringTemplate implements ExpressionNodeConstants {
 				break;
 
 			default:
-				if ((right.isLeaf() && !isFraction(right))
+				if ((isSinglePowerArg(right) && !isFraction(right))
 						|| ((ExpressionNode
 						.opID(right) > Operation.POWER.ordinal())
 						&& (ExpressionNode.opID(right) != Operation.EXP
-								.ordinal()))) { // not
-					// +,
-					// -,
-					// *,
-					// /,
-					// ^,
-					// e^x
-					// Michael Borcherds 2008-05-14
-					// display powers over 9 as unicode superscript
+								.ordinal()))) {
+					// not +, -, *, /, ^, e^x
 					try {
+						// display integer powers as unicode superscript
 						int i = Integer.parseInt(rightStr);
 						StringUtil.numberToIndex(i, sb);
 					} catch (RuntimeException e) {
@@ -2970,6 +2946,16 @@ public class StringTemplate implements ExpressionNodeConstants {
 			}
 			return sb.toString();
 		}
+	}
+
+	/**
+	 * Checks for composite expressions and numbers like -5, 2*10^5
+	 * @param val expression value
+	 * @return whether val can be used as argument for power/factorial without brackets
+	 */
+	public boolean isSinglePowerArg(ExpressionValue val) {
+		return val instanceof MySpecialDouble
+				? !((MySpecialDouble) val).isScientificNotation() : val.isLeaf();
 	}
 
 	private boolean isTrigFunction(ExpressionNode expr) {
@@ -3048,11 +3034,6 @@ public class StringTemplate implements ExpressionNodeConstants {
 				sb.append(")");
 			}
 		}
-		if (Efound && !this.isPrintLocalizedCommandNames()) {
-			sb.insert(0, '(');
-			sb.append(')');
-		}
-
 		return sb.toString();
 	}
 
@@ -3109,8 +3090,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 			// eg 4.35372862870553E8
 			// need to add decimal point back in
 			if (i < 0) {
-				return s[0].substring(0, s[0].length() + i) + "."
-						+ s[0].substring(s[0].length() + i);
+				return "(" + s[0] + "/1" + StringUtil.repeat('0', -i) + ")";
 			}
 
 			if (i == 0) {
@@ -3152,13 +3132,6 @@ public class StringTemplate implements ExpressionNodeConstants {
 		}
 		// simple integer, no need to change
 		return originalString;
-	}
-
-	/**
-	 * @return whether to suppress serialization of LHS in f(x)=x
-	 */
-	public boolean isHideLHS() {
-		return this.hideLHS;
 	}
 
 	/**
@@ -3223,6 +3196,8 @@ public class StringTemplate implements ExpressionNodeConstants {
 	public void leftCurlyBracket(StringBuilder sb) {
 		if (hasType(StringType.LATEX)) {
 			sb.append("\\left\\{");
+		} else if (hasType(StringType.SCREEN_READER)) {
+			sb.append(ScreenReader.getOpenBrace());
 		} else {
 			sb.append("{");
 		}
@@ -3237,6 +3212,8 @@ public class StringTemplate implements ExpressionNodeConstants {
 	public void rightCurlyBracket(StringBuilder sb) {
 		if (hasType(StringType.LATEX)) {
 			sb.append("\\right\\}");
+		} else if (hasType(StringType.SCREEN_READER)) {
+			sb.append(ScreenReader.getCloseBrace());
 		} else {
 			sb.append("}");
 		}
@@ -3270,6 +3247,20 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 		StringTemplate ret = this.copy();
 		ret.supportsFractions = fractions;
+		return ret;
+	}
+
+	/**
+	 * @param questionMark whether to use "?" for Double.NaN
+	 * @return copy of this template with adjusted question mark flag
+	 */
+	public StringTemplate deriveWithQuestionmark(boolean questionMark) {
+		if (questionMarkForNaN == questionMark) {
+			return this;
+		}
+
+		StringTemplate ret = this.copy();
+		ret.questionMarkForNaN = questionMark;
 		return ret;
 	}
 
@@ -3537,10 +3528,17 @@ public class StringTemplate implements ExpressionNodeConstants {
 	 * @return equal sign with appropriate whitespace symbols
 	 */
 	public String getEqualsWithSpace() {
-		if (!useOperatorWhitespace) {
+		if (forEditorParser) {
 			return "=";
 		}
-		return stringType == StringType.LATEX ? "\\, = \\," : " = ";
+		switch (stringType) {
+		case LATEX:
+			return "\\, = \\,";
+		case SCREEN_READER:
+			return " equals ";
+		default:
+			return " = ";
+		}
 	}
 
 	public boolean isLatex() {
@@ -3552,15 +3550,38 @@ public class StringTemplate implements ExpressionNodeConstants {
 	}
 
 	/**
-	 * Get the undefined string equivalent
+	 * Appends brackets to log argument if necessary
 	 *
-	 * @param localization localization if needed
-	 * @return undefined string
+	 * @param sb
+	 *            builder
+	 * @param str
+	 *            serialized expression
+	 * @param left
+	 *            left subtree
 	 */
-	public String getUndefined(Localization localization) {
-		if (localizeCmds) {
-			return localization.getMenu("Undefined");
+	public void addLogBracketsIfNecessary(StringBuilder sb, String str, ExpressionValue left) {
+		if ((forEditorParser || stringType == StringType.LATEX)
+				&& left.isOperation(Operation.ABS)) {
+			sb.append(str);
+		} else {
+			appendWithBrackets(sb, str);
 		}
-		return "Undefined";
+	}
+
+	public boolean allowShortLhs() {
+		return allowShortLhs;
+	}
+
+	/**
+	 * Appends localized comma to a StringBuilder
+	 * @param sb builder
+	 * @param localization localization
+	 */
+	public void getComma(StringBuilder sb, Localization localization) {
+		if (hasType(StringType.SCREEN_READER)) {
+			sb.append(ScreenReader.getComma());
+		} else {
+			sb.append(localization.getComma());
+		}
 	}
 }

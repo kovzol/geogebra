@@ -20,48 +20,48 @@ public class GeoGebraProfiler {
 	private static volatile long eventTime;
 	private static volatile long cascadeTime;
 
-    private static final Object lock = new Object();
+	private static final Object lock = new Object();
 
 	/**
-     * Display performance data about drags and repaints
+	 * Display performance data about drags and repaints
 	 */
-    public static void printDragMeasurementData() {
-        if (drags > 0) {
-            Log.debug("Profile Dragging: \nNumber of handled drag events: " + drags + "\n"
-                    + "Average duration of one drag event: "
-                    + ((float) dragTime / (float) drags) + " ms \n" + "Number of repaints: "
-                    + repaints + "\n" + "Average duration of one repaint: "
-                    + ((float) repaintTime / repaints) + " ms");
-        }
-    }
-
-	/**
-     * Display performance data about algebra view updates
-	 */
-    public static void printAlgebraMeasurementData() {
-        if (algebra > 0) {
-            Log.debug("Profile Algebra: " + algebra + " x "
-                    + (algebraTime / algebra) + " = " + algebraTime);
-        }
-    }
-
-	/**
-     * Display performance data about event dispatches
-	 */
-    public static void printEventMeasurementData() {
-        if (event > 0) {
-            Log.debug("Profile EventDispatcher: " + event + " x "
-                    + (eventTime / event) + " = " + eventTime);
+	public static void printDragMeasurementData() {
+		if (drags > 0) {
+			Log.debug("Profile Dragging: \nNumber of handled drag events: " + drags + "\n"
+					+ "Average duration of one drag event: "
+					+ ((float) dragTime / (float) drags) + " ms \n" + "Number of repaints: "
+					+ repaints + "\n" + "Average duration of one repaint: "
+					+ ((float) repaintTime / repaints) + " ms");
 		}
 	}
 
 	/**
-     * Display performance data about cascade update
+	 * Display performance data about algebra view updates
 	 */
-    public static void printCascadeMeasurementData() {
-        if (cascades > 0) {
-            Log.debug("Profile Cascades: " + cascades + " x "
-                    + (cascadeTime / cascades) + " = " + cascadeTime);
+	public static void printAlgebraMeasurementData() {
+		if (algebra > 0) {
+			Log.debug("Profile Algebra: " + algebra + " x "
+					+ (algebraTime / algebra) + " = " + algebraTime);
+		}
+	}
+
+	/**
+	 * Display performance data about event dispatches
+	 */
+	public static void printEventMeasurementData() {
+		if (event > 0) {
+			Log.debug("Profile EventDispatcher: " + event + " x "
+					+ (eventTime / event) + " = " + eventTime);
+		}
+	}
+
+	/**
+	 * Display performance data about cascade update
+	 */
+	public static void printCascadeMeasurementData() {
+		if (cascades > 0) {
+			Log.debug("Profile Cascades: " + cascades + " x "
+					+ (cascadeTime / cascades) + " = " + cascadeTime);
 		}
 	}
 
@@ -79,46 +79,46 @@ public class GeoGebraProfiler {
 	}
 
 	/**
-     * @param time
+	 * @param time
 	 *            cascade duration
 	 */
-    public static void addUpdateCascade(long time) {
+	public static void addUpdateCascade(long time) {
 		synchronized (lock) {
 			cascades++;
-            cascadeTime += time;
+			cascadeTime += time;
 		}
 	}
 
 	/**
-     * @param time
+	 * @param time
 	 *            algebra update duration
 	 */
-    public static void addAlgebra(long time) {
+	public static void addAlgebra(long time) {
 		synchronized (lock) {
 			algebra++;
-            algebraTime += time;
+			algebraTime += time;
 		}
 	}
 
 	/**
-     * @param time
+	 * @param time
 	 *            event handling duration
 	 */
-    public static void addEvent(long time) {
+	public static void addEvent(long time) {
 		synchronized (lock) {
 			event++;
-            eventTime += time;
+			eventTime += time;
 		}
 	}
 
 	/**
-     * @param time
+	 * @param time
 	 *            drag duration
 	 */
-    public static void addDrag(long time) {
+	public static void addDrag(long time) {
 		synchronized (lock) {
 			drags++;
-            dragTime += time;
+			dragTime += time;
 		}
 	}
 }

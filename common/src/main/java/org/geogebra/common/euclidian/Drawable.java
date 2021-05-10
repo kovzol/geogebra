@@ -19,11 +19,13 @@ the Free Software Foundation.
 package org.geogebra.common.euclidian;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.CheckForNull;
 
 import org.geogebra.common.awt.GArea;
 import org.geogebra.common.awt.GBasicStroke;
-import org.geogebra.common.awt.GBufferedImage;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GDimension;
 import org.geogebra.common.awt.GFont;
@@ -42,9 +44,10 @@ import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.geos.properties.FillType;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.main.App;
-import org.geogebra.common.main.Feature;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.util.StringUtil;
+
+import com.google.j2objc.annotations.Weak;
 
 /**
  * 
@@ -74,6 +77,7 @@ public abstract class Drawable extends DrawableND {
 	/**
 	 * View in which this is drawn
 	 */
+	@Weak
 	protected EuclidianView view;
 
 	/**
@@ -116,7 +120,7 @@ public abstract class Drawable extends DrawableND {
 	 * Whether current paint is the first one
 	 */
 	protected boolean firstCall = true;
-    private GeoElement geoForLabel;
+	private GeoElement geoForLabel;
 
 	/**
 	 * Create a default drawable. GeoElement and the view must be set
@@ -185,7 +189,9 @@ public abstract class Drawable extends DrawableND {
 	}
 
 	@Override
-	public abstract GeoElement getGeoElement();
+	public GeoElement getGeoElement() {
+		return geo;
+	}
 
 	/**
 	 * @return bounding box with handlers
@@ -216,26 +222,8 @@ public abstract class Drawable extends DrawableND {
 	 * 
 	 * @return null when this Drawable is infinite or undefined
 	 */
-	public GRectangle getBounds() {
+	public @CheckForNull GRectangle getBounds() {
 		return null;
-	}
-
-	/**
-	 * Returns the minimum width of drawable
-	 * 
-	 * @return min width in pixels
-	 */
-	public double getWidthThreshold() {
-		return Double.NEGATIVE_INFINITY;
-	}
-
-	/**
-	 * Returns the minimum height of drawable
-	 * 
-	 * @return min height in pixels
-	 */
-	public double getHeightThreshold() {
-		return Double.NEGATIVE_INFINITY;
 	}
 
 	/**
@@ -407,12 +395,15 @@ public abstract class Drawable extends DrawableND {
 	 */
 	public final void drawMultilineLaTeX(GGraphics2D g2, GFont font,
 			GColor fgColor, GColor bgColor) {
-		EuclidianStatic.drawMultilineLaTeX(view.getApplication(),
-				view.getTempGraphics2D(font), geo, g2, font, fgColor,
-				bgColor, labelDesc, xLabel, yLabel, isSerif(),
-				view.getCallBack(geo, firstCall),
-				labelRectangle);
-		firstCall = false;
+		if (labelDesc != null) {
+			EuclidianStatic.drawMultilineLaTeX(view.getApplication(),
+					view.getTempGraphics2D(font), geo, g2, font, fgColor,
+					bgColor, labelDesc, xLabel, yLabel, isSerif(),
+					view.getCallBack(geo, firstCall),
+					labelRectangle);
+			firstCall = false;
+		}
+		// else: undefined text, do nothing
 	}
 
 	/**
@@ -434,11 +425,7 @@ public abstract class Drawable extends DrawableND {
 		}
 
 		// no index in text
-		// There is no indexed text in MOW text tool yet. Needed to check if it
-		// is a mow text tool, because the labelDesc will be changed when the
-		// text wrapping updated.
-		if ((labelDesc.equals(oldLabelDesc) && !labelHasIndex)
-				|| geo.getKernel().getApplication().has(Feature.MOW_TEXT_TOOL)) {
+		if (labelDesc.equals(oldLabelDesc) && !labelHasIndex) {
 
 			// sets labelRectangle
 			EuclidianStatic.drawMultiLineText(
@@ -595,7 +582,7 @@ public abstract class Drawable extends DrawableND {
 					EuclidianStyleConstants.LINE_TYPE_FULL);
 
 			selStroke = EuclidianStatic.getStroke(
-					!fromGeo.isShape() ? 2 * width + 2
+					!fromGeo.isShape() ? 2 * Math.max(width, 1) + 2
 									: width + EuclidianStyleConstants.SELECTION_ADD,
 					EuclidianStyleConstants.LINE_TYPE_FULL);
 		} else if (lineType != fromGeo.getLineType()) {
@@ -646,61 +633,41 @@ public abstract class Drawable extends DrawableND {
 	 *            shape to be filled
 	 */
 	protected void fill(GGraphics2D g2, GShape fillShape) {
-		fill(g2, fillShape, null, null);
+		if (isForceNoFill()) {
+			return;
+		}
+		if (geo.getFillType() != FillType.STANDARD) {
+			fillWithHatchOrImage(g2, fillShape, geo.getObjectColor());
+		} else if (geo.getAlphaValue() > 0.0f) {
+			g2.setPaint(geo.getFillColor());
+			g2.fill(fillShape);
+		}
 	}
 
 	/**
 	 * Fills given shape
-	 * 
+	 *
 	 * @param g2
 	 *            graphics
 	 * @param fillShape
 	 *            shape to be filled
-	 * @param gpaint0
-	 *            override paint
-	 * @param subImage
-	 *            override image
 	 */
-	protected void fill(GGraphics2D g2, GShape fillShape, GPaint gpaint0,
-			GBufferedImage subImage) {
-		if (isForceNoFill()) {
-			return;
-		}
-		GPaint gpaint = gpaint0;
-		if (geo.isHatchingEnabled() || gpaint != null) {
-			// use decoStroke as it is always full (not dashed/dotted etc)
-
-			if (gpaint == null) {
-
-				gpaint = getHatchingHandler().setHatching(g2, decoStroke,
-						geo.getObjectColor(), geo.getBackgroundColor(),
-						geo.getAlphaValue(), geo.getHatchingDistance(),
-						geo.getHatchingAngle(), geo.getFillType(),
-						geo.getFillSymbol(), geo.getKernel().getApplication());
-			}
-
-			g2.setPaint(gpaint);
-
-			if (!geo.getKernel().getApplication().isHTML5Applet()) {
-				g2.fill(fillShape);
-			} else {
-				GBufferedImage subImage2 = subImage;
-				if (subImage2 == null) {
-					subImage2 = getHatchingHandler().getSubImage();
-				}
-
-				// take care of filling after the image is loaded
-				AwtFactory.getPrototype().fillAfterImageLoaded(fillShape, g2,
-						subImage2, geo.getKernel().getApplication());
-			}
-		} else if (geo.getFillType() == FillType.IMAGE) {
+	public void fillWithHatchOrImage(GGraphics2D g2, GShape fillShape, GColor color) {
+		if (geo.getFillType() == FillType.IMAGE && geo.getFillImage() != null) {
 			getHatchingHandler().setTexture(g2, geo, geo.getAlphaValue());
 			g2.fill(fillShape);
-		} else if (geo.getAlphaValue() > 0.0f) {
-			g2.setPaint(geo.getFillColor());
-			// magic for switching off dash emulation moved to GGraphics2DW
-			g2.fill(fillShape);
+			return;
 		}
+		// use decoStroke as it is always full (not dashed/dotted etc)
+		GPaint gpaint = getHatchingHandler().setHatching(g2, decoStroke,
+				color, geo.getBackgroundColor(),
+				geo.getAlphaValue(), geo.getHatchingDistance(),
+				geo.getHatchingAngle(), geo.getFillType(),
+				geo.getFillSymbol(), geo.getKernel().getApplication());
+
+		g2.setPaint(gpaint);
+		getHatchingHandler().fill(g2, fillShape, getView().getApplication());
+
 	}
 
 	private HatchingHandler getHatchingHandler() {
@@ -778,8 +745,7 @@ public abstract class Drawable extends DrawableND {
 	protected GColor getObjectColor() {
 		GColor color = geo.getObjectColor();
 		if (geo.hasLineOpacity()) {
-			color = GColor.newColor(color.getRed(), color.getGreen(),
-					color.getBlue(), geo.getLineOpacity());
+			color = color.deriveWithAlpha(geo.getLineOpacity());
 		}
 		return color;
 	}
@@ -840,23 +806,24 @@ public abstract class Drawable extends DrawableND {
 	 * @return bounds of the drawn path
 	 */
 	@Override
-	public GRectangle2D getBoundsForStylebarPosition() {
+	public @CheckForNull GRectangle2D getBoundsForStylebarPosition() {
 		return getBounds();
 	}
 
-    /**
-     * @return geo that determines labeling and highlighting
-     */
-    public GeoElement getTopLevelGeo() {
-        return geoForLabel == null ? getGeoElement() : geoForLabel;
-    }
+	/**
+	 * @return geo that determines labeling and highlighting
+	 */
+	public GeoElement getTopLevelGeo() {
+		return geoForLabel == null ? getGeoElement() : geoForLabel;
+	}
 
-    /**
-     * @param geo that determines labeling and highlighting
-     */
-    public void setTopLevelGeo(GeoElement geo) {
-        geoForLabel = geo;
-    }
+	/**
+	 * @param geo
+	 *            that determines labeling and highlighting
+	 */
+	public void setTopLevelGeo(GeoElement geo) {
+		geoForLabel = geo;
+	}
 
 	/**
 	 * @param x
@@ -898,11 +865,11 @@ public abstract class Drawable extends DrawableND {
 	}
 
 	/**
-     * @return whether the drawable should be highlighted
-     */
-    public boolean isHighlighted() {
-        return getTopLevelGeo().doHighlighting();
-    }
+	 * @return whether the drawable should be highlighted
+	 */
+	public boolean isHighlighted() {
+		return getTopLevelGeo().doHighlighting();
+	}
 
 	@Override
 	public void setPartialHitClip(GRectangle rect) {
@@ -949,6 +916,9 @@ public abstract class Drawable extends DrawableND {
 		GRectangle2D bounds = getBoundingBox() != null
 				? getBoundingBox().getRectangle()
 				: getBounds();
+		if (bounds == null) {
+			return Collections.emptyList();
+		}
 		List<GPoint2D> ret = new ArrayList<>(2);
 		ret.add(new MyPoint(bounds.getMinX(), bounds.getMinY()));
 		ret.add(new MyPoint(bounds.getMaxX(), bounds.getMaxY()));
@@ -967,5 +937,9 @@ public abstract class Drawable extends DrawableND {
 
 	public BoundingBox<? extends GShape> getSelectionBoundingBox() {
 		return new SingleBoundingBox(view.getApplication().getPrimaryColor());
+	}
+
+	public GBasicStroke getDecoStroke() {
+		return decoStroke;
 	}
 }

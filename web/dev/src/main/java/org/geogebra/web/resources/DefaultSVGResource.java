@@ -9,57 +9,57 @@ import com.google.gwt.safehtml.shared.UriUtils;
  */
 public class DefaultSVGResource implements SVGResource {
 
-    @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private static JavaScriptObject parser;
+	@SuppressWarnings({"unused", "FieldCanBeLocal"})
+	private static JavaScriptObject parser;
 
-    @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private static JavaScriptObject serializer;
+	@SuppressWarnings({"unused", "FieldCanBeLocal"})
+	private static JavaScriptObject serializer;
 
-    static {
-        parser = createParser();
-        serializer = createSerializer();
-    }
+	static {
+		parser = createParser();
+		serializer = createSerializer();
+	}
 
-    private static native JavaScriptObject createParser() /*-{
+	private static native JavaScriptObject createParser() /*-{
 		return new DOMParser();
 	}-*/;
 
-    private static native JavaScriptObject createSerializer() /*-{
+	private static native JavaScriptObject createSerializer() /*-{
 		return new XMLSerializer();
 	}-*/;
 
 
-    private String svg;
-    private String name;
+	private String svg;
+	private String name;
 
-    /**
-     * Creates a new SVG Resource.
-     *
-     * @param svg
-     * @param name
-     */
-    public DefaultSVGResource(String svg, String name) {
-        this.svg = svg;
-        this.name = name;
-    }
+	/**
+	 * Creates a new SVG Resource.
+	 *
+	 * @param svg
+	 * @param name
+	 */
+	public DefaultSVGResource(String svg, String name) {
+		this.svg = svg;
+		this.name = name;
+	}
 
-    @Override
-    public SafeUri getSafeUri() {
-        return UriUtils.fromSafeConstant(getUrl());
-    }
+	@Override
+	public SafeUri getSafeUri() {
+		return UriUtils.fromSafeConstant(getUrl());
+	}
 
-    @Override
-    public String getName() {
-        return name;
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    public SVGResource withFill(String color) {
-        String filled = createFilled(color);
-        return new DefaultSVGResource(filled, name);
-    }
+	@Override
+	public SVGResource withFill(String color) {
+		String filled = createFilled(color);
+		return new DefaultSVGResource(filled, name);
+	}
 
-    private native String createFilled(String color) /*-{
+	private native String createFilled(String color) /*-{
 	    var that = this;
 		var parser = @org.geogebra.web.resources.DefaultSVGResource::parser;
 		var serializer = @org.geogebra.web.resources.DefaultSVGResource::serializer;
@@ -70,9 +70,9 @@ public class DefaultSVGResource implements SVGResource {
 		return xml;
 	}-*/;
 
-    @Override
-    public String getUrl() {
-        return "data:image/svg+xml;base64," +
-                Base64Encoder.encodeBase64(svg);
-    }
+	@Override
+	public String getUrl() {
+		return "data:image/svg+xml;base64," +
+				Base64Encoder.encodeBase64(svg);
+	}
 }

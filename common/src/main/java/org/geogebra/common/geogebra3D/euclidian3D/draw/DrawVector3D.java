@@ -107,16 +107,16 @@ public class DrawVector3D extends DrawJoinPoints {
 	protected void setStartEndPoints(Coords p1, Coords p2) {
 		super.setStartEndPoints(p1, p2);
 
-        radius = getLineThickness() * PlotterBrush.LINE3D_THICKNESS
+		radius = getLineThickness() * PlotterBrush.LINE3D_THICKNESS
 				/ getView3D().getScale();
 
 		for (int i = 1; i <= 3; i++) {
 			if (p1.get(i) < p2.get(i)) {
-                boundsMin.set(i, p1.get(i));
-                boundsMax.set(i, p2.get(i));
+				boundsMin.set(i, p1.get(i));
+				boundsMax.set(i, p2.get(i));
 			} else {
-                boundsMin.set(i, p2.get(i));
-                boundsMax.set(i, p1.get(i));
+				boundsMin.set(i, p2.get(i));
+				boundsMax.set(i, p1.get(i));
 			}
 		}
 	}

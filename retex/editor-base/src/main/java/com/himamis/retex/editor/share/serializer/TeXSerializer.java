@@ -1,7 +1,10 @@
 package com.himamis.retex.editor.share.serializer;
 
+import com.himamis.retex.editor.share.editor.SyntaxAdapter;
+import com.himamis.retex.editor.share.meta.Tag;
 import com.himamis.retex.editor.share.model.MathArray;
 import com.himamis.retex.editor.share.model.MathCharacter;
+import com.himamis.retex.editor.share.model.MathContainer;
 import com.himamis.retex.editor.share.model.MathFunction;
 import com.himamis.retex.editor.share.model.MathSequence;
 import com.himamis.retex.editor.share.util.Unicode;
@@ -11,18 +14,31 @@ import com.himamis.retex.editor.share.util.Unicode;
  */
 public class TeXSerializer extends SerializerAdapter {
 
+	public static final String PLACEHOLDER =
+			"{\\bgcolor{#DCDCDC}\\scalebox{1}[1.6]{\\phantom{g}}}";
 	private static final String cursor = "\\jlmcursor{0}";
 	private static final String cursorBig = "\\jlmcursor{0.9}";
 	private static final String selection_start = "\\jlmselection{";
 	private static final String selection_end = "}";
 
-	private static final String characterMissing = "\\nbsp ";
+	private static final String PLACEHOLDER_INVISIBLE = "\\nbsp ";
+	private boolean showPlaceholder = true;
 	private boolean lineBreakEnabled = false;
 
 	private static final String[] escapeableSymbols = { "%", "$", "#", "&", "{",
 			"}", "_" };
 	private static final String[][] replaceableSymbols = { { "~", "^", "\\" },
 			{ "\u223C ", "\\^{\\ } ", "\\backslash{}" } };
+
+	private SyntaxAdapter syntaxAdapter;
+
+	public TeXSerializer() {
+		// sometimes we don't want to pass a syntax adapter
+	}
+
+	public TeXSerializer(SyntaxAdapter syntaxAdapter) {
+		this.syntaxAdapter = syntaxAdapter;
+	}
 
 	@Override
 	public void serialize(MathCharacter mathCharacter,
@@ -42,6 +58,10 @@ public class TeXSerializer extends SerializerAdapter {
 			stringBuilder.append("\\nbsp ");
 		} else if (lineBreakEnabled && 10 == mathCharacter.getName().charAt(0)) {
 			stringBuilder.append("\\\\\\vspace{0}");
+		} else if ("n".equals(mathCharacter.getName()) && stringBuilder.length() > 0
+				&& 'l' == stringBuilder.charAt(stringBuilder.length() - 1)) {
+			stringBuilder.setLength((Math.max(stringBuilder.length() - 1, 0)));
+			stringBuilder.append("\\mathrm{ln}");
 		} else {
 			String texName = mathCharacter.getTexName();
 			if (isSymbolEscapeable(texName)) {
@@ -73,11 +93,24 @@ public class TeXSerializer extends SerializerAdapter {
 		lineBreakEnabled = lineBreaks;
 	}
 
+	/**
+	 * Enables or disables placeholder in the editor.
+	 *
+	 * @param placeholder
+	 *            whether to show placeholders
+	 */
+	public void setPlaceholderEnabled(boolean placeholder) {
+		showPlaceholder = placeholder;
+	}
+
 	@Override
 	public void serialize(MathSequence sequence, StringBuilder stringBuilder) {
 		if (sequence == null) {
 			stringBuilder.append("?");
 			return;
+		}
+		if (sequence.isScript(0) && (sequence != mCurrentField || mCurrentOffset > 0)) {
+			stringBuilder.append(showPlaceholder ? PLACEHOLDER : PLACEHOLDER_INVISIBLE);
 		}
 		int lengthBefore = stringBuilder.length();
 		boolean addBraces = (sequence.hasChildren() || // {a^b_c}
@@ -101,15 +134,7 @@ public class TeXSerializer extends SerializerAdapter {
 					stringBuilder.append(cursorBig);
 				}
 			} else {
-				if (sequence.getParent() == null
-						|| /* symbol.getParent() instanceof MathOperator || */
-						(sequence.getParent() instanceof MathFunction
-								&& sequence.getParentIndex() == sequence
-										.getParent().getInsertIndex())) {
-					stringBuilder.append(characterMissing);
-				} else {
-					stringBuilder.append(characterMissing);
-				}
+				stringBuilder.append(getPlaceholder(sequence));
 			}
 		} else {
 			if (sequence == mCurrentField) {
@@ -149,6 +174,21 @@ public class TeXSerializer extends SerializerAdapter {
 		}
 	}
 
+	private String getPlaceholder(MathSequence sequence) {
+		MathContainer parent = sequence.getParent();
+		if (parent == null
+				|| (parent instanceof MathArray	&& parent.size() == 1)) {
+			return PLACEHOLDER_INVISIBLE;
+		}
+		if (parent instanceof MathFunction) {
+			Tag fn = ((MathFunction) parent).getName();
+			if (fn == Tag.APPLY || fn == Tag.LOG) {
+				return PLACEHOLDER_INVISIBLE;
+			}
+		}
+		return showPlaceholder ? PLACEHOLDER : PLACEHOLDER_INVISIBLE;
+	}
+
 	@Override
 	public void serialize(MathFunction function, StringBuilder stringBuilder) {
 		if (function == currentSelStart) {
@@ -173,6 +213,7 @@ public class TeXSerializer extends SerializerAdapter {
 			stringBuilder.append("}}");
 			break;
 		case SQRT:
+		case CBRT:
 			stringBuilder.append(function.getTexName());
 			stringBuilder.append("{");
 			serialize(function.getArgument(0), stringBuilder);
@@ -199,39 +240,8 @@ public class TeXSerializer extends SerializerAdapter {
 			serialize(function.getArgument(1), stringBuilder);
 			stringBuilder.append("\\right)");
 			break;
-		case SUM:
-		case PROD:
-			stringBuilder.append(function.getTexName());
-			stringBuilder.append("_{");
-			serialize(function.getArgument(0), stringBuilder);
-			stringBuilder.append('=');
-			serialize(function.getArgument(1), stringBuilder);
-			stringBuilder.append("}^");
-			serialize(function.getArgument(2), stringBuilder);
-			boolean addBraces = function.getArgument(3).hasOperator();
-			addWithBraces(stringBuilder, function.getArgument(3), addBraces);
-
-			break;
-		case INT:
-			stringBuilder.append(function.getTexName());
-			stringBuilder.append('_');
-			serialize(function.getArgument(0), stringBuilder);
-			stringBuilder.append('^');
-			serialize(function.getArgument(1), stringBuilder);
-			stringBuilder.append('{');
-			addBraces = currentBraces;
-			if (addBraces) {
-				stringBuilder.append("\\left(");
-			}
-			serialize(function.getArgument(2), stringBuilder);
-			// jmathtex v0.7: incompatibility
-			stringBuilder.append(" " + ("\\nbsp") + " d");
-			serialize(function.getArgument(3), stringBuilder);
-			if (addBraces) {
-				stringBuilder.append("\\right)");
-			}
-			stringBuilder.append('}');
-			break;
+		case SUM_EQ:
+		case PROD_EQ:
 		case DEF_INT:
 			stringBuilder.append(function.getTexName());
 			stringBuilder.append('_');
@@ -240,35 +250,10 @@ public class TeXSerializer extends SerializerAdapter {
 			serialize(function.getArgument(1), stringBuilder);
 			stringBuilder.append("{}");
 			break;
-		case LIM:
-			// lim not implemented in jmathtex
-			stringBuilder.append("\\lim_{");
-			serialize(function.getArgument(0), stringBuilder);
-			stringBuilder.append(" \\rightarrow ");
-			serialize(function.getArgument(1), stringBuilder);
-			// jmathtex v0.7: incompatibility
-			stringBuilder.append("} " + ("\\nbsp") + " {");
-			addBraces = (function.getArgument(2).hasOperator()
-					&& function.getParent().hasOperator());
-			this.addWithBraces(stringBuilder, function.getArgument(2),
-					addBraces);
-			stringBuilder.append('}');
-			break;
 		case LIM_EQ:
 			stringBuilder.append("\\lim_{");
 			serialize(function.getArgument(0), stringBuilder);
 			stringBuilder.append("} ");
-			break;
-		case SUM_EQ:
-		case PROD_EQ:
-			stringBuilder.append(function.getTexName());
-			// this will force the limits to appear on the side
-			stringBuilder.append("\\nolimits");
-			stringBuilder.append('_');
-			serialize(function.getArgument(0), stringBuilder);
-			stringBuilder.append('^');
-			serialize(function.getArgument(1), stringBuilder);
-			stringBuilder.append("{}");
 			break;
 		case ABS:
 			stringBuilder.append("\\left|");
@@ -287,9 +272,16 @@ public class TeXSerializer extends SerializerAdapter {
 			break;
 		case APPLY:
 		case APPLY_SQUARE:
-			stringBuilder.append("{\\mathrm{");
-			serialize(function.getArgument(0), stringBuilder);
-			stringBuilder.append("}");
+			StringBuilder functionName = new StringBuilder();
+			serialize(function.getArgument(0), functionName);
+
+			stringBuilder.append("{");
+			if (isFunction(functionName.toString())) {
+				stringBuilder.append("{\\mathrm{").append(functionName).append("}}");
+			} else {
+				stringBuilder.append(functionName);
+			}
+
 			serializeArguments(stringBuilder, function, 1);
 			break;
 		case VEC:
@@ -307,6 +299,23 @@ public class TeXSerializer extends SerializerAdapter {
 		if (function == currentSelEnd) {
 			stringBuilder.append(selection_end);
 		}
+	}
+
+	/**
+	 * @param name function name
+	 * @return whether this is a builtin function (sin/cos/...)
+	 */
+	public boolean isFunction(String name) {
+		if (syntaxAdapter == null) {
+			return true;
+		}
+
+		String trimmed = name.replace(cursor, "");
+		if (trimmed.indexOf('^') > 0) {
+			trimmed = trimmed.substring(0, trimmed.indexOf('^'));
+		}
+
+		return syntaxAdapter.isFunction(trimmed);
 	}
 
 	private void serializeArguments(StringBuilder stringBuilder,
@@ -334,24 +343,13 @@ public class TeXSerializer extends SerializerAdapter {
 								.getArgument(index - 1) instanceof MathCharacter
 						&& ((MathCharacter) parent.getArgument(index - 1))
 								.isOperator())) {
-			stringBuilder.append(characterMissing);
+			stringBuilder.append(PLACEHOLDER_INVISIBLE);
 		}
 		stringBuilder.append(idxType);
 		stringBuilder.append('{');
 		serialize(function.getArgument(0), stringBuilder);
 		stringBuilder.append('}');
 
-	}
-
-	private void addWithBraces(StringBuilder stringBuilder,
-			MathSequence argument, boolean addBraces) {
-		if (currentBraces || addBraces) {
-			stringBuilder.append("\\left(");
-		}
-		serialize(argument, stringBuilder);
-		if (currentBraces || addBraces) {
-			stringBuilder.append("\\right)");
-		}
 	}
 
 	@Override
@@ -412,5 +410,9 @@ public class TeXSerializer extends SerializerAdapter {
 			}
 		}
 		return symbol;
+	}
+
+	public void setSyntaxAdapter(SyntaxAdapter syntaxAdapter) {
+		this.syntaxAdapter = syntaxAdapter;
 	}
 }

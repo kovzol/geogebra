@@ -1,5 +1,6 @@
 package org.geogebra.web.full.gui.util;
 
+import org.geogebra.common.euclidian.event.PointerEventType;
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.common.main.Localization;
 import org.geogebra.web.full.css.MaterialDesignResources;
@@ -9,7 +10,7 @@ import org.geogebra.web.full.javax.swing.GPopupMenuW;
 import org.geogebra.web.full.main.AppWFull;
 import org.geogebra.web.html5.gui.GPopupPanel;
 import org.geogebra.web.html5.gui.util.AriaMenuItem;
-import org.geogebra.web.html5.gui.util.NoDragImage;
+import org.geogebra.web.html5.gui.util.ClickStartHandler;
 import org.geogebra.web.html5.gui.view.button.StandardButton;
 import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.resources.SVGResource;
@@ -17,16 +18,12 @@ import org.geogebra.web.resources.SVGResource;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.user.client.ui.Image;
 
 /**
  * Context Menu Popup for Cards
  * 
  * Tasks in subclass: add Menu Items, override show() to show the popup at the
  * correct position
- * 
- * @author Alicia
- *
  */
 public class ContextMenuButtonCard extends StandardButton
 		implements SetLabels, CloseHandler<GPopupPanel> {
@@ -44,7 +41,7 @@ public class ContextMenuButtonCard extends StandardButton
 	 *            application
 	 */
 	public ContextMenuButtonCard(AppW app) {
-		super(MaterialDesignResources.INSTANCE.more_vert_black(), null, 24, app);
+		super(MaterialDesignResources.INSTANCE.more_vert_black(), null, 24);
 		this.app = app;
 		loc = app.getLocalization();
 		frame = ((AppWFull) app).getAppletFrame();
@@ -52,17 +49,16 @@ public class ContextMenuButtonCard extends StandardButton
 	}
 
 	private void initButton() {
-		SVGResource resource = getActiveImageResource();
-		Image hoveringFace = getImage(resource);
-		getUpHoveringFace().setImage(hoveringFace);
-		getDownHoveringFace().setImage(hoveringFace);
 		addStyleName("mowMoreButton");
 
-		addFastClickHandler(source -> {
-			if (isShowing()) {
-				hide();
-			} else {
-				show();
+		ClickStartHandler.init(this, new ClickStartHandler(true, true) {
+			@Override
+			public void onClickStart(int x, int y, PointerEventType type) {
+				if (isShowing()) {
+					hide();
+				} else {
+					show();
+				}
 			}
 		});
 	}
@@ -82,15 +78,12 @@ public class ContextMenuButtonCard extends StandardButton
 	 * @param cmd
 	 *            command to execute
 	 */
-	protected void addItem(SVGResource img, String text,
+	protected AriaMenuItem addItem(SVGResource img, String text,
 			ScheduledCommand cmd) {
 		AriaMenuItem mi = new AriaMenuItem(
 				MainMenu.getMenuBarHtml(img, text), true, cmd);
 		wrappedPopup.addItem(mi);
-	}
-
-	private static Image getImage(SVGResource res) {
-		return new NoDragImage(res, 24, 24);
+		return mi;
 	}
 
 	/**
@@ -100,7 +93,7 @@ public class ContextMenuButtonCard extends StandardButton
 		wrappedPopup = new GPopupMenuW(app);
 		wrappedPopup.getPopupPanel().addCloseHandler(this);
 		wrappedPopup.getPopupPanel().addAutoHidePartner(this.getElement());
-		wrappedPopup.getPopupPanel().addStyleName("matMenu mowMatMenu");
+		wrappedPopup.getPopupPanel().addStyleName("mowMatMenu");
 	}
 
 	@Override
@@ -148,11 +141,10 @@ public class ContextMenuButtonCard extends StandardButton
 	 */
 	protected void toggleIcon(boolean toggle) {
 		if (toggle) {
-			getUpFace().setImage(getImage(getActiveImageResource()));
+			setIcon(getActiveImageResource());
 			addStyleName("active");
 		} else {
-			getUpFace().setImage(getImage(
-					MaterialDesignResources.INSTANCE.more_vert_black()));
+			setIcon(MaterialDesignResources.INSTANCE.more_vert_black());
 			removeStyleName("active");
 		}
 	}

@@ -243,8 +243,8 @@ public class FormatCollada extends Format {
 	}
 
 	@Override
-    public void getPolyhedronStart(StringBuilder sb, boolean isFlat,
-                                   boolean isCurve) {
+	public void getPolyhedronStart(StringBuilder sb, boolean isFlat,
+			boolean isCurve) {
 		sb.append("<geometry id=\"");
 		sb.append(currentLabel);
 		sb.append("-mesh\" name=\"");
@@ -407,17 +407,17 @@ public class FormatCollada extends Format {
 	}
 
 	@Override
-    public boolean handlesSurfacesDirectly() {
+	public boolean handlesSurfacesDirectly() {
 		return true;
 	}
 
 	@Override
-    public boolean needsClosedObjectsForCurves() {
-        return false;
-    }
+	public boolean needsClosedObjectsForCurves() {
+		return false;
+	}
 
-    @Override
-    public boolean needsClosedObjectsForSurfaces() {
+	@Override
+	public boolean needsClosedObjectsForSurfaces() {
 		return false;
 	}
 
@@ -436,34 +436,34 @@ public class FormatCollada extends Format {
 		// not used so far
 	}
 
-    @Override
-    public boolean needsScale() {
-        return false;
-    }
+	@Override
+	public boolean needsScale() {
+		return false;
+	}
 
-    @Override
-    public boolean needsBothSided() {
-        return true;
-    }
+	@Override
+	public boolean needsBothSided() {
+		return true;
+	}
 
-    @Override
-    public void setWantsFilledSolids(boolean flag) {
-        // not used
-    }
+	@Override
+	public void setWantsFilledSolids(boolean flag) {
+		// not used
+	}
 
-    @Override
-    public boolean wantsFilledSolids() {
-        return false;
-    }
+	@Override
+	public boolean wantsFilledSolids() {
+		return false;
+	}
 
-    @Override
-    public void setExportsPointsAndLines(boolean flag) {
-        // not used
-    }
+	@Override
+	public void setExportsPointsAndLines(boolean flag) {
+		// not used
+	}
 
-    @Override
-    public boolean exportsPointsAndLines() {
-        return true;
-    }
+	@Override
+	public boolean exportsPointsAndLines() {
+		return true;
+	}
 
 }

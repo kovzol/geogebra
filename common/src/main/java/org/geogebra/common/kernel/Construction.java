@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.LayerManager;
 import org.geogebra.common.euclidian.event.PointerEventType;
 import org.geogebra.common.io.MyXMLio;
@@ -55,11 +56,13 @@ import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.MyError;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.SelectionManager;
+import org.geogebra.common.main.undo.UndoManager;
 import org.geogebra.common.plugin.GeoClass;
 import org.geogebra.common.plugin.ScriptManager;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
 
+import com.google.j2objc.annotations.Weak;
 import com.himamis.retex.editor.share.input.Character;
 
 /**
@@ -104,6 +107,7 @@ public class Construction {
 	private boolean showOnlyBreakpoints;
 
 	/** construction belongs to kernel */
+	@Weak
 	protected Kernel kernel;
 
 	// current construction step (-1 ... ceList.size() - 1)
@@ -128,10 +132,6 @@ public class Construction {
 
 	/** Table for (label, GeoElement) pairs, contains global variables */
 	protected HashMap<String, GeoElement> geoTable;
-
-	// List of GeoElements to store strong references to
-	// Used in the iOS app
-	private List<ConstructionElement> tempList;
 
 	// list of algorithms that need to be updated when EuclidianView changes
 	private ArrayList<EuclidianViewCE> euclidianViewCE;
@@ -177,7 +177,7 @@ public class Construction {
 	private String yAxisLocalName;
 	private GeoPoint origin;
 
-    private Stack<GeoElement> selfGeoStack = new Stack<>();
+	private Stack<GeoElement> selfGeoStack = new Stack<>();
 	private boolean undoEnabled = true;
 
 	private boolean isGettingXMLForReplace;
@@ -191,7 +191,7 @@ public class Construction {
 
 	private GeoElement outputGeo;
 
-	private TreeSet<String> registredFV = new TreeSet<>();
+	private TreeSet<String> registeredFV = new TreeSet<>();
 
 	private boolean fileLoading;
 	private boolean casCellUpdate = false;
@@ -235,7 +235,6 @@ public class Construction {
 		geoSetLabelOrder = new TreeSet<>(new LabelComparator());
 		geoSetsTypeMap = new HashMap<>();
 		euclidianViewCE = new ArrayList<>();
-		tempList = new ArrayList<>();
 
 		layerManager = new LayerManager();
 
@@ -279,21 +278,21 @@ public class Construction {
 	 *            new value of "self" variable
 	 */
 	public void setSelfGeo(GeoElement selfGeo) {
-        this.selfGeoStack.add(selfGeo);
-    }
+		this.selfGeoStack.add(selfGeo);
+	}
 
-    /**
-     * Sets self geo to the previous one
-     */
-    public void restoreSelfGeo() {
-        this.selfGeoStack.pop();
-    }
+	/**
+	 * Sets self geo to the previous one
+	 */
+	public void restoreSelfGeo() {
+		this.selfGeoStack.pop();
+	}
 
-    /**
-     * @return whether a click/update script is currently running
-     */
-    public boolean isScriptRunningForGeo() {
-        return !selfGeoStack.isEmpty();
+	/**
+	 * @return whether a click/update script is currently running
+	 */
+	public boolean isScriptRunningForGeo() {
+		return !selfGeoStack.isEmpty();
 	}
 
 	/**
@@ -919,7 +918,6 @@ public class Construction {
 	public void addToConstructionList(ConstructionElement ce,
 			boolean checkContains) {
 		if (supressLabelCreation) {
-			tempList.add(ce);
 			return;
 		}
 		if (checkContains && ce.isInConstructionList()) {
@@ -937,6 +935,7 @@ public class Construction {
 	 *            ConstuctionElement to be removed
 	 */
 	public void removeFromConstructionList(ConstructionElement ce) {
+
 		int pos = ceList.indexOf(ce);
 		if (pos == -1) {
 			return;
@@ -1063,6 +1062,10 @@ public class Construction {
 		if (!euclidianViewCE.contains(elem)) {
 			euclidianViewCE.add(elem);
 		}
+	}
+
+	public final boolean isRegisteredEuclidianViewCE(EuclidianViewCE elem) {
+		return euclidianViewCE.contains(elem);
 	}
 
 	/**
@@ -1629,7 +1632,7 @@ public class Construction {
 			// use setLoadedLabel() instead of setLabel() to make sure that
 			// hidden objects also get the label, see #379
 			newGeo.setLoadedLabel(oldGeoLabel);
-
+			layerManager.replace(oldGeo.getOrdering(), newGeo);
 			if (newGeo.isGeoText()) {
 				newGeo.updateRepaint();
 			}
@@ -1889,7 +1892,7 @@ public class Construction {
 			Log.debug("replace failed: oldXML string not found:\n" + oldXML);
 			// Application.debug("consXML=\n" + consXML);
 			throw new MyError(getApplication().getLocalization(),
-                    Errors.ReplaceFailed);
+					Errors.ReplaceFailed);
 		}
 
 		// System.out.println("REDEFINE: oldGeo: " + oldGeo + ", newGeo: " +
@@ -2292,7 +2295,7 @@ public class Construction {
 			}
 		}
 		if ("self".equals(label1)) {
-            return this.selfGeoStack.peek();
+			return this.selfGeoStack.peek();
 		}
 		if ("undefined".equals(label1)) {
 			GeoNumeric n = new GeoNumeric(this);
@@ -2695,16 +2698,21 @@ public class Construction {
 	}
 
 	/**
-	 * Returns the next free indexed label using the given prefix starting with
-	 * the given index number.
-	 * 
-	 * @param prefix
-	 *            e.g. "c"
-	 * @param startIndex
-	 *            e.g. 2
+	 * Returns the next free indexed label using the given prefix.
+	 * @param prefix e.g. "c"
 	 * @return indexed label, e.g. "c_2"
 	 */
-	public String getIndexLabel(String prefix, int startIndex) {
+	public String getIndexLabel(String prefix) {
+		return getIndexLabel(prefix, false);
+	}
+
+	/**
+	 * Returns the next free indexed label using the given prefix.
+	 * @param prefix e.g. "c"
+	 * @param includeDummies to include cas dummy variables
+	 * @return indexed label, e.g. "c_{2}"
+	 */
+	public String getIndexLabel(String prefix, boolean includeDummies) {
 		// start numbering with indices using suggestedLabel
 		// as prefix
 		String pref;
@@ -2720,42 +2728,20 @@ public class Construction {
 			pref = "a";
 		}
 
-		StringBuilder sbIndexLabel = new StringBuilder();
-		StringBuilder sbLongIndexLabel = new StringBuilder();
-
-		int n = startIndex;
+		String longIndexLabel;
+		boolean freeLabelFound;
+		int n = 0;
 
 		do {
-			sbIndexLabel.setLength(0);
-			sbLongIndexLabel.setLength(0);
-			sbLongIndexLabel.append(pref);
-			sbLongIndexLabel.append("_{");
-			sbLongIndexLabel.append(n);
-			sbLongIndexLabel.append('}');
-			// n as index
-
-			if (n < 10) {
-				sbIndexLabel.append(pref);
-				sbIndexLabel.append('_');
-				sbIndexLabel.append(n);
-			} else {
-				sbIndexLabel.append(sbLongIndexLabel);
-			}
 			n++;
-		} while (!isFreeLabel(sbIndexLabel.toString())
-				|| !isFreeLabel(sbLongIndexLabel.toString()));
-		return sbIndexLabel.toString();
-	}
 
-	/**
-	 * Returns the next free indexed label using the given prefix.
-	 * 
-	 * @param prefix
-	 *            e.g. "c"
-	 * @return indexed label, e.g. "c_2"
-	 */
-	public String getIndexLabel(String prefix) {
-		return getIndexLabel(prefix, 1);
+			longIndexLabel = pref + "_{" + n + '}';
+			String indexLabel = pref + '_' + n;
+			freeLabelFound = isFreeLabel(longIndexLabel, true, includeDummies)
+					&& ((n >= 10) || isFreeLabel(indexLabel, true, includeDummies));
+		} while (!freeLabelFound);
+
+		return longIndexLabel;
 	}
 
 	/**
@@ -2891,29 +2877,29 @@ public class Construction {
 
 	/**
 	 * @return whether there are some objects incompatible with the 2D version
-     */
-    private boolean has3DObjects() {
+	 */
+	private boolean has3DObjects() {
 
-        Iterator<GeoClass> it = usedGeos.iterator();
+		Iterator<GeoClass> it = usedGeos.iterator();
 
-        boolean kernelHas3DObjects = false;
+		boolean kernelHas3DObjects = false;
 
-        while (it.hasNext()) {
-            GeoClass geoType = it.next();
+		while (it.hasNext()) {
+			GeoClass geoType = it.next();
 
-            if (geoType.is3D) {
-                Log.debug("found 3D geo: " + geoType.xmlName);
-                kernelHas3DObjects = true;
-                break;
-            }
-        }
+			if (geoType.is3D) {
+				Log.debug("found 3D geo: " + geoType.xmlName);
+				kernelHas3DObjects = true;
+				break;
+			}
+		}
 
-        return kernelHas3DObjects;
-    }
+		return kernelHas3DObjects;
+	}
 
-    public boolean hasInputBoxes() {
-        return usedGeos.contains(GeoClass.TEXTFIELD);
-    }
+	public boolean hasInputBoxes() {
+		return usedGeos.contains(GeoClass.TEXTFIELD);
+	}
 
 	/**
 	 * @return Whether some objects were created in this cons
@@ -3071,7 +3057,6 @@ public class Construction {
 		intsM.clear();
 		ceList.clear();
 		algoList.clear();
-		tempList.clear();
 
 		geoSetConsOrder.clear();
 		geoSetWithCasCells.clear();
@@ -3099,6 +3084,7 @@ public class Construction {
 
 		usedMacros = null;
 		spreadsheetTraces = false;
+		supressLabelCreation = false;
 
 		groups.clear();
 	}
@@ -3167,7 +3153,7 @@ public class Construction {
 		if (kernel.getConstruction().getXMLio().hasErrors()) {
 			restoreAfterRedefine(oldXML);
 			throw new MyError(getApplication().getLocalization(),
-                    Errors.ReplaceFailed);
+					Errors.ReplaceFailed);
 		}
 	}
 
@@ -3244,9 +3230,9 @@ public class Construction {
 	 */
 	public void registerFunctionVariable(String fv) {
 		if (fv == null) {
-			registredFV.clear();
+			registeredFV.clear();
 		} else {
-			registredFV.add(fv);
+			registeredFV.add(fv);
 		}
 
 	}
@@ -3255,10 +3241,10 @@ public class Construction {
 	 * 
 	 * @param s
 	 *            variable name
-	 * @return whether s is among registred function variables
+	 * @return whether s is among registered function variables
 	 */
-	public boolean isRegistredFunctionVariable(String s) {
-		return registredFV.contains(s);
+	public boolean isRegisteredFunctionVariable(String s) {
+		return registeredFV.contains(s);
 	}
 
 	/**
@@ -3268,7 +3254,7 @@ public class Construction {
 	 * @return local function variable or null if there is none
 	 */
 	public String getRegisteredFunctionVariable() {
-		Iterator<String> it = registredFV.iterator();
+		Iterator<String> it = registeredFV.iterator();
 		if (it.hasNext()) {
 			return it.next();
 		}
@@ -3520,8 +3506,8 @@ public class Construction {
 	 * @return all function variables registered for parsing
 	 */
 	public String[] getRegisteredFunctionVariables() {
-		String[] varNames = new String[this.registredFV.size()];
-		Iterator<String> it = this.registredFV.iterator();
+		String[] varNames = new String[this.registeredFV.size()];
+		Iterator<String> it = this.registeredFV.iterator();
 		int i = 0;
 		while (it.hasNext()) {
 			varNames[i++] = it.next();
@@ -3652,18 +3638,18 @@ public class Construction {
 	 * 
 	 * @return the LabelManager instance
 	 */
-    public LabelManager getLabelManager() {
-        if (labelManager == null) {
-            labelManager = new LabelManager(this);
-            labelManager.setAngleLabels(
-                    kernel.getApplication().getConfig().isGreekAngleLabels());
-        }
-        return labelManager;
-    }
+	public LabelManager getLabelManager() {
+		if (labelManager == null) {
+			labelManager = new LabelManager(this);
+			labelManager.setAngleLabels(
+					kernel.getApplication().getConfig().isGreekAngleLabels());
+		}
+		return labelManager;
+	}
 
-    public boolean requires3D() {
-        return has3DObjects() || hasInputBoxes();
-    }
+	public boolean requires3D() {
+		return has3DObjects() || hasInputBoxes();
+	}
 
 	/**
 	 * Discovery pool for the prover.
@@ -3702,4 +3688,125 @@ public class Construction {
 	public LayerManager getLayerManager() {
 		return layerManager;
 	}
+
+	/**
+	 * creates group of geos
+	 * @param geos - list of geos to be grouped
+	 */
+	public void createGroupFromSelected(ArrayList<GeoElement> geos) {
+		EuclidianView ev = getApplication().getActiveEuclidianView();
+
+		ungroupGroups(geos);
+		unfixAll(geos);
+		ev.getEuclidianController().splitSelectedStrokes(true);
+
+		createGroup(geos);
+		getLayerManager().groupObjects(geos);
+		ev.invalidateDrawableList();
+	}
+
+	/**
+	 * ungroups a group of geos
+	 * @param geos - list of geos to be ungrouped
+	 */
+	public void ungroupGroups(ArrayList<GeoElement> geos) {
+		for (GeoElement geo : geos) {
+			Group groupOfGeo = geo.getParentGroup();
+			if (groupOfGeo != null) {
+				removeGroupFromGroupList(groupOfGeo);
+				geo.setParentGroup(null);
+			}
+		}
+	}
+
+	private void unfixAll(ArrayList<GeoElement> geos) {
+		for (GeoElement geo : geos) {
+			geo.setFixed(false);
+		}
+	}
+
+	/**
+	 * creates group of objects given by their labels
+	 * @param objects - list of labels of objects to be grouped
+	 */
+	public void groupObjects(String[] objects) {
+		ArrayList<GeoElement> geos = getGeosByLabel(objects);
+		createGroupFromSelected(geos);
+	}
+
+	/**
+	 * ungroups group of objects given by their labels
+	 * @param objects - list of labels of objects to be ungrouped
+	 */
+	public void ungroupObjects(String[] objects) {
+		ArrayList<GeoElement> geos = getGeosByLabel(objects);
+		ungroupGroups(geos);
+	}
+
+	/**
+	 * @param object
+	 *            label of object
+	 * @return array of labels of objects in the same group as the given object
+	 */
+	public String[] getObjectsOfItsGroup(String object) {
+		Group parentGroup = getParentGroup(object);
+		if (parentGroup != null) {
+			ArrayList<GeoElement> geos = parentGroup.getGroupedGeos();
+			String[] objectsInGroup = new String[geos.size()];
+			for (int i = 0; i < objectsInGroup.length; i++) {
+				objectsInGroup[i] = geos.get(i).getLabelSimple();
+			}
+			return objectsInGroup;
+		}
+		return null;
+	}
+
+	/**
+	 * adds an object to a group
+	 * @param object
+	 *            label of object to be added to the group
+	 * @param objectsInGroup
+	 *            list of labels of objects in the group the given object has to be added to
+	 */
+	public void addToGroup(String object, String[] objectsInGroup) {
+		GeoElement geo = geoTable.get(object);
+		for (String i : objectsInGroup) {
+			Group parentGroup = getParentGroup(i);
+			if (parentGroup != null) {
+				parentGroup.setFixed(geo.isLocked());
+				parentGroup.getGroupedGeos().add(geo);
+				geo.setParentGroup(parentGroup);
+				return;
+			}
+		}
+	}
+
+	private Group getParentGroup(String object) {
+		GeoElement geoInGroup = geoTable.get(object);
+		return geoInGroup.getParentGroup();
+	}
+
+	private ArrayList<GeoElement> getGeosByLabel(String[] list) {
+		ArrayList<GeoElement> geos = new ArrayList<>();
+		for (String g : list) {
+			geos.add(geoTable.get(g));
+		}
+		return geos;
+	}
+
+	/**
+	 * @param label
+	 *            label of object
+	 * @return whether object has unlabeled predecessors
+	 */
+	public boolean hasUnlabeledPredecessors(String label) {
+		final TreeSet<GeoElement> set = geoTable.get(label).getAllPredecessors();
+		for (GeoElement el : set) {
+			if (el.getLabelSimple() == null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

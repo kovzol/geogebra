@@ -167,8 +167,8 @@ public class DrawAxis3D extends DrawLine3D {
 		} else {
 			label.setAnchor(true);
 
-            if (getView3D().isARDrawing()) {
-                updateDrawPositionLabel();
+			if (getView3D().isXRDrawing()) {
+				updateDrawPositionLabel();
 			} else {
 				label.update(text, getView3D().getAxisLabelFont(axisIndex),
 				getGeoElement().getObjectColor(),
@@ -182,24 +182,24 @@ public class DrawAxis3D extends DrawLine3D {
 
 	}
 
-    /**
-     * update position for end of axis label
-     */
-    private void updateDrawPositionLabel() {
-        GeoAxisND axis = (GeoAxisND) getGeoElement();
-        int axisIndex = axis.getType();
+	/**
+	 * update position for end of axis label
+	 */
+	private void updateDrawPositionLabel() {
+		GeoAxisND axis = (GeoAxisND) getGeoElement();
+		int axisIndex = axis.getType();
 
-        String text = getView3D().getAxisLabel(axisIndex);
-        if (text == null || text.length() == 0) {
-            return;
-        }
-        label.update(text, getView3D().getAxisLabelFont(axisIndex),
-                getGeoElement().getObjectColor(),
-                ((GeoAxisND) getGeoElement()).getPointInD(3, getDrawMinMax()[1]),
-                -numbersXOffset,
-                -numbersYOffset,
-                -numbersZOffset);
-    }
+		String text = getView3D().getAxisLabel(axisIndex);
+		if (text == null || text.length() == 0) {
+			return;
+		}
+		label.update(text, getView3D().getAxisLabelFont(axisIndex),
+				getGeoElement().getObjectColor(),
+				((GeoAxisND) getGeoElement()).getPointInD(3, getDrawMinMax()[1]),
+				-numbersXOffset,
+				-numbersYOffset,
+				-numbersZOffset);
+	}
 
 	@Override
 	public void setLabelWaitForReset() {
@@ -270,14 +270,14 @@ public class DrawAxis3D extends DrawLine3D {
 	 */
 	public void updateDecorations() {
 
-        if (getView3D().isARDrawing()) {
+		if (getView3D().isXRDrawing()) {
 			// update decorations
 			GeoAxisND axis = (GeoAxisND) getGeoElement();
 			// getToScreenMatrixForGL = rotation + translation
-            // for AR, we need the rotation+translation from Renderer.arViewModelMatrix
+			// for AR, we need the rotation+translation from Renderer.arViewModelMatrix
 			tmpCoords2.setMul(getView3D().getToScreenMatrixForGL(),
 					axis.getDirectionInD3());
-            tmpCoords1.setMul(getView3D().getRenderer().getArViewModelMatrix(),
+			tmpCoords1.setMul(getView3D().getRenderer().getArViewModelMatrix(),
 					tmpCoords2);
 			tmpCoords1.setZ(0);
 			tmpCoords1.setW(0);
@@ -286,17 +286,17 @@ public class DrawAxis3D extends DrawLine3D {
 			tmpCoords1.setX(-tmpCoords1.getY());
 			tmpCoords1.setY(valueX);
 
-            getView3D().getRenderer().getArViewModelMatrix().solve(tmpCoords1,
+			getView3D().getRenderer().getArViewModelMatrix().solve(tmpCoords1,
 					tmpCoords2);
 			numbersXOffset  = (float) tmpCoords2.getX();
 			numbersYOffset  = (float) tmpCoords2.getY();
 			numbersZOffset  = (float) tmpCoords2.getZ();
 
-            if (axis.getType() == GeoAxisND.X_AXIS) {
-                numbersXOffset = -numbersXOffset;
-                numbersYOffset = -numbersYOffset;
-                numbersZOffset = -numbersZOffset;
-            }
+			if (axis.getType() == GeoAxisND.X_AXIS) {
+				numbersXOffset = -numbersXOffset;
+				numbersYOffset = -numbersYOffset;
+				numbersZOffset = -numbersZOffset;
+			}
 
 			getGeoElement().setLabelOffset((int) -numbersXOffset, (int) -numbersYOffset);
 		} else {
@@ -311,7 +311,7 @@ public class DrawAxis3D extends DrawLine3D {
 			// calc orthogonal offsets
 			int vx = (int) (v.get(1) * 1.5 * axis.getTickSize());
 			int vy = (int) (v.get(2) * 1.5 * axis.getTickSize());
-			if (getView3D().isARDrawing() && axis.getType() == GeoAxisND.Y_AXIS
+			if (getView3D().isXRDrawing() && axis.getType() == GeoAxisND.Y_AXIS
 					&& vx == 0 && vy == 0) {
 				vx = (int) (-SQRT3_DIV_3 * 1.5 * axis.getTickSize());
 				vy = (int) (-SQRT3_DIV_3 * 1.5 * axis.getTickSize());
@@ -430,12 +430,12 @@ public class DrawAxis3D extends DrawLine3D {
 	 * update axis position for ticks and labels
 	 */
 	public void updateDrawPositionAxes() {
-        updateDecorations();
-        int tickSize = ((GeoAxisND) getGeoElement()).getTickSize();
-        for (DrawLabel3D currentLabel : labels.values()) {
-            currentLabel.updateDrawPositionAxes(numbersXOffset, numbersYOffset, numbersZOffset,
+	    updateDecorations();
+		int tickSize = ((GeoAxisND) getGeoElement()).getTickSize();
+		for (DrawLabel3D currentLabel : labels.values()) {
+			currentLabel.updateDrawPositionAxes(numbersXOffset, numbersYOffset, numbersZOffset,
                     tickSize);
-        }
-        label.updateDrawPositionAxes(-numbersXOffset, -numbersYOffset, -numbersZOffset, tickSize);
+		}
+		label.updateDrawPositionAxes(-numbersXOffset, -numbersYOffset, -numbersZOffset, tickSize);
 	}
 }

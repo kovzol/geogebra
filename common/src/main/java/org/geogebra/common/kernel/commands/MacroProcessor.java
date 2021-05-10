@@ -66,7 +66,7 @@ public class MacroProcessor extends CommandProcessor {
 				sb.append(" ");
 				sb.append(macro.getCommandName());
 				sb.append(":\n");
-                sb.append(Errors.IllegalArgumentNumber.getError(loc));
+				sb.append(Errors.IllegalArgumentNumber.getError(loc));
 				sb.append(": ");
 				sb.append(arg.length);
 				sb.append("\n\nSyntax:\n");
@@ -83,7 +83,7 @@ public class MacroProcessor extends CommandProcessor {
 				sb.append(" ");
 				sb.append(macro.getCommandName());
 				sb.append(":\n");
-                sb.append(Errors.IllegalArgument.getError(loc));
+				sb.append(Errors.IllegalArgument.getError(loc));
 				sb.append(": ");
 				sb.append(arg[i].getNameDescription());
 				sb.append("\n\nSyntax:\n");

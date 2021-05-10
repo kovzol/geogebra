@@ -226,6 +226,10 @@ public enum Commands implements CommandsConstants,
 
 	ContinuedFraction(TABLE_TEXT),
 
+	ReplaceAll(TABLE_TEXT),
+
+	Split(TABLE_TEXT),
+
 	// =============================================================
 	// logical
 	// =============================================================
@@ -252,7 +256,7 @@ public enum Commands implements CommandsConstants,
 
 	/**
 	 * bad translation, actually InflectionPoint
-	 * 
+	 *
 	 * name just used internally and in XML
 	 */
 	TurningPoint(TABLE_FUNCTION),
@@ -266,6 +270,8 @@ public enum Commands implements CommandsConstants,
 	/** move to TABLE_FUNCTION when released */
 	Holes(TABLE_ENGLISH),
 
+	RemovableDiscontinuity(TABLE_FUNCTION),
+
 	CurveCartesian(TABLE_FUNCTION),
 
 	ParametricDerivative(TABLE_FUNCTION),
@@ -277,6 +283,8 @@ public enum Commands implements CommandsConstants,
 	Integral(TABLE_FUNCTION),
 
 	IntegralBetween(TABLE_FUNCTION),
+
+	IntegralSymbolic(TABLE_FUNCTION),
 
 	LowerSum(TABLE_FUNCTION),
 
@@ -475,6 +483,10 @@ public enum Commands implements CommandsConstants,
 	StickGraph(TABLE_CHARTS),
 
 	StepGraph(TABLE_CHARTS),
+
+	LineGraph(TABLE_CHARTS),
+
+	PieChart(TABLE_CHARTS),
 
 	ContingencyTable(TABLE_CHARTS),
 
@@ -943,7 +955,7 @@ public enum Commands implements CommandsConstants,
 	Maximize(TABLE_OPTIMIZATION),
 
 	Minimize(TABLE_OPTIMIZATION),
-	
+
 	ExportImage(TABLE_SCRIPTING),
 
 	// =================================================================
@@ -1063,16 +1075,16 @@ public enum Commands implements CommandsConstants,
 	PerpendicularPlane(TABLE_ENGLISH),
 
 	/** internal name */
-	ConeInfinite(TABLE_ENGLISH),
+	ConeInfinite(TABLE_3D),
 
 	/** English name */
-	InfiniteCone(TABLE_3D),
+	InfiniteCone(TABLE_ENGLISH),
 
 	/** internal name */
-	CylinderInfinite(TABLE_ENGLISH),
+	CylinderInfinite(TABLE_3D),
 
 	/** English name */
-	InfiniteCylinder(TABLE_3D),
+	InfiniteCylinder(TABLE_ENGLISH),
 
 	IntersectCircle(TABLE_ENGLISH),
 
@@ -1168,6 +1180,8 @@ public enum Commands implements CommandsConstants,
 
 	Solve(TABLE_ALGEBRA),
 
+	PlotSolve(TABLE_FUNCTION),
+
 	SolveCubic(TABLE_CAS),
 
 	SolveQuartic(TABLE_CAS),
@@ -1204,7 +1218,7 @@ public enum Commands implements CommandsConstants,
 
 	CASLoaded(TABLE_GEOGEBRA),
 
-	ShowSteps(TABLE_ALGEBRA);
+	ShowSteps(TABLE_ALGEBRA), IsVertexForm(TABLE_FUNCTION);
 
 	private static final Commands[] RENAMED = {
 			Commands.Binomial, Commands.BinomialCoefficient, Commands.Mean,
@@ -1291,10 +1305,10 @@ public enum Commands implements CommandsConstants,
 			return Random;
 		case TaylorPolynomial:
 			return TaylorSeries;
-		case CylinderInfinite:
-			return InfiniteCylinder;
-		case ConeInfinite:
-			return InfiniteCone;
+		case InfiniteCylinder:
+			return CylinderInfinite;
+		case InfiniteCone:
+			return ConeInfinite;
 		case PerpendicularPlane:
 			return OrthogonalPlane;
 		case InputBox:
@@ -1326,7 +1340,7 @@ public enum Commands implements CommandsConstants,
 
 	/**
 	 * Like valueOf(), but no error is thrown
-	 * 
+	 *
 	 * @param str
 	 *            command nam
 	 * @return command with that name

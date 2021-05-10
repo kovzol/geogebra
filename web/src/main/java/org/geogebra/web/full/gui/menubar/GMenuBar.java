@@ -110,17 +110,14 @@ public class GMenuBar extends AriaMenuBar {
 									"GeoGebraMenuBar.subMenuRightSidePopup");
 						}
 
-						if (getApp().isUnbundled()) {
-							pp.addStyleName("floatingSubMenu");
-						}
 						pp.add(submenupopup);
 						AriaMenuItem mi0 = (AriaMenuItem) ait[0];
 						int left = (int) ((getAbsoluteHorizontalPos(mi0,
 								subleft) - (int) app1.getAbsLeft())
-								/ app1.getArticleElement().getScaleX());
+								/ app1.getGeoGebraElement().getScaleX());
 						int top = (int) ((mi0.getAbsoluteTop()
 								- app1.getAbsTop())
-								/ app1.getArticleElement().getScaleY());
+								/ app1.getGeoGebraElement().getScaleY());
 
 						pp.setPopupPosition(left, top);
 

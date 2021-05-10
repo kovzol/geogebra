@@ -5,8 +5,6 @@ import org.geogebra.web.full.gui.browser.BrowseGUI;
 import org.geogebra.web.full.gui.browser.BrowseResources;
 import org.geogebra.web.full.gui.dialog.image.ImageInputDialog;
 import org.geogebra.web.full.gui.dialog.image.UploadImageDialog;
-import org.geogebra.web.full.gui.dialog.image.UploadImageWithoutDialog;
-import org.geogebra.web.full.gui.dialog.image.WebcamInputDialog;
 import org.geogebra.web.full.gui.openfileview.OpenFileView;
 import org.geogebra.web.full.gui.view.consprotocol.ConstructionProtocolViewW;
 import org.geogebra.web.html5.Browser;
@@ -44,15 +42,13 @@ public class BrowserDevice implements GDevice {
 					"position: absolute; top: 0px; left: 0px; "
 							+ "width: 50px; height: 50px; padding: 10px;  overflow: hidden;");
 			span.appendChild(icon.getElement());
-			Element form = DOM.createElement("form");
 			input = DOM.createElement("input");
 			input.setAttribute("type", "file");
 			input.setAttribute("style",
 					"width: 500px; height: 60px; font-size: 56px;"
 							+ "opacity: 0; position: absolute;"
 							+ "right: 0px; top: 0px; cursor: pointer;");
-			form.appendChild(input);
-			span.appendChild(form);
+			span.appendChild(input);
 
 			DOM.insertChild(getElement(), span, 0);
 		}
@@ -73,8 +69,8 @@ public class BrowserDevice implements GDevice {
 		 * @param of
 		 *            open file view
 		 */
-        public void setOpenFileView(BrowseViewI of) {
-            addGgbChangeHandler(input, of);
+		public void setOpenFileView(BrowseViewI of) {
+			addGgbChangeHandler(input, of);
 		}
 
 		private native void addGgbChangeHandler(Element el,
@@ -85,9 +81,9 @@ public class BrowserDevice implements GDevice {
 				var files = this.files;
 				if (files.length) {
 					var fileToHandle = files[0];
-					bg.@org.geogebra.web.html5.gui.view.browser.BrowseViewI::openFile(Lcom/google/gwt/core/client/JavaScriptObject;)(fileToHandle);
+					bg.@org.geogebra.web.html5.gui.view.browser.BrowseViewI::openFile(Lelemental2/dom/File;)(fileToHandle);
+					el.value = [];
 				}
-				el.parentElement.reset();
 			};
 		}-*/;
 
@@ -111,10 +107,10 @@ public class BrowserDevice implements GDevice {
 		}
 
 		/**
-		 * @return input element
+		 * @param typeHint file extension including the dot or "image/*"
 		 */
-		public Element getInput() {
-			return input;
+		public void setAcceptedFileType(String typeHint) {
+			input.setAttribute("accept", typeHint);
 		}
 	}
 
@@ -130,31 +126,12 @@ public class BrowserDevice implements GDevice {
 
 	@Override
 	public UploadImageDialog getImageInputDialog(AppW app) {
-
 		return new ImageInputDialog(app);
-	}
-
-	/**
-	 * @param app
-	 *            application
-	 * @return WebcamInputDialog webcam input dialog
-	 */
-	public WebcamInputDialog getWebcamInputDialog(AppW app) {
-		return new WebcamInputDialog(app);
-	}
-
-	/**
-	 * @param app
-	 *            application
-	 * @return image panel controller
-	 */
-	public UploadImageWithoutDialog getUploadImageWithoutDialog(AppW app) {
-		return new UploadImageWithoutDialog(app);
 	}
 
 	@Override
 	public BrowseViewI createBrowseView(AppW app) {
-        if (app.isMebis()) {
+		if (app.isMebis()) {
 			FileOpenButton mb = new FileOpenButton("containedButton");
 			OpenFileView of = new OpenFileView(app, mb);
 			mb.setOpenFileView(of);
@@ -162,7 +139,7 @@ public class BrowserDevice implements GDevice {
 		}
 		FileOpenButton mb = new FileOpenButton();
 		BrowseGUI bg = new BrowseGUI(app, mb);
-        mb.setOpenFileView(bg);
+		mb.setOpenFileView(bg);
 		return bg;
 	}
 

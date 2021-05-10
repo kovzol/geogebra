@@ -17,10 +17,10 @@ public class VoiceInputOutputController {
 
 	private AppW appW;
 	private VoiceInputDispatcher dispatcher;
-    @ExternalAccess
-    private String gotResult = "false";
-    @ExternalAccess
-    private int action = -1;
+	@ExternalAccess
+	private String gotResult = "false";
+	@ExternalAccess
+	private int action = -1;
 	private ArrayList<Double> results = new ArrayList<>();
 
 	/**
@@ -239,10 +239,10 @@ public class VoiceInputOutputController {
 		}
 	}
 
-    @ExternalAccess
-    private void showMessage(String msg) {
-        ToolTipManagerW.sharedInstance().showBottomMessage(msg, true, appW);
-    }
+	@ExternalAccess
+	private void showMessage(String msg) {
+		ToolTipManagerW.sharedInstance().showBottomMessage(msg, true, appW);
+	}
 
 	/**
 	 * collect necessary input from the user by processing the question list

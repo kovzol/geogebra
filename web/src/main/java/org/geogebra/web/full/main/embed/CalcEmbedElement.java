@@ -1,17 +1,16 @@
 package org.geogebra.web.full.main.embed;
 
 import org.geogebra.common.kernel.Kernel;
-import org.geogebra.common.kernel.UndoManager;
-import org.geogebra.common.kernel.undoredo.UndoInfoStoredListener;
+import org.geogebra.common.main.undo.UndoInfoStoredListener;
+import org.geogebra.common.main.undo.UndoManager;
 import org.geogebra.common.plugin.EventType;
+import org.geogebra.web.full.gui.GuiManagerW;
 import org.geogebra.web.full.gui.applet.GeoGebraFrameFull;
 import org.geogebra.web.full.main.EmbedManagerW;
 import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.html5.main.ScriptManagerW;
-import org.geogebra.web.html5.util.JSON;
 
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Style.Unit;
+import elemental2.core.Global;
 
 /**
  * Embedded GeoGebra calculator for Notes
@@ -19,7 +18,7 @@ import com.google.gwt.dom.client.Style.Unit;
 public class CalcEmbedElement extends EmbedElement {
 
 	private final GeoGebraFrameFull frame;
-    private UndoRedoGlue undoRedoGlue;
+	private UndoRedoGlue undoRedoGlue;
 
 	/**
 	 * @param widget
@@ -54,74 +53,85 @@ public class CalcEmbedElement extends EmbedElement {
 	@Override
 	public void setSize(int contentWidth, int contentHeight) {
 		frame.getApp().getGgbApi().setSize(contentWidth, contentHeight);
-		// 1px border
-		frame.getElement().getStyle().setWidth(contentWidth - 2, Unit.PX);
-		frame.getElement().getStyle().setHeight(contentHeight - 2, Unit.PX);
-        frame.getApp().checkScaleContainer();
 	}
 
 	@Override
 	public String getContentSync() {
-		return JSON.stringify(
-                frame.getApp().getGgbApi().getFileJSON(false));
-    }
+		return Global.JSON.stringify(
+				frame.getApp().getGgbApi().getFileJSON(false));
+	}
 
-    /**
-     * @return API
-     */
-    public JavaScriptObject getApi() {
-        ScriptManagerW sm = (ScriptManagerW) frame.getApp()
-                .getScriptManager();
-        return sm.getApi();
-    }
+	/**
+	 * @return API
+	 */
+	@Override
+	public Object getApi() {
+		ScriptManagerW sm = (ScriptManagerW) frame.getApp()
+				.getScriptManager();
+		return sm.getApi();
+	}
 
-    private static class UndoRedoGlue implements UndoInfoStoredListener {
+	@Override
+	public void setJsEnabled(boolean jsEnabled) {
+		frame.getApp().getScriptManager().setJsEnabled(jsEnabled);
+		GuiManagerW guiManager = frame.getApp().getGuiManager();
+		if (guiManager != null) {
+			guiManager.updatePropertiesView();
+		}
+	}
 
-        private int embedId;
-        private boolean ignoreUndoInfoStored;
-        private UndoManager embeddedUndoManager;
-        private EmbedManagerW embedManager;
+	@Override
+	public void setContent(String base64) {
+		frame.getApp().getGgbApi().setBase64(base64);
+	}
 
-        private UndoRedoGlue(int embedId, UndoManager embeddedUndoManager,
-                             EmbedManagerW embedManager) {
-            this.embedId = embedId;
-            this.ignoreUndoInfoStored = false;
-            this.embeddedUndoManager = embeddedUndoManager;
-            this.embedManager = embedManager;
-            embeddedUndoManager.addUndoInfoStoredListener(this);
-        }
+	private static class UndoRedoGlue implements UndoInfoStoredListener {
 
-        @Override
-        public void onUndoInfoStored() {
-            if (!ignoreUndoInfoStored) {
-                embedManager.createUndoAction(embedId);
-            }
-        }
+		private int embedId;
+		private boolean ignoreUndoInfoStored;
+		private UndoManager embeddedUndoManager;
+		private EmbedManagerW embedManager;
 
-        private void executeAction(EventType action) {
-            if (EventType.UNDO.equals(action)) {
-                undo();
-            } else if (EventType.REDO.equals(action)) {
-                redo();
-            } else if (EventType.EMBEDDED_PRUNE_STATE_LIST.equals(action)) {
-                pruneStateList();
-            }
-        }
+		private UndoRedoGlue(int embedId, UndoManager embeddedUndoManager,
+				EmbedManagerW embedManager) {
+			this.embedId = embedId;
+			this.ignoreUndoInfoStored = false;
+			this.embeddedUndoManager = embeddedUndoManager;
+			this.embedManager = embedManager;
+			embeddedUndoManager.addUndoInfoStoredListener(this);
+		}
 
-        private void undo() {
-            ignoreUndoInfoStored = true;
-            embeddedUndoManager.undo();
-            ignoreUndoInfoStored = false;
-        }
+		@Override
+		public void onUndoInfoStored() {
+			if (!ignoreUndoInfoStored) {
+				embedManager.createUndoAction(embedId);
+			}
+		}
 
-        private void redo() {
-            ignoreUndoInfoStored = true;
-            embeddedUndoManager.redo();
-            ignoreUndoInfoStored = false;
-        }
+		private void executeAction(EventType action) {
+			if (EventType.UNDO.equals(action)) {
+				undo();
+			} else if (EventType.REDO.equals(action)) {
+				redo();
+			} else if (EventType.EMBEDDED_PRUNE_STATE_LIST.equals(action)) {
+				pruneStateList();
+			}
+		}
 
-        private void pruneStateList() {
-            embeddedUndoManager.pruneStateList();
-        }
+		private void undo() {
+			ignoreUndoInfoStored = true;
+			embeddedUndoManager.undo();
+			ignoreUndoInfoStored = false;
+		}
+
+		private void redo() {
+			ignoreUndoInfoStored = true;
+			embeddedUndoManager.redo();
+			ignoreUndoInfoStored = false;
+		}
+
+		private void pruneStateList() {
+			embeddedUndoManager.pruneStateList();
+		}
 	}
 }

@@ -71,8 +71,8 @@ public class DependentNumberAdapter extends ProverAdapter {
 		String exprGiacStr = "";
 		// expand(lcm(denom(coeff(gg)))*gg);
 		// see also CASgiac.createEliminateScript()
-        String gg = definition.toString(StringTemplate.giacTemplate) + "-"
-                + Kernel.TMP_VARIABLE_PREFIX + botanaVars[0];
+		String gg = definition.toString(StringTemplate.giacTemplate) + "-"
+				+ Kernel.TMP_VARIABLE_PREFIX + botanaVars[0];
 		exprGiacStr = "expand(lcm(denom(coeff(" + gg + ")))*(" + gg + "))";
 
 		nrOfMaxDecimals = 0;
@@ -199,7 +199,7 @@ public class DependentNumberAdapter extends ProverAdapter {
 				s.update();
 			}
 			cons.setSuppressLabelCreation(suppress);
-			Entry<GeoElement, PVariable> pair = new AbstractMap.SimpleEntry<GeoElement, PVariable>(
+			Entry<GeoElement, PVariable> pair = new AbstractMap.SimpleEntry<>(
 					s, currentVar);
 			searchSegVarPair(pair);
 			allSegmentsFromExpression.add(s);

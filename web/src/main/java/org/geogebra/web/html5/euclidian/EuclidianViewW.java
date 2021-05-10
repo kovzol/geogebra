@@ -12,6 +12,8 @@ import org.geogebra.common.euclidian.CoordSystemAnimation;
 import org.geogebra.common.euclidian.EmbedManager;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianCursor;
+import org.geogebra.common.euclidian.EuclidianPen;
+import org.geogebra.common.euclidian.EuclidianStatic;
 import org.geogebra.common.euclidian.EuclidianStyleBar;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.PenPreviewLine;
@@ -33,39 +35,33 @@ import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.GeoGebraProfiler;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.ggbjdk.java.awt.DefaultBasicStroke;
+import org.geogebra.ggbjdk.java.awt.geom.Dimension;
 import org.geogebra.web.html5.Browser;
-import org.geogebra.web.html5.awt.GDimensionW;
 import org.geogebra.web.html5.awt.GFontW;
 import org.geogebra.web.html5.awt.GGraphics2DW;
 import org.geogebra.web.html5.awt.LayeredGGraphicsW;
 import org.geogebra.web.html5.awt.PrintableW;
 import org.geogebra.web.html5.css.GuiResourcesSimple;
+import org.geogebra.web.html5.export.Canvas2Svg;
+import org.geogebra.web.html5.export.ExportLoader;
 import org.geogebra.web.html5.gawt.GBufferedImageW;
 import org.geogebra.web.html5.gui.GuiManagerInterfaceW;
 import org.geogebra.web.html5.gui.util.CancelEventTimer;
-import org.geogebra.web.html5.gui.util.ClickStartHandler;
 import org.geogebra.web.html5.gui.util.ImgResourceHelper;
 import org.geogebra.web.html5.gui.util.MathKeyboardListener;
 import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.html5.main.MyImageW;
 import org.geogebra.web.html5.main.TimerSystemW;
+import org.geogebra.web.html5.multiuser.MultiuserManager;
 import org.geogebra.web.html5.util.Dom;
-import org.geogebra.web.html5.util.ImageLoadCallback;
-import org.geogebra.web.html5.util.ImageWrapper;
 import org.geogebra.web.html5.util.PDFEncoderW;
-import org.geogebra.web.resources.JavaScriptInjector;
 import org.geogebra.web.resources.SVGResource;
 
-import com.google.gwt.animation.client.AnimationScheduler;
-import com.google.gwt.animation.client.AnimationScheduler.AnimationCallback;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.canvas.dom.client.ImageData;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.DropEvent;
@@ -88,6 +84,12 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+
+import elemental2.dom.CanvasRenderingContext2D;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.FrameRequestCallback;
+import elemental2.dom.HTMLImageElement;
+import jsinterop.base.Js;
 
 /**
  * Web implementation of graphics view
@@ -113,29 +115,24 @@ public class EuclidianViewW extends EuclidianView implements
 	private GGraphics2DWI g2p = null;
 	private GGraphics2D g2dtemp;
 	private GGraphics2DW g4copy = null;
+	private GGraphics2DWI penCanvas;
+
 	private GColor backgroundColor = GColor.WHITE;
 	private int waitForRepaint = TimerSystemW.SLEEPING_FLAG;
 	private String svgBackgroundUri = null;
 	private MyImageW svgBackground = null;
 
-	private AnimationCallback repaintCallback = new AnimationCallback() {
-		@Override
-		public void execute(double ts) {
-			doRepaint2();
-		}
-	};
-
-	private AnimationScheduler repaintScheduler = AnimationScheduler.get();
+	private final FrameRequestCallback repaintCallback = ts -> doRepaint2();
 
 	private long lastRepaint;
 	/** application **/
 	AppW appW = (AppW) super.app;
 
-	private ImageElement resetImage;
-	private ImageElement playImage;
-	private ImageElement pauseImage;
-	private ImageElement playImageHL;
-	private ImageElement pauseImageHL;
+	private HTMLImageElement resetImage;
+	private HTMLImageElement playImage;
+	private HTMLImageElement pauseImage;
+	private HTMLImageElement playImageHL;
+	private HTMLImageElement pauseImageHL;
 	/** parent panel */
 	protected EuclidianPanelWAbstract evPanel;
 	private PointerEventHandler pointerHandler;
@@ -147,8 +144,13 @@ public class EuclidianViewW extends EuclidianView implements
 	// needed to make sure outline doesn't get dashed
 	private GBasicStroke outlineStroke = AwtFactory.getPrototype()
 			.newBasicStroke(3, GBasicStroke.CAP_BUTT, GBasicStroke.JOIN_BEVEL);
-	/** cache for bottom layers */
-	private ImageData cacheGraphics;
+	/**
+	 * cache state
+	 * true: currently using cache
+	 * false: cache invalidated, not yet cleared
+	 * null: cache was invalidated and cleared
+	 */
+	private Boolean cacheGraphics;
 
 	/**
 	 * @param euclidianViewPanel
@@ -170,7 +172,7 @@ public class EuclidianViewW extends EuclidianView implements
 
 		initBaseComponents(euclidianViewPanel, euclidiancontroller, evNo,
 				settings);
-		initClickStartHandler();
+		initAriaDefaults();
 		attachFocusinHandler();
 	}
 
@@ -185,24 +187,6 @@ public class EuclidianViewW extends EuclidianView implements
         }
         element.addEventListener("focusin", handler);
     }-*/;
-
-	private void initClickStartHandler() {
-		AbsolutePanel panel = getAbsolutePanel();
-		if (panel == null) {
-			return;
-		}
-		ClickStartHandler.init(panel, new ClickStartHandler() {
-			@Override
-			public void onClickStart(final int x, final int y,
-					PointerEventType type) {
-				getEuclidianController().closePopups(x, y, type);
-				if (appW.isMenuShowing()) {
-					appW.toggleMenu();
-				}
-			}
-		});
-		initAriaDefaults();
-	}
 
 	/**
 	 * @param euclidiancontroller
@@ -228,11 +212,11 @@ public class EuclidianViewW extends EuclidianView implements
 		// at mouse events which call setActiveToolbarId #plotpanelevno
 		// initBaseComponents(EVPanel, euclidiancontroller, -1);
 		initBaseComponents(evPanel, euclidiancontroller, viewNo, settings);
-		initClickStartHandler();
+		initAriaDefaults();
 	}
 
 	private void initAriaDefaults() {
-        Element elem = g2p.getElement();
+		Element elem = g2p.getElement();
 		elem.setAttribute("role", "application");
 		elem.setAttribute("aria-label", "Graphics View " + evNo);
 	}
@@ -259,11 +243,7 @@ public class EuclidianViewW extends EuclidianView implements
 	public final GGraphics2D getTempGraphics2D(GFont fontForGraphics) {
 		if (this.g2dtemp == null) {
 			Canvas canvas = Canvas.createIfSupported();
-			if (canvas == null) {
-				this.g2dtemp = new GGraphics2DE();
-			} else {
-				this.g2dtemp = new GGraphics2DW(canvas);
-			}
+			this.g2dtemp = new GGraphics2DW(canvas);
 		}
 		this.g2dtemp.setFont(fontForGraphics);
 		return this.g2dtemp;
@@ -292,19 +272,27 @@ public class EuclidianViewW extends EuclidianView implements
 	 */
 	public final void doRepaint2() {
 		long time = System.currentTimeMillis();
-		if (cacheGraphics == null) {
+
+		if (cacheGraphics != null && cacheGraphics) {
+			penCanvas.clearRect(0, 0, getWidth(), getHeight());
+			getEuclidianController().getPen().repaintIfNeeded(penCanvas);
+		} else {
 			g2p.resetLayer();
 			updateBackgroundIfNecessary();
 			paint(g2p);
-		} else {
-			g2p.getContext().putImageData(cacheGraphics, 0, 0);
-			getEuclidianController().getPen().repaintIfNeeded(g2p);
+			MultiuserManager.INSTANCE.paintInteractionBoxes(this, g2p);
+
+			if (cacheGraphics != null) {
+				cacheGraphics = null;
+				penCanvas.clearAll();
+			}
 		}
+
 		// if we have pen tool in action
 		// repaint the preview line
 		lastRepaint = System.currentTimeMillis() - time;
 		GeoGebraProfiler.addRepaint(lastRepaint);
-        app.getFpsProfiler().notifyRepaint();
+		app.getFpsProfiler().notifyRepaint();
 	}
 
 	/**
@@ -448,22 +436,17 @@ public class EuclidianViewW extends EuclidianView implements
 		int width = (int) Math.floor(getExportWidth() * scale);
 		int height = (int) Math.floor(getExportHeight() * scale);
 
-		if (!canvas2svgLoaded()) {
-			JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.canvas2Svg());
-		}
-		JavaScriptObject ctx = getCanvas2SVG(width, height);
-
-		if (ctx == null) {
-			Log.debug("canvas2SVG not found");
+		if (!ExportLoader.ensureCanvas2SvgLoaded()) {
 			return null;
 		}
-
-		g4copy = new GGraphics2DW((Context2d) ctx.cast());
+		Canvas2Svg canvas2svg = new Canvas2Svg(width, height);
+		CanvasRenderingContext2D ctx = Js.uncheckedCast(canvas2svg);
+		g4copy = new GGraphics2DW(ctx);
 		this.appW.setExporting(ExportType.SVG, scale);
 		exportPaintPre(g4copy, scale, transparency);
 		drawObjects(g4copy);
 		this.appW.setExporting(ExportType.NONE, 1);
-		return getSerializedSvg(ctx);
+		return canvas2svg.getSerializedSvg(true);
 	}
 
 	/**
@@ -489,7 +472,7 @@ public class EuclidianViewW extends EuclidianView implements
 					Math.floor(view2.getExportHeight() * scale));
 		}
 
-		Context2d ctx = PDFEncoderW.getContext(width, height);
+		CanvasRenderingContext2D ctx = PDFEncoderW.getContext(width, height);
 
 		if (ctx == null) {
 			Log.debug("canvas2PDF not found");
@@ -512,23 +495,6 @@ public class EuclidianViewW extends EuclidianView implements
 		this.appW.setExporting(ExportType.NONE, 1);
 		return PDFEncoderW.getPDF(ctx);
 	}
-
-	private native JavaScriptObject getCanvas2SVG(double width,
-			double height) /*-{
-		if ($wnd.C2S) {
-			return new $wnd.C2S(width, height);
-		}
-
-		return null;
-	}-*/;
-
-	private native boolean canvas2svgLoaded() /*-{
-		return !!$wnd.C2S;
-	}-*/;
-
-	private native String getSerializedSvg(JavaScriptObject ctx) /*-{
-		return ctx.getSerializedSvg(true);
-	}-*/;
 
 	@Override
 	public GBufferedImageW getExportImage(double scale) {
@@ -585,7 +551,7 @@ public class EuclidianViewW extends EuclidianView implements
 	 * schedule a repaint
 	 */
 	public void doRepaint() {
-		repaintScheduler.requestAnimationFrame(repaintCallback);
+		DomGlobal.requestAnimationFrame(repaintCallback);
 	}
 
 	/**
@@ -621,9 +587,9 @@ public class EuclidianViewW extends EuclidianView implements
 		g2p.setCoordinateSpaceSize(width, height);
 		try {
 			// just resizing the AbsolutePanelSmart, not the whole of DockPanel
-            g2p.getElement().getParentElement().getStyle()
+			g2p.getElement().getParentElement().getStyle()
 			        .setWidth(width, Style.Unit.PX);
-            g2p.getElement().getParentElement().getStyle()
+			g2p.getElement().getParentElement().getStyle()
 			        .setHeight(height, Style.Unit.PX);
 			getEuclidianController().calculateEnvironment();
 		} catch (Exception exc) {
@@ -697,18 +663,19 @@ public class EuclidianViewW extends EuclidianView implements
 		final Canvas canvas = euclidianViewPanel.getCanvas();
 		this.evNo = newEvNo;
 
-		if (canvas != null) {
-			this.g2p = new LayeredGGraphicsW(canvas);
-			g2p.setDevicePixelRatio(appW.getPixelRatio());
-			if (appW.getArticleElement().isDebugGraphics()) {
-				g2p.startDebug();
-			}
-		} else {
-			this.g2p = new GGraphics2DE();
+		this.g2p = new LayeredGGraphicsW(canvas);
+		g2p.setDevicePixelRatio(appW.getPixelRatio());
+		if (appW.getAppletParameters().isDebugGraphics()) {
+			g2p.startDebug();
 		}
+
 		updateFonts();
 		initView(true);
 		attachView();
+
+		if (getViewID() == App.VIEW_EUCLIDIAN || getViewID() == App.VIEW_EUCLIDIAN2) {
+			g2p.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
+		}
 
 		euclidiancontroller.setView(this);
 
@@ -720,10 +687,6 @@ public class EuclidianViewW extends EuclidianView implements
 
 		registerDragDropHandlers(euclidianViewPanel,
 				(EuclidianControllerW) euclidiancontroller);
-
-		if (canvas == null) {
-			return;
-		}
 
 		EuclidianSettings es = null;
 		if (settings != null) {
@@ -841,14 +804,14 @@ public class EuclidianViewW extends EuclidianView implements
 		}
 	}
 
-	private ImageElement getResetImage() {
+	private HTMLImageElement getResetImage() {
 		if (resetImage == null) {
 			resetImage = this.appW.getRefreshViewImage();
 		}
 		return resetImage;
 	}
 
-	private ImageElement getPlayImage(boolean highlight) {
+	private HTMLImageElement getPlayImage(boolean highlight) {
 		if (playImage == null) {
 			playImage = this.appW.getPlayImage();
 			playImageHL = this.appW.getPlayImageHover();
@@ -856,7 +819,7 @@ public class EuclidianViewW extends EuclidianView implements
 		return highlight ? playImageHL : playImage;
 	}
 
-	private ImageElement getPauseImage(boolean highlight) {
+	private HTMLImageElement getPauseImage(boolean highlight) {
 		if (pauseImage == null) {
 			pauseImage = this.appW.getPauseImage();
 			pauseImageHL = this.appW.getPauseImageHover();
@@ -940,18 +903,13 @@ public class EuclidianViewW extends EuclidianView implements
 		final int y = getHeight() - 27;
 
 		// draw pause or play button
-		final ImageElement img = kernel.isAnimationRunning()
+		final HTMLImageElement img = kernel.isAnimationRunning()
 				? getPauseImage(highlightAnimationButtons)
 				: getPlayImage(highlightAnimationButtons);
-		if (img.getPropertyBoolean("complete")) {
+		if (img.complete) {
 			((GGraphics2DW) g2).drawImage(img, x, y);
 		} else {
-			ImageWrapper.nativeon(img, "load", new ImageLoadCallback() {
-				@Override
-				public void onLoad() {
-					((GGraphics2DW) g2).drawImage(img, x, y);
-				}
-			});
+			img.addEventListener("load", (event) -> ((GGraphics2DW) g2).drawImage(img, x, y));
 		}
 	}
 
@@ -977,7 +935,7 @@ public class EuclidianViewW extends EuclidianView implements
 	 *            the new height (in pixel)
 	 */
 	public void setPreferredSize(int width, int height) {
-		setPreferredSize(new GDimensionW(width, height));
+		setPreferredSize(new Dimension(width, height));
 	}
 
 	private void setDragCursor() {
@@ -1057,6 +1015,11 @@ public class EuclidianViewW extends EuclidianView implements
 		}
 	}
 
+	@Override
+	public Object getExportCanvas() {
+		return getCanvasElement();
+	}
+
 	public void focusResetIcon() {
 		setResetIconSelected(true);
 	}
@@ -1066,10 +1029,10 @@ public class EuclidianViewW extends EuclidianView implements
 		// omit for export
 		if (!appW.isExporting()) {
 			GGraphics2DW graphics = (GGraphics2DW) g;
-			ImageElement resetIcon = getResetImage();
+			HTMLImageElement resetIcon = getResetImage();
 			int width = getWidth();
-			int iconWidth = resetIcon.getWidth();
-			int iconHeight = resetIcon.getHeight();
+			int iconWidth = resetIcon.width;
+			int iconHeight = resetIcon.height;
 
 			graphics.drawImage(resetIcon,
 					width - ICON_MARGIN - iconWidth - (ICON_SIZE - iconWidth) / 2,
@@ -1121,8 +1084,8 @@ public class EuclidianViewW extends EuclidianView implements
 	}
 
 	@Override
-    public Element getCanvasElement() {
-        return g2p.getElement();
+	public Element getCanvasElement() {
+		return g2p.getElement();
 	}
 
 	@Override
@@ -1168,13 +1131,9 @@ public class EuclidianViewW extends EuclidianView implements
 		}
 		String altStr = appW.getLocalization().getMenu("DrawingPad");
 		if (alt instanceof GeoText) {
-			altStr = ((GeoText) alt).getTextString();
-			if (g2p.setAltText(altStr)) {
-				getScreenReader().readText(altStr);
-			}
-		} else {
-			g2p.setAltText(altStr);
+			altStr = ((GeoText) alt).getAuralText();
 		}
+		g2p.setAltText(altStr);
 	}
 
 	@Override
@@ -1291,20 +1250,10 @@ public class EuclidianViewW extends EuclidianView implements
 			}
 			return;
 		case PEN:
-			if (appW.isWhiteboardActive() && getEuclidianController()
-					.getDefaultEventType() != PointerEventType.MOUSE) {
-				setTransparentCursor();
-			} else {
-				setPenCursor();
-			}
+			setPenCursor();
 			return;
 		case HIGHLIGHTER:
-			if (appW.isWhiteboardActive() && getEuclidianController()
-					.getDefaultEventType() != PointerEventType.MOUSE) {
-				setTransparentCursor();
-			} else {
-				setHighlighterCursor();
-			}
+			setHighlighterCursor();
 			return;
 		case ROTATION:
 			if (appW.isWhiteboardActive() && getEuclidianController()
@@ -1317,7 +1266,7 @@ public class EuclidianViewW extends EuclidianView implements
 	}
 
 	private void addScreenReader() {
-        screenReader = new ReaderWidget(evNo, g2p.getElement());
+		screenReader = new ReaderWidget(evNo, g2p.getElement());
 		attachReaderWidget(screenReader, app);
 	}
 
@@ -1450,8 +1399,9 @@ public class EuclidianViewW extends EuclidianView implements
 		if (res != null) {
 			String uri = ImgResourceHelper.safeURI(res);
 			if (!uri.equals(svgBackgroundUri)) {
-				Image img = new Image(uri);
-				svgBackground = new MyImageW(ImageElement.as(img.getElement()), true);
+				HTMLImageElement img = Dom.createImage();
+				img.src = uri;
+				svgBackground = new MyImageW(img, true);
 				svgBackgroundUri = uri;
 			}
 		}
@@ -1510,10 +1460,9 @@ public class EuclidianViewW extends EuclidianView implements
 
 	@Override
 	public void invalidateCache() {
-		cacheGraphics = null;
-		// fix for chromium bug with putImageData
-		// https://bugs.chromium.org/p/chromium/issues/detail?id=68495
-		forceResize(this);
+		if (penCanvas != null) {
+			cacheGraphics = false;
+		}
 	}
 
 	/**
@@ -1521,6 +1470,19 @@ public class EuclidianViewW extends EuclidianView implements
 	 */
 	@Override
 	public void cacheGraphics() {
-		cacheGraphics = g2p.getContext().getImageData(0, 0, getWidth(), getHeight());
+		cacheGraphics = true;
+		if (penCanvas == null) {
+			Canvas pCanvas = Canvas.createIfSupported();
+			penCanvas = new GGraphics2DW(pCanvas);
+			penCanvas.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
+			penCanvas.setDevicePixelRatio(appW.getPixelRatio());
+			g2p.getElement().getParentElement()
+					.appendChild(penCanvas.getElement());
+		}
+		EuclidianPen pen = getEuclidianController().getPen();
+		penCanvas.setCoordinateSpaceSize(getWidth(), getHeight());
+		penCanvas.setStroke(EuclidianStatic.getStroke(pen.getPenSize(),
+				pen.getPenLineStyle(), GBasicStroke.JOIN_ROUND));
+		penCanvas.setColor(pen.getPenColor());
 	}
 }

@@ -3,6 +3,7 @@ package org.geogebra.common.main;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
 import org.geogebra.common.euclidian.EuclidianView;
@@ -39,8 +40,11 @@ import org.geogebra.common.kernel.kernelND.GeoQuadric3DLimitedInterface;
 import org.geogebra.common.kernel.kernelND.GeoQuadricND;
 import org.geogebra.common.kernel.kernelND.GeoSegmentND;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
+import org.geogebra.common.plugin.Event;
 import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.plugin.GeoClass;
+
+import com.google.j2objc.annotations.Weak;
 
 /**
  * Keeps lists of selected geos (global, per type)
@@ -50,6 +54,7 @@ public class SelectionManager {
 	/** list of selected geos */
 	protected final ArrayList<GeoElement> selectedGeos = new ArrayList<>();
 
+	@Weak
 	private final Kernel kernel;
 
 	private final ArrayList<UpdateSelection> listeners;
@@ -109,7 +114,7 @@ public class SelectionManager {
 	 * @param geos
 	 *            geos
 	 */
-	final public void setSelectedGeos(ArrayList<GeoElement> geos) {
+	final public void setSelectedGeos(List<GeoElement> geos) {
 		setSelectedGeos(geos, true);
 	}
 
@@ -121,7 +126,7 @@ public class SelectionManager {
 	 * @param updateSelection
 	 *            says if selection has to be updated
 	 */
-	final public void setSelectedGeos(ArrayList<GeoElement> geos,
+	final public void setSelectedGeos(List<GeoElement> geos,
 			boolean updateSelection) {
 		// special case -- happens when we set the same selection on mouse down
 		// and mouse up; we don't want too many events
@@ -192,8 +197,7 @@ public class SelectionManager {
 				updateSelection();
 			}
 
-			kernel.getApplication().getEventDispatcher()
-					.dispatchEvent(EventType.DESELECT, null);
+			dispatchDeselected(null);
 		}
 	}
 
@@ -220,8 +224,7 @@ public class SelectionManager {
 		if (geo == null) {
 			return;
 		}
-		kernel.getApplication().getEventDispatcher()
-				.dispatchEvent(EventType.DESELECT, geo);
+		dispatchDeselected(geo);
 		if (selectedGeos.remove(geo)) {
 			// update only if selectedGeos contained geo
 			geo.setSelected(false);
@@ -246,7 +249,7 @@ public class SelectionManager {
 			// On desktop selectedGeos.remove(geo) here throws an exception,
 			// so first iterate over, do stuff and then clear the array is the proper way.
 
-			kernel.getApplication().getEventDispatcher().dispatchEvent(EventType.DESELECT, geo);
+			dispatchDeselected(geo);
 			geo.setSelected(false);
 		}
 
@@ -301,7 +304,12 @@ public class SelectionManager {
 
 	private void dispatchSelected(GeoElement geo) {
 		kernel.getApplication().getEventDispatcher()
-				.dispatchEvent(EventType.SELECT, geo);
+				.dispatchEvent(new Event(EventType.SELECT, geo, ""));
+	}
+
+	private void dispatchDeselected(GeoElement geo) {
+		kernel.getApplication().getEventDispatcher()
+				.dispatchEvent(EventType.DESELECT, geo);
 	}
 
 	private void setGeoToggled(boolean flag) {
@@ -642,8 +650,7 @@ public class SelectionManager {
 		boolean contains = selectedGeos.contains(geo);
 		if (contains) {
 			selectedGeos.remove(geo);
-			kernel.getApplication().getEventDispatcher()
-					.dispatchEvent(EventType.DESELECT, geo);
+			dispatchDeselected(geo);
 			geo.setSelected(false);
 		} else {
 			selectedGeos.add(geo);
@@ -709,32 +716,34 @@ public class SelectionManager {
 	}
 
 	/**
-	 * Selects last geo in a particular order.
+	 * Selects previous geo in a particular order.
 	 *
 	 * @return whether selection was successful
 	 */
-	final public boolean selectLastGeo() {
-		boolean forceLast = false;
-		if (selectedGeos.size() != 1 && !selectedGeos.get(0).hasGroup()) {
-			forceLast = true;
-		}
+	final public boolean selectPreviousGeo() {
 		TreeSet<GeoElement> tree = getEVFilteredTabbingSet();
+		if (tree.size() == 0) {
+			return false;
+		}
 
 		int selectionSize = selectedGeos.size();
-		GeoElement last = getGroupLead(tree.last());
-		if (forceLast) {
-			addSelectedGeoForEV(last);
+
+		if (selectionSize == 0) {
+			addSelectedGeoForEV(tree.last());
 			return true;
 		}
 
 		GeoElement lastSelected = getGroupLead(selectedGeos.get(selectionSize - 1));
-		GeoElement prev = tree.lower(lastSelected);
-		removeAllSelectedGeos();
 
-		if (prev != null) {
-			addSelectedGeoForEV(prev);
+		GeoElement previous = tree.lower(lastSelected);
+
+		clearSelectedGeos();
+
+		if (previous != null) {
+			addSelectedGeoForEV(previous);
 			return true;
 		}
+
 		return false;
 	}
 

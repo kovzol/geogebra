@@ -88,7 +88,7 @@ public class CmdSlowPlot extends CmdScripting {
 					g.setLabel(label);
 				} else {
 					var.remove();
-                    throw new MyError(loc, Errors.InvalidFunction);
+					throw new MyError(loc, Errors.InvalidFunction);
 				}
 
 				kernel.getAnimatonManager().startAnimation();

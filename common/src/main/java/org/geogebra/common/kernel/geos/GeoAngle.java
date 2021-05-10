@@ -51,6 +51,8 @@ public class GeoAngle extends GeoNumeric implements AngleProperties {
 	/** Default increment when displayed as slider */
 	final public static double DEFAULT_SLIDER_INCREMENT_ANGLE = Math.PI / 180.0;
 
+	private boolean keepDegrees = false;
+
 	/**
 	 * different angle styles
 	 *
@@ -220,6 +222,27 @@ public class GeoAngle extends GeoNumeric implements AngleProperties {
 	public GeoAngle(Construction c, double x, AngleStyle style) {
 		this(c);
 
+		// must set style before value
+		setAngleStyle(style);
+		setValue(x);
+	}
+
+	/**
+	 * Creates labeled angle of given size
+	 *
+	 * @param c
+	 *            Construction
+	 * @param x
+	 *            Size of the angle
+	 * @param style
+	 *            eg UNBOUNDED
+	 * @param keepDegrees
+	 *            keep degrees
+	 */
+	public GeoAngle(Construction c, double x, AngleStyle style, boolean keepDegrees) {
+		this(c);
+
+		this.keepDegrees = keepDegrees;
 		// must set style before value
 		setAngleStyle(style);
 		setValue(x);
@@ -448,11 +471,11 @@ public class GeoAngle extends GeoNumeric implements AngleProperties {
 	final public String toValueString(StringTemplate tpl) {
 		if (isEuclidianVisible()) {
 			return kernel.formatAngle(value, 1 / getAnimationStep(), tpl,
-					angleStyle == AngleStyle.UNBOUNDED).toString();
+					angleStyle == AngleStyle.UNBOUNDED, keepDegrees).toString();
 		}
 		return kernel
-				.formatAngle(value, tpl, angleStyle == AngleStyle.UNBOUNDED)
-				.toString();
+				.formatAngle(value, tpl, angleStyle == AngleStyle.UNBOUNDED,
+						keepDegrees).toString();
 	}
 
 	// overwrite
@@ -491,7 +514,7 @@ public class GeoAngle extends GeoNumeric implements AngleProperties {
 	protected void getXMLtags(StringBuilder sb) {
 
 		// from ggb44 need to save before value in case it's unbounded
-        XMLBuilder.appendAngleStyle(sb, angleStyle, emphasizeRightAngle);
+		XMLBuilder.appendAngleStyle(sb, angleStyle, emphasizeRightAngle);
 
 		sb.append("\t<value val=\"");
 		sb.append(rawValue);

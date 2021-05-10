@@ -84,10 +84,8 @@ public class CommandDispatcherGiac {
 		re(Operation.REAL),
 		/** surd(a,b)=bth root of a */
 		surd(Operation.NROOT),
-        /**
-         * eg alt(x) returns as ggbalt(x)
-         */
-        ggbalt(Operation.ALT),
+		/** eg alt(x) returns as ggbalt(x) */
+		ggbalt(Operation.ALT),
 		/** sqrt */
 		sqrt(Operation.SQRT),
 		/** sign */
@@ -475,7 +473,7 @@ public class CommandDispatcherGiac {
 			case ycoordsymb:
 			case zcoordsymb:
 			case altsymb:
-                case sqrt:
+			case sqrt:
 			case ggbalt:
 			case sign:
 			case floor:

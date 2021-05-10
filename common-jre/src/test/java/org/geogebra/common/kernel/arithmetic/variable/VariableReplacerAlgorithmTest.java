@@ -6,7 +6,6 @@ import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 import org.geogebra.test.TestStringUtil;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.himamis.retex.editor.share.util.Unicode;
@@ -50,12 +49,6 @@ public class VariableReplacerAlgorithmTest extends BaseUnitTest {
 		allowMultipleUnassigned();
 		shouldReplaceAs("E_{m}" + Unicode.omega + "C",
 				"E_{m} * " + Unicode.omega + " * C");
-	}
-
-	@Ignore
-	@Test
-	public void testFunctionProducts() {
-		shouldReplaceAs("sina", "sin(a)");
 	}
 
 	@Test
@@ -104,7 +97,13 @@ public class VariableReplacerAlgorithmTest extends BaseUnitTest {
 		shouldReplaceAs("ln" + Unicode.PI_STRING, "ln(" + Unicode.PI_STRING + ")");
 		shouldReplaceAs("log_{2}2", "log(2, 2)");
 		shouldReplaceAs("log_22", "log(2, 2)");
-		shouldReplaceAs("log_{2}xx", "log(2, x^(2))");
+		shouldReplaceAs("log_{2}xx", "log(2, x * x)");
+		shouldReplaceAs("xlog_{2}x", "x * log(2, x)");
+	}
+
+	@Test
+	public void testParseReverse() {
+		shouldReplaceAs("ax", "a * x");
 	}
 
 	private void shouldReplaceAs(String in, String out) {

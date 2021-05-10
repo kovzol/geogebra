@@ -22,8 +22,9 @@ package org.geogebra.common.kernel.geos;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeMap;
 
 import javax.annotation.CheckForNull;
 
@@ -608,7 +609,7 @@ final public class GeoVector extends GeoVec3D implements Path, VectorValue,
 
 		// startPoint of vector
 		if (startPoint != null) {
-			xmlsb.append(startPoint.getStartPointXML());
+			startPoint.appendStartPointXML(xmlsb);
 		}
 	}
 
@@ -831,6 +832,10 @@ final public class GeoVector extends GeoVec3D implements Path, VectorValue,
 	static public String buildLatexString(Kernel kernel, StringBuilder sb,
 			boolean symbolic, StringTemplate tpl, int toStringMode, double x,
 			double y, GeoVectorND vector) {
+		if (!symbolic && !vector.isDefined()) {
+			sb.append("?");
+			return sb.toString();
+		}
 		switch (toStringMode) {
 		case Kernel.COORD_POLAR:
 			sb.append("(");
@@ -1083,11 +1088,5 @@ final public class GeoVector extends GeoVec3D implements Path, VectorValue,
 	@Override
 	public ValidExpression toValidExpression() {
 		return getVector();
-	}
-
-	@Override
-	public boolean isColumnEditable() {
-		return isIndependent()
-				|| getDefinition() != null && getDefinition().unwrap() instanceof MyVecNDNode;
 	}
 }

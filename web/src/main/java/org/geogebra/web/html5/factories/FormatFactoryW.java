@@ -3,39 +3,40 @@ package org.geogebra.web.html5.factories;
 import org.geogebra.common.factories.FormatFactory;
 import org.geogebra.common.util.NumberFormatAdapter;
 import org.geogebra.common.util.ScientificFormatAdapter;
+import org.geogebra.web.html5.util.MyNumberFormat;
 import org.geogebra.web.html5.util.NumberFormatW;
 import org.geogebra.web.html5.util.ScientificFormat;
 
 public class FormatFactoryW extends FormatFactory {
-    private static final class FastFormatAdapter
-            implements ScientificFormatAdapter {
-        private int d;
+	private static final class FastFormatAdapter
+			implements ScientificFormatAdapter {
+		private int d;
 
-        protected FastFormatAdapter(int d) {
-            this.d = d;
-        }
+		protected FastFormatAdapter(int d) {
+			this.d = d;
+		}
 
-        @Override
-        public native String format(double x) /*-{
-			return x.toPrecision(this.d).replace("e", "E");
-		}-*/;
+		@Override
+		public String format(double x) {
+			return MyNumberFormat.toPrecision(x, this.d).replace("e", "E");
+		}
 
-        @Override
-        public int getSigDigits() {
-            return d;
-        }
+		@Override
+		public int getSigDigits() {
+			return d;
+		}
 
-        @Override
-        public void setSigDigits(int sigDigits) {
-            d = sigDigits;
-        }
+		@Override
+		public void setSigDigits(int sigDigits) {
+			d = sigDigits;
+		}
 
-        @Override
-        public void setMaxWidth(int mWidth) {
-            throw new UnsupportedOperationException();
-        }
+		@Override
+		public void setMaxWidth(int mWidth) {
+			throw new UnsupportedOperationException();
+		}
 
-    }
+	}
 
 	@Override
 	public NumberFormatAdapter getNumberFormat(int digits) {
@@ -85,8 +86,8 @@ public class FormatFactoryW extends FormatFactory {
 		return new ScientificFormat(a, b, c);
 	}
 
-    @Override
-    public ScientificFormatAdapter getFastScientificFormat(int digits) {
-        return new FastFormatAdapter(digits);
-    }
+	@Override
+	public ScientificFormatAdapter getFastScientificFormat(int digits) {
+		return new FastFormatAdapter(digits);
+	}
 }

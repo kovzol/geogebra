@@ -1,6 +1,11 @@
 package org.geogebra.desktop.geogebra3D.euclidianInput3D;
 
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 
@@ -160,7 +165,7 @@ public class EuclidianControllerInput3D extends EuclidianController3DD {
 	private boolean isNotMovingView = true;
 
 	private void processRightRelease() {
-        setRotContinueAnimation();
+		setRotContinueAnimation();
 	}
 
 

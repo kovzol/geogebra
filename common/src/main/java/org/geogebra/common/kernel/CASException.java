@@ -47,7 +47,7 @@ public class CASException extends RuntimeException {
 		if (key != null) {
 			return key;
 		}
-        return Errors.CASGeneralErrorMessage.getKey();
+		return Errors.CASGeneralErrorMessage.getKey();
 	}
 
 	/**

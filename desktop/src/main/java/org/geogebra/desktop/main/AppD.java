@@ -17,10 +17,30 @@ the Free Software Foundation.
  */
 package org.geogebra.desktop.main;
 
-import java.awt.*;
+import java.awt.AWTKeyStroke;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ComponentEvent;
@@ -54,7 +74,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -69,7 +88,27 @@ import java.util.logging.SimpleFormatter;
 
 import javax.imageio.ImageIO;
 import javax.naming.OperationNotSupportedException;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
+import javax.swing.JApplet;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.GeoGebraConstants.Platform;
@@ -99,6 +138,7 @@ import org.geogebra.common.javax.swing.GImageIcon;
 import org.geogebra.common.jre.factory.FormatFactoryJre;
 import org.geogebra.common.jre.gui.MyImageJre;
 import org.geogebra.common.jre.headless.AppDI;
+import org.geogebra.common.jre.headless.LocalizationCommon;
 import org.geogebra.common.jre.kernel.commands.CommandDispatcher3DJre;
 import org.geogebra.common.jre.kernel.commands.CommandDispatcherJre;
 import org.geogebra.common.jre.main.TemplateHelper;
@@ -113,8 +153,6 @@ import org.geogebra.common.kernel.geos.GeoElementGraphicsAdapter;
 import org.geogebra.common.kernel.geos.GeoImage;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.DialogManager;
-import org.geogebra.common.main.HTML5Export;
-import org.geogebra.common.main.MyError;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.ProverSettings;
 import org.geogebra.common.main.RealGeomWSSettings;
@@ -182,12 +220,11 @@ import org.geogebra.desktop.headless.GFileHandler;
 import org.geogebra.desktop.io.MyXMLioD;
 import org.geogebra.desktop.io.OFFReader;
 import org.geogebra.desktop.javax.swing.GImageIconD;
-import org.geogebra.desktop.kernel.UndoManagerD;
 import org.geogebra.desktop.kernel.geos.GeoElementGraphicsAdapterD;
 import org.geogebra.desktop.main.settings.DefaultSettingsD;
 import org.geogebra.desktop.main.settings.SettingsBuilderD;
 import org.geogebra.desktop.main.settings.updater.FontSettingsUpdaterD;
-import org.geogebra.desktop.move.OpenFromGGTOperation;
+import org.geogebra.desktop.main.undo.UndoManagerD;
 import org.geogebra.desktop.move.ggtapi.models.LoginOperationD;
 import org.geogebra.desktop.plugin.GgbAPID;
 import org.geogebra.desktop.plugin.ScriptManagerD;
@@ -251,8 +288,6 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	// ==============================================================
 	// RESOURCE fields
 	// ==============================================================
-
-	private ResourceBundle rbmenuEnglish;
 
 	private final LocalizationD loc;
 
@@ -377,14 +412,12 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			boolean undoActive,
 			LocalizationD loc) {
 
-        super(Platform.DESKTOP);
+		super(Platform.DESKTOP);
 
 		this.loc = loc;
 		loc.setApp(this);
 		this.cmdArgs = args;
-		this.prerelease = args != null && (args.containsArg("prerelease")
-				|| args.containsArg("canary"));
-		this.canary = args != null && args.containsArg("canary");
+		this.prerelease = args != null && args.containsArg("prerelease");
 		if (args != null && !args.containsArg("silent")) {
 			LoggerD logger = new LoggerD();
 			logger.setReading(true);
@@ -401,25 +434,21 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 				Log.setCallerShown(args.getBooleanValue("logShowCaller", true));
 			}
 			if (args.containsArg("logShowTime")) {
-				Log.setTimeShown(args.getBooleanValue("logShowTime", true));
+				LoggerD.setTimeShown(args.getBooleanValue("logShowTime", true));
 			}
 			if (args.containsArg("logShowLevel")) {
 				Log.setLevelShown(args.getBooleanValue("logShowLevel", true));
 			}
 		}
 
-		if (canary) {
-			Log.error("*****************************");
-			Log.error("*** Running with --canary ***");
-			Log.error("*****************************");
-		} else if (prerelease) {
+		if (prerelease) {
 			Log.error("*********************************");
 			Log.error("*** Running with --prerelease ***");
 			Log.error("*********************************");
 		}
 
 		setFileVersion(GeoGebraConstants.VERSION_STRING,
-                getConfig().getAppCode());
+				getConfig().getAppCode());
 
 		if (args != null) {
 			handleHelpVersionArgs(args);
@@ -539,7 +568,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			getGuiManager().getLayout()
 					.setPerspectives(getTmpPerspectives(),
 							PerspectiveDecoder.decode(
-							this.perspectiveParam, getKernel().getParser(),
+							"", getKernel().getParser(),
 							ToolBar.getAllToolsNoMacros(false, false, this)));
 		}
 
@@ -579,6 +608,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			// user authentication handling
 			initSignInEventFlow();
 		}
+
 		if (kernel.wantAnimationStarted()) {
 			kernel.getAnimatonManager().startAnimation();
 			kernel.setWantAnimationStarted(false);
@@ -927,7 +957,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			String filename = args.getStringValue("giacJSONtests");
 
 			if (filename == null || "".equals(filename)) {
-				filename = "../common/src/main/resources/giac/__giac.js";
+				filename = "../common/src/main/resources/giac/giacTests.js";
 			}
 
 			int count = 0;
@@ -1410,7 +1440,6 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			updateTitle();
 			getGuiManager().updateMenuWindow();
 		}
-
 	}
 
 	public static void addToFileList(File file) {
@@ -1466,8 +1495,6 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		// reload the saved/(default) preferences
 		GeoGebraPreferencesD.getPref().loadXMLPreferences(this);
 		resetUniqueId();
-
-
 	}
 
 	private void resetAllToolbars() {
@@ -1644,7 +1671,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			// characters
 		} catch (Exception e) {
 			setDefaultCursor();
-            showError(Errors.LoadFileFailed, file.getName());
+			showError(Errors.LoadFileFailed, file.getName());
 			e.printStackTrace();
 			return false;
 
@@ -2226,25 +2253,6 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		copyGraphicsViewToClipboard(getActiveEuclidianView());
 	}
 
-	@Override
-	public void copyTextToSystemClipboard(String text) {
-		Toolkit.getDefaultToolkit().getSystemClipboard()
-				.setContents(new StringSelection(text), null);
-	}
-
-	@Override
-	public void copyBase64ToClipboard() {
-
-		// don't include preview bitmap
-		copyTextToSystemClipboard(getGgbApi().getBase64(false));
-	}
-
-	@Override
-	public void copyFullHTML5ExportToClipboard() {
-
-		copyTextToSystemClipboard(HTML5Export.getFullString(this));
-	}
-
 	public void copyGraphicsViewToClipboard(final EuclidianView copyView) {
 
 		getSelectionManager().clearSelectedGeos(true, false);
@@ -2295,24 +2303,24 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		// copy drawing pad to the system clipboard
 		Image img = GBufferedImageD.getAwtBufferedImage(
 				((EuclidianViewD) ev).getExportImage(scale));
-        copyImageToClipboard(img);
-    }
+		copyImageToClipboard(img);
+	}
 
-    /**
-     * Copy image to system clipboard
-     *
-     * @param dataURI data URI of image to copy
-     */
-    @Override
-    public void copyImageToClipboard(String dataURI) {
+	/**
+	 * Copy image to system clipboard
+	 *
+	 * @param dataURI data URI of image to copy
+	 */
+	@Override
+	public void copyImageToClipboard(String dataURI) {
 
-        String base64Image = dataURI;
+		String base64Image = dataURI;
 
-        if (base64Image.startsWith(StringUtil.pngMarker)) {
-            base64Image = base64Image.substring(StringUtil.pngMarker.length(),
-                    base64Image.length());
-        }
-        handleImageExport(base64Image);
+		if (base64Image.startsWith(StringUtil.pngMarker)) {
+			base64Image = base64Image.substring(StringUtil.pngMarker.length(),
+					base64Image.length());
+		}
+		handleImageExport(base64Image);
 	}
 
 	private static Rectangle screenSize = null;
@@ -2475,7 +2483,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		try {
 			fontManager.setLanguage(loc.getLocale());
 		} catch (Exception e) {
-            showGenericError(e);
+			showGenericError(e);
 
 			// go back to previous locale
 			loc.setLocale(oldLocale);
@@ -2490,19 +2498,6 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 */
 	public Locale getLocale() {
 		return loc.getLocale();
-	}
-
-	final public String getEnglishMenu(String key) {
-
-		if (rbmenuEnglish == null) {
-			rbmenuEnglish = MyResourceBundle.createBundle(LocalizationD.RB_MENU,
-					Locale.ENGLISH);
-		}
-		try {
-			return rbmenuEnglish.getString(key);
-		} catch (Exception e) {
-			return key;
-		}
 	}
 
 	/**
@@ -2727,9 +2722,9 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			// menubar manually to the north
 			if (showMenuBar() && (mainComp instanceof JPanel)) {
 				return getMenuBarPanel(this, applicationPanel);
-            }
+			}
 
-            getSettingsUpdater().getFontSettingsUpdater().resetFonts();
+			getSettingsUpdater().getFontSettingsUpdater().resetFonts();
 			// Standard case: return application panel
 			return applicationPanel;
 		}
@@ -3339,7 +3334,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		} catch (Exception ex) {
 			status = false;
 			ex.printStackTrace();
-            showError(Errors.LoadFileFailed, file.getName());
+			showError(Errors.LoadFileFailed, file.getName());
 		}
 
 		return status;
@@ -3414,7 +3409,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		} catch (Exception e) {
 			setCurrentFile(null);
 			e.printStackTrace();
-            showError(Errors.LoadFileFailed, file.getName());
+			showError(Errors.LoadFileFailed, file.getName());
 			return false;
 		} finally {
 			initing = false;
@@ -3455,7 +3450,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 			return success;
 		} catch (Exception e) {
-            showError(Errors.LoadFileFailed, e.getMessage());
+			showError(Errors.LoadFileFailed, e.getMessage());
 			setCurrentFile(null);
 			return false;
 		}
@@ -3526,7 +3521,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			return true;
 		} catch (Exception e) {
 			setDefaultCursor();
-            showError(Errors.SaveFileFailed);
+			showError(Errors.SaveFileFailed);
 			e.printStackTrace();
 			return false;
 		}
@@ -3545,33 +3540,9 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			return true;
 		} catch (Exception e) {
 			setDefaultCursor();
-            showError(Errors.SaveFileFailed);
+			showError(Errors.SaveFileFailed);
 			e.printStackTrace();
 			return false;
-		}
-	}
-
-	@Override
-	public void setXML(String xml, boolean clearAll) {
-		if (xml == null) {
-			return;
-		}
-		if (clearAll) {
-			setCurrentFile(null);
-		}
-
-		try {
-
-			// make sure objects are displayed in the correct View
-			setActiveView(App.VIEW_EUCLIDIAN);
-
-			getXMLio().processXMLString(xml, clearAll, false);
-		} catch (MyError err) {
-			err.printStackTrace();
-			showError(err);
-		} catch (Exception e) {
-			e.printStackTrace();
-            showError(Errors.LoadFileFailed);
 		}
 	}
 
@@ -4041,7 +4012,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 					if (msg == null) {
 						return;
 					}
-					Log.printStacktrace("" + msg);
+					Log.trace("" + msg);
 
 					// make sure splash screen not showing (will be in front)
 					GeoGebra.hideSplash();
@@ -4207,7 +4178,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		logFile.append(".txt");
 
 		Log.debug("Logging is redirected to " + logFile.toString());
-		Log.setTimeShown(false); // do not print the time twice
+		LoggerD.setTimeShown(false); // do not print the time twice
 
 		// log file max size 10K, 1 file, append-on-open
 		Handler fileHandler;
@@ -4340,10 +4311,8 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 	private DialogManager dialogManager;
 
-	private OpenFromGGTOperation openFromGGTOperation;
-
-    @Override
-    public void callAppletJavaScript(String string, String args) {
+	@Override
+	public void callAppletJavaScript(String string, String args) {
 		// not needed in desktop
 	}
 
@@ -4405,7 +4374,6 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		if (getGuiManager() != null && getGuiManager().hasSpreadsheetView()) {
 			getGuiManager().getSpreadsheetView().repaintView();
 		}
-
 	}
 
 	@Override
@@ -4466,15 +4434,6 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		return WINDOWS;
 	}
 
-	/**
-	 * Whether we are using Java 7 (can't use clipboard on OSX)
-	 * 
-	 * @return whether we are using Java 7
-	 */
-	public static boolean isJava7() {
-		return System.getProperty("java.version").startsWith("1.7.");
-	}
-
 	/*
 	 * current possible values http://mindprod.com/jgloss/properties.html AIX
 	 * Digital Unix FreeBSD HP UX Irix Linux Mac OS Mac OS X MPE/iX Netware 4.11
@@ -4483,6 +4442,8 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 */
 	private static final String OS = StringUtil
 			.toLowerCaseUS(System.getProperty("os.name"));
+	private static final String VERSION = StringUtil
+			.toLowerCaseUS(System.getProperty("os.version"));
 
 	public static final boolean MAC_OS = OS.startsWith("mac");
 	public static final boolean WINDOWS = OS.startsWith("windows");
@@ -4500,6 +4461,21 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 	public static final boolean WINDOWS_VISTA_OR_EARLIER = WINDOWS_XP_OR_EARLIER
 			|| OS.startsWith("windows vista");
+
+	/**
+	 * @return true if running on Mac OS Big Sur or later versions.
+	 */
+	public static boolean isMacOsBigSurOrLater() {
+		if (!MAC_OS) {
+			return false;
+		}
+		try {
+			double version = Double.parseDouble(VERSION);
+			return version > 10.15;
+		} catch (NumberFormatException exception) {
+			return false;
+		}
+	}
 
 	@Override
 	public boolean isHTML5Applet() {
@@ -4851,22 +4827,11 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 * stored token
 	 */
 	protected void initSignInEventFlow() {
-
 		// Inizialize the login operation
 		loginOperation = new LoginOperationD(this);
 
 		// Try to login the stored user
 		loginOperation.performTokenLogin();
-	}
-
-	public void initOpenFromGGTEventFlow() {
-		if (openFromGGTOperation == null) {
-			openFromGGTOperation = new OpenFromGGTOperation(this);
-		}
-	}
-
-	public OpenFromGGTOperation getOpenFromGGTOperation() {
-		return openFromGGTOperation;
 	}
 
 	@Override
@@ -4885,13 +4850,6 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	public void uploadToGeoGebraTubeOnCallback() {
 
 		uploadToGeoGebraTube();
-	}
-
-	private String perspectiveParam = "";
-
-	public void setPerspectiveParam(String perspective) {
-		this.perspectiveParam = perspective;
-
 	}
 
 	@Override
@@ -5321,7 +5279,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	public void handleImageExport(String base64image) {
 		if (base64image.startsWith("<svg") || base64image.startsWith("<?xml")
 				|| base64image.startsWith("%PDF")) {
-			copyTextToSystemClipboard(base64image);
+			getCopyPaste().copyTextToSystemClipboard(base64image);
 			return;
 		}
 
@@ -5334,29 +5292,12 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
 
-
-    }
-
-    private static void copyImageToClipboard(Image img) {
+	private static void copyImageToClipboard(Image img) {
 		ImageSelection imgSel = new ImageSelection(img);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(imgSel,
 				null);
-	}
-
-	public void showReinstallMessage() {
-		Object[] options = { loc.getMenu("Cancel"), loc.getMenu("Download") };
-		int n = JOptionPane.showOptionDialog(mainComp, loc.getMenu("FullReinstallNeeded"),
-				GeoGebraConstants.APPLICATION_NAME + " - "
-						+ getLocalization().getError("Error"),
-				JOptionPane.YES_NO_OPTION,
-				JOptionPane.QUESTION_MESSAGE, null,
-				options, // the titles of buttons
-				options[1]); // default button title
-
-		if (n == 1) {
-			showURLinBrowser(GeoGebraConstants.INSTALLERS_URL);
-		}
 	}
 
 	@Override

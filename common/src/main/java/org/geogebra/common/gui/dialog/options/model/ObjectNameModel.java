@@ -6,6 +6,7 @@ import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.arithmetic.TextValue;
 import org.geogebra.common.kernel.geos.GProperty;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoInputBox;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.main.App;
@@ -21,7 +22,7 @@ public class ObjectNameModel extends OptionsModel {
 	private GeoElementND currentGeo;
 	private boolean redefinitionFailed;
 	private boolean busy;
-    private LabelController labelController = null;
+	private LabelController labelController=null;
 
 	public interface IObjectNameListener extends PropertyListener {
 		void setNameText(final String text);
@@ -51,144 +52,150 @@ public class ObjectNameModel extends OptionsModel {
 	}
 
 	@Override
-    public void updateProperties() {
-        // take name of first geo
-        GeoElement geo0 = getGeoAt(0);
-        updateName(geo0);
+	public void updateProperties() {
+		// take name of first geo
+		GeoElement geo0 = getGeoAt(0);
+		updateName(geo0);
 
-        // if a focus lost is called in between, we keep the current definition
-        // text
-        // redefinitionForFocusLost = tfDefinition.getText();
-        setCurrentGeo(geo0);
-        nameInputHandler.setGeoElement(geo0);
-        defInputHandler.setGeoElement(geo0);
+		// if a focus lost is called in between, we keep the current definition
+		// text
+		// redefinitionForFocusLost = tfDefinition.getText();
+		setCurrentGeo(geo0);
+		nameInputHandler.setGeoElement(geo0);
+		defInputHandler.setGeoElement(geo0);
 
-        // DEFINITION
-        // boolean showDefinition = !(currentGeo.isGeoText() ||
-        // currentGeo.isGeoImage());
-        boolean showDefinition = true;
-        if(getCurrentGeo().isGeoText()){
-            showDefinition = ((GeoText) getCurrentGeo()).isTextCommand();
-        }else{
-            showDefinition = getCurrentGeo().isAlgebraViewEditable();
-        }
+		// DEFINITION
+		// boolean showDefinition = !(currentGeo.isGeoText() ||
+		// currentGeo.isGeoImage());
+		boolean showDefinition = true;
+		if(getCurrentGeo().isGeoText()){
+			showDefinition = ((GeoText) getCurrentGeo()).isTextCommand();
+		}else{
+			showDefinition = getCurrentGeo().isAlgebraViewEditable();
+		}
 
-        if (showDefinition) {
-            listener.updateDefLabel();
-        }
-        // CAPTION
-        boolean showCaption = !(getCurrentGeo() instanceof TextValue);
-        if (showCaption) {
-            listener.updateCaption(getCurrentGeo().getRawCaption());
-        }
+		if (showDefinition) {
+			listener.updateDefLabel();
+		}
+		// CAPTION
+		boolean showCaption = !(getCurrentGeo() instanceof TextValue);
+		if (showCaption) {
+			listener.updateCaption(getCurrentGeo().getRawCaption());
+		}
 
-        listener.updateGUI(showDefinition, showCaption);
-    }
+		listener.updateGUI(showDefinition, showCaption);
+	}
 
-    private void updateName(GeoElement geo) {
-        String name = "";
-        if (getLabelController().hasLabel(geo)) {
-            name = geo.getLabel(StringTemplate.editTemplate);
-        }
-        listener.updateName(name);
-    }
+	private void updateName(GeoElement geo) {
+		String name = "";
+		if (getLabelController().hasLabel(geo)) {
+			name = geo.getLabel(StringTemplate.editTemplate);
+		}
+		listener.updateName(name);
+	}
 
 	@Override
 	public boolean checkGeos() {
 		return (getGeosLength() == 1);
 	}
 
-    public void applyNameChange(final String name, ErrorHandler handler) {
-        if (isAutoLabelNeeded()) {
-            getLabelController().ensureHasLabel(currentGeo);
-        }
+	public void applyNameChange(final String name, ErrorHandler handler) {
+		if (isAutoLabelNeeded()) {
+			getLabelController().ensureHasLabel(currentGeo);
+		}
 
-        nameInputHandler.setGeoElement(currentGeo);
-        nameInputHandler.processInput(name, handler,
-                new AsyncOperation<Boolean>() {
+		nameInputHandler.setGeoElement(currentGeo);
+		nameInputHandler.processInput(name, handler,
+				new AsyncOperation<Boolean>() {
 
-                    @Override
-                    public void callback(Boolean obj) {
-                        // TODO Auto-generated method stub
+					@Override
+					public void callback(Boolean obj) {
+						// TODO Auto-generated method stub
 
-                    }
-                });
+					}
+				});
 
-        // reset label if not successful
-        resetLabel(name);
-        currentGeo.updateRepaint();
-        storeUndoInfo();
+		// reset label if not successful
+		resetLabel(name);
+		currentGeo.updateRepaint();
+		storeUndoInfo();
 
-    }
+	}
 
-    /**
-     * @param label the new label
-     * @return if label should change to the new one.
-     */
-    public boolean noLabelUpdateNeeded(String label) {
-        return "".equals(label) && !hasLabelOfCurrentGeo();
-    }
+	/**
+	 *
+	 * @param label
+	 * 				the new label
+	 *
+	 * @return if label should change to the new one.
+	 */
+	public boolean noLabelUpdateNeeded(String label) {
+		return "".equals(label)  && !hasLabelOfCurrentGeo();
+	}
 
-    private boolean hasLabelOfCurrentGeo() {
-        return getLabelController().hasLabel((GeoElement) getCurrentGeo());
-    }
+	private boolean hasLabelOfCurrentGeo() {
+		return getLabelController().hasLabel((GeoElement) getCurrentGeo());
+	}
 
-    private void resetLabel(String name) {
-        final String strName = currentGeo
-                .getLabel(StringTemplate.defaultTemplate);
-        if (!strName.equals(name)) {
-            listener.setNameText(strName);
-        }
-    }
+	private void resetLabel(String name) {
+		final String strName = currentGeo
+				.getLabel(StringTemplate.defaultTemplate);
+		if (!strName.equals(name)) {
+			listener.setNameText(strName);
+		}
+	}
 
 	private boolean isAutoLabelNeeded() {
-        return isAutoLabelNeeded(app);
-    }
+		return isAutoLabelNeeded(app);
+	}
 
-    /**
-     * @param app The application.
-     * @return if app needs autolabeling.
-     */
-    public static boolean isAutoLabelNeeded(App app) {
-        if (!app.has(Feature.AUTOLABEL_CAS_SETTINGS)) {
-            return false;
-        }
+	/**
+	 *
+	 * @param app
+	 * 				The application.
+	 * @return if app needs autolabeling.
+	 *
+	 */
+	public static boolean isAutoLabelNeeded(App app) {
+		if (!app.has(Feature.AUTOLABEL_CAS_SETTINGS)) {
+			return false;
+		}
 
-        return !app.getConfig().hasAutomaticLabels();
-    }
+		return !app.getConfig().hasAutomaticLabels();
+	}
 
-    private LabelController getLabelController() {
-        if (labelController == null) {
-            labelController = new LabelController();
-        }
-        return labelController;
-    }
+	private LabelController getLabelController() {
+		if (labelController == null) {
+			labelController = new LabelController();
+		}
+		return labelController;
+	}
 
-    public void applyDefinitionChange(final String definition,
-                                      ErrorHandler handler) {
-        if (!definition.equals(getDefText(currentGeo))) {
-            defInputHandler.processInput(definition, handler,
-                    new AsyncOperation<Boolean>() {
+	public void applyDefinitionChange(final String definition,
+			ErrorHandler handler) {
+		if (!definition.equals(getDefText(currentGeo))) {
+			defInputHandler.processInput(definition, handler,
+					new AsyncOperation<Boolean>() {
 
-                        @Override
-                        public void callback(Boolean ok) {
-                            if (ok) {
-                                // if succeeded, switch current geo
-                                currentGeo = defInputHandler.getGeoElement();
-                                app.getSelectionManager()
-                                        .clearSelectedGeos(false, false);
-                                app.getSelectionManager()
-                                        .addSelectedGeo(currentGeo);
-                            } else {
-                                setRedefinitionFailed(true);
-                            }
-                            storeUndoInfo();
-                        }
-                    });
+						@Override
+						public void callback(Boolean ok) {
+							if (ok) {
+								// if succeeded, switch current geo
+								currentGeo = defInputHandler.getGeoElement();
+								app.getSelectionManager()
+										.clearSelectedGeos(false, false);
+								app.getSelectionManager()
+										.addSelectedGeo(currentGeo);
+							} else {
+								setRedefinitionFailed(true);
+							}
+							storeUndoInfo();
+						}
+					});
 
-        }
+		}
 
-    }
+	}
 
 	public static String getDefText(GeoElementND geo) {
 		/*
@@ -306,5 +313,13 @@ public class ObjectNameModel extends OptionsModel {
 	@Override
 	public PropertyListener getListener() {
 		return listener;
+	}
+
+	/**
+	 *
+	 * @return if caption can be GeoText or not.
+	 */
+	public boolean canCaptionBeGeoText() {
+		return currentGeo instanceof GeoInputBox;
 	}
 }

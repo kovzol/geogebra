@@ -51,15 +51,15 @@ package com.himamis.retex.renderer.share;
 public class ResizeAtom extends Atom {
 
 	private Atom base;
-    private TeXLength width;
-    private TeXLength height;
+	private TeXLength width;
+	private TeXLength height;
 	private boolean keepaspectratio;
 
 	public ResizeAtom(Atom base, TeXLength width, TeXLength height,
 			boolean keepaspectratio) {
 		this.base = base;
-        this.width = width;
-        this.height = height;
+		this.width = width;
+		this.height = height;
 		this.keepaspectratio = keepaspectratio;
 	}
 
@@ -70,27 +70,27 @@ public class ResizeAtom extends Atom {
 	@Override
 	public Box createBox(TeXEnvironment env) {
 		Box bbox = base.createBox(env);
-        if (width == null && height == null) {
-			return bbox;
+		if (width == null && height == null) {
+			return bbox.setAtom(this);
 		} else {
-            double xscl;
-            double yscl;
-            if (width != null && height != null) {
-                xscl = width.getValue(env) / bbox.width;
-                yscl = height.getValue(env) / bbox.height;
+			double xscl;
+			double yscl;
+			if (width != null && height != null) {
+				xscl = width.getValue(env) / bbox.width;
+				yscl = height.getValue(env) / bbox.height;
 				if (keepaspectratio) {
 					xscl = Math.min(xscl, yscl);
 					yscl = xscl;
 				}
-            } else if (width != null) {
-                xscl = width.getValue(env) / bbox.width;
+			} else if (width != null) {
+				xscl = width.getValue(env) / bbox.width;
 				yscl = xscl;
 			} else {
-                yscl = height.getValue(env) / bbox.height;
+				yscl = height.getValue(env) / bbox.height;
 				xscl = yscl;
 			}
 
-			return new ScaleBox(bbox, xscl, yscl);
+			return new ScaleBox(bbox, xscl, yscl).setAtom(this);
 		}
 	}
 

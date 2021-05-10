@@ -13,7 +13,7 @@ the Free Software Foundation.
 package org.geogebra.common.kernel.arithmetic;
 
 import org.geogebra.common.kernel.Kernel;
-import org.geogebra.common.kernel.StringTemplate;
+import org.geogebra.common.kernel.VarString;
 import org.geogebra.common.kernel.algos.AlgoElement;
 
 /**
@@ -22,68 +22,40 @@ import org.geogebra.common.kernel.algos.AlgoElement;
  * @author Markus
  *
  */
-public interface FunctionalNVar extends Evaluate2Var {
+public interface FunctionalNVar extends Evaluate2Var, VarString {
 	/**
 	 * @param vals
 	 *            values of variables
 	 * @return value at vals
 	 */
-	public double evaluate(double[] vals);
-
-	/**
-	 * @return function
-	 */
-	@Override
-	public FunctionNVar getFunction();
+	double evaluate(double[] vals);
 
 	/**
 	 * @return list of inequalities
 	 */
-	public IneqTree getIneqs();
+	IneqTree getIneqs();
 
 	/**
 	 * Returns true iff the function is boolean
 	 * 
 	 * @return true iff the function is boolean
 	 */
-	public boolean isBooleanFunction();
+	boolean isBooleanFunction();
 
-	// public GeoFunctionNVar getGeoDerivative(int order, int nvar);
-	/**
-	 * @param tpl
-	 *            string template
-	 * @return comma separated variable names
-	 */
-	@Override
-	public String getVarString(StringTemplate tpl);
+	void setForceInequality(boolean inequality);
 
-	/**
-	 * @return function expression
-	 */
-	@Override
-	public ExpressionNode getFunctionExpression();
-
-	/**
-	 * @return whether this function is defined or not
-	 */
-	@Override
-	public boolean isDefined();
+	boolean isForceInequality();
 
 	/**
 	 * @param label
 	 *            new label
 	 */
-	public void setLabel(String label);
-
-	/**
-	 * @return function variables
-	 */
-	public FunctionVariable[] getFunctionVariables();
+	void setLabel(String label);
 
 	/**
 	 * @return kernel
 	 */
-	public Kernel getKernel();
+	Kernel getKernel();
 
 	/**
 	 * For GeoElements sets the usual defined flag, also works for
@@ -92,18 +64,18 @@ public interface FunctionalNVar extends Evaluate2Var {
 	 * @param b
 	 *            whether this is defined
 	 */
-	public void setDefined(boolean b);
+	void setDefined(boolean b);
 
 	/**
 	 * @return is lhs just y= (or z=)
 	 */
-	public String getShortLHS();
+	String getShortLHS();
 
 	/**
 	 * @param shortLHS
 	 *            whether lhs should be just y= (or z=)
 	 */
-	public void setShortLHS(String shortLHS);
+	void setShortLHS(String shortLHS);
 
 	/**
 	 * GGB-605
@@ -112,6 +84,5 @@ public interface FunctionalNVar extends Evaluate2Var {
 	 *            algorithm to be used for value string instead of secret
 	 *            expression
 	 */
-	public void setSecret(AlgoElement algo);
-
+	void setSecret(AlgoElement algo);
 }

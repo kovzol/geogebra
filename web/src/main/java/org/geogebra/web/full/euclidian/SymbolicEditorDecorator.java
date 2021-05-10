@@ -6,7 +6,6 @@ import org.geogebra.web.full.gui.components.MathFieldEditor;
 import org.geogebra.web.full.gui.components.MathFieldEditorDecoratorBase;
 
 public class SymbolicEditorDecorator extends MathFieldEditorDecoratorBase {
-
 	private int baseline;
 	private double fontSize;
 
@@ -29,7 +28,7 @@ public class SymbolicEditorDecorator extends MathFieldEditorDecoratorBase {
 
 	private void updateSize() {
 		if (getHeight() > 0) {
-			setTop(baseline - getHeight() / 2);
+			setTop(baseline - getHeight() / 2d);
 		}
 	}
 

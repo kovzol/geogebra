@@ -6,6 +6,7 @@ import java.util.MissingResourceException;
 
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.gui.SetLabels;
+import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
@@ -46,11 +47,14 @@ public final class LocalizationW extends Localization {
 	private ArrayList<SetLabels> setLabelsListeners;
 
 	/**
+	 * @param config
+	 * 			app config
 	 * @param dimension
-	 *            3 for 3D
+	 *           3 for 3D
 	 */
-	public LocalizationW(int dimension) {
+	public LocalizationW(AppConfig config, int dimension) {
 		super(dimension, 13);
+		getCommandSyntax().setSyntaxFilter(config.newCommandSyntaxFilter());
 	}
 
 	//
@@ -88,37 +92,33 @@ public final class LocalizationW extends Localization {
 
 	@Override
 	public String getCommand(String key) {
-
 		if (key == null) {
 			return "";
 		}
 
-		String ret = getPropertyNative(getCommandLocaleString(), key, "command");
+		return getPropertyWithFallback(getCommandLocaleString(), key, key, "command");
+	}
 
+	private String getPropertyWithFallback(String lang, String key,
+			String fallback, String category) {
+		String ret = getPropertyNative(lang, key, category);
 		if (ret == null || "".equals(ret)) {
-			Log.debug("command key not found: " + key);
-			return key;
+			if (GWT.isScript()) { // no error message in test
+				Log.debug(category + " key not found: " + key);
+			}
+			return fallback;
 		}
 
 		return ret;
 	}
 
-    @Override
-    public String getEnglishCommand(String key) {
-        if (key == null) {
-            return "";
-        }
-
-        String ret = getPropertyNative("en", key, "command");
-
-        if (ret == null || "".equals(ret)) {
-            Log.debug("command key not found: " + key);
-            return key;
-        }
-
-        return ret;
-
-    }
+	@Override
+	public String getEnglishCommand(String key) {
+		if (key == null) {
+			return "";
+		}
+		return getPropertyWithFallback("en", key, key, "command");
+	}
 
 	// TODO: implement getCommandLocale()
 	private String getCommandLocaleString() {
@@ -135,7 +135,9 @@ public final class LocalizationW extends Localization {
 	 */
 	@Override
 	public String getMenu(String key) {
-
+		if ("undefined".equalsIgnoreCase(key)) {
+			Log.error("undefined");
+		}
 		if (key == null) {
 			return "";
 		}
@@ -164,45 +166,21 @@ public final class LocalizationW extends Localization {
 
 	@Override
 	public String getError(String key) {
-
 		if (key == null) {
 			return "";
 		}
 
-		String ret = getPropertyNative(localeStr, key, "error");
-
-		if (ret == null || "".equals(ret)) {
-			Log.debug("error key not found: " + key);
-			return key;
-		}
-
-		return ret;
+		return getPropertyWithFallback(localeStr, key, key, "error");
 	}
 
 	@Override
 	public String getSymbol(int key) {
-
-		String ret = getPropertyNative(localeStr, "S_" + key, "symbols");
-
-		if (ret == null || "".equals(ret)) {
-			Log.debug("menu key not found: " + key);
-			return null;
-		}
-
-		return ret;
+		return getPropertyWithFallback(localeStr, "S_" + key, null, "symbols");
 	}
 
 	@Override
 	public String getSymbolTooltip(int key) {
-
-		String ret = getPropertyNative(localeStr, "T_" + key, "symbols");
-
-		if (ret == null || "".equals(ret)) {
-			Log.debug("menu key not found: " + key);
-			return null;
-		}
-
-		return ret;
+		return getPropertyWithFallback(localeStr, "T_" + key, null, "symbols");
 	}
 
 	@Override
@@ -237,18 +215,9 @@ public final class LocalizationW extends Localization {
 		        && StringUtil.toLowerCaseUS(key).startsWith("gray")) {
 
 			return StringUtil.getGrayString(key.charAt(4), this);
-
 		}
 
-		String ret = getPropertyNative(localeStr, key, "colors");
-
-		if (ret == null || "".equals(ret)) {
-			Log.debug("error key not found: " + key);
-			return key;
-		}
-
-		return ret;
-
+		return getPropertyWithFallback(localeStr, key, key, "colors");
 	}
 
 	/**

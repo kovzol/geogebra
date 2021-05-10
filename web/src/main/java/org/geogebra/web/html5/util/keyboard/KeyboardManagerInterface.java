@@ -9,9 +9,9 @@ import org.geogebra.web.html5.gui.util.MathKeyboardListener;
 public interface KeyboardManagerInterface {
 
 	/**
-	 * @return whether keyboard should be shown
+	 * @return whether keyboard was closed by clicking the X button
 	 */
-	boolean shouldKeyboardBeShown();
+	boolean isKeyboardClosedByUser();
 
 	/**
 	 * @param tablePopup
@@ -30,4 +30,8 @@ public interface KeyboardManagerInterface {
 	 */
 	void updateKeyboardLanguage();
 
+	/**
+	 * Update keyboard layout
+	 */
+	void clearAndUpdateKeyboard();
 }

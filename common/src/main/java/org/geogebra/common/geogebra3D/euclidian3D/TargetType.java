@@ -308,31 +308,31 @@ public enum TargetType {
 			EuclidianView3D view3D, EuclidianController3D ec,
 			TargetType onSuccess, TargetType onFail, int vertexCount) {
 		Hits hits;
-        // no point: can select a regular polygon
-        if (ec.selPoints() == 0) {
-            GeoPoint3D point = view3D.getCursor3D();
-            if (point.hasRegion()) {
-                GeoElement geo = (GeoElement) point.getRegion();
-                if (!(geo instanceof GeoCoordSys2D)) {
-                    return onSuccess;
-                }
-                if (!geo.isGeoPolygon()) {
-                    return geo.isGeoPlane() ? onSuccess : NOTHING;
-                }
-                GeoPolygon polygon = (GeoPolygon) geo;
-                if (polygon.getPointsLength() == vertexCount
-                        && polygon.isRegular()) {
-                    return onFail;
-                }
-                return NOTHING;
-            }
-            // must be a path
-            return onSuccess;
-        }
-        // one point, one region: can create a point
-        if (ec.selCS2D() == 1) {
-            return onSuccess;
-        }
+		// no point: can select a regular polygon
+		if (ec.selPoints() == 0) {
+			GeoPoint3D point = view3D.getCursor3D();
+			if (point.hasRegion()) {
+				GeoElement geo = (GeoElement) point.getRegion();
+				if (!(geo instanceof GeoCoordSys2D)) {
+					return onSuccess;
+				}
+				if (!geo.isGeoPolygon()) {
+					return geo.isGeoPlane() ? onSuccess : NOTHING;
+				}
+				GeoPolygon polygon = (GeoPolygon) geo;
+				if (polygon.getPointsLength() == vertexCount
+						&& polygon.isRegular()) {
+					return onFail;
+				}
+				return NOTHING;
+			}
+			// must be a path
+			return onSuccess;
+		}
+		// one point, one region: can create a point
+		if (ec.selCS2D() == 1) {
+			return onSuccess;
+		}
 
 		// no region: can create a point on edge or xOy plane
 		hits = view3D.getHits();

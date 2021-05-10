@@ -7,7 +7,8 @@ import org.geogebra.common.kernel.commands.CommandDispatcher;
 import org.geogebra.common.kernel.commands.CommandNotLoadedError;
 import org.geogebra.common.util.debug.Log;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import elemental2.promise.Promise.PromiseExecutorCallbackFn.RejectCallbackFn;
+import elemental2.promise.Promise.PromiseExecutorCallbackFn.ResolveCallbackFn;
 
 /**
  * Async modules manager
@@ -19,9 +20,9 @@ public class AsyncManager {
 	/**
 	 * Preload all but discrete and steps
 	 */
-    private static final AsyncModule[] defaultPreload = {AsyncModule.ADVANCED,
-            AsyncModule.PROVER, AsyncModule.SCRIPTING, AsyncModule.STATS, AsyncModule.CAS,
-            AsyncModule.SPATIAL
+	private static final AsyncModule[] defaultPreload = { AsyncModule.ADVANCED,
+			AsyncModule.PROVER, AsyncModule.SCRIPTING, AsyncModule.STATS, AsyncModule.CAS,
+			AsyncModule.SPATIAL
 	};
 
 	private AppW app;
@@ -75,38 +76,38 @@ public class AsyncManager {
 	public void ensureModulesLoaded(String[] modules) {
 		final CommandDispatcher cmdDispatcher = app.getKernel()
 				.getAlgebraProcessor().getCmdDispatcher();
-        final AsyncModule[] preload = modules == null ? defaultPreload
-                : parse(modules);
-        for (AsyncModule module : preload) {
-            module.prefetch();
-        }
+		final AsyncModule[] preload = modules == null ? defaultPreload
+				: parse(modules);
+		for (AsyncModule module : preload) {
+			module.prefetch();
+		}
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
-                for (AsyncModule module : preload) {
+				for (AsyncModule module : preload) {
 					switch (module) {
-                        case DISCRETE:
+					case DISCRETE:
 						cmdDispatcher.getDiscreteDispatcher();
 						break;
-                        case SCRIPTING:
+					case SCRIPTING:
 						cmdDispatcher.getScriptingDispatcher();
 						break;
-                        case ADVANCED:
+					case ADVANCED:
 						cmdDispatcher.getAdvancedDispatcher();
 						break;
-                        case STATS:
+					case STATS:
 						cmdDispatcher.getStatsDispatcher();
 						break;
-                        case STEPS:
+					case STEPS:
 						cmdDispatcher.getStepsDispatcher();
 						break;
-                        case PROVER:
+					case PROVER:
 						cmdDispatcher.getProverDispatcher();
 						break;
-                        case CAS:
+					case CAS:
 						cmdDispatcher.getCASDispatcher();
 						break;
-                        case SPATIAL:
+					case SPATIAL:
 						cmdDispatcher.get3DDispatcher();
 						break;
 					default:
@@ -119,48 +120,38 @@ public class AsyncManager {
 		callbacks.add(0, r);
 	}
 
-    private static AsyncModule[] parse(String[] modules) {
-        ArrayList<AsyncModule> parsed = new ArrayList<>();
-        for (String name : modules) {
-            AsyncModule module = AsyncModule.parseOrNull(name);
-            if (module != null) {
-                parsed.add(module);
-            }
-        }
-        return parsed.toArray(new AsyncModule[0]);
-    }
+	private static AsyncModule[] parse(String[] modules) {
+		ArrayList<AsyncModule> parsed = new ArrayList<>();
+		for (String name : modules) {
+			AsyncModule module = AsyncModule.parseOrNull(name);
+			if (module != null) {
+				parsed.add(module);
+			}
+		}
+		return parsed.toArray(new AsyncModule[0]);
+	}
 
 	/**
 	 * Asynchronously evaluate a command
-	 * @param command command to evaluate
-	 * @param onSuccess function to be called when the execution succeeds
-	 * @param onFailure function to be called when the execution fails
+	 * 
+	 * @param command
+	 *            command to evaluate
+	 * @param onSuccess
+	 *            function to be called when the execution succeeds
+	 * @param onFailure
+	 *            function to be called when the execution fails
 	 */
-    public void asyncEvalCommand(final String command,
-                                 final JavaScriptObject onSuccess,
-                                 final JavaScriptObject onFailure) {
-        asyncEvalCommand(command, toRunnable(onSuccess), onFailure);
-    }
-
-    /**
-     * Asynchronously evaluate a command
-     *
-     * @param command   command to evaluate
-     * @param onSuccess function to be called when the execution succeeds
-     * @param onFailure function to be called when the execution fails
-     */
-    public void asyncEvalCommand(final String command, final Runnable onSuccess,
-			final JavaScriptObject onFailure) {
-		Runnable r = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					getGgbApi().evalCommand(command);
-					if (onSuccess != null) {
-                        onSuccess.run();
-                    }
-                } catch (Exception e) {
-					call(onFailure, e);
+	public void asyncEvalCommand(final String command, ResolveCallbackFn<String> onSuccess,
+			RejectCallbackFn onFailure) {
+		Runnable r = () -> {
+			try {
+				getGgbApi().evalCommand(command);
+				if (onSuccess != null) {
+					onSuccess.onInvoke("");
+				}
+			} catch (Exception e) {
+				if (onFailure != null) {
+					onFailure.onInvoke(e);
 				}
 			}
 		};
@@ -168,37 +159,25 @@ public class AsyncManager {
 		scheduleCallback(r);
 	}
 
-    private Runnable toRunnable(final JavaScriptObject onSuccess) {
-        return new Runnable() {
-            @Override
-            public void run() {
-                call(onSuccess, null);
-            }
-        };
-    }
+	/**
+	 * Asynchronously evaluate a command
+	 * @param command command to evaluate
+	 * @param onSuccess function to be called when the execution succeeds
+	 *                     (with the labels of the created Geos)
+	 * @param onFailure function to be called if the execution fails
+	 */
+	public void asyncEvalCommandGetLabels(final String command, ResolveCallbackFn<String> onSuccess,
+			RejectCallbackFn onFailure) {
+		Runnable r = () -> {
+			try {
+				onSuccess.onInvoke(getGgbApi().evalCommandGetLabels(command));
+			} catch (Exception e) {
+				onFailure.onInvoke(e);
+			}
+		};
 
-    /**
-     * Asynchronously evaluate a command
-     * @param command command to evaluate
-     * @param onSuccess function to be called when the execution succeeds
-     *                     (with the labels of the created Geos)
-     * @param onFailure function to be called if the execution fails
-     */
-    public void asyncEvalCommandGetLabels(final String command, final JavaScriptObject onSuccess,
-                                          final JavaScriptObject onFailure) {
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    call(onSuccess, getGgbApi().evalCommandGetLabels(command));
-                } catch (Exception e) {
-                    call(onFailure, e);
-                }
-            }
-        };
-
-        scheduleCallback(r);
-    }
+		scheduleCallback(r);
+	}
 
 	/**
 	 * @return API object
@@ -206,18 +185,6 @@ public class AsyncManager {
 	protected GgbAPIW getGgbApi() {
 		return app.getGgbApi();
 	}
-
-	/**
-	 * @param callback
-	 *            JS function
-	 * @param o
-	 *            argument
-	 */
-	native void call(JavaScriptObject callback, Object o) /*-{
-		if (typeof callback === 'function') {
-			callback(o);
-		}
-	}-*/;
 
 	/**
 	 * Split module has finished loading: try to run scheduled
@@ -229,7 +196,9 @@ public class AsyncManager {
 		while (callbacks.size() > 0) {
 			try {
 				callbacks.get(0).run();
-				callbacks.remove(0);
+				if (!callbacks.isEmpty()) {
+					callbacks.remove(0);
+				}
 			} catch (CommandNotLoadedError e) {
 				break;
 			}

@@ -496,7 +496,7 @@ public class Context
         }
         return call(factory, new ContextAction() {
             @Override
-            public Object run(Context cx) {
+			public Object run(Context cx) {
                 return callable.call(cx, scope, thisObj, args);
             }
         });
@@ -2118,12 +2118,11 @@ public class Context
         hasClassShutter = true;
         return new ClassShutterSetter() {
             @Override
-            public void setClassShutter(ClassShutter shutter) {
+			public void setClassShutter(ClassShutter shutter) {
                 classShutter = shutter;
             }
-
             @Override
-            public ClassShutter getClassShutter() {
+			public ClassShutter getClassShutter() {
                 return classShutter;
             }
         };
@@ -2704,7 +2703,7 @@ public class Context
     int version;
 
     private SecurityController securityController;
-    private boolean hasClassShutter;
+	private boolean hasClassShutter;
     private ClassShutter classShutter;
     private ErrorReporter errorReporter;
     RegExpProxy regExpProxy;

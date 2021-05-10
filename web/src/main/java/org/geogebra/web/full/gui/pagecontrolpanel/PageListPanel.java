@@ -4,36 +4,32 @@ import javax.annotation.Nonnull;
 
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.common.main.App;
+import org.geogebra.common.plugin.Event;
 import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.web.full.css.MaterialDesignResources;
 import org.geogebra.web.full.gui.applet.GeoGebraFrameFull;
 import org.geogebra.web.full.gui.layout.panels.EuclidianDockPanelW;
-import org.geogebra.web.full.gui.toolbar.mow.ToolbarMow;
+import org.geogebra.web.full.gui.toolbar.mow.NotesLayout;
 import org.geogebra.web.full.main.AppWFull;
-import org.geogebra.web.html5.gui.FastClickHandler;
 import org.geogebra.web.html5.gui.view.button.StandardButton;
 import org.geogebra.web.html5.main.GgbFile;
 import org.geogebra.web.html5.util.CSSAnimation;
 import org.geogebra.web.html5.util.PersistablePanel;
 
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchStartEvent;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.Widget;
+
+import jsinterop.base.Js;
 
 /**
  * Page Control Panel for navigating through multiple pages
- * 
- * @author Alicia Hofstaetter
- * 
  */
 public class PageListPanel
 		extends PersistablePanel implements SetLabels, CardListInterface {
@@ -45,11 +41,10 @@ public class PageListPanel
 	private PersistablePanel contentPanel;
 	private StandardButton plusButton;
 	private PageListController pageController;
-	private FlowPanel divider = null;
 	private boolean isTouch = false;
 
 	@Nonnull
-	private final ToolbarMow toolbarMow;
+	private final NotesLayout notesLayout;
 
 	/**
 	 * @param app
@@ -60,7 +55,7 @@ public class PageListPanel
 		this.frame = app.getAppletFrame();
 		this.dockPanel = (EuclidianDockPanelW) (app.getGuiManager().getLayout()
 				.getDockManager().getPanel(App.VIEW_EUCLIDIAN));
-		this.toolbarMow = frame.getToolbarMowSafe(app);
+		this.notesLayout = frame.getNotesLayoutSafe(app);
 		pageController = new PageListController(app, this);
 		app.setPageController(pageController);
 		initGUI();
@@ -79,8 +74,7 @@ public class PageListPanel
 		addDomHandler(pageController, MouseDownEvent.getType());
 		addDomHandler(pageController, MouseMoveEvent.getType());
 		addDomHandler(pageController, MouseUpEvent.getType());
-		divider = new FlowPanel();
-		divider.setStyleName("mowPagePreviewCardDivider");
+		addDomHandler(pageController, MouseOutEvent.getType());
 	}
 
 	private void addContentPanel() {
@@ -89,20 +83,18 @@ public class PageListPanel
 		contentPanel = new PersistablePanel();
 		contentPanel.addStyleName("mowPageControlContentPanel");
 		scrollPanel.add(contentPanel);
-		scrollPanel.addScrollHandler(pageController);
 		add(scrollPanel);
 	}
 
 	private void addPlusButton() {
 		plusButton = new StandardButton(
-				MaterialDesignResources.INSTANCE.add_white(), null, 24, app);
+				MaterialDesignResources.INSTANCE.add_white(), null, 24);
 		plusButton.setStyleName("mowFloatingButton");
 		plusButton.addStyleName("mowPlusButton");
-		plusButton.addFastClickHandler(new FastClickHandler() {
-			@Override
-			public void onClick(Widget source) {
-				loadNewPage(false);
-			}
+		plusButton.addFastClickHandler(source -> {
+			app.dispatchEvent(new Event(EventType.ADD_SLIDE,
+					null, null));
+			loadNewPage(false);
 		});
 		add(plusButton);
 		showPlusButton(false);
@@ -117,8 +109,7 @@ public class PageListPanel
 	public void loadNewPage(boolean selected) {
 		int index = addNewPreviewCard(selected);
 		pageController.loadNewPage(index);
-		app.getKernel().getConstruction().getUndoManager()
-				.storeAction(EventType.ADD_SLIDE, index + "",
+		app.getUndoManager().storeAction(EventType.ADD_SLIDE, index + "",
 						pageController.getSlide(index).getID());
 	}
 
@@ -136,26 +127,21 @@ public class PageListPanel
 				doShow ? "hideMowFloatingButton" : "showMowFloatingButton");
 	}
 
-	/**
-	 * opens the page control panel
-	 */
+	@Override
 	public void open() {
+		if (isVisible()) {
+			return;
+		}
+
 		dockPanel.hideZoomPanel();
-		toolbarMow.showPageControlButton(false);
+		notesLayout.showPageControlButton(false);
 
 		setVisible(true);
 		setLabels();
 		removeStyleName("animateOut");
 		addStyleName("animateIn");
-		final Style style = app.getFrameElement().getStyle();
-		style.setOverflow(Overflow.HIDDEN);
-		CSSAnimation.runOnAnimation(new Runnable() {
-			@Override
-			public void run() {
-				style.setOverflow(Overflow.VISIBLE);
-				showPlusButton(true);
-			}
-		}, getElement(), "animateIn");
+		CSSAnimation.runOnAnimation(() -> showPlusButton(true),
+				getElement(), "animateIn");
 	}
 
 	/**
@@ -169,13 +155,8 @@ public class PageListPanel
 		}
 		showPlusButton(false);
 		addStyleName("animateOut");
-		app.getFrameElement().getStyle().setOverflow(Overflow.HIDDEN);
-		CSSAnimation.runOnAnimation(new Runnable() {
-			@Override
-			public void run() {
-				onClose();
-			}
-		}, getElement(), "animateOut");
+		CSSAnimation.runOnAnimation(this::onClose,
+				getElement(), "animateOut");
 		return true;
 	}
 
@@ -183,9 +164,8 @@ public class PageListPanel
 	 * handles close actions after animation
 	 */
 	protected void onClose() {
-		app.getFrameElement().getStyle().setOverflow(Overflow.VISIBLE);
 		if (app.isWhiteboardActive()) {
-			toolbarMow.showPageControlButton(true);
+			notesLayout.showPageControlButton(true);
 			dockPanel.showZoomPanel();
 		}
 		setVisible(false);
@@ -242,19 +222,16 @@ public class PageListPanel
 		// remove associated ggb file
 		String id = pageController.getSlide(index).getID();
 		if (index == 0 && pageController.getSlideCount() == 1) {
-			app.getKernel().getConstruction().getUndoManager().storeAction(
-					EventType.CLEAR_SLIDE, id);
+			app.getUndoManager().storeActionWithSlideId(
+					EventType.CLEAR_SLIDE, id, new String[]{id});
 			pageController.loadNewPage(0);
-			update();
 		} else {
-
 			pageController.removeSlide(index);
-			app.getKernel().getConstruction().getUndoManager()
-					.storeAction(EventType.REMOVE_SLIDE, index + "", id,
-							pageController.getSlideCount() + "");
+			app.getUndoManager()
+					.storeActionWithSlideId(EventType.REMOVE_SLIDE, id, new String[]{index + "", id,
+							pageController.getSlideCount() + ""});
 			updateIndexes(index);
 			// load new slide
-
 			if (index == pageController.getSlideCount()) {
 				// last slide was deleted
 				pageController.loadPage(index - 1);
@@ -262,9 +239,8 @@ public class PageListPanel
 				// otherwise
 				pageController.loadPage(index);
 			}
-
 		}
-
+		update();
 	}
 
 	/**
@@ -291,9 +267,7 @@ public class PageListPanel
 		}
 	}
 
-	/**
-	 * resets the page control panel
-	 */
+	@Override
 	public void reset() {
 		contentPanel.clear();
 		addNewPreviewCard(true);
@@ -305,10 +279,11 @@ public class PageListPanel
 	 * @param src
 	 *            to duplicate page at.
 	 */
-	public void duplicatePage(PagePreviewCard src) {
-		PagePreviewCard dup = pageController.duplicateSlideStoreUndo(src);
+	public void pastePage(PagePreviewCard src, String json) {
+		PagePreviewCard dup = pageController.pasteSlideStoreUndo(src, json);
 		addPreviewCard(dup);
 		pageController.updatePreviewImage();
+		update();
 	}
 
 	/**
@@ -322,35 +297,15 @@ public class PageListPanel
 			card.setPageIndex(index++);
 			addPreviewCard(card);
 		}
+		pageController.resetCardPositions();
 	}
 
 	@Override
-	public void insertDivider(int targetIdx) {
-		removeDivider();
-		contentPanel.insert(divider, targetIdx);
-	}
-
-	@Override
-	public void removeDivider() {
-		divider.removeFromParent();
-	}
-
-	@Override
-	public void hideScrollbar() {
-		scrollPanel.addStyleName("noVerticalScrollbar");
-	}
-
-	@Override
-	public void restoreScrollbar() {
-		scrollPanel.removeStyleName("noVerticalScrollbar");
-	}
-
-	@Override
-	public boolean scrollBy(int diff) {
-		int pos = getVerticalScrollPosition() + diff;
-		scrollPanel.setVerticalScrollPosition(pos);
-		return pos > scrollPanel.getMinimumVerticalScrollPosition()
-				|| pos < scrollPanel.getMaximumVerticalScrollPosition();
+	public void scrollBy(int diff) {
+		elemental2.dom.Element elem = Js.uncheckedCast(scrollPanel.getElement());
+		if (elem.scrollTop < elem.scrollHeight) {
+			elem.scrollTop += diff;
+		}
 	}
 
 	@Override
@@ -375,4 +330,18 @@ public class PageListPanel
 		isTouch = true;
 		update();
 	}
-}	
+
+	public void saveSlide(PagePreviewCard card) {
+		pageController.refreshSlide(card);
+	}
+
+	@Override
+	public void updateContentPanelHeight() {
+		int count = pageController.getCardCount();
+		contentPanel.getElement().getStyle().setProperty("minHeight",
+				PagePreviewCard.computeTop(count) + "px");
+		contentPanel.getElement().getStyle().setProperty("maxHeight",
+				PagePreviewCard.computeTop(count) + "px");
+	}
+}
+

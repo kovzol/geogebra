@@ -1,14 +1,21 @@
 @import 'colors';
+@import 'z-index';
 
 .GeoGebraFrame {
 
-	div[data-title]:after {
+	&.appletStyle {
+		overflow: hidden;
+		box-sizing: border-box;
+	}
+
+	div[data-title]:after,
+	button[data-title]:after {
 		opacity: 0;
 		content: "";
 	}
 
-	div[data-title]:hover:after { 
-		opacity: 1;
+	div[data-title]:hover:after,
+	button[data-title]:hover:after {
 		transition: opacity 0s linear 1s;
 		content: attr(data-title);
 		font-size: 65%;
@@ -25,7 +32,7 @@
 		background: #616161;
 		color: white;
 		opacity: 0.9;
-		z-index: 999999999999999;
+		z-index: $z-snackbar;
 	} 
 
 	.gwt-SplitLayoutPanel>div {
@@ -40,11 +47,11 @@
 
 		.gwt-SplitLayoutPanel-HDragger {
 			border-left: 1px solid #ccc;
-			z-index: 51; /* for MOW double canvas */
+			z-index: $z-on-top-of-graphics; /* for MOW double canvas */
 			/* display: none; */
 			width: 0px !important;
 			cursor: e-resize;
-   			border-right: none;
+			border-right: none;
 			box-shadow: inset 5px 3px 8px rgba(0,0,0,0.2);
 			background-color: transparent;
 			padding-right: 8px;
@@ -85,7 +92,6 @@
 		position: absolute;
 		top: 4px;
 		left: 0px;
-		z-index: 498;
 	}
 
 	.menu:hover, .menu:focus {
@@ -104,7 +110,7 @@
 		img {
 			opacity: 0.85;
 		}
-		z-index: 60;
+		z-index: $z-flat-button;
 	}
 	.tabButton {
 		position: relative;
@@ -126,100 +132,12 @@
 		}
 	}
 
-	.dotSubMenu {
-		/*padding-left: 8px;*/
-		z-index: 99999;
-	}
-
-	.collapseMenuItem,
-	.checkMarkMenuItem {
-		height: 32px;
-		padding-left: 24px;
-
-		.gwt-HTML {
-			margin-left: -30px;
-
-			img {
-				left: 56px;
-			}
-		}
-
-		img  {
-			position: absolute;
-			right: 8px;
-		}
-	}
-
 	.textWrap{
 		white-space: normal;
 	}
 
-	/*.collapseMenuItem {
-
-		img.expandImg.animeExpand {
-			transition:  0.6s ease-out;
-			transform: rotateZ(180deg);
-		}
-	}*/
-
-	.collapseMenuItem >*,
-	.checkMarkMenuItem >* {
-		padding: 8px;
-		display: inline-block;
-	}
-
-$collapse-trans: all 0.2s ease;
-
-	.expanded {
-		padding: 0px 16px 0px 64px;
-		max-height: 32px;
-		height: 32px;
-		transition: $collapse-trans; 
-
-		.checkMarkMenuItem {
-			max-height: 32px;
-			transition: $collapse-trans;
-
-			.gwt-HTML {
-				position: relative;
-				left: -24px;
-			}
-		}
-	}
-
-	.expanded >* {
-		max-height: 32px;
-		height: 32px;
-		transition: $collapse-trans; 
-	}
-
-	.collapsed {
-		padding: 0px 16px 0px 64px;
-		max-height: 0px;
-		height: 0px;
-		overflow: hidden;
-		transition: $collapse-trans;
-
-			.checkMarkMenuItem {
-			transition: $collapse-trans;
-			max-height: 0px;
-			.gwt-HTML {
-				position: relative;
-				left: -24px;
-			}
-			img  {
-				max-height: 0px;
-		}
-	}
-
-	}
-	.collapsed >*{
-		max-height: 0px;
-		transition: $collapse-trans;
-	} 
-
-	.advanced-ListPopupPanel.matDesign {
-		z-index: 500;
+	.advanced-ListPopupPanel {
+		z-index: $z-dialog;
 		background: $white;
 		border: 1px solid #dcdcdc;
 		cursor: pointer;
@@ -241,5 +159,25 @@ $collapse-trans: all 0.2s ease;
 	.verticalScroll {
 		overflow-y: auto;
 	}
+
+	.mowColorPlusButton img {
+		padding: 3px;
+	}
+
+	.matDynStyleBar {
+		will-change: transform;
+	}
  }
 
+.screenReaderStyle {
+	position: fixed;
+	bottom: 20px;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	outline-width: 0;
+	overflow: hidden;
+	margin: 0;
+	border-width: 0;
+	clip: rect(0 0 0 0);
+}

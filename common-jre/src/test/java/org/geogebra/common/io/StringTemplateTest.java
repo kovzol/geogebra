@@ -1,5 +1,7 @@
 package org.geogebra.common.io;
 
+import static org.geogebra.test.TestStringUtil.unicode;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 import org.geogebra.common.cas.giac.CASgiac;
@@ -8,19 +10,22 @@ import org.geogebra.common.jre.headless.LocalizationCommon;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.FunctionVariable;
+import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.commands.AlgebraProcessor;
 import org.geogebra.common.kernel.commands.EvalInfo;
 import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.main.AppCommon3D;
+import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.test.OrderingComparison;
 import org.geogebra.test.TestErrorHandler;
+import org.gwtproject.regexp.shared.RegExp;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.gwt.regexp.shared.RegExp;
 import com.himamis.retex.editor.share.util.Unicode;
 
 public class StringTemplateTest {
@@ -58,7 +63,7 @@ public class StringTemplateTest {
 	}
 
 	@Test
-	public void testCannonicNumber() {
+	public void testCanonicalNumber() {
 		assertEquals("0", StringUtil.canonicalNumber("0.0"));
 		assertEquals("0", StringUtil.canonicalNumber(".0"));
 		assertEquals("1.0E2", StringUtil.canonicalNumber("1.0E2"));
@@ -90,7 +95,7 @@ public class StringTemplateTest {
 		String caseSimple = "x, \\;\\;\\;\\; \\left(x > 0 \\right)";
 		tcl("If[x>0,x]", caseSimple);
 		tcl("If[x>0,x,-x]", "\\left\\{\\begin{array}{ll} x& : x > 0\\\\"
-						+ " -x& : \\text{otherwise} \\end{array}\\right. ");
+				+ " -x& : \\text{otherwise} \\end{array}\\right. ");
 		String caseThree = "\\left\\{\\begin{array}{ll} x& : x > 1\\\\"
 				+ " -x& : x < 0\\\\ 7& : \\text{otherwise} \\end{array}\\right. ";
 		tcl("If[x>1,x,If[x<0,-x,7]]", caseThree);
@@ -144,9 +149,9 @@ public class StringTemplateTest {
 
 	@Test
 	public void testInequality() {
-		String[] testI = new String[] { "(x>=3) && (7>=x) && (10>=x)" };
-		String[] test = new String[] { "aaa", "(a)+b", "3", "((a)+(b))+7" };
-		String[] testFalse = new String[] { "3(", "(((7)))" };
+		String[] testI = new String[]{"(x>=3) && (7>=x) && (10>=x)"};
+		String[] test = new String[]{"aaa", "(a)+b", "3", "((a)+(b))+7"};
+		String[] testFalse = new String[]{"3(", "(((7)))"};
 		for (String t : test) {
 			Assert.assertTrue(
 					RegExp.compile("^" + CASgiac.expression + "$").test(t));
@@ -176,11 +181,73 @@ public class StringTemplateTest {
 	public void shouldUseTrigPowerForVarExponent() {
 		FunctionVariable x = new FunctionVariable(app.getKernel());
 		ExpressionNode node = x.wrap().sin().power(x.wrap().cos());
-		assertEquals("sin(x)^cos(x)",
+		assertEquals("(sin(x))^cos(x)",
 				node.toString(StringTemplate.editTemplate));
-		assertEquals("\\operatorname{sin} \\left( x \\right)"
+		assertEquals("\\left(\\operatorname{sin} \\left( x \\right) \\right)"
 						+ "^{\\operatorname{cos} \\left( x \\right)}",
 				node.toString(StringTemplate.latexTemplate));
 	}
 
+	@Test
+	public void shouldUseBracketsForFunctionPowers() {
+		ExpressionNode node = functionPower(Operation.LOG, 2);
+		assertEquals(unicode("(ln(x))^2"),
+				node.toString(StringTemplate.editTemplate));
+		node = functionPower(Operation.ARCSIN, 3);
+		assertEquals(unicode("(sin^-1(x))^3"),
+				node.toString(StringTemplate.editTemplate));
+	}
+
+	private ExpressionNode functionPower(Operation op, int exponent) {
+		FunctionVariable x = new FunctionVariable(app.getKernel());
+		return x.wrap().apply(op).power(new MyDouble(app.getKernel(), exponent));
+	}
+
+	@Test
+	public void testConvertScientificNotationGiac() {
+		StringTemplate template = StringTemplate.giacTemplate;
+		MatcherAssert.assertThat(template.convertScientificNotationGiac("3E3"), is("3000"));
+		MatcherAssert.assertThat(template.convertScientificNotationGiac("3.33"), is("(333/100)"));
+		MatcherAssert.assertThat(template.convertScientificNotationGiac("3.33E1"), is("(333/10)"));
+		MatcherAssert.assertThat(template.convertScientificNotationGiac("3.33E2"), is("333"));
+		MatcherAssert.assertThat(template.convertScientificNotationGiac("3.33E3"), is("3330"));
+	}
+
+	@Test
+	public void definitionShouldKeepSmallNumbers() {
+		GeoElementND num = add("a=1E-20");
+		assertEquals("1*10^(-20)",
+				num.getDefinition(StringTemplate.editTemplate));
+	}
+
+	@Test
+	public void definitionShouldKeepSmallNumbersScientific() {
+		GeoElementND num = add("a=1E-20");
+		StringTemplate latexNoLocal = StringTemplate.defaultTemplate.deriveLaTeXTemplate();
+		latexNoLocal.setLocalizeCmds(false);
+		assertEquals("1 \\cdot 10^{-20}", num.getDefinition(latexNoLocal));
+	}
+
+	@Test
+	public void powerWithScientificNotationShouldHaveBrackets() {
+		GeoElementND fn = add("x^(3E-20)");
+		assertEquals("f(x) = x^(3*10^(-20))",
+				fn.toString(StringTemplate.editTemplate));
+		GeoElementND fn2 = add("3E20^x");
+		assertEquals("g(x) = (3*10^(20))^x",
+				fn2.toString(StringTemplate.editTemplate));
+		GeoElementND fn3 = add("x^3E20");
+		assertEquals("h(x) = x^(3*10^(20))",
+				fn3.toString(StringTemplate.editTemplate));
+		GeoElementND num = add("3E-20!");
+		assertEquals("(3*10^(-20))!",
+				num.getDefinition(StringTemplate.editTemplate));
+	}
+
+	@Test
+	public void factorialWithScientificNotationShouldHaveBrackets() {
+		GeoElementND num = add("3E-20!");
+		assertEquals("(3*10^(-20))!",
+				num.getDefinition(StringTemplate.editTemplate));
+	}
 }

@@ -37,6 +37,8 @@ import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.MyParseError;
 import org.geogebra.common.plugin.Operation;
 
+import com.google.j2objc.annotations.Weak;
+
 /**
  * 
  * @author Markus Hohenwarter
@@ -45,6 +47,7 @@ import org.geogebra.common.plugin.Operation;
 public class Variable extends ValidExpression {
 
 	private String name;
+	@Weak
 	private Kernel kernel;
 	private VariableReplacerAlgorithm variableReplacerAlgorithm;
 
@@ -89,33 +92,28 @@ public class Variable extends ValidExpression {
 	/**
 	 * Looks up the name of this variable in the kernel and returns the
 	 * according GeoElement object.
-	 */
-	private GeoElement resolve(boolean throwError, SymbolicMode mode) {
-		return resolve(
-				mode == SymbolicMode.NONE, throwError, mode);
-	}
-
-	/**
-	 * Looks up the name of this variable in the kernel and returns the
-	 * according GeoElement object.
 	 * 
 	 * @param allowAutoCreateGeoElement
 	 *            true to allow creating new objects
 	 * @param throwError
 	 *            when true, error is thrown when geo not found. Otherwise null
 	 *            is returned in such case.
+	 * @param allowMultiLetterVariables
+	 * 			  when false, allow only single letter variables
+	 * 			  or followed by apostrophes or subscript (only for inputbox)
 	 * @param mode
 	 *            symbolic mode
 	 * @return GeoElement with same label
 	 */
-
 	public GeoElement resolve(boolean allowAutoCreateGeoElement, boolean throwError,
-							  SymbolicMode mode) {
+							  SymbolicMode mode, boolean allowMultiLetterVariables) {
 		if (mode == SymbolicMode.SYMBOLIC) {
 			return new GeoDummyVariable(kernel.getConstruction(), name);
 		}
 		GeoElement resolvedElement = lookupLabel(allowAutoCreateGeoElement, mode);
-		if (resolvedElement != null || !throwError) {
+		boolean resolveVariable = allowMultiLetterVariables || acceptLabelInputbox();
+		if ((resolvedElement != null && resolveVariable)
+				|| (resolvedElement == null && !throwError)) {
 			return resolvedElement;
 		}
 		if (mode == SymbolicMode.SYMBOLIC_AV) {
@@ -127,7 +125,24 @@ public class Variable extends ValidExpression {
 
 	private GeoElement lookupLabel(boolean allowAutoCreateGeoElement, SymbolicMode symbolicMode) {
 		return kernel.lookupLabel(name, allowAutoCreateGeoElement, symbolicMode);
+	}
 
+	private boolean acceptLabelInputbox() {
+		// single letter
+		if (name.length() == 1) {
+			return true;
+		}
+		// single letter followed by subscript
+		if (name.charAt(1) == '_' && name.charAt(2) == '{'
+				&& name.charAt(name.length() - 1) == '}') {
+			return true;
+		}
+		// single letter followed by apostrophes
+		String noApostrophes = name.replaceAll("'", "");
+		if (noApostrophes.length() == 1) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -140,25 +155,29 @@ public class Variable extends ValidExpression {
 	 *            symbolic mode
 	 * @param multipleUnassignedAllowed
 	 *            whether to allow splitting into multiple unassigned variables
+	 * @param allowMultiLetterVariables
+	 * 			  whether multiple letter variable name are allowed
 	 * @return GeoElement whose label is name of this variable or ExpressionNode
 	 *         wrapping spreadsheet reference
 	 */
 	final public ExpressionValue resolveAsExpressionValue(SymbolicMode mode,
-				boolean multipleUnassignedAllowed) {
+				boolean multipleUnassignedAllowed, boolean allowMultiLetterVariables) {
 		variableReplacerAlgorithm.setMultipleUnassignedAllowed(multipleUnassignedAllowed);
-		GeoElement geo = resolve(false, mode);
+		boolean allowAutoCreateGeoElement = (mode == SymbolicMode.NONE)
+					&& !multipleUnassignedAllowed;
+		GeoElement geo = resolve(allowAutoCreateGeoElement, false, mode, allowMultiLetterVariables);
 		if (geo == null) {
-			if (kernel.getConstruction().isRegistredFunctionVariable(name)) {
+			if (kernel.getConstruction().isRegisteredFunctionVariable(name)) {
 				return new FunctionVariable(kernel, name);
 			}
-            ExpressionValue replacement = replacement(name);
-            if (!(replacement instanceof Variable)) {
-                return replacement;
-            }
-            if (mode == SymbolicMode.SYMBOLIC_AV) {
-                return new GeoDummyVariable(kernel.getConstruction(), name);
-            }
-            return resolve(true, mode);
+			ExpressionValue replacement = replacement(name);
+			if (!(replacement instanceof Variable)) {
+				return replacement;
+			}
+			if (mode == SymbolicMode.SYMBOLIC_AV) {
+				return new GeoDummyVariable(kernel.getConstruction(), name);
+			}
+			return resolve(allowAutoCreateGeoElement, true, mode, allowMultiLetterVariables);
 		}
 
 		// spreadsheet dollar sign reference
@@ -168,7 +187,7 @@ public class Variable extends ValidExpression {
 			// row and/or column dollar sign present?
 			boolean colDollar = name.indexOf('$') == 0;
 			boolean rowDollar = name.length() > 2 && name.indexOf('$', 1) > -1;
-            Operation operation;
+			Operation operation;
 			if (rowDollar && colDollar) {
 				operation = Operation.DOLLAR_VAR_ROW_COL;
 			} else if (rowDollar) {
@@ -198,7 +217,7 @@ public class Variable extends ValidExpression {
 	@Override
 	public HashSet<GeoElement> getVariables(SymbolicMode mode) {
 		HashSet<GeoElement> ret = new HashSet<>();
-		ret.add(resolve(true, mode));
+		ret.add(resolve(mode == SymbolicMode.NONE, true, mode, true));
 		return ret;
 	}
 

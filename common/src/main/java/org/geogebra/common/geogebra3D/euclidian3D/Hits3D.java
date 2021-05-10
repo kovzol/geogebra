@@ -225,22 +225,22 @@ public class Hits3D extends Hits {
 		Iterator<Drawable3D> iter1 = hitSetSet.first().iterator();
 		if (iter1.hasNext()) {
 			Drawable3D d = iter1.next();
-            addToHits(d, topHits);
+			addToHits(d, topHits);
 			zNear = d.getZPickNear();
 		}
 		while (iter1.hasNext()) {
-            addToHits(iter1.next(), topHits);
+			addToHits(iter1.next(), topHits);
 		}
 
 		// sets the hits to this
 		ArrayList<GeoElement> segmentList = new ArrayList<>();
 		drawables3D.clear();
 
-        for (TreeSetOfDrawable3D set : hitSetSet) {
-            for (Drawable3D d : set) {
+		for (TreeSetOfDrawable3D set : hitSetSet) {
+			for (Drawable3D d : set) {
 				drawables3D.add(d);
 				GeoElement geo = d.getGeoElement();
-                addToHits(d, this);
+				addToHits(d, this);
 
 				// add the parent of this if it's a segment from a GeoPolygon3D
 				// or GeoPolyhedron
@@ -259,14 +259,14 @@ public class Hits3D extends Hits {
 		return zNear;
 	}
 
-    private void addToHits(Drawable3D d, Hits hits) {
-        GeoElement geo = d.getGeoElement();
-        if (geo.getMetasLength() > 0 && geo.getKernel().getApplication()
-                .has(Feature.G3D_SELECT_META)) {
-            hits.addAll(Arrays.asList(((FromMeta) geo).getMetas()));
-        }
-        hits.add(geo);
-    }
+	private void addToHits(Drawable3D d, Hits hits) {
+		GeoElement geo = d.getGeoElement();
+		if (geo.getMetasLength() > 0 && geo.getKernel().getApplication()
+				.has(Feature.G3D_SELECT_META)) {
+			hits.addAll(Arrays.asList(((FromMeta) geo).getMetas()));
+		}
+		hits.add(geo);
+	}
 
 	/**
 	 * WARNING : sort() should be called before

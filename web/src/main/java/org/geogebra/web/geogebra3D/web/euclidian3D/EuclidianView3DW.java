@@ -29,7 +29,6 @@ import org.geogebra.web.html5.awt.GGraphics2DW;
 import org.geogebra.web.html5.euclidian.EuclidianPanelWAbstract;
 import org.geogebra.web.html5.euclidian.EuclidianViewW;
 import org.geogebra.web.html5.euclidian.EuclidianViewWInterface;
-import org.geogebra.web.html5.euclidian.GGraphics2DE;
 import org.geogebra.web.html5.euclidian.GGraphics2DWI;
 import org.geogebra.web.html5.euclidian.IsEuclidianController;
 import org.geogebra.web.html5.euclidian.MyEuclidianViewPanel;
@@ -43,7 +42,6 @@ import org.geogebra.web.html5.main.TimerSystemW;
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.animation.client.AnimationScheduler.AnimationCallback;
 import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.GestureChangeEvent;
@@ -62,6 +60,10 @@ import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
+
+import elemental2.dom.CanvasRenderingContext2D;
+import elemental2.dom.HTMLCanvasElement;
+import jsinterop.base.Js;
 
 /**
  * 3D view
@@ -109,11 +111,7 @@ public class EuclidianView3DW extends EuclidianView3D implements
 
 		Canvas canvas = euclidianViewPanel.getCanvas();
 		setEvNo();
-		if (canvas != null) {
-			this.g2p = new GGraphics2DW(canvas);
-		} else {
-			this.g2p = new GGraphics2DE();
-		}
+		this.g2p = new GGraphics2DW(canvas);
 
 		updateFonts();
 		initView(true);
@@ -541,13 +539,8 @@ public class EuclidianView3DW extends EuclidianView3D implements
 	@Override
 	public String getExportImageDataUrl(double scale, boolean transparent,
 			ExportType format, boolean greyscale) {
-		((RendererWInterface) this.renderer).setBuffering(true);
-		this.doRepaint2();
-
-		String url = ((Canvas) renderer.getCanvas()).toDataUrl(
+		return getExportCanvas().toDataURL(
 				format == ExportType.WEBP ? "image/webp" : "image/png");
-		((RendererWInterface) this.renderer).setBuffering(false);
-		return url;
 	}
 
 	@Override
@@ -576,10 +569,10 @@ public class EuclidianView3DW extends EuclidianView3D implements
 		canv.setCoordinateSpaceWidth((int) thx);
 		canv.setWidth((int) thx + "px");
 		canv.setHeight((int) thy + "px");
-		Context2d c2 = canv.getContext2d();
+		CanvasRenderingContext2D c2 = Js.uncheckedCast(canv.getContext2d());
 
-		c2.drawImage(foreground.getCanvasElement(), 0, 0, (int) thx,
-				(int) thy);
+		c2.drawImage(Js.<HTMLCanvasElement>uncheckedCast(foreground.getCanvasElement()),
+				0, 0, (int) thx, (int) thy);
 
 		return EuclidianViewW.dataURL(canv, null);
 	}
@@ -633,7 +626,7 @@ public class EuclidianView3DW extends EuclidianView3D implements
 			alt = app.getKernel().lookupLabel("altText");
 		}
 		if (alt instanceof GeoText) {
-			altStr = ((GeoText) alt).getTextString();
+			altStr = ((GeoText) alt).getAuralText();
 		}
 		setAltText(altStr);
 	}
@@ -704,5 +697,14 @@ public class EuclidianView3DW extends EuclidianView3D implements
 	@Override
 	public boolean isAttached() {
 		return g2p != null && g2p.isAttached();
+	}
+
+	@Override
+	public HTMLCanvasElement getExportCanvas() {
+		RendererWInterface rendererW = (RendererWInterface) this.renderer;
+		rendererW.setBuffering(true);
+		this.doRepaint2();
+		rendererW.setBuffering(true);
+		return Js.uncheckedCast(rendererW.getCanvas().getCanvasElement());
 	}
 }

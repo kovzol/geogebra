@@ -15,7 +15,7 @@ import org.geogebra.common.kernel.matrix.Coords;
  *
  */
 public interface GeoSegmentND extends GeoLineND, LimitedPath, GeoNumberValue,
-        FromMeta, Parametrizable {
+		FromMeta, Parametrizable {
 
 	/**
 	 * Sets start point and end point with inhom coords
@@ -82,7 +82,7 @@ public interface GeoSegmentND extends GeoLineND, LimitedPath, GeoNumberValue,
 
 	/**
 	 * 
-	 * @return copy with free Input Points
+	 * @return unlabeled copy with free Input Points
 	 */
 	GeoElement copyFreeSegment();
 

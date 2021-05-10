@@ -52,6 +52,12 @@
 			visibility: hidden;
 			z-index: 2000;
 		}
+
+		.popupImg {
+			position: absolute;
+			z-index: 3000;
+			left: 0;
+		}
 	</style>
 
 	<script type="text/javascript">
@@ -101,9 +107,9 @@
 			"laf": "text",
 			"showResetIcon": "boolean",
 			"showAnimationButton": ["boolean", true],
-			"showSuggestionButtons": ["boolean", true],
 			"showFullscreenButton": "boolean",
 			"showZoomButtons": "boolean",
+			"showSlides": "boolean",
 			"buttonShadows": "boolean",
 			"buttonRounding": "number",
 			"buttonBorderColor": "text",
@@ -112,7 +118,10 @@
 			"jSON": "text",
 			"id": "text",
 			"fontSize": "text",
-			"keyboardType": ["select", "normal", "scientific"],
+			"keyboardType": ["select", "normal", "scientific", "notes"],
+			"textMode": "boolean",
+			"editorForegroundColor": "text",
+			"editorBackgroundColor": "text",
 			"randomSeed": "text",
 			"width": ["text", 800],
 			"height": ["text", 600]
@@ -168,7 +177,19 @@
 		}
 
 		window.addEventListener("load", function () {
-			var article = document.createElement("article");
+			document.getElementById("snap").addEventListener("click", function() {
+				ggbApplet.getScreenshotBase64(function(base64) {
+					var popup = document.createElement("img");
+					popup.src = "data:image/png;base64," + base64;
+					popup.className = "popupImg";
+					popup.addEventListener("click", function() {
+						popup.remove()
+					});
+					document.body.appendChild(popup);
+				});
+			});
+
+			var article = document.createElement("div");
 
 			for (param in params) {
 				type = typeof params[param] == "object" ? params[param][0]
@@ -258,6 +279,7 @@
 	</script>
 </head>
 <body>
+	<button id="snap">SCREENSHOT</button>
 	<div id="settings"></div>
 	<div id="scaleContainer">
 		<div>

@@ -10,14 +10,14 @@ public interface PointProperties {
 	 * @param size
 	 *            new point size
 	 */
-    void setPointSize(int size);
+	void setPointSize(int size);
 
 	/**
 	 * Returns the point size
 	 * 
 	 * @return point size
 	 */
-    int getPointSize();
+	int getPointSize();
 
 	/**
 	 * Sets the point style
@@ -25,22 +25,22 @@ public interface PointProperties {
 	 * @param type
 	 *            point style
 	 */
-    void setPointStyle(int type);
+	void setPointStyle(int type);
 
 	/**
 	 * Returns the point style
 	 * 
 	 * @return point style
 	 */
-    int getPointStyle();
+	int getPointStyle();
 
 	/**
 	 * Updates and repaints the object
 	 */
-    void updateRepaint();
+	void updateRepaint();
 
-    /**
-     * @return whether point settings should be shown
-     */
-    boolean showPointProperties();
+	/**
+	 * @return whether point settings should be shown
+	 */
+	boolean showPointProperties();
 }

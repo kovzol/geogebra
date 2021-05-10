@@ -75,7 +75,7 @@ public class AlgoCircleThreePoints extends AlgoElement
 
 
 	public AlgoCircleThreePoints(Construction cons, String label, GeoPointND A, GeoPointND B,
-								 GeoPointND C) {
+			GeoPointND C) {
 		this(cons, A, B, C);
 		circle.setLabel(label);
 	}

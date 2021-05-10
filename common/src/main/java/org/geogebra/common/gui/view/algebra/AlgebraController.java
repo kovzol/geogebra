@@ -25,11 +25,17 @@ import org.geogebra.common.main.SelectionManager;
 import org.geogebra.common.main.error.ErrorHandler;
 import org.geogebra.common.util.AsyncOperation;
 
+import com.google.j2objc.annotations.Weak;
+
 public class AlgebraController {
 
+	@Weak
 	protected Kernel kernel;
+	@Weak
 	protected App app;
+	@Weak
 	protected SelectionManager selection;
+	@Weak
 	private AlgebraView view;
 	private boolean isAutoCreateSliders = true;
 	private boolean isStoringUndo = true;
@@ -204,7 +210,7 @@ public class AlgebraController {
 			}
 		} catch (Exception ee) {
 			errorHandler
-                    .showError(app.getLocalization().getInvalidInputError());
+					.showError(app.getLocalization().getInvalidInputError());
 			return false;
 		} catch (Error ee) {
 			errorHandler.showError(ee.getLocalizedMessage());

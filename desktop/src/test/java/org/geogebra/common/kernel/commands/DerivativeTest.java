@@ -7,9 +7,9 @@ import org.junit.Test;
  */
 public class DerivativeTest extends AlgebraTest {
 
-    @Test
-    public void testNoCasDerivative() {
-        app.enableCAS(false);
-        t("Derivative(sin(x))", "NDerivative[sin(x)]");
-    }
+	@Test
+	public void testNoCasDerivative() {
+		app.enableCAS(false);
+		t("Derivative(sin(x))", "NDerivative[sin(x)]");
+	}
 }

@@ -34,6 +34,8 @@ import org.geogebra.common.kernel.prover.polynomial.PVariable;
 import org.geogebra.common.plugin.Operation;
 
 /**
+ * Boolean expression, may require CAS for expressions like f==g where f,g are functions,
+ * curves or surfaces.
  *
  * @author Markus
  */

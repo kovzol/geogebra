@@ -39,7 +39,6 @@ public class ComponentDropDownPopup {
 		this.itemHeight = itemHeight;
 		this.anchor = anchor;
 		menu = new GPopupMenuW(app);
-		menu.getPopupPanel().addStyleName("matMenu");
 		menu.getPopupPanel().addStyleName("dropDownPopup");
 		app.registerAutoclosePopup(menu.getPopupPanel());
 	}
@@ -107,7 +106,7 @@ public class ComponentDropDownPopup {
 
 	private void showHigh() {
 		int top = getTop() - getSelectedItemTop();
-		double spaceToBottom = app.getHeight() - top - 3 * (itemHeight / 2);
+		double spaceToBottom = app.getHeight() - top - 3d * itemHeight / 2;
 		if (spaceToBottom < getPopupHeightRemaining()) {
 			setMaxHeightInPx(spaceToBottom);
 		} else {

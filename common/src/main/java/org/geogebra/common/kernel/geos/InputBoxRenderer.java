@@ -1,8 +1,6 @@
 package org.geogebra.common.kernel.geos;
 
-import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
-import org.geogebra.common.kernel.arithmetic.VectorNDValue;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
 
@@ -33,13 +31,13 @@ class InputBoxRenderer {
 			linkedGeoText = getTextForNumeric((GeoNumeric) linkedGeo);
 		} else if (inputBox.isSymbolicMode()) {
 			linkedGeoText = getTextForSymbolic();
+		} else if (isRestrictedPoint()) {
+			linkedGeoText = linkedGeo.toValueString(StringTemplate.editTemplate);
 		} else {
 			linkedGeoText = linkedGeo.getRedefineString(true, true);
 		}
 
-		if (isComplexNumber(linkedGeo)) {
-			linkedGeoText = linkedGeoText.replace(Unicode.IMAGINARY, 'i');
-		}
+		linkedGeoText = linkedGeoText.replace(Unicode.IMAGINARY, 'i');
 
 		if (isTextUndefined(linkedGeoText)) {
 			return "";
@@ -48,30 +46,28 @@ class InputBoxRenderer {
 		return linkedGeoText;
 	}
 
-	/**
-	 *
-	 * @param geo to check
-	 * @return if geo is complex number or not.
-	 */
-	public static boolean isComplexNumber(GeoElementND geo) {
-		return geo instanceof VectorNDValue
-				&& ((VectorNDValue) geo).getToStringMode() == Kernel.COORD_COMPLEX;
-	}
-
 	private boolean isTextUndefined(String text) {
 		return "?".equals(text);
 	}
 
 	private String getTextForSymbolic() {
-		boolean flatEditableList = !hasEditableMatrix() && linkedGeo.isGeoList();
-
-		if (inputBox.hasSymbolicFunction() || flatEditableList) {
+		boolean flatEditableList = linkedGeo.isGeoList()
+				&& !((GeoList) linkedGeo).hasSpecialEditor();
+		boolean isComplexFunction = linkedGeo.isGeoSurfaceCartesian()
+				&& linkedGeo.getDefinition() != null;
+		if (isRestrictedPoint()) {
+			return linkedGeo.toValueString(StringTemplate.latexTemplate);
+		} else if (inputBox.hasSymbolicFunction() || flatEditableList || isComplexFunction) {
 			return getLaTeXRedefineString();
 		} else if (hasVector()) {
 			return getVectorRenderString((GeoVectorND) linkedGeo);
 		}
 
 		return toLaTex();
+	}
+
+	private boolean isRestrictedPoint() {
+		return linkedGeo.isPointInRegion() || linkedGeo.isPointOnPath();
 	}
 
 	private String getTextForNumeric(GeoNumeric numeric) {
@@ -93,7 +89,7 @@ class InputBoxRenderer {
 	}
 
 	private String getVectorRenderString(GeoVectorND vector) {
-		return vector.isColumnEditable()
+		return vector.hasSpecialEditor()
 				? vector.toLaTeXString(true, StringTemplate.latexTemplate)
 				: getLaTeXRedefineString();
 	}
@@ -105,17 +101,9 @@ class InputBoxRenderer {
 
 	private StringTemplate getStringTemplateForLaTeX() {
 		if (stringTemplateForLaTeX == null) {
-			stringTemplateForLaTeX = StringTemplate.latexTemplate.makeStrTemplateForEditing();
+			stringTemplateForLaTeX = StringTemplate.latexTemplate;
 		}
 		return stringTemplateForLaTeX;
-	}
-
-	private boolean hasEditableMatrix() {
-		if (!linkedGeo.isGeoList()) {
-			return false;
-		}
-
-		return ((GeoList) linkedGeo).isEditableMatrix();
 	}
 
 	void setLinkedGeo(GeoElementND linkedGeo) {

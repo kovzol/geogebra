@@ -20,8 +20,9 @@ package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeMap;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Construction;
@@ -58,7 +59,22 @@ public class AlgoJoinPointsSegment extends AlgoElement
 
 	/**
 	 * Creates new AlgoJoinPoints
-	 * 
+	 *
+	 * @param cons
+	 *            construction
+	 * @param P
+	 *            start point
+	 * @param Q
+	 *            end point
+	 */
+	public AlgoJoinPointsSegment(Construction cons, GeoPoint P,
+			GeoPoint Q) {
+		this(cons, P, Q, null, true);
+	}
+
+	/**
+	 * Creates new AlgoJoinPoints
+	 *
 	 * @param cons
 	 *            construction
 	 * @param label

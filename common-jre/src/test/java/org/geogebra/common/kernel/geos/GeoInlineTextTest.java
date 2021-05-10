@@ -3,6 +3,7 @@ package org.geogebra.common.kernel.geos;
 import static org.junit.Assert.assertEquals;
 
 import org.geogebra.common.BaseUnitTest;
+import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GPoint2D;
 import org.geogebra.common.io.XmlTestUtil;
 import org.geogebra.common.kernel.Construction;
@@ -41,11 +42,12 @@ public class GeoInlineTextTest extends BaseUnitTest {
 		GPoint2D startPoint = new GPoint2D(x, y);
 
 		GeoInlineText savedInlineText = new GeoInlineText(cons, startPoint);
-		savedInlineText.setWidth(width);
-		savedInlineText.setHeight(height);
+		savedInlineText.setSize(width, height);
 		savedInlineText.setLabel("testText");
 		savedInlineText.setAngle(angle);
 		savedInlineText.setContent(content);
+		savedInlineText.setBorderColor(GColor.DARK_GREEN);
+		savedInlineText.setBorderThickness(3);
 
 		String appXML = getApp().getXML();
 		XmlTestUtil.testCurrentXML(getApp());
@@ -59,6 +61,8 @@ public class GeoInlineTextTest extends BaseUnitTest {
 		assertEquals(height, loadedInlineText.getHeight(), Kernel.MAX_PRECISION);
 		assertEquals(angle, loadedInlineText.getAngle(), Kernel.MAX_PRECISION);
 		assertEquals(content, loadedInlineText.getContent());
+		assertEquals(GColor.DARK_GREEN, loadedInlineText.getBorderColor());
+		assertEquals(3, loadedInlineText.getBorderThickness());
 	}
 
 	@Test

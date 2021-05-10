@@ -2,7 +2,9 @@ package org.geogebra.common.util;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.algos.AlgoFractionText;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
+import org.geogebra.common.util.debug.crashlytics.CrashlyticsLogger;
 
 public class DoubleUtil {
 
@@ -159,20 +161,28 @@ public class DoubleUtil {
 
 	/**
 	 * Check difference is small, proportional to numbers
-	 * 
-	 * @param x
-	 *            first number
-	 * @param y
-	 *            second number
-	 * @return x==y
+	 * @param x first number
+	 * @param y second number
+	 * @return x == y, with standard precision
 	 */
-	final public static boolean isRatioEqualTo1(double x, double y) {
+	public static boolean isRatioEqualTo1(double x, double y) {
+		return isRatioEqualTo1(x, y, Kernel.STANDARD_PRECISION);
+	}
+
+	/**
+	 * Check difference is small, proportional to numbers
+	 * @param x first number
+	 * @param y second number
+	 * @param precision precision to use when comparing
+	 * @return x == y, with the given precision
+	 */
+	public static boolean isRatioEqualTo1(double x, double y, double precision) {
 		if (x == y) {
 			return true;
 		}
-	
-		double eps = Kernel.STANDARD_PRECISION * Math.min(Math.abs(x), Math.abs(y));
-	
+
+		double eps = precision * Math.min(Math.abs(x), Math.abs(y));
+
 		return ((x - eps) <= y) && (y <= (x + eps));
 	}
 
@@ -416,6 +426,23 @@ public class DoubleUtil {
 			// rounded root is more accurate -> use that
 			return root2;
 		}
+		
+		// now try slower check for eg 1/3
+		double[] polishedRoot = AlgoFractionText.decimalToFraction(root, Kernel.STANDARD_PRECISION);
+		if (polishedRoot[1] != 0 && Math.abs(polishedRoot[0]) < 999
+				&& Math.abs(polishedRoot[1]) < 20) {
+			root2 = polishedRoot[0] / polishedRoot[1];
+			root2Val = f.value(root2);
+			if (!MyDouble.isFinite(root2Val)) {
+				// hole near/at root
+				return Double.NaN;
+			}
+			
+			if (Math.abs(root2Val) < Math.abs(rootVal)) {
+				// rounded root is more accurate -> use that
+				return root2;
+			}
+		}
 
 		// default: return original root
 		return root;
@@ -513,12 +540,12 @@ public class DoubleUtil {
 	 * Create a range of doubles from min to max with the given step
 	 * @param max >= min
 	 * @param step > 0
-	 * @return {min} if min == max,
+	 * @return {min} if min >= max,
 	 * 		{min, min + step, min + 2*step, ..., min + i*step, max}
 	 * 		otherwise, where min + i*step is the greatest such number
 	 * 		that is smaller than max
 	 */
-	public static double[] range(double min, double max, double step) {
+	public static double[] range(double min, double max, double step) throws OutOfMemoryError {
 		// To any future developer who wants to simplify this code:
 		// please double-triple check what you are doing, floating
 		// point numbers are _not_ easy to handle (APPS-158, APPS-1824)
@@ -527,12 +554,18 @@ public class DoubleUtil {
 		if (min + length * step < max - Kernel.STANDARD_PRECISION) {
 			length++;
 		}
+		if (length <= 0) {
+			return new double[] {min};
+		}
+
+		CrashlyticsLogger.log("DoubleUtil.range called with min = " + min + ", max = " + max
+				+ ", step = " + step + ". Array length = " + length + ".");
 
 		double[] result = new double[length + 1];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = checkDecimalFraction(min + i * step);
 		}
-		result[length] = max;
+		result[result.length - 1] = max;
 
 		return result;
 	}

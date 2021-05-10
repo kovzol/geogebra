@@ -1,23 +1,20 @@
 @import 'colors';
+@import 'z-index';
 
 .GeoGebraFrame {
-	$always_on_top: 60;
-	
+
 	.TitleBarPanel {
-		z-index: $always_on_top;
-	}
-	
-	.MatTitleBarPanelContent {
-		min-width: 48px;
-		min-height: 64px;
-		box-shadow: none !important;
-		padding: 0px !important;
-		background-color: transparent !important;
+		z-index: $z-on-top-of-graphics;
 	}
 
-	.button.flatButton.graphicsContextMenuBtn.button-up {
+	.graphicsControlsPanel {
+		left: auto !important;
+		z-index: $z-on-top-of-graphics;
+	}
+
+	.flatButton.graphicsContextMenuBtn {
 		margin-top: 10px;
-		margin-right: 10px;	
+		margin-right: 10px;
 		position: relative;
 		right: 0px;
 		border-radius: 50%;
@@ -25,22 +22,18 @@
 		img {
 			opacity: 0.54;
 		}
-	}
-		
-	.button.flatButton.graphicsContextMenuBtn.button-up-hovering {
-		@extend .button-up;
-				
-		img {
-			opacity: 0.84;	
-		}
-	}
 
-	.button.flatButton.graphicsContextMenuBtn.mow.button-up-hovering {
-		@extend .button-up;
-			
-		background-color: $mow_card_background_hover;
-		img {
-			opacity: 1;	
+		&:hover {
+			img {
+				opacity: 0.84;
+			}
+		}
+
+		&.mow:hover {
+			background-color: $mow_card_background_hover;
+			img {
+				opacity: 1;
+			}
 		}
 	}
 
@@ -51,17 +44,17 @@
 	/*dyn stylebar*/
 	.matDynStyleBar {
 		// popup has 500
-		z-index: 499;
+		z-index: $z-dialog-under-keyboard;
 		position: absolute;
 	    border-radius: 2px;
 	    padding: 8px 4px 8px 16px;
 	    background-color: $white;
 	    box-shadow: 0 0 2px 1px $popup-shadow;
-	    
+
 	    &.noContextBtn {
 	    	padding: 8px 0px 8px 8px;
 	    }
-	    
+
 	    /*stylebar btn*/
 	    .MyCanvasButton {
 			text-align: center;
@@ -73,73 +66,53 @@
 			margin-left: 0px;
 			margin-right: 8px;
 			cursor: pointer;
-			
+
 			img , .buttonContent {
-				opacity: 0.7;	
-			}
-
-			&:hover {
-				border: $purple-default solid 1px;
-			}
-
-			&.active {
-				border: $purple-default solid 1px;
-			}
-		
-			&.withIcon {
-				border: $tool-border solid 1px;
-				
-				.buttonContent {
-					opacity: 0.7;	
-				}
-			
-				&:hover {
-					border: $purple-default solid 1px;
-				}
+				opacity: 0.7;
 			}
 		}
-	
+
 		.btnBold,.btnItalic {
 			border-radius: 2px;
 			margin-left: 0px;
 			margin-right: 8px;
-			
+
 			img {
 				opacity: 0.7;
-			}	
-		
+			}
+
 			&:hover, &:focus {
 				border: $purple-default solid 1px;
 			}
-		
+
 			&.gwt-ToggleButton-down {
 				border: $purple-default solid 1px;
 			}
 		}
 
-		.matDynStyleContextButton { 
+		.matDynStyleContextButton {
 			margin-right: 0px !important;
 			margin-left: 0px !important;
 			border: none !important;
-			
+
 			&.noOpacity, &.noOpacity:hover {
 				.buttonContent.stylebarButton {
-					opacity: 1 !important;	
+					opacity: 1 !important;
 				}
 			}
-		
+
 			&:hover {
 				.buttonContent.stylebarButton {
-					opacity: 1 !important;		
+					opacity: 1 !important;
 				}
 			}
-		
+
 		}
 	}
 
 	.mowDynStyleBar.matDynStyleBar.noContextBtn{
 	    padding: 8px 0px 8px 8px;
-	    
+
 	    .MyCanvasButton.delete{
 	    	margin-right: -12px;
 	    }
@@ -150,44 +123,32 @@
 		border-radius: 2px;
 		padding: 8px 0px 8px 0px;
 		margin: 0px;
-		
+
 		.matSelectionTable {
     		border-collapse: separate;
 			border-spacing: 0px 0px;
-    			
+
     		.gwt-Label {
     			padding: 0px 16px 0px 16px;
     			height: 24px;
     			line-height: 24px;
-    			
+
     			&:hover {
     				background-color: $selected-menuitem-background;
-    				color: $black;
-    				/*background-color: $white-90;*/
-    				/*color: $toolbar-header-54;	*/
-    			}
-    		
-    			&.selected {
-    				/*border: 1px solid $purple-default;*/
-    				color: $purple-default;
-    				
-    				&:hover {
-    					color: $purple-default !important;
-    				}
     			}
     		}
     	}
-    
+
 	}
 
 	/*dyn stylebar popup panel*/
 	.matPopupPanel {
 		border-radius: 2px;
-    	padding: 0px 8px 0px 8px;
-    	background-color: $white;
-    	box-shadow: 0 0 2px 1px $tool-border;
-    	z-index: 500000;	
-        min-height: 30px;
+		padding: 5px !important;
+		background-color: $white;
+		box-shadow: 0 0 2px 1px $tool-border;
+		z-index: $z-dialog-over-keyboard;
+		min-height: 30px;
 
         .ButtonPopupMenu .panelRow2.showSlider {
             display: inline-block;
@@ -197,12 +158,12 @@
         .ButtonPopupMenu .panelRow2.hideSlider {
             display: none;
         }
-    	
+
     	/*slider panel*/
-    	.ButtonPopupMenu .panelRow2 { 
+    	.ButtonPopupMenu .panelRow2 {
     		padding-bottom: 8px;
             padding-top: 8px;
-    		
+
     		/*slider label*/
     		.popupSliderLabel {
     		    margin: 0px 10px;
@@ -239,11 +200,11 @@
 		    	margin: 3px 0px 3px 12px;
 			}
     	}
-    
+
     	.labelPopupPanel {
     		padding: 8px 8px;
     		width: 192px;
-    		
+
     		.panelRow {
     			height: 32px !important;
     			display: flex;
@@ -251,12 +212,12 @@
     				line-height: 30px;
     				cursor: default;
 				}
-    			
+
     			.AutoCompleteTextFieldW {
     				width: 134px;
     				margin: 0px !important;
-    				border-radius: 2px;	
-    				
+    				border-radius: 2px;
+
     				.TextField {
     					padding: 2px;
    						padding-left: 8px;
@@ -269,93 +230,72 @@
     				}
     			}
     		}
-    		
+
     		.checkMarkMenuItem {
                 cursor: pointer;
                 line-height: 32px;
+                display: flex;
 
-                .gwt-HTML {
-                    margin-left: -24px;
-                }
-    		
     			img {
     				opacity: 0.54;
-    				margin-top: -4px;
-    			}	    				
+    				position: absolute;
+    				right: 8px;
+    				padding: 4px;
+    			}
     		}
     	}
 	}
 
 	/*point/line style table*/
 	.matSelectionTable {
-		
+
 			border-collapse: separate;
 			border-spacing: 8px 8px;
-    		
+
     		td {
     		    padding: 0px;
-    		}	
-    	
+    		}
+
     		.gwt-Label {
     			margin: 0px;
     		}
-    	
+
     		.gwt-Label.border {
     			border-radius: 2px;
-    			
-    			&:hover {
-    				border: 1px solid $purple-default;
-    			}
     		}
-    	
-    		.gwt-Label.border.selected,.gwt-Label.border.selected:hover {
-    			border: 1px solid $purple-default;
-    		}
-    	
+
     		 .gwt-Label.borderButton {
     		 	border: 1px solid;
     			border-radius: 2px;
     			height: 24px;
     			width: 24px;
-    			
+
     			&:hover {
     				opacity: 0.65;
     			}
-    			
+
     			&.plusButton {
     				border: $black-30 solid 1px;
-    				opacity: 0.54;	
-    				
+    				opacity: 0.54;
+
     				&:hover {
     					opacity: 1;
-    					border: 1px solid $purple-default;
     					background-color: $white-90;
     				}
     			}
     		 }
-	}	
-
-	.matPopupPanel.tealBorder {
-		padding: 0px !important; 
-		
-   		.matSelectionTable {
-   		 	.gwt-Label.border:hover,
-   		 		.gwt-Label.border.selected, 
-					.gwt-Label.border.selected:hover {
-   		 		border: 1px solid $teal-default !important;
-   		 	}
-   		}
-   	}
+	}
 
 	.zoomPanel {
 		position: absolute;
 		cursor: default;
 		top: auto !important;
-    	left: auto !important;
-    	z-index: $always_on_top;
+		left: auto !important;
+		z-index: $z-on-top-of-graphics;
 		will-change: transform;
-		
+
     	.zoomPanelBtn {
+    		display: block;
     		position: relative;
     		width: 36px;
     		height: 36px;
@@ -365,21 +305,21 @@
     		box-shadow: 0 1px 3px 0 $black-20, 0 1px 1px 0 $black-14, 0 2px 1px -1px $black-12;
     		cursor: pointer;
     		transition: background-color 150ms ease 0ms;
-    		
+
     		img {
     			padding: 6px;
     			opacity: 0.54;
-    		}	
-    	
+    		}
+
     		&:hover {
     			/*background-color: #666;*/
     			background-color: $selected-menuitem-background;
-    			
+
     			img {
-    				opacity: 1;	
+    				opacity: 1;
     			}
     		}
-    	
+
     		&.keyboardFocus:focus {
     			img {
     				opacity: 1;
@@ -387,47 +327,47 @@
     			}
     		}
     	}
-		.zoomPanelBtnSmall img { 
- 	        padding: 8px; 
- 	    } 
+		.zoomPanelBtnSmall img {
+ 	        padding: 8px;
+ 	    }
 		.zoomPanelHomeIn {
 			opacity: 1;
 			visibility: visible;
 			transition: all 0.2s ease;
 		}
-	
+
 		.zoomPanelHomeOut {
 			cursor: default;
-			opacity: 0;	
+			opacity: 0;
 			visibility: hidden;
 			transition: all 0.2s ease;
-	
+
 			img {
     			opacity: 0;
     		}
-    	
+
     		&:hover, &:focus {
     			/*background-color: #666;*/
     			background-color: $selected-menuitem-background;
-    			
+
     			img {
-    				opacity: 0;	
+    				opacity: 0;
     			}
     		}
-    	
+
 		}
 	}
 	.zoomPanelPosition {
     	bottom: 8px !important;
     	right: 16px !important;
     }
-    .mowZoomPanel {
-    	margin-top: 48px!important;
-	    left: auto !important;
-	    z-index: 60;
-	    right: 4px !important;
-	    
+	.mowZoomPanel {
+		will-change: transform;
+		top: -6px !important;
+		position: relative;
+
 	    .zoomPanelBtn {
+			display: block;
 	    	position: relative;
 		    margin: 6px;
 		    padding: 6px;
@@ -436,26 +376,26 @@
 		    width: 24px;
     		height: 24px;
     		transition: background-color 150ms ease 0ms;
-		    
+
 		    &.zoomPanelBtnSmall {
-		    	padding: 8px;	
+		    	padding: 8px;
 		    	width: 20px;
     			height: 20px;
-		    	
+
 		    	img {
 		    		width: 20px;
-					height: 20px;		    			
+					height: 20px;
 		    	}
 		    }
-		   
+
 		   img {
 		   		width: 24px;
-				height: 24px;	
-				opacity: 0.54;	    	
+				height: 24px;
+				opacity: 0.54;
 		   }
-		  
+
 		  	&:hover, &:focus, &.selected {
-		  		img { 
+		  		img {
 		  			opacity: 1;
 		  		}
 		  		background-color: $mow_card_background_hover;
@@ -463,28 +403,28 @@
 		}
 		.zoomPanelHomeIn {
 			opacity: 1;
-			visibility: visible;	 
+			visibility: visible;
 			transition: all 0.2s ease;
 		}
-	
+
 		.zoomPanelHomeOut {
 			cursor: default;
-			opacity: 0;	
-			visibility: hidden;	 
+			opacity: 0;
+			visibility: hidden;
 			transition: all 0.2s ease;
-	
+
 			img {
     			opacity: 0;
     		}
-    	
+
     		&:hover, &:focus {
     			background-color: $mow_card_background_hover;
-    			
+
     			img {
-    				opacity: 1;	
+    				opacity: 1;
     			}
     		}
-    	
+
 		}
     }
 	.zoomPanelWithPageControl {
@@ -493,39 +433,39 @@
 	}
 
 	.speechBtnPanel {
-	    
-	    .speechBtn {
+
+		.speechBtn {
 		 	height: 36px;
-		    width: 36px;
-		    background-color: #fff;
-		    border-radius: 50%;
-		    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12);
-		    transition: background-color 150ms ease 0ms;
-		    cursor: pointer;
-		    z-index: 60;
-		    position: relative;
-		    bottom: 52px;
-    		margin: 0px 0px 16px 16px;
-		    display: inline-block;
-				    
+			width: 36px;
+			background-color: #fff;
+			border-radius: 50%;
+			box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12);
+			transition: background-color 150ms ease 0ms;
+			cursor: pointer;
+			z-index: $z-on-top-of-graphics;
+			position: relative;
+			bottom: 52px;
+			margin: 0px 0px 16px 16px;
+			display: inline-block;
+
 			img {
 			   padding: 6px;
 			   opacity: 0.54;
-			}	
-			    	
+			}
+
 			&:hover {
 				background-color: $selected-menuitem-background;
-			    			
-			    img {
-			    	opacity: 1;	
+
+				img {
+					opacity: 1;
 				}
 			}
-			    	
+
 			&:focus {
-			    img {
-			    	opacity: 1;
-			    	outline: $focus-black 5px auto;	
-			    }	
+				img {
+					opacity: 1;
+					outline: $focus-black 5px auto;
+				}
 			}
 		}
 	}
@@ -535,12 +475,12 @@
 		padding-bottom: 4px;
 		padding-left: 12px;
 		position: absolute;
-		z-index: $always_on_top;
-		
+		z-index: $z-on-top-of-graphics;
+
 		.flatButton {
 			display: inline-block;
 		}
-		
+
 		.hideButton {
 			display: none;
 		}
@@ -549,11 +489,11 @@
 	.undoRedoPosition {
 		top: 0px;
 		.flatButton {
-			border-radius: 50%;	
+			border-radius: 50%;
 			transition: background-color 150ms ease 0ms;
-			
+
 			&.buttonActive:hover {
-				img { 
+				img {
 		  			opacity: 1;
 		  		}
 		  		background-color: $mow_card_background_hover;
@@ -585,7 +525,6 @@
 	input[type="text"],
 	input[type="number"],
 	.gwt-TextBox,
-	select,
 	textarea,
 	.gwt-TextArea,
 	iframe.objectPropertiesTextEditor {
@@ -622,6 +561,11 @@
 	.AutoCompleteTextFieldW.FromDrawTextFieldNew input[type="text"].TextField {
 		padding-left: 2px;
 		padding-right: 2px;
+	}
+
+	.AutoCompleteTextFieldW.FromDrawTextFieldNew.errorStyle input[type="text"].TextField,
+		.evInputEditor.errorStyle, .mathTextField.errorStyle {
+		border: 4px $error dotted;
 	}
 
 	.AutoCompleteTextFieldW.FromDrawTextField .TextField {
@@ -725,7 +669,7 @@
 	}
 
 	.SymbolTablePopup {
-		z-index: 501;
+		z-index: $z-dialog-over-keyboard;
 		background-color: $white;
 		border-radius: 0px;
 		padding: 16px;
@@ -747,26 +691,65 @@
 		}
 	}
 
-    .evInputEditor {
-            padding-top: 2px;
-            padding-left: 2px;
-            position: absolute;
-            border: 1px solid blue;
-            border-radius: 4px 4px;
-            overflow: hidden;
-         }
+	.mathTextField, .evInputEditor {
+		padding-top: 2px;
+		padding-left: 2px;
+		border-radius: 4px;
+		overflow: hidden;
+	}
 
-         .accessibilityView {
-            opacity: 0.01;
-            position: fixed;
-            width: 1px;
-            height: 1px;
-            overflow: scroll;
-         }
+	.mathTextField {
+		border: 1px #DCDCDC solid;
+	}
 
-        .invisible {
-            visibility: hidden;
-        }
+	.mathTextField.disabled {
+		background-color: rgb(240,240,240);
+	}
+
+	.evInputEditor {
+		position: absolute;
+		border: 1px solid blue;
+	}
+
+	 .accessibilityControl {
+		opacity: 0.01;
+		position: fixed;
+		width: 1px;
+		height: 1px;
+		overflow: scroll;
+	 }
+
+	.accessibleInput {
+		width: 20px;
+		height: 20px;
+		z-index: $z-accessible-input;
+		position: absolute;
+	}
+
+	.invisible {
+		visibility: hidden;
+	}
+
+	.tooltipChip {
+		position: absolute;
+		display: inline-flex;
+		padding: 2px 4px;
+		border-radius: 16px;
+		font-size: 12px;
+		align-items: center;
+		cursor: default;
+		height: 18px;
+		box-sizing: border-box;
+		z-index: $z-on-top-of-graphics;
+	}
+	.mathFieldEditor {
+		will-change: transform;
+	}
+
+	.h5pEmbed {
+		overflow: auto;
+		height: 100%;
+	}
 }
 
 /* Outside of GeoGebraFrame */
@@ -774,10 +757,10 @@
 	background-color: black;
 	top: 0px;
 	left: 0px;
-	z-index: 9999;
+	z-index: $z-fullscreen-container;
 }
 
 .gbox {
-    will-change: transform;
-    z-index: 50;
+	will-change: transform;
+	z-index: $z-on-top-of-graphics;
 }

@@ -1,5 +1,8 @@
 package org.geogebra.web.full.gui.view.algebra;
 
+import java.util.HashMap;
+
+import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.plugin.Event;
 import org.geogebra.common.plugin.EventType;
@@ -9,11 +12,10 @@ import org.geogebra.web.full.gui.GuiManagerW;
 import org.geogebra.web.full.gui.inputfield.MathFieldInputSuggestions;
 import org.geogebra.web.html5.gui.util.CancelEventTimer;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.himamis.retex.editor.share.event.MathFieldListener;
-import com.himamis.retex.editor.share.model.MathSequence;
-import com.himamis.retex.editor.share.serializer.GeoGebraSerializer;
 import com.himamis.retex.editor.web.MathFieldW;
 
 /**
@@ -48,24 +50,23 @@ public class LatexTreeItemController extends RadioTreeItemController
 
 	@Override
 	public void onBlur(BlurEvent event) {
-		if (preventBlur || noEvaluationOnBlur()) {
-			return;
-		}
+		Scheduler.get().scheduleDeferred(() -> {
+			item.resetInputBarOnBlur();
+			if (preventBlur || isSuggesting()) {
+				return;
+			}
 
-		onEnter(false, false);
-		if (item.isEmpty() && item.isInputTreeItem()) {
-			item.addDummyLabel();
-			item.setItemWidth(item.getAV().getFullWidth());
-		}
+			onEnter(false, false);
+			if (item.isEmpty() && item.isInputTreeItem()) {
+				item.addDummyLabel();
+				item.setItemWidth(item.getAV().getFullWidth());
+			}
 
-		if (item.getAV().isNodeTableEmpty()) {
-			// #5245#comment:8, cases B and C excluded
-			item.updateGUIfocus(true);
-		}
-	}
-
-	private boolean noEvaluationOnBlur() {
-		return item.isInputTreeItem();
+			if (item.getAV().isNodeTableEmpty()) {
+				// #5245#comment:8, cases B and C excluded
+				item.updateGUIfocus(true);
+			}
+		});
 	}
 
 	@Override
@@ -93,14 +94,10 @@ public class LatexTreeItemController extends RadioTreeItemController
 			return;
 		}
 
-		item.stopEditing(item.getText(), new AsyncOperation<GeoElementND>() {
-
-			@Override
-			public void callback(GeoElementND obj) {
-				if (obj != null && !keepFocus) {
-					app.setScrollToShow(true);
-					obj.update();
-				}
+		item.stopEditing(item.getText(), obj -> {
+			if (obj != null && !keepFocus) {
+				app.setScrollToShow(true);
+				obj.update();
 			}
 		}, keepFocus);
 	}
@@ -115,17 +112,27 @@ public class LatexTreeItemController extends RadioTreeItemController
 		setEditing(true);
 		onEnter(true, false);
 		item.getAV().clearActiveItem();
+		dispatchKeyTypeEvent("\n");
 	}
 
 	@Override
-	public void onKeyTyped() {
+	public void onKeyTyped(String key) {
 		if (app.getSelectionManager().getSelectedGeos().size() > 0) {
 			// to clear preview points
 			app.getSelectionManager().clearSelectedGeos();
 		}
 		item.onKeyTyped();
-        Event event = new Event(EventType.EDITOR_KEY_TYPED);
-        app.dispatchEvent(event);
+		dispatchKeyTypeEvent(key);
+	}
+
+	private void dispatchKeyTypeEvent(String key) {
+		Event event = new Event(EventType.EDITOR_KEY_TYPED);
+		if (key != null) {
+			HashMap<String, Object> jsonArgument = new HashMap<>();
+			jsonArgument.put("key", key);
+			event.setJsonArgument(jsonArgument);
+		}
+		app.dispatchEvent(event);
 	}
 
 	@Override
@@ -148,14 +155,8 @@ public class LatexTreeItemController extends RadioTreeItemController
 	}
 
 	@Override
-	public String serialize(MathSequence selectionText) {
-		return GeoGebraSerializer.serialize(selectionText);
-	}
-
-	@Override
 	public void onInsertString() {
-		getMathField().setFormula(
-				GeoGebraSerializer.reparse(getMathField().getFormula()));
+		// nothing to do
 	}
 
 	/**
@@ -221,7 +222,7 @@ public class LatexTreeItemController extends RadioTreeItemController
 	 */
 	public void setOnScreenKeyboardTextField() {
 		app.getKeyboardManager()
-				.setOnScreenKeyboardTextField(getRetexListener());
+				.setOnScreenKeyboardTextField(item);
 		// prevent that keyboard is closed on clicks (changing
 		// cursor position)
 		CancelEventTimer.keyboardSetVisible();
@@ -229,7 +230,7 @@ public class LatexTreeItemController extends RadioTreeItemController
 
 	@Override
 	public void showKeyboard() {
-		app.showKeyboard(retexListener);
+		app.showKeyboard(item);
 	}
 
 	/**
@@ -238,9 +239,9 @@ public class LatexTreeItemController extends RadioTreeItemController
 	 */
 	public void initAndShowKeyboard(boolean show) {
 		retexListener = new RetexKeyboardListener(item.canvas, getMathField());
-        retexListener.setAcceptsCommandInserts(true);
+		retexListener.setAcceptsCommandInserts(true);
 		if (show) {
-			app.getAppletFrame().showKeyBoard(true, retexListener, false);
+			app.getAppletFrame().showKeyBoard(true, item, false);
 		}
 	}
 
@@ -253,7 +254,8 @@ public class LatexTreeItemController extends RadioTreeItemController
 	 */
 	MathFieldInputSuggestions getInputSuggestions() {
 		if (sug == null) {
-			sug = new MathFieldInputSuggestions(app, item, false);
+			boolean forCas = getApp().getConfig().getVersion() == GeoGebraConstants.Version.CAS;
+			sug = new MathFieldInputSuggestions(app, item, forCas);
 		}
 		return sug;
 	}

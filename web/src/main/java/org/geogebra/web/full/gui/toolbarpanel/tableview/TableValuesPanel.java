@@ -36,7 +36,7 @@ public class TableValuesPanel extends FlowPanel
 		view.getTableValuesModel().registerListener(this);
 		emptyPanel = new TableValuesEmptyPanel(app);
 		table = new StickyValuesTable(app, view);
-        TestHarness.setAttr(table, "TV_table");
+		TestHarness.setAttr(table, "TV_table");
 		add(emptyPanel);
 		add(table);
 	}

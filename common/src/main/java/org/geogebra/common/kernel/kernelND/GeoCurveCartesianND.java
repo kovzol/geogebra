@@ -737,83 +737,83 @@ public abstract class GeoCurveCartesianND extends GeoElement
 	 * @param repeatLast
 	 *            true if we should add last-first edge
 	 */
-    public final void setFromPolyLine(GeoPointND[] points, boolean repeatLast) {
+	public final void setFromPolyLine(GeoPointND[] points, boolean repeatLast) {
 
-        int dim = fun.length;
-        if (points.length < 2) {
-            setUndefined();
-            return;
-        }
-        ExpressionNode[] en = new ExpressionNode[dim];
-        for (int i = 0; i < dim; i++) {
-            en[i] = new ExpressionNode(this.kernel,
-                    pointToCoords(points[0]).get(i + 1));
-        }
-        FunctionVariable fv = new FunctionVariable(this.kernel, "t");
-        int nonzeroSegments = 0;
-        if (points.length == 2) {
-            for (int i = 0; i < dim; i++) {
-                double coeff = pointToCoords(points[1]).get(i + 1)
-                        - pointToCoords(points[0]).get(i + 1);
-                en[i] = en[i].plus(new ExpressionNode(this.kernel,
-                        new MyDouble(this.kernel, coeff), Operation.MULTIPLY,
-                        fv));
-            }
-            nonzeroSegments = 1;
-        } else {
-            nonzeroSegments = buildAbsExpression(points, en, fv, repeatLast);
-        }
+		int dim = fun.length;
+		if (points.length < 2) {
+			setUndefined();
+			return;
+		}
+		ExpressionNode[] en = new ExpressionNode[dim];
+		for (int i = 0; i < dim; i++) {
+			en[i] = new ExpressionNode(this.kernel,
+					pointToCoords(points[0]).get(i + 1));
+		}
+		FunctionVariable fv = new FunctionVariable(this.kernel, "t");
+		int nonzeroSegments = 0;
+		if (points.length == 2) {
+			for (int i = 0; i < dim; i++) {
+				double coeff = pointToCoords(points[1]).get(i + 1)
+						- pointToCoords(points[0]).get(i + 1);
+				en[i] = en[i].plus(new ExpressionNode(this.kernel,
+						new MyDouble(this.kernel, coeff), Operation.MULTIPLY,
+						fv));
+			}
+			nonzeroSegments = 1;
+		} else {
+			nonzeroSegments = buildAbsExpression(points, en, fv, repeatLast);
+		}
 
-        for (int j = 0; j < dim; j++) {
-            Function xFun = new Function(en[j], fv);
-            this.setFun(j, xFun);
-        }
-        this.setInterval(0, nonzeroSegments);
-    }
+		for (int j = 0; j < dim; j++) {
+			Function xFun = new Function(en[j], fv);
+			this.setFun(j, xFun);
+		}
+		this.setInterval(0, nonzeroSegments);
+	}
 
-    private int buildAbsExpression(GeoPointND[] points, ExpressionNode[] en,
-                                   FunctionVariable fv, boolean repeatLast) {
-        int dim = fun.length;
-        int nonzeroSegments = 0;
-        double coef = 0;
-        double[] sum = new double[] { 0, 0, 0 };
-        double[] cumulative = new double[] { 0, 0, 0 };
+	private int buildAbsExpression(GeoPointND[] points, ExpressionNode[] en,
+			FunctionVariable fv, boolean repeatLast) {
+		int dim = fun.length;
+		int nonzeroSegments = 0;
+		double coef = 0;
+		double[] sum = new double[] { 0, 0, 0 };
+		double[] cumulative = new double[] { 0, 0, 0 };
 
-        int limit = repeatLast ? points.length + 1 : points.length;
+		int limit = repeatLast ? points.length + 1 : points.length;
 
-        for (int i = 1; i < limit; i++) {
-            int pointIndex = i >= points.length ? 0 : i;
-            Coords c1 = pointToCoords(points[pointIndex]);
-            Coords c2 = pointToCoords(points[i - 1]);
-            if (c1.isEqual(c2)) {
-                continue;
-            }
-            ExpressionNode greater = new ExpressionNode(this.kernel,
-                    new ExpressionNode(this.kernel, fv, Operation.MINUS,
-                            new MyDouble(this.kernel, nonzeroSegments)),
-                    Operation.ABS, null);
-            for (int j = 0; j < dim; j++) {
-                coef = 0.5 * c1.get(j + 1) - 0.5 * c2.get(j + 1)
-                        - cumulative[j];
-                sum[j] += coef * nonzeroSegments;
+		for (int i = 1; i < limit; i++) {
+			int pointIndex = i >= points.length ? 0 : i;
+			Coords c1 = pointToCoords(points[pointIndex]);
+			Coords c2 = pointToCoords(points[i - 1]);
+			if (c1.isEqual(c2)) {
+				continue;
+			}
+			ExpressionNode greater = new ExpressionNode(this.kernel,
+					new ExpressionNode(this.kernel, fv, Operation.MINUS,
+							new MyDouble(this.kernel, nonzeroSegments)),
+					Operation.ABS, null);
+			for (int j = 0; j < dim; j++) {
+				coef = 0.5 * c1.get(j + 1) - 0.5 * c2.get(j + 1)
+						- cumulative[j];
+				sum[j] += coef * nonzeroSegments;
 
-                cumulative[j] += coef;
-                en[j] = en[j].plus(
-                        greater.multiply(new MyDouble(this.kernel, coef)));
-            }
-            nonzeroSegments++;
+				cumulative[j] += coef;
+				en[j] = en[j].plus(
+						greater.multiply(new MyDouble(this.kernel, coef)));
+			}
+			nonzeroSegments++;
 
-        }
-        for (int j = 0; j < dim; j++) {
-            en[j] = en[j].plus(
-                    new ExpressionNode(this.kernel, fv, Operation.MULTIPLY,
-                            new MyDouble(this.kernel, cumulative[j])));
+		}
+		for (int j = 0; j < dim; j++) {
+			en[j] = en[j].plus(
+					new ExpressionNode(this.kernel, fv, Operation.MULTIPLY,
+							new MyDouble(this.kernel, cumulative[j])));
 
-            en[j] = en[j].plus(new MyDouble(this.kernel, -sum[j]));
+			en[j] = en[j].plus(new MyDouble(this.kernel, -sum[j]));
 
-        }
-        return nonzeroSegments;
-    }
+		}
+		return nonzeroSegments;
+	}
 
 	/**
 	 * @param geoPointND

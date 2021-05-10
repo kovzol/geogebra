@@ -22,13 +22,13 @@ import org.geogebra.common.plugin.EuclidianStyleConstants;
 public class ChangeableParent {
 
 	private GeoNumeric changeableNumber = null;
-    private GeoElementND directorGeo = null;
+	private GeoElementND directorGeo = null;
 	private double startValue;
 	private Coords direction;
 	private Coords centroid;
 	private boolean forPolyhedronNet = false;
 	private GeoPolyhedronInterface parent;
-    private final CoordConverter converter;
+	private final CoordConverter converter;
 
 	/**
 	 * 
@@ -85,14 +85,14 @@ public class ChangeableParent {
 	 *            number
 	 * @param director
 	 *            director
-     * @param converter
-     *            converts mouse movement to parameter value
+	 * @param converter
+	 *            converts mouse movement to parameter value
 	 */
-    public ChangeableParent(GeoNumeric number, GeoElementND director, CoordConverter converter) {
+	public ChangeableParent(GeoNumeric number, GeoElementND director, CoordConverter converter) {
 		changeableNumber = number;
 		directorGeo = director;
 		forPolyhedronNet = false;
-        this.converter = converter;
+		this.converter = converter;
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class ChangeableParent {
 		changeableNumber = number;
 		directorGeo = child;
 		forPolyhedronNet = true;
-        this.converter = new PolyhedronNetConverter();
+		this.converter = new PolyhedronNetConverter();
 		this.parent = parent;
 	}
 
@@ -134,7 +134,7 @@ public class ChangeableParent {
 	 * 
 	 * @return director
 	 */
-    final public GeoElementND getDirector() {
+	final public GeoElementND getDirector() {
 		return directorGeo;
 	}
 
@@ -143,8 +143,8 @@ public class ChangeableParent {
 	 * 
 	 * @param view
 	 *            view calling
-     * @param startPoint
-     *            start point
+	 * @param startPoint
+	 *            start point
 	 */
 	final public void record(EuclidianView view, Coords startPoint) {
 		startValue = getValue();
@@ -164,10 +164,10 @@ public class ChangeableParent {
 				direction.set(0, 0, 0);
 			}
 		} else {
-            direction.set3(
+			direction.set3(
 
-                    directorGeo.getMainDirection());
-            converter.record(this, startPoint);
+					directorGeo.getMainDirection());
+			converter.record(this, startPoint);
 		}
 	}
 
@@ -230,24 +230,24 @@ public class ChangeableParent {
             return false;
         }
 
-        var.setValue(val);
-        GeoElement.addParentToUpdateList(var, updateGeos, tempMoveObjectList);
+		var.setValue(val);
+		GeoElement.addParentToUpdateList(var, updateGeos, tempMoveObjectList);
 
-        return true;
-    }
+		return true;
+	}
 
-    private static boolean needsSnap(EuclidianView view) {
-        switch (view.getPointCapturingMode()) {
-            case EuclidianStyleConstants.POINT_CAPTURING_STICKY_POINTS:
-                // TODO
-                return false;
-            default:
-            case EuclidianStyleConstants.POINT_CAPTURING_AUTOMATIC:
-                return view.isGridOrAxesShown();
-            case EuclidianStyleConstants.POINT_CAPTURING_ON:
-            case EuclidianStyleConstants.POINT_CAPTURING_ON_GRID:
-                return true;
-        }
+	private static boolean needsSnap(EuclidianView view) {
+		switch (view.getPointCapturingMode()) {
+		case EuclidianStyleConstants.POINT_CAPTURING_STICKY_POINTS:
+			// TODO
+			return false;
+		default:
+		case EuclidianStyleConstants.POINT_CAPTURING_AUTOMATIC:
+			return view.isGridOrAxesShown();
+		case EuclidianStyleConstants.POINT_CAPTURING_ON:
+		case EuclidianStyleConstants.POINT_CAPTURING_ON_GRID:
+			return true;
+		}
 	}
 
 	/**
@@ -257,11 +257,11 @@ public class ChangeableParent {
 		return direction;
 	}
 
-    /**
-     * @return converter for mouse movement to value
-     */
-    public CoordConverter getConverter() {
-        return converter;
-    }
+	/**
+	 * @return converter for mouse movement to value
+	 */
+	public CoordConverter getConverter() {
+		return converter;
+	}
 
 }

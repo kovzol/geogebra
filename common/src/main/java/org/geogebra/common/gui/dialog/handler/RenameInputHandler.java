@@ -63,7 +63,7 @@ public class RenameInputHandler implements InputHandler {
 		String newLabel = inputValue;
 
 		if (!LabelManager.isValidLabel(newLabel, kernel, (GeoElement) geo1)) {
-            app.showError(Errors.InvalidInput, inputValue);
+			app.showError(Errors.InvalidInput, inputValue);
 			callback.callback(false);
 			return;
 		}

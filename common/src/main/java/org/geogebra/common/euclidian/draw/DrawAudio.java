@@ -76,7 +76,7 @@ public class DrawAudio extends DrawWidget {
 	 *            The GeoElement that represents the audio content.
 	 */
 	public DrawAudio(EuclidianView view, GeoAudio geo) {
-		super(view, geo);
+		super(view, geo, false);
 		this.geoAudio = geo;
 		getColors();
 		update();
@@ -111,7 +111,7 @@ public class DrawAudio extends DrawWidget {
 	}
 
 	private void updateSlider(GGraphics2D g2) {
-		GFont font = view.getFont().deriveFont(GFont.PLAIN, TIME_FONT);
+		GFont font = view.getApplication().getFontCommon(false, GFont.PLAIN, TIME_FONT);
 		g2.setFont(font);
 		duration = geoAudio.getDuration();
 		String textAll = getElapsedTime(duration, duration);
@@ -190,16 +190,6 @@ public class DrawAudio extends DrawWidget {
 		}
 	}
 
-	@Override
-	public double getWidthThreshold() {
-		return GeoAudio.DEFAULT_PLAYER_WIDTH;
-	}
-
-	@Override
-	public double getHeightThreshold() {
-		return GeoAudio.DEFAULT_PLAYER_HEIGHT;
-	}
-
 	private void drawPlay(GGraphics2D g2) {
 		g2.setColor(playHovered ? playHoverColor : PLAY_COLOR);
 		int size = PLAY_SIZE;
@@ -233,7 +223,7 @@ public class DrawAudio extends DrawWidget {
 	}
 
 	private void drawTime(GGraphics2D g2) {
-		GFont font = view.getFont().deriveFont(GFont.PLAIN, TIME_FONT);
+		GFont font = view.getApplication().getFontCommon(false, GFont.PLAIN, TIME_FONT);
 		g2.setFont(font);
 		g2.setPaint(TIME_COLOR);
 		duration = geoAudio.getDuration() / 1000;
@@ -363,11 +353,6 @@ public class DrawAudio extends DrawWidget {
 	@Override
 	public GeoWidget getGeoElement() {
 		return geoAudio;
-	}
-
-	@Override
-	public boolean isFixedRatio() {
-		return false;
 	}
 
 	@Override

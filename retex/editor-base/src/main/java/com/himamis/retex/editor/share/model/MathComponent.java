@@ -78,10 +78,9 @@ abstract public class MathComponent implements Traversable, Inspectable, Seriali
         if (parent == null) {
             return 0;
         }
-        for (int i = 0; i < parent.size(); i++) {
-            if (parent.getArgument(i) == this) {
-                return i;
-            }
+        int index = parent.indexOf(this);
+        if (index >= 0) {
+            return index;
         }
 
         throw new RuntimeException("Parent reference is not set correctly");
@@ -103,12 +102,13 @@ abstract public class MathComponent implements Traversable, Inspectable, Seriali
 		return seq;
 	}
 
-    /**
-     * @param tag container tag
-     * @return whether this is a container with given tag
-     */
-    public boolean hasTag(Tag tag) {
-        return false;
-    }
+	/**
+	 * @param tag
+	 *            container tag
+	 * @return whether this is a container with given tag
+	 */
+	public boolean hasTag(Tag tag) {
+		return false;
+	}
 
 }

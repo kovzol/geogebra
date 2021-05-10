@@ -97,17 +97,6 @@ public class MathSequence extends MathContainer {
 	}
 
 	/**
-	 * Is i'th argument script.
-	 * 
-	 * @param i
-	 *            index
-	 * @return whether given argument is a sub/super-script
-	 */
-	public boolean isScript(int i) {
-		return i >= 0 && i < size() && MathFunction.isScript(getArgument(i));
-	}
-
-	/**
 	 * Is i'th argument operator.
 	 * 
 	 * @param i
@@ -143,30 +132,5 @@ public class MathSequence extends MathContainer {
 	@Override
 	public MathComponent wrap() {
 		return this;
-	}
-
-	/**
-	 * Extract the matrix if sequence contains one only.
-	 *
-	 * @return the matrix if any, the component unchanged
-	 * 		   otherwise.
-	 */
-	public MathContainer extractMatrix() {
-		if (size() == 1) {
-			MathComponent argument = getArgument(0);
-			if (MathArray.isMatrix(argument)) {
-				return (MathContainer) argument;
-			}
-		}
-
-		return this;
-	}
-
-	/**
-	 *
-	 * @return true if sequence is a matrix.
-	 */
-	public boolean isMatrix() {
-		return extractMatrix() != this;
 	}
 }

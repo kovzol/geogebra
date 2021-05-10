@@ -16,30 +16,24 @@ public class Event {
 	public final EventType type;
 
 	/** generic argument, e.g. macro name */
-    public String argument;
-    /**
-     * argument formatted as a JSON string
-     */
-    public Map<String, Object> jsonArgument;
+	public String argument;
+	/** argument formatted as a JSON string */
+	public Map<String, Object> jsonArgument;
 
-    /**
-     * primary target
-     */
-    public GeoElement target;
-    /**
-     * secondary target
-     */
-    public ArrayList<GeoElement> targets;
+	/** primary target */
+	public GeoElement target;
+	/** secondary target */
+	public ArrayList<GeoElement> targets;
 
-    private boolean alwaysDispatched;
+	private boolean alwaysDispatched;
 
-    /**
-     * @param type
-     *            event type
-     */
-    public Event(EventType type) {
-        this(type, null);
-    }
+	/**
+	 * @param type
+	 *            event type
+	 */
+	public Event(EventType type) {
+		this(type, null);
+	}
 
 	/**
 	 * @param type
@@ -60,7 +54,7 @@ public class Event {
 	 *            extra info
 	 */
 	public Event(EventType type, GeoElement target, String argument) {
-        this(type, target, argument, null);
+		this(type, target, argument, null);
 	}
 
 	/**
@@ -71,32 +65,33 @@ public class Event {
 	 * @param argument
 	 *            extra info
 	 * @param targets
-     *            extra targets
-     */
-    public Event(EventType type, GeoElement target,
-                 String argument, ArrayList<GeoElement> targets) {
+	 *            extra targets
+	 */
+	public Event(EventType type, GeoElement target,
+			 String argument, ArrayList<GeoElement> targets) {
 		this.type = type;
 		this.target = target;
 		this.argument = argument;
-        this.targets = targets;
-    }
+		this.targets = targets;
+	}
 
-    /**
-     * @param jsonArgument
-     *            JSON encoded additional properties
-     * @return this
-     */
-    public Event setJsonArgument(Map<String, Object> jsonArgument) {
-        this.jsonArgument = jsonArgument;
-        return this;
-    }
+	/**
+	 * @param jsonArgument
+	 *            JSON encoded additional properties
+	 * @return this
+	 */
+	public Event setJsonArgument(Map<String, Object> jsonArgument) {
+		this.jsonArgument = jsonArgument;
+		return this;
+	}
 
-    /**
-     * @param alwaysDispatched whether to force dispatching while an update is running
-     * @return this
-     */
-    public Event setAlwaysDispatched(boolean alwaysDispatched) {
-        this.alwaysDispatched = alwaysDispatched;
+	/**
+	 * @param alwaysDispatched
+	 *            whether to force dispatching while an update is running
+	 * @return this
+	 */
+	public Event setAlwaysDispatched(boolean alwaysDispatched) {
+		this.alwaysDispatched = alwaysDispatched;
 		return this;
 	}
 
@@ -134,11 +129,11 @@ public class Event {
 	 * 
 	 * @return argument
 	 */
-    public String getArgument() {
-        return argument;
-    }
+	public String getArgument() {
+		return argument;
+	}
 
-    public Map<String, Object> getJsonArgument() {
-        return jsonArgument;
-    }
+	public Map<String, Object> getJsonArgument() {
+		return jsonArgument;
+	}
 }

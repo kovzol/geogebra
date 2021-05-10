@@ -1400,7 +1400,7 @@ public class DrawQuadric3D extends Drawable3DSurfaces implements Previewable {
 			return false;
 		}
 
-		quadric.getProjections(null, hitting.origin, hitting.direction, p1,
+		quadric.getProjections(hitting.origin, hitting.direction, p1,
 				parameters1, p2, parameters2);
 
 		double z1 = Double.NEGATIVE_INFINITY, z2 = Double.NEGATIVE_INFINITY;
@@ -1553,8 +1553,8 @@ public class DrawQuadric3D extends Drawable3DSurfaces implements Previewable {
 				break;
 			default:
 				if (exportSurface) {
-                    exportToPrinter3D.exportSurface(this, false,
-                            this instanceof DrawQuadric3DPart);
+					exportToPrinter3D.exportSurface(this, false,
+							this instanceof DrawQuadric3DPart);
 				}
 				break;
 			}

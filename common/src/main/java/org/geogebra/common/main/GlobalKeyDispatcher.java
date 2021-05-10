@@ -9,6 +9,7 @@ import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.awt.GRectangle2D;
 import org.geogebra.common.euclidian.DrawableND;
+import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.EuclidianViewInterfaceCommon;
 import org.geogebra.common.euclidian.draw.DrawDropDownList;
@@ -35,6 +36,7 @@ import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.util.DoubleUtil;
 import org.geogebra.common.util.debug.Log;
 
+import com.google.j2objc.annotations.Weak;
 import com.himamis.retex.editor.share.util.KeyCodes;
 
 /**
@@ -45,8 +47,10 @@ public abstract class GlobalKeyDispatcher {
 	private static final double AUTOSTEPS_PER_KEY = 5;
 
 	/** application */
+	@Weak
 	public final App app;
 	/** selection */
+	@Weak
 	protected final SelectionManager selection;
 
 	private TreeSet<AlgoElement> tempSet;
@@ -133,9 +137,9 @@ public abstract class GlobalKeyDispatcher {
 				if (geo instanceof GeoInputBox) {
 					DrawInputBox dt = (DrawInputBox) app
 							.getActiveEuclidianView().getDrawableFor(geo);
-                    if (dt != null) {
-                        dt.setFocus(ch + "");
-                    }
+					if (dt != null) {
+						dt.setFocus(ch + "");
+					}
 				} else {
 					if (app.getDialogManager() != null) {
 						app.getDialogManager().showRenameDialog(geo, true,
@@ -224,6 +228,9 @@ public abstract class GlobalKeyDispatcher {
 													 boolean left) {
 		if (geos.size() == 1 && geos.get(0).isGeoList()) {
 			DrawDropDownList dl = DrawDropDownList.asDrawable(app, geos.get(0));
+			if (dl == null) {
+				return false;
+			}
 			if (!dl.isOptionsVisible()) {
 				dl.toggleOptions();
 			}
@@ -247,8 +254,8 @@ public abstract class GlobalKeyDispatcher {
 	 * 
 	 * @param geos
 	 *            moved geos
-     * @param diff
-     *            translation in x, y and z directions
+	 * @param diff
+	 *            translation in x, y and z directions
 	 * @param increment
 	 *            multiplier for x,y,z
 	 * 
@@ -277,8 +284,8 @@ public abstract class GlobalKeyDispatcher {
 			tempVec = new Coords(4); // 4 coords for 3D
 		}
 
-        tempVec.set(diff);
-        tempVec.mulInside(increment);
+		tempVec.set(diff);
+		tempVec.mulInside(increment);
 
 		// move objects
 		boolean moved = MoveGeos.moveObjects(geos, tempVec, null, null,
@@ -425,14 +432,15 @@ public abstract class GlobalKeyDispatcher {
 							// probably 3D, just open in corner
 							bounds = AwtFactory.getPrototype().newRectangle2D();
 						}
-						GPoint p = new GPoint((int) bounds.getMinX(),
-								(int) bounds.getMinY());
+						if (bounds != null) {
+							GPoint p = new GPoint((int) bounds.getMinX(),
+									(int) bounds.getMinY());
 
-						app.getGuiManager().showPopupChooseGeo(
-								app.getSelectionManager().getSelectedGeos(),
-								app.getSelectionManager().getSelectedGeoList(),
-								app.getActiveEuclidianView(), p);
-
+							app.getGuiManager().showPopupChooseGeo(
+									app.getSelectionManager().getSelectedGeos(),
+									app.getSelectionManager().getSelectedGeoList(),
+									app.getActiveEuclidianView(), p);
+						}
 					} else {
 						// open in corner
 						app.getGuiManager().showDrawingPadPopup(
@@ -826,11 +834,13 @@ public abstract class GlobalKeyDispatcher {
 				// AltGr+ on Spanish keyboard is ] so
 				// allow <Ctrl>+ (zoom) but not <Ctrl><Alt>+ (fast zoom)
 				// from eg Input Bar
-				if (!spanish || (fromEuclidianView)) {
-					(app.getActiveEuclidianView()).getEuclidianController()
-							.zoomInOut(false,
-									key.equals(KeyCodes.MINUS)
-											|| key.equals(KeyCodes.SUBTRACT));
+				if (!spanish || fromEuclidianView) {
+					EuclidianController ec = app.getActiveEuclidianView().getEuclidianController();
+					double factor = key.equals(KeyCodes.MINUS) || key.equals(KeyCodes.SUBTRACT)
+							? 1d / EuclidianView.MOUSE_WHEEL_ZOOM_FACTOR
+							: EuclidianView.MOUSE_WHEEL_ZOOM_FACTOR;
+
+					ec.zoomInOut(factor, 15, ec.mouseLoc.x, ec.mouseLoc.y);
 					app.setUnsaved();
 					consumed = true;
 				}
@@ -1549,10 +1559,10 @@ public abstract class GlobalKeyDispatcher {
 							}
 						}
 
-                        // stop all animation if slider dragged
-                        if (num.isAnimating()) {
-                            num.getKernel().getAnimatonManager().stopAnimation();
-                        }
+						// stop all animation if slider dragged
+						if (num.isAnimating()) {
+							num.getKernel().getAnimatonManager().stopAnimation();
+						}
 
 						num.setValue(newValue);
 						hasUnsavedGeoChanges = true;
@@ -1636,10 +1646,13 @@ public abstract class GlobalKeyDispatcher {
 		if (selection.getSelectedGeos().size() == 1) {
 			GeoElement geo = selection.getSelectedGeos().get(0);
 			if (geo.isGeoList()) {
-				DrawDropDownList.asDrawable(app, geo).selectCurrentItem();
-				ScreenReader.readDropDownItemSelected(geo);
-				return true;
-			} else if (geo.isGeoInputBox()) {
+				DrawDropDownList dropdown = DrawDropDownList.asDrawable(app, geo);
+				if (dropdown != null) {
+					dropdown.selectCurrentItem();
+					ScreenReader.readDropDownItemSelected(geo);
+					return true;
+				}
+			} else if (geo.isGeoInputBox() && geo.isEuclidianVisible()) {
 				app.getActiveEuclidianView()
 						.focusAndShowTextField((GeoInputBox) geo);
 			}

@@ -891,10 +891,10 @@ public class GeoConicPart3D extends GeoConic3D
 		return false;
 	}
 
-    @Override
-    public void toGeoCurveCartesian(GeoCurveCartesianND curve) {
-        super.toGeoCurveCartesian(curve);
-        parameters.updateCurve(curve);
-    }
+	@Override
+	public void toGeoCurveCartesian(GeoCurveCartesianND curve) {
+		super.toGeoCurveCartesian(curve);
+		parameters.updateCurve(curve);
+	}
 
 }

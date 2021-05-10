@@ -1,55 +1,39 @@
 package org.geogebra.web.full.gui.dialog.template;
 
-import org.geogebra.common.main.Localization;
-import org.geogebra.web.full.gui.dialog.OptionDialog;
 import org.geogebra.web.html5.main.AppW;
+import org.geogebra.web.shared.components.ComponentDialog;
+import org.geogebra.web.shared.components.DialogData;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 
-public class TemplateChooser extends OptionDialog {
-    private Localization loc;
+public class TemplateChooser extends ComponentDialog {
     private TemplateChooserController controller;
 
     /**
      * @param app see {@link AppW}
+     * @param data dialog transkeys
+     * @param controller template chooser controller
      */
-    public TemplateChooser(AppW app, TemplateChooserController controller) {
-        super(app.getPanel(), app);
-        loc = app.getLocalization();
+    public TemplateChooser(AppW app, DialogData data, TemplateChooserController controller) {
+        super(app, data, false, true);
         this.controller = controller;
-        buildGUI();
-        setGlassEnabled(true);
+        this.addStyleName("templateChooser");
+        buildContent();
+        setOnPositiveAction(() -> controller.onCreate(app));
     }
 
-    private void buildGUI() {
-        this.getCaption().setText(loc.getMenu("New.Mebis"));
-        this.addStyleName("templateChooser");
-        FlowPanel dialogContent = new FlowPanel();
-        dialogContent.addStyleName("templateChooserContent");
+    private void buildContent() {
         FlowPanel templatesPanel = new FlowPanel();
         templatesPanel.addStyleName("templatesPanel");
-        if (controller.getTemplates().size() > 6) {
-            templatesPanel.addStyleName("withBorder");
-        }
         for (TemplatePreviewCard templateCard : controller.getTemplates()) {
             templatesPanel.add(templateCard);
         }
-        dialogContent.add(templatesPanel);
-        updateButtonLabels("Create");
-        dialogContent.add(getButtonPanel());
-        setPrimaryButtonEnabled(true);
-        this.add(dialogContent);
-    }
+        addDialogContent(templatesPanel);
 
-    @Override
-    public void show() {
-        super.show();
-        super.center();
-    }
-
-    @Override
-    protected void processInput() {
-        hide();
-        controller.onCreate(app);
+        if (controller.getTemplates().size() > 6) {
+            templatesPanel.getElement().getParentElement().addClassName("withBorder");
+        } else {
+            templatesPanel.getElement().getParentElement().removeClassName("withBorder");
+        }
     }
 }

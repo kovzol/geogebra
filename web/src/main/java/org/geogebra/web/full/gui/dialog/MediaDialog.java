@@ -4,58 +4,50 @@ import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.ModeSetter;
 import org.geogebra.common.kernel.geos.GeoElement;
-import org.geogebra.web.full.main.AppWFull;
+import org.geogebra.web.html5.main.AppW;
+import org.geogebra.web.shared.components.ComponentDialog;
+import org.geogebra.web.shared.components.DialogData;
 
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Panel;
 
 /**
- * Audio / video dialog.
- *
- * @author Zbynek
+ * Audio / video / embed dialog.
  */
-public abstract class MediaDialog extends OptionDialog {
 
-	protected AppWFull appW;
+public abstract class MediaDialog extends ComponentDialog {
+
 	protected MediaInputPanel mediaInputPanel;
 
 	/**
-	 * @param root
-	 *            popup root
 	 * @param app
 	 *            app
+	 * @param dialogTitle
+	 * 			  title of dialog
 	 */
-	public MediaDialog(Panel root, AppWFull app) {
-		super(root, app);
-		this.appW = app;
-		initGui();
-	}
 
-	protected void initGui() {
-		FlowPanel mainPanel = new FlowPanel();
-
-		mediaInputPanel = new MediaInputPanel(appW, this, "Link", true);
-		mediaInputPanel.addPlaceholder(app.getLocalization().getMenu("pasteLink"));
-
-		// add panels
-		add(mainPanel);
-		mainPanel.add(mediaInputPanel);
-		mainPanel.add(getButtonPanel());
-		setLabels();
-
-		// style
-		addStyleName("GeoGebraPopup");
+	public MediaDialog(AppW app, String dialogTitle) {
+		super(app, new DialogData(dialogTitle, "Cancel", "Insert"),
+				false, true);
 		addStyleName("mediaDialog");
+		addStyleName(dialogTitle);
 		addStyleName("mebis");
-
-		mediaInputPanel.focusDeferred();
+		buildContent();
 	}
 
 	/**
-	 * set button labels
+	 * build dialog content
 	 */
-	public void setLabels() {
-		updateButtonLabels("Insert");
+	public void buildContent() {
+		FlowPanel contentPanel = new FlowPanel();
+
+		mediaInputPanel = new MediaInputPanel((AppW) app, this, "Link", true);
+		mediaInputPanel.addPlaceholder(app.getLocalization().getMenu("pasteLink"));
+
+		contentPanel.add(mediaInputPanel);
+		addDialogContent(contentPanel);
+
+		mediaInputPanel.focusDeferred();
+		setPosBtnDisabled(true);
 	}
 
 	/**
@@ -81,9 +73,17 @@ public abstract class MediaDialog extends OptionDialog {
 
 	@Override
 	public void hide() {
-		appW.getGuiManager().setMode(EuclidianConstants.MODE_MOVE,
+		app.getGuiManager().setMode(EuclidianConstants.MODE_MOVE,
 				ModeSetter.TOOLBAR);
 		super.hide();
+	}
+
+	@Override
+	public void show() {
+		super.show();
+		if (mediaInputPanel != null) {
+			mediaInputPanel.focusDeferred();
+		}
 	}
 
 	protected void onMediaElementCreated(GeoElement geoElement) {

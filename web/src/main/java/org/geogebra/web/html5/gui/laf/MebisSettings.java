@@ -57,11 +57,6 @@ public class MebisSettings implements VendorSettings {
 	}
 
 	@Override
-	public boolean isGraspableMathEnabled() {
-		return false;
-	}
-
-	@Override
 	public List<FontFamily> getTextToolFonts() {
 		return Arrays.asList(FontFamily.ARIAL,
 				FontFamily.CALIBRI,
@@ -85,6 +80,16 @@ public class MebisSettings implements VendorSettings {
 
 	@Override
 	public boolean canSessionExpire() {
+		return true;
+	}
+
+	@Override
+	public boolean hasBitmapSecurity() {
+		return true;
+	}
+
+	@Override
+	public boolean isH5PEnabled() {
 		return true;
 	}
 }

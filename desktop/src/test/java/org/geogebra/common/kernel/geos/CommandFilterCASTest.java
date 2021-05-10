@@ -8,13 +8,13 @@ public class CommandFilterCASTest extends BaseSymbolicTest {
 
     @Test
     public void cmdInvert() {
-        t("Invert({{1, 2}, {3, 4}})", "{{-2, 1}, {3 / 2, (-1) / 2}}");
+        t("Invert({{1, 2}, {3, 4}})", "{{-2, 1}, {3 / 2, -1 / 2}}");
         t("Invert({{a, b}, {c, d}})", "{{d / (a * d - b * c), (-b) / (a * d - b * c)},"
                 + " {(-c) / (a * d - b * c), a / (a * d - b * c)}}");
         String[][] expected;
         expected = new String[1][2];
-        expected[0][0] = "-sin⁻¹(x) + 2 * k_1 * π + π";
-        expected[0][1] = "2 * k_1 * π - sin⁻¹(x) + π";
+        expected [0][0] = "-sin⁻¹(x) + 2 * k_{1} * π + π";
+        expected [0][1] = "2 * k_{1} * π - sin⁻¹(x) + π";
         AlgebraTestHelper.testMultipleResults("Invert(sin(x))", expected, ap,
                 StringTemplate.testTemplate);
         t("Invert(PartialFractions((x + 1) / (x + 2)))", "(-2 * x + 1) / (x - 1)");
@@ -23,12 +23,12 @@ public class CommandFilterCASTest extends BaseSymbolicTest {
 
     @Test
     public void cmdNSolutions() {
-        t("NSolutions(x^6 - 2x + 1 = 0)", "{0.5086603916, 1}");
-        t("NSolutions(a^4 + 34a^3 = 34, a)", "{-34.0008649859, 0.9904738886}");
-        t("NSolutions(cos(x) = x, x = 0)", "{0.7390851332}");
-        t("NSolutions(a^4 + 34a^3 = 34, a = 3)", "{0.9904738886}");
+        t("NSolutions(x^6 - 2x + 1 = 0)", "{0.508660391642, 1}");
+        t("NSolutions(a^4 + 34a^3 = 34, a)", "{-34.00086498588, 0.9904738885574}");
+        t("NSolutions(cos(x) = x, x = 0)", "{0.7390851332152}");
+        t("NSolutions(a^4 + 34a^3 = 34, a = 3)", "{0.9904738885574}");
         t("NSolutions({pi / x = cos(x - 2y), 2 y - pi = sin(x)}, {x = 3, y = 1.5})",
-                "{1.5707963268, 3.1415926536}");
+                "{1.570796326795, 3.14159265359}");
     }
 
     @Test
@@ -49,12 +49,12 @@ public class CommandFilterCASTest extends BaseSymbolicTest {
     public void cmdReducedRowEchelonForm() {
         t("ReducedRowEchelonForm({{1, 6, 4}, {2, 8, 9}, {4, 5, 6}})",
                 "{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}");
-        t("ReducedRowEchelonForm({{2, 10, 11, 4}, {2, (-5), (-6), 12}, {2, 5, 3, 2}})",
-                "{{1, 0, 0, 5}, {0, 1, 0, (-14) / 5}, {0, 0, 1, 2}}");
+        t("ReducedRowEchelonForm({{2, 10, 11, 4}, {2, -5, -6, 12}, {2, 5, 3, 2}})",
+                "{{1, 0, 0, 5}, {0, 1, 0, -14 / 5}, {0, 0, 1, 2}}");
         t("ReducedRowEchelonForm({{1, 6, 4}, {2, 8, 9}, {4, 5, 6}})",
                 "{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}");
-        t("ReducedRowEchelonForm({{2, 10, 11, 4}, {2, (-5), (-6), 12}, {2, 5, 3, 2}})",
-                "{{1, 0, 0, 5}, {0, 1, 0, (-14) / 5}, {0, 0, 1, 2}}");
+        t("ReducedRowEchelonForm({{2, 10, 11, 4}, {2, -5, -6, 12}, {2, 5, 3, 2}})",
+                "{{1, 0, 0, 5}, {0, 1, 0, -14 / 5}, {0, 0, 1, 2}}");
     }
 
     @Test
@@ -87,8 +87,8 @@ public class CommandFilterCASTest extends BaseSymbolicTest {
 
     @Test
     public void cmdRemoveUndefined() {
-        t("RemoveUndefined(Sequence((-1)^i, i, -3, -1, 0.5))",
-                "{-1, 1, -1}");
+        t("RemoveUndefined(Sequence((-1)^j, j, -3, -1, 0.5))",
+                "{-1, -ί, 1, ί, -1}");
     }
 
     @Test

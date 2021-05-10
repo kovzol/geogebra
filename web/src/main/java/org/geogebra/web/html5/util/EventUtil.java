@@ -77,10 +77,11 @@ public final class EventUtil {
 		return getTouchOrClickClientY(event.getNativeEvent());
 	}
 
-    /**
-     * @param element element
-     */
-    public static native void stopPointer(Element element) /*-{
+	/**
+	 * @param element
+	 *            element
+	 */
+	public static native void stopPointer(Element element) /*-{
 		if ($wnd.PointerEvent) {
 			var evts = [ "PointerDown", "PointerUp" ];
 			for ( var k in evts) {

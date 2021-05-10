@@ -39,6 +39,8 @@ import org.geogebra.common.util.MyMath;
 import org.geogebra.common.util.MyMath2;
 import org.geogebra.common.util.StringUtil;
 
+import com.google.j2objc.annotations.Weak;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -58,6 +60,7 @@ public class MyDouble extends ValidExpression
 	/**
 	 * kernel
 	 */
+	@Weak
 	protected Kernel kernel;
 
 	/**
@@ -94,20 +97,6 @@ public class MyDouble extends ValidExpression
 		kernel = d.kernel;
 		val = d.val;
 		angleDim = d.angleDim;
-	}
-
-	/**
-	 * called from the parser power must be a string of unicode SUPERSCRIPT
-	 * digits
-	 * 
-	 * @param kernel
-	 *            kernel
-	 * @param power
-	 *            SUPERSCRIPT power
-	 */
-	public MyDouble(Kernel kernel, String power) {
-		this.kernel = kernel;
-		val = StringUtil.indexToNumber(power);
 	}
 
 	@Override
@@ -670,10 +659,10 @@ public class MyDouble extends ValidExpression
 			set(Double.NaN);
 		}
 
-        if (!Kernel.angleUnitUsesDegrees(angleUnit)) {
-            set(Precision.round(val, (int) digits));
-            return this;
-        }
+		if (!Kernel.angleUnitUsesDegrees(angleUnit)) {
+			set(Precision.round(val, (int) digits));
+			return this;
+		}
 
 		double pow = Math.pow(10, digits);
 		set(val * pow);
@@ -898,7 +887,7 @@ public class MyDouble extends ValidExpression
 	}
 
 	@Override
-    public HashSet<GeoElement> getVariables(SymbolicMode mode) {
+	public HashSet<GeoElement> getVariables(SymbolicMode mode) {
 		return null;
 	}
 
@@ -1024,7 +1013,7 @@ public class MyDouble extends ValidExpression
 			return StringUtil.parseDouble(sb.toString());
 		} catch (Exception e) {
 			// eg try to parse "1.2.3", "1..2"
-            throw new MyError(app, Errors.InvalidInput, str);
+			throw new MyError(app, Errors.InvalidInput, str);
 		}
 		/*
 		 * "\u0030"-"\u0039", "\u0660"-"\u0669", "\u06f0"-"\u06f9",
@@ -1127,7 +1116,7 @@ public class MyDouble extends ValidExpression
 
 	@Override
 	public int hashCode() {
-        return DoubleUtil.hashCode(val);
+		return DoubleUtil.hashCode(val);
 	}
 
 	@Override
@@ -1288,6 +1277,10 @@ public class MyDouble extends ValidExpression
 	 */
 	public boolean isDigits() {
 		return true;
+	}
+
+	protected ExpressionValue unaryMinus(Kernel kernel2) {
+		return new MyDouble(kernel2, -getDouble());
 	}
 
 }

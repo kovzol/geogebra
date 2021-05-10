@@ -12,7 +12,12 @@ the Free Software Foundation.
 
 package org.geogebra.desktop.export;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -26,7 +31,14 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.freehep.graphics2d.VectorGraphics;
 import org.freehep.graphicsio.AbstractVectorGraphicsIO;
@@ -53,6 +65,7 @@ import org.geogebra.desktop.euclidianND.EuclidianViewInterfaceD;
 import org.geogebra.desktop.export.epsgraphics.ColorMode;
 import org.geogebra.desktop.export.epsgraphics.EpsGraphics;
 import org.geogebra.desktop.export.epsgraphics.EpsGraphicsD;
+import org.geogebra.desktop.gui.dialog.Dialog;
 import org.geogebra.desktop.gui.util.FileTransferable;
 import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.main.FontManagerD;
@@ -65,7 +78,7 @@ import com.himamis.retex.editor.share.util.Unicode;
 /**
  * @author Markus Hohenwarter
  */
-public class GraphicExportDialog extends JDialog implements KeyListener {
+public class GraphicExportDialog extends Dialog implements KeyListener {
 
 	// #4979
 	private static final int EXTRA_MARGIN = 4;
@@ -757,11 +770,11 @@ public class GraphicExportDialog extends JDialog implements KeyListener {
 
 			return true;
 		} catch (Exception ex) {
-            app.showError(Errors.SaveFileFailed);
+			app.showError(Errors.SaveFileFailed);
 			Log.debug(ex.toString());
 			return false;
 		} catch (Error ex) {
-            app.showError(Errors.SaveFileFailed);
+			app.showError(Errors.SaveFileFailed);
 			Log.debug(ex.toString());
 			return false;
 		}
@@ -798,12 +811,12 @@ public class GraphicExportDialog extends JDialog implements KeyListener {
 			return true;
 		} catch (Exception ex) {
 			ex.printStackTrace();
-            app.showError(Errors.SaveFileFailed);
+			app.showError(Errors.SaveFileFailed);
 
 			return false;
 		} catch (Error ex) {
 			ex.printStackTrace();
-            app.showError(Errors.SaveFileFailed);
+			app.showError(Errors.SaveFileFailed);
 
 			return false;
 		}
@@ -831,7 +844,7 @@ public class GraphicExportDialog extends JDialog implements KeyListener {
 		}
 
 		try {
-            exportSVG(app, ev, file, textAsShapes, pixelWidth,
+			exportSVG(app, ev, file, textAsShapes, pixelWidth,
 					pixelHeight, cmWidth, cmHeight, exportScale, transparent);
 
 			if (exportToClipboard) {
@@ -843,7 +856,7 @@ public class GraphicExportDialog extends JDialog implements KeyListener {
 			return true;
 		} catch (Throwable t) {
 			app.showError(Errors.SaveFileFailed);
-			Log.printStacktrace(t.getMessage());
+			Log.trace(t.getMessage());
 			return false;
 		}
 	}
@@ -889,11 +902,11 @@ public class GraphicExportDialog extends JDialog implements KeyListener {
 
 			return true;
 		} catch (Exception ex) {
-            app.showError(Errors.SaveFileFailed);
+			app.showError(Errors.SaveFileFailed);
 			Log.debug(ex.toString());
 			return false;
 		} catch (Error ex) {
-            app.showError(Errors.SaveFileFailed);
+			app.showError(Errors.SaveFileFailed);
 			Log.debug(ex.toString());
 			return false;
 		}
@@ -1020,7 +1033,7 @@ public class GraphicExportDialog extends JDialog implements KeyListener {
 			int currentLayer = 0;
 
 			g.startGroup("layer" + currentLayer);
-			for (Drawable d : ev.allDrawableList) {
+			for (Drawable d : ev.getAllDrawableList()) {
 				if (d.getGeoElement().getLayer() != currentLayer) {
 					g.endGroup("layer" + currentLayer);
 					currentLayer = d.getGeoElement().getLayer();

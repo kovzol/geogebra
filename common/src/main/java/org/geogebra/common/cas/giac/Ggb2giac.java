@@ -22,7 +22,7 @@ public class Ggb2giac {
 	/** Giac syntax for Element(list,index) */
 	public static final String ELEMENT_2 = "when(%1>0&&%1<=size(%0),(%0)[%1-when(type(%0)==DOM_LIST,1,0)],?)";
 	private static final String GGBVECT_TYPE = "27";
-	private static Map<String, String> commandMap = new TreeMap<>();
+	private static final Map<String, String> commandMap = new TreeMap<>();
 
 	/**
 	 * @param signature
@@ -71,24 +71,24 @@ public class Ggb2giac {
 				"[[[ggbbinarg0:=%0],[ggbbinarg1:=%1],[ggbbinarg2:=%2],"
 						// round ggbbinarg0 only if number
 						// (to be consistent with the Algebra View version)
-						+ "[ggbbinarg0:=when(type(ggbbinarg0)==DOM_RAT||type(ggbbinarg0)==DOM_FLOAT,round(ggbbinarg0),ggbbinarg0)]],"
-						+ "when(type(ggbbinarg2)==DOM_LIST,sum(seq(binomial(ggbbinarg0,ggbbinarg2[j],ggbbinarg1),j,0,length(ggbbinarg2)-1)),undef)][1]");
+						+ "[ggbbinarg00:=when(type(ggbbinarg0)==DOM_RAT||type(ggbbinarg0)==DOM_FLOAT,round(ggbbinarg0),ggbbinarg0)]],"
+						+ "when(type(ggbbinarg2)==DOM_LIST,sum(seq(binomial(ggbbinarg00,ggbbinarg2[j],ggbbinarg1),j,0,length(ggbbinarg2)-1)),undef)][1]");
 
 		p("BinomialDist.4",
 				"[[[ggbbinarg0:=%0],[ggbbinarg1:=%1],[ggbbinarg2:=%2],"
 						// round ggbbinarg0 and ggbbinarg2 only if numbers
 						// (to be consistent with the Algebra View version)
-						+ "[ggbbinarg0:=when(type(ggbbinarg0)==DOM_RAT||type(ggbbinarg0)==DOM_FLOAT,round(ggbbinarg0),ggbbinarg0)],"
-						+ "[ggbbinarg2:=when(type(ggbbinarg2)==DOM_RAT||type(ggbbinarg2)==DOM_FLOAT,round(ggbbinarg2),ggbbinarg2)]],"
+						+ "[ggbbinarg00:=when(type(ggbbinarg0)==DOM_RAT||type(ggbbinarg0)==DOM_FLOAT,round(ggbbinarg0),ggbbinarg0)],"
+						+ "[ggbbinarg02:=when(type(ggbbinarg2)==DOM_RAT||type(ggbbinarg2)==DOM_FLOAT,round(ggbbinarg2),ggbbinarg2)]],"
 						+ "if %3==true then "
 						// needed for GGB-841
 						// if %2 is not a number for BinomialDist[n,p,k,true]
 						// use
 						// Sum[BinomialCoefficient[n,i]p^i(1-p)^(n-i),i,0,k]
-						+ "when(type(ggbbinarg2)==DOM_IDENT,"
-						+ " expand(sum(binomial(ggbbinarg0,ggbtmpvari)*pow(ggbbinarg1,ggbtmpvari)*pow(1-ggbbinarg1,ggbbinarg0-ggbtmpvari),ggbtmpvari,0,ggbbinarg2)),"
-						+ " binomial_cdf(ggbbinarg0,ggbbinarg1,ggbbinarg2))"
-						+ "else binomial(ggbbinarg0,ggbbinarg2,ggbbinarg1) fi][1]");
+						+ "when(type(ggbbinarg02)==DOM_IDENT,"
+						+ " expand(sum(binomial(ggbbinarg00,ggbtmpvari)*pow(ggbbinarg1,ggbtmpvari)*pow(1-ggbbinarg1,ggbbinarg0-ggbtmpvari),ggbtmpvari,0,ggbbinarg02)),"
+						+ " binomial_cdf(ggbbinarg00,ggbbinarg1,ggbbinarg02))"
+						+ "else binomial(ggbbinarg00,ggbbinarg02,ggbbinarg1) fi][1]");
 
 		p("Cauchy.3", "normal(1/2+1/pi*atan(((%2)-(%1))/(%0)))");
 
@@ -141,16 +141,16 @@ public class Ggb2giac {
 						+ " when(odd(degree(ggbcmpsqarg0))==0,when(degree((ggbcmpsqarg0)[2])==0,"
 						// case px^(2n)+r
 						+ " [[[n:=degree(ggbsort(ggbcmpsqarg0)[1]) div 2],[p:=coeffs(ggbsort(ggbcmpsqarg0)[1])[0]],[r:=coeffs(ggbsort(ggbcmpsqarg0)[2])[0]]],equation(p*(lname(ggbcmpsqarg0)[0]^(2n))+r)][1],"
-						// case px^(2n)+qx^n
-						+ " [[[n:=degree(ggbsort(ggbcmpsqarg0)[1]) div 2],[p:=coeffs(ggbsort(ggbcmpsqarg0)[1])[0]],[q:=coeffs(ggbsort(ggbcmpsqarg0)[2])[0]],[h:=-q/(2*p)],[k:=(-q^2)/(4*p)]],when(degree((ggbcmpsqarg0)[2])==n,equation(p*((lname(ggbcmpsqarg0)[0])^n-h)^2+k),?)][1]),"
+						// case px^(2n)+qx^n eg CompleteSquare(a x^2-4x)
+						+ " [[[n:=degree(ggbsort(ggbcmpsqarg0)[1]) div 2],[p:=coeffs(ggbsort(ggbcmpsqarg0)[1])[0]],[q:=coeffs(ggbsort(ggbcmpsqarg0)[2])[0]],[h:=-q/(2*p)],[k:=(-q^2)/(4*p)]],when(degree((ggbcmpsqarg0)[2])==n,equation(p*((lname(ggbcmpsqarg0)[-1])^n-h)^2+k),?)][1]),"
 						// 2 terms with even degree
 						+ " ?),"
 						// case 3 term with degree 2
 						+ "when(degree(ggbcmpsqarg0)==2,canonical_form(ggbcmpsqarg0),"
 						// case 3 term with degree>2
 						+ " when(odd(degree(ggbcmpsqarg0))==0&&degree(ggbsort(ggbcmpsqarg0)[2])==degree(ggbsort(ggbcmpsqarg0)[1]) div 2&&type(ggbsort(ggbcmpsqarg0)[3])==DOM_INT,"
-						// case px^(2n)+qx^n+r
-						+ " [[[[n:=degree(ggbsort(ggbcmpsqarg0)[1]) div 2]],[p:=coeffs(ggbsort(ggbcmpsqarg0)[1])[0]],[q:=coeffs(ggbsort(ggbcmpsqarg0)[2])[0]],[r:=coeffs(ggbsort(ggbcmpsqarg0)[3])[0]],[h:=-q/(2*p)],[k:=r-(q^2)/(4*p)]],equation(p*((lname(ggbcmpsqarg0)[0])^n-h)^2+k)][1],"
+						// case px^(2n)+qx^n+r eg CompleteSquare(a x^4-4x^2+6)
+						+ " [[[[n:=degree(ggbsort(ggbcmpsqarg0)[1]) div 2]],[p:=coeffs(ggbsort(ggbcmpsqarg0)[1])[0]],[q:=coeffs(ggbsort(ggbcmpsqarg0)[2])[0]],[r:=coeffs(ggbsort(ggbcmpsqarg0)[3])[0]],[h:=-q/(2*p)],[k:=r-(q^2)/(4*p)]],equation(p*((lname(ggbcmpsqarg0)[-1])^n-h)^2+k)][1],"
 						// invalid equation
 						+ "?))),"
 						// term>3
@@ -160,6 +160,10 @@ public class Ggb2giac {
 
 		// Use local function rather than subst to make sure t==5 is not
 		// evaluated to false before subst
+		p("KeepIf.3",
+				"[[ggbkeep(%1):=begin when(%0,[%1],[]);end],flatten1(map(%2,loc->ggbkeep(loc)))][1]");
+		p("KeepIf.2",
+				"[[ggbkeep(x):=begin when(%0,[x],[]);end],flatten1(map(%1,loc->ggbkeep(loc)))][1]");
 		p("CountIf.3",
 				"[[ggbcount(%1):=begin when(%0,1,0);end],sum(map(%2,loc->ggbcount(loc)))][1]");
 		p("CountIf.2",
@@ -465,6 +469,9 @@ public class Ggb2giac {
 				(integralPart1 + integralPart3).replace("REPLACEME0", "%0-(%1)")
 						.replace("REPLACEME1", "%2").replace("REPLACEME2", "%3")
 						.replace("REPLACEME3", "%4"));
+
+		p("IntegralSymbolic.1", "regroup(integrate(%0))");
+		p("IntegralSymbolic.2", "regroup(integrate(%0,%1))");
 
 		// need to wrap in coordinates() for
 		// Intersect[Curve[t,t^2,t,-10,10],Curve[t2,1-t2,t2,-10,10]]
@@ -845,11 +852,14 @@ public class Ggb2giac {
 						+ ")),"
 
 						// Intersect[2dLine,2dLine]
+						// e.g. Intersect(x^2+y^2=5, x+y=0)
 						+ "when((type(xcoord(ggbinarg1))==DOM_INT&&type(grad(ggbinarg1,x)[1])==DOM_INT)"
+						// e.g. Intersect(x+y=0, x^2+y^2=5)
+						+ "|| (type(xcoord(ggbinarg0))==DOM_INT&&type(grad(ggbinarg0,x)[1])==DOM_INT)"
 						// Intersect[2dLine,Cmd2dLine]
 						// Intersect[Cmd2dLine,Cmd2dLine]
 						+ "|| ((ggbinarg1)[0]=='='&&(ggbinarg1)[1]=='y'),"
-						+ "inter(ggbinarg0,ggbinarg1),"
+						+ "normal(inter(ggbinarg0,ggbinarg1)),"
 						// Intersect[2dLine,3dLine]
 						// Intersect[Cmd2dLine,3dLine]
 						+ "when((xcoord(ggbinarg1))[0]=='='&&string((xcoord(ggbinarg1))[1])==string(X),"
@@ -930,20 +940,21 @@ public class Ggb2giac {
 		p("Iteration.3", "regroup((unapply(%0,x)@@%2)(%1))");
 		p("IterationList.3",
 				"[[ggbilans(f,x0,n):=begin local l,k; l:=[x0]; for k from 1 to n do l[k]:=regroup(f(l[k-1])); od; l; end],ggbilans(unapply(%0,x),%1,%2)][1]");
-		p("PointList.1",
-				// solution is 3D
-				"when(size((%0)[0])==3,"
+
+		String pointList = // solution is 3D
+				"[[ggbplarg:=%0],[when(size((ggbplarg)[0])==3,"
 						// result of Solve,eg {{x=7,y=7,z=7}}
-						+ " flatten1(coordinates(map(%0,t->when((flatten1(t))[0][0]=='='&&type((flatten1(t))[0][2])=='DOM_INT',"
+						+ " flatten1(coordinates(map(ggbplarg,t->when((flatten1(t))[0][0]=='='&&type((flatten1(t))[0][2])=='DOM_INT',"
 						+ "point((flatten1(t))[0][2],(flatten1(t))[1][2],(flatten1(t))[2][2]),"
 						+ "when(type(flatten1(t)[0])==DOM_INT,"
 						// result of Solution,eg (7 7 7)
 						+ "point(t[0],t[1],t[2]),"
 						// result of Solve as 3D Line
 						+ "point((flatten1(t))[0][2],(flatten1(t))[1][2],(flatten1(t))[2][2])))))),"
-						+ "when(type((%0)[0])==DOM_COMPLEX||(type((%0)[0])==DOM_SYMBOLIC&&(%0)[0][0]=='*'"
-						+ "&& (%0)[0][1]==i),%0,"
-						+ "flatten1(coordinates(map(%0,t->when(t[0]=='=',point(re(t[2]),im(t[2])),t))))))");
+						+ "when(type((ggbplarg)[0])==DOM_COMPLEX||(type((ggbplarg)[0])==DOM_SYMBOLIC&&(ggbplarg)[0][0]=='*'"
+						+ "&& (ggbplarg)[0][1]==i),ggbplarg,"
+						+ "flatten1(coordinates(map(ggbplarg,t->when(t[0]=='=',point(re(t[2]),im(t[2])),t))))))]][-1][0]";
+		p("PointList.1", pointList);
 		p("RootList.1", "apply(x->convert([x,0],25),%0)");
 		p("Invert.1",
 				"[[ggbinvans:=0/0],[ggbinvarg:=%0],[ggbinvans:=when(type(ggbinvarg)!=DOM_LIST,"
@@ -1026,14 +1037,14 @@ public class Ggb2giac {
 		p("LimitBelow.3",
 				"[[ggblimvans:=?],[ggblimvans:=limit(%0,%1,%2,-1)],[ggblimvans:=when(ggblimvans==inf||ggblimvans==-inf||ggblimvans==undef,ggblimvans,regroup(ggblimvans))],ggblimvans][3]");
 
-		p("Max.N",
-				"[[ggbmaxarg:=%],when(type(ggbmaxarg)==DOM_LIST,when(type((ggbmaxarg)[0])==DOM_LIST,?,max(ggbmaxarg)),?)][1]");
 		p("MatrixRank.1", "rank(%0)");
 		p("mean.1", listToNumber("mean"));
 		p("Mean.1", listToNumber("mean"));
 		p("Median.1", "median(%0)");
-		p("Min.N",
-				"[[ggbminarg:=%],when(type(ggbminarg)==DOM_LIST,when(type((ggbminarg)[0])==DOM_LIST,?,min(ggbminarg)),?)][1]");
+
+		pOptimize("Min", "min", "fMin");
+		pOptimize("Max", "max", "fMax");
+
 		p("MixedNumber.1", "propfrac(%0)");
 
 		p("Mod.2", "ggbmod(%0,%1)");
@@ -1156,7 +1167,7 @@ public class Ggb2giac {
 				+ ","
 				// eg Polynomial[x^2+a x+b x +c]
 				// eg Polynomial[y^2+a y+b y +c,y]
-				+ "[[ggbinput:=when(type(ggbinput)==DOM_LIST,[[ggbvar:=ggbinput[1]],coeffs(ggbinput[0],ggbinput[1])][1],coeffs(ggbinput,x))],"
+				+ "[[ggbinput:=when(type(ggbinput)==DOM_LIST,[[ggbvar:=ggbinput[1]],coeffs(simplify(ggbinput[0]),ggbinput[1])][1],coeffs(simplify(ggbinput),x))],"
 				+ "[ggbpolans:=add(seq(ggbinput[j]*ggbvar^(size(ggbinput)-1-j),j=0..size(ggbinput)-1))]]"
 				+ ")],ggbpolans][1]");
 
@@ -1170,8 +1181,14 @@ public class Ggb2giac {
 		// p("Prog.1","<<%0>>");
 		// p("Prog.2","<<begin scalar %0; return %1 end>>");
 
+		// return the median of that part of the list which fall at or below the list median
+		p("Q1.1","[[ggblist:=sort(%0)],[ggbmedian:=median(ggblist)], [ggbsublist:=at(ggblist,0..floor(length(ggblist)/2)-1)], when(length(ggblist)<2,undef, median(ggbsublist))][3]");
+
+		// return the number q3 such that three-fourths of the list numbers fall at or below q3.
+		p("Q3.1","[[ggblist:=sort(%0)],[ggbmedian:=median(ggblist)], [ggbsublist:=at(ggblist, (ceil(length(ggblist)/2))..(length(ggblist)-1))], when(length(ggblist)<2,undef, median(ggbsublist))][3]");
+
 		p("RandomUniform.2", "exact(%0+rand(0,1)*(%1-%0))");
-        p("Random.2", "(%0+rand(%1-(%0)+1))"); // "RandomBetween"
+		p("Random.2", "(%0+rand(%1-(%0)+1))"); // "RandomBetween"
 		p("RandomBinomial.2", "binomial_icdf(%0,%1,rand(0,1))");
 		p("RandomElement.1", "rand(1,%0)[0]");
 		p("RandomPoisson.1", "poisson_icdf(%0,rand(0,1))"); // could also make
@@ -1187,6 +1204,7 @@ public class Ggb2giac {
 		p("Reverse.1", "revlist(%0)");
 
 		p("ReducedRowEchelonForm.1", "rref(%0)");
+		p("Round.2", "round(%0, %1)");
 		p("Sample.2", "flatten1(seq(rand(1,%0),j,1,%1))");
 		p("Sample.3",
 				"[[[ggbsamarg0:=%0],[ggbsamarg1:=%1]],if %2==true then flatten1(seq(rand(1,ggbsamarg0),j,1,ggbsamarg1)) else rand(ggbsamarg1,ggbsamarg0) fi][1]");
@@ -1204,11 +1222,11 @@ public class Ggb2giac {
 
 		// default 15,like Input Bar version
 		p("ScientificText.1",
-				" [[[ggbstinput:=%0],[ggbstans:=?],[ggbstabsans:=abs(ggbstinput)],[ggbstpower:=floor(log10(ggbstinput))],"
+				" [[[ggbstinput:=%0],[ggbstans:=?],[ggbstabsans:=abs(ggbstinput)],[ggbstpower:=floor(log10(ggbstabsans))],"
 						+ "[ggbstans:=evalf(ggbstinput/10^ggbstpower,15)+\" * 10^ \"+ggbstpower]],when(ggbstinput==0,0,ggbstans)][1]");
 
 		p("ScientificText.2",
-				" [[[ggbstinput:=%0],[ggbstans:=?],[ggbstabsans:=abs(ggbstinput)],[ggbstpower:=floor(log10(ggbstinput))],"
+				" [[[ggbstinput:=%0],[ggbstans:=?],[ggbstabsans:=abs(ggbstinput)],[ggbstpower:=floor(log10(ggbstabsans))],"
 						+ "[ggbstans:=evalf(ggbstinput/10^ggbstpower,%1)+\" * 10^ \"+ggbstpower]],when(ggbstinput==0,0,ggbstans)][1]");
 
 		// stdevp / stdev different way round in Giac!
@@ -1217,8 +1235,8 @@ public class Ggb2giac {
 		p("SD.1", listToNumber("stddev"));
 		p("stdevp.1", listToNumber("stddev"));
 
-        p("Defined.1", "%0!=?");
-        p("Sort.1", "sort(%0)");
+		p("Defined.1", "%0!=?");
+		p("Sort.1", "sort(%0)");
 		p("Shuffle.1", "randperm(%0)");
 
 		// regroup for r*r^n
@@ -1226,16 +1244,16 @@ public class Ggb2giac {
 		// texpand() added for Simplify[exp(x)/exp(x+1)]
 		// normal needed for Simplify[sqrt(2)*sqrt(5)]
 		// exp2pow(lin(pow2exp()) added for Simplify(x^(8*k+9)*x^(5*k))
-        // factor() for Simplify((x^2+2*x+1)/((x+1)^8))
+		// factor() for Simplify((x^2+2*x+1)/((x+1)^8))
 		p("Simplify.1",
-                "[[[ggbsimparg:=%0],[ggbsimpans:=?],[ggbsimpans:=normal(simplify(regroup(texpand(ggbsimparg))))],[ggbsimpans2:=factor(exp2pow(lin(pow2exp(ggbsimparg))))]],"
+				"[[[ggbsimparg0:=%0],[ggbsimpans:=?],[ggbsimpans:=normal(simplify(regroup(texpand(ggbsimparg0))))],[ggbsimpans2:=factor(exp2pow(lin(pow2exp(ggbsimparg0))))]],"
 						+ "when(length(\"\"+ggbsimpans)<length(\"\"+ggbsimpans2)||indexOf(?,lname(ggbsimpans2))!=?,ggbsimpans,ggbsimpans2)][1]");
 
 		p("Regroup.1", "regroup(%0)");
 		p("ExpandOnly.1", "expand(%0)");
 
-        p("Solutions.1",
-                "ggbsort(normal(zeros(%0,when(type(%0)==DOM_LIST,lname(%0),when(indexOf(x,lname(%0))!=?,x,lname(%0)[0])))))");
+		 p("Solutions.1",
+				"ggbsort(normal(zeros(%0,when(type(%0)==DOM_LIST,lname(%0),when(indexOf(x,lname(%0))!=?,x,lname(%0)[0])))))");
 		p("Solutions.2", "ggbsort(normal(zeros(%0,%1)))");
 
 		// Root.1 and Solve.1 should be the same
@@ -1262,6 +1280,8 @@ public class Ggb2giac {
 				// assumptions>]
 				"when((type(%0)==DOM_SYMBOLIC||type(%0)==DOM_LIST)&&(type(%1)==DOM_IDENT||type(%1)==DOM_LIST),"
 						+ "(assume(%2),solve(%0,%1))[size(assume(%2),solve(%0,%1))-1],?)");
+
+		p("PlotSolve.1", pointList.replace("%0", root1));
 		p("SolveODE.1",
 				"when((%0)[0]=='=',"
 						// case the equation contains only y and other variable
@@ -1328,7 +1348,7 @@ public class Ggb2giac {
 		// quote() needed for GGB-2184
 		// Sum(If(Mod(k,2)==0,k,0),k,0,10)
 		p("Sum.4",
-                "expand(subst(sum(subst(quote(%0),{%1},{ggbsumvar@1}),ggbsumvar@1,%2,%3),ggbsumvar@1,%1))");
+				"expand(subst(sum(subst(quote(%0),{%1},{ggbsumvar@1}),ggbsumvar@1,%2,%3),ggbsumvar@1,%1))");
 
 		// svd = singular value decomposition
 		// svd(M)=[U,S,V]
@@ -1354,7 +1374,7 @@ public class Ggb2giac {
 
 		// eg ToBase(10^23,2)
 
-        p("Text.1", "%0+\"\"");
+		p("Text.1", "%0+\"\"");
 
 		String lookupList = "\"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ\"";
 		p("ToBase.2", "ggbText(\"\"+[[lookuplist:=" + lookupList
@@ -1425,7 +1445,10 @@ public class Ggb2giac {
 
 		// eg tlin(halftan(csc(x)-cot(x)+csc(y)-cot(y))) ->
 		// tan(x/2)+tan(y/2)
-		p("TrigExpand.1", "tan2sincos(trigexpand(%0))");
+		// check both methods and pick the *longer* answer
+		p("TrigExpand.1",
+				"[[[ggbsimparg0:=%0],[ggbsimpans:=?],[ggbsimpans:=tan2sincos(trigexpand(ggbsimparg0))],[ggbsimpans2:=tlin(ggbsimparg0)]],"
+						+ "when(length(\"\"+ggbsimpans)>length(\"\"+ggbsimpans2),ggbsimpans,ggbsimpans2)][1]");
 		p("TrigExpand.2",
 				"[[ggbtrigarg0:=%0],when((%1)[0]=='tan',trigexpand(ggbtrigarg0),tan2sincos(trigexpand(ggbtrigarg0)))][1]");
 
@@ -1802,11 +1825,11 @@ public class Ggb2giac {
 		// p("PolyLine.N","open_polygon(%)");
 
 		p("Tangent.2",
-                "[[[ggbtanarg0:=%0],[ggbtanarg1:=%1],"
-                        // convert y=x^2 into x^2 but leave x^2+y^2=1 and x^3+y^3=1 alone
-                        + "[ggbtanarg1:=when(ggbtanarg1[0]=='='&&length(zeros(ggbtanarg1,y))==1&&degree(ggbtanarg1[1])<3&&degree(ggbtanarg1[2])<3,zeros(ggbtanarg1,y)[0],ggbtanarg1)],"
-                        + "[ggbtanvar:=when(size(lname(ggbtanarg1) intersect [x])==0,lname(ggbtanarg1)[0],x)]],"
-                        + "when((%0)[0]=='pnt'," + "when((ggbtanarg1)[0]=='='," +
+				"[[[ggbtanarg0:=%0],[ggbtanarg1:=%1],"
+						// convert y=x^2 into x^2 but leave x^2+y^2=1 and x^3+y^3=1 alone
+						+ "[ggbtanarg1:=when(ggbtanarg1[0]=='='&&length(zeros(ggbtanarg1,y))==1&&degree(ggbtanarg1[1])<3&&degree(ggbtanarg1[2])<3,zeros(ggbtanarg1,y)[0],ggbtanarg1)],"
+						+ "[ggbtanvar:=when(size(lname(ggbtanarg1) intersect [x])==0,lname(ggbtanarg1)[0],x)]],"
+						+ "when((%0)[0]=='pnt'," + "when((ggbtanarg1)[0]=='='," +
 						// Tangent[conic/implicit,point on curve]
 						"when(type(equation(tangent(ggbtanarg1,ggbtanarg0)))==DOM_LIST,"
 						+ "equation(tangent(ggbtanarg1,ggbtanarg0)),"
@@ -1825,7 +1848,7 @@ public class Ggb2giac {
 						+ ")][1]");
 
 
-        // p("TangentThroughPoint.2",
+		// p("TangentThroughPoint.2",
 		// "[[ggbans:=?],[ggbans:=equation(tangent(when((%1)[0]=='=',%1,y=%1),%0))],"
 		// +
 		// "[ggbans:=when(((ggbans)[0])=='='&&lhs(ggbans)==1 &&
@@ -1914,7 +1937,37 @@ public class Ggb2giac {
 
 		p("Eigenvalues.1", "{eigenvals(%0)}");
 
+		p("RemoveUndefined.1", "when(type(%0)==DOM_LIST, remove(undef,%0),?)");
+		p("IsInteger.1", "when(type(%0)==DOM_INT,round(%0)==%0, false)");
+
 		return commandMap;
+	}
+
+	private static void pOptimize(String optimize, String optimizeGiac, String optimizeGiacFun) {
+		p(optimize + ".1", "[[ggbarg:=%0],"
+				+ " when(type(ggbarg)==DOM_LIST,"
+				+ "  when(type((ggbarg)[0])==DOM_LIST,?," + optimizeGiac + "(ggbarg)),"
+				+ "  when((ggbarg)[0]=='and',[[ggbnumb:=(a,b)->when(type(evalf(a))==DOM_IDENT,b,a)],"
+				+ "   [ggba:=ggbnumb(ggbarg[1][1],ggbarg[1][2])],"
+				+ "   [ggbb:=ggbnumb(ggbarg[2][1],ggbarg[2][2])],"
+				+ "   " + optimizeGiac + "(ggba,ggbb)][3],?))"
+				+ "][1]");
+		p(optimize + ".2", "[[ggbparam1:=%0],[ggbparam2:=%1],"
+				+ "when(type(ggbparam1)==DOM_LIST&&type(ggbparam2)==DOM_LIST,"
+				+ optimizeGiac + "(map(remove(x->(x[1]<=0), zip((x,y)->[x,y], ggbparam1, ggbparam2)), x->x[0])),"
+				+ optimizeGiac + "(ggbparam1,ggbparam2))][2]");
+		p(optimize + ".3", "[[ggbfun:=%0],[ggbinta:=%1],[ggbintb:=%2],"
+				+ " when(ggb_is_number(ggbfun),"
+				+ "  " + optimizeGiac + "([ggbfun, ggbinta, ggbintb]),"
+				+ "  [[ggbvar:=lname(ggbfun)[0]],"
+				+ "   [ggbx:=" + optimizeGiacFun + "(ggbfun, ggbvar=ggbinta..ggbintb)[0][2]],"
+				+ "   point(ggbx,normal(subst(ggbfun,ggbvar,ggbx)))"
+				+ "  ][2]"
+				+ " )][3]");
+		p(optimize + ".N", "[[ggbarg:=%],"
+				+ "  when(type(ggbarg)==DOM_LIST,"
+				+ "    when(type((ggbarg)[0])==DOM_LIST,?," + optimizeGiac + "(ggbarg)),?"
+				+ "  )][1]");
 	}
 
 	private static String listToNumber(String string) {

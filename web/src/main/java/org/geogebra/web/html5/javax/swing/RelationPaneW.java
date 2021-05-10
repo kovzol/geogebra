@@ -30,7 +30,7 @@ public class RelationPaneW extends GDialogBox
 
 	private Button btnOK;
 	private Button[] btnCallbacks;
-    private Relation[] callbacks;
+	private Relation[] callbacks;
 	private int rels;
 	private FlowPanel[] texts;
 	private FlowPanel[] buttons;
@@ -68,7 +68,7 @@ public class RelationPaneW extends GDialogBox
 		rels = relations.length;
 
 		btnCallbacks = new Button[rels];
-        callbacks = new Relation[rels];
+		callbacks = new Relation[rels];
 		texts = new FlowPanel[rels];
 		buttons = new FlowPanel[rels];
 
@@ -82,9 +82,9 @@ public class RelationPaneW extends GDialogBox
 				callbacks[i] = relations[i].getCallback();
 				btnCallbacks[i] = new Button();
 				btnCallbacks[i].setStyleName("moreBtn");
-                btnCallbacks[i].setText(app1.isUnbundledOrWhiteboard()
-                        ? app1.getLocalization().getMenu("More")
-                        : app1.getLocalization().getMenu("More")
+				btnCallbacks[i].setText(app1.isUnbundledOrWhiteboard()
+						? app1.getLocalization().getMenu("More")
+						: app1.getLocalization().getMenu("More")
 								+ Unicode.ELLIPSIS);
 				btnCallbacks[i].addClickHandler(this);
 				buttons[i].add(btnCallbacks[i]);
@@ -129,28 +129,25 @@ public class RelationPaneW extends GDialogBox
 			hide();
 		}
 
-        ((AppW) app).getAsyncManager().asyncEvalCommand("Delete(Prove(true))",
-                new Runnable() {
+		((AppW) app).getAsyncManager().asyncEvalCommand("Delete(Prove(true))",
+				(_unused) -> {
+					LoggerW.loaded("prover");
+					for (int i = 0; i < rels; ++i) {
+						if (source == btnCallbacks[i]) {
+							expandRow(i);
+						}
+					}
+				}, null);
+	}
 
-                    @Override
-                    public void run() {
-                        LoggerW.loaded("prover");
-                        for (int i = 0; i < rels; ++i) {
-                            if (source == btnCallbacks[i]) {
-                                expandRow(i);
-                            }
-                        }
-                    }
-                }, null);
-    }
-
-    /**
-     * Update UI after More button clicked
-     *
-     * @param row row number
-     */
-    protected void expandRow(int row) {
-        RelationRow relation = callbacks[row].getExpandedRow(row);
+	/**
+	 * Update UI after More button clicked
+	 * 
+	 * @param row
+	 *            row number
+	 */
+	protected void expandRow(int row) {
+		RelationRow relation = callbacks[row].getExpandedRow(row);
 		texts[row].clear();
 		HTML text = new HTML(relation.getInfo());
 		texts[row].add(text);
@@ -165,4 +162,6 @@ public class RelationPaneW extends GDialogBox
 		HTML htext = new HTML(text);
 		texts[row].add(htext);
 	}
+
+
 }

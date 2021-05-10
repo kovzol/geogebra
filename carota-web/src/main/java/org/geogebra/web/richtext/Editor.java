@@ -1,34 +1,13 @@
 package org.geogebra.web.richtext;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.user.client.ui.Widget;
+
+import elemental2.dom.CanvasRenderingContext2D;
 
 /** The interface to the Carota editor */
 public interface Editor {
 
 	void reload();
-
-	interface EditorChangeListener {
-
-		/**
-		 * Called 0.5s after the last change in the editor state
-		 * @param content the JSON encoded content of the editor
-		 */
-		void onContentChanged(String content);
-
-		/**
-		 * Called instantly on editor state change
-		 *
-		 * @param minHeight
-		 *            minimum height in pixels
-		 */
-		void onSizeChanged(int minHeight);
-
-		/**
-		 * Called on selection change
-		 */
-		void onSelectionChanged();
-	}
 
 	/**
 	 * Return the GWT widget that represents the editor.
@@ -92,11 +71,15 @@ public interface Editor {
 	 */
 	String getContent();
 
-	void draw(Context2d canvasElement);
+	void draw(CanvasRenderingContext2D canvasElement);
 
 	void setWidth(int width);
 
 	String getHyperlinkRangeText();
+
+	String getSelectionRangeText();
+
+	void setSelection(String text);
 
 	void setHyperlinkUrl(String input);
 
@@ -105,4 +88,6 @@ public interface Editor {
 	void switchListTo(String listType);
 
 	String getListStyle();
+
+	int getMinHeight();
 }

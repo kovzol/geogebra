@@ -13,8 +13,10 @@ import org.geogebra.common.euclidian.draw.DrawDropDownList;
 import org.geogebra.common.euclidian.draw.DrawEmbed;
 import org.geogebra.common.euclidian.draw.DrawFormula;
 import org.geogebra.common.euclidian.draw.DrawImage;
+import org.geogebra.common.euclidian.draw.DrawImageResizable;
 import org.geogebra.common.euclidian.draw.DrawImplicitCurve;
 import org.geogebra.common.euclidian.draw.DrawInequality;
+import org.geogebra.common.euclidian.draw.DrawInlineTable;
 import org.geogebra.common.euclidian.draw.DrawInlineText;
 import org.geogebra.common.euclidian.draw.DrawInputBox;
 import org.geogebra.common.euclidian.draw.DrawIntegral;
@@ -22,6 +24,7 @@ import org.geogebra.common.euclidian.draw.DrawIntegralFunctions;
 import org.geogebra.common.euclidian.draw.DrawLine;
 import org.geogebra.common.euclidian.draw.DrawList;
 import org.geogebra.common.euclidian.draw.DrawLocus;
+import org.geogebra.common.euclidian.draw.DrawPieChart;
 import org.geogebra.common.euclidian.draw.DrawPoint;
 import org.geogebra.common.euclidian.draw.DrawPointPlot;
 import org.geogebra.common.euclidian.draw.DrawPolyLine;
@@ -55,8 +58,8 @@ import org.geogebra.common.kernel.geos.GeoButton;
 import org.geogebra.common.kernel.geos.GeoEmbed;
 import org.geogebra.common.kernel.geos.GeoFormula;
 import org.geogebra.common.kernel.geos.GeoFunction;
-import org.geogebra.common.kernel.geos.GeoFunctionNVar;
 import org.geogebra.common.kernel.geos.GeoImage;
+import org.geogebra.common.kernel.geos.GeoInlineTable;
 import org.geogebra.common.kernel.geos.GeoInlineText;
 import org.geogebra.common.kernel.geos.GeoInputBox;
 import org.geogebra.common.kernel.geos.GeoList;
@@ -82,6 +85,7 @@ import org.geogebra.common.kernel.kernelND.GeoSurfaceCartesian2D;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
 import org.geogebra.common.kernel.matrix.CoordSys;
 import org.geogebra.common.kernel.statistics.AlgoDotPlot;
+import org.geogebra.common.kernel.statistics.GeoPieChart;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
 
 /**
@@ -126,6 +130,9 @@ public class EuclidianDraw {
 		case SEGMENT3D:
 			d = new DrawSegment(ev, (GeoSegmentND) geo);
 			break;
+		case PIECHART:
+			d = new DrawPieChart(ev, (GeoPieChart) geo);
+			break;
 
 		case RAY:
 		case RAY3D:
@@ -157,17 +164,10 @@ public class EuclidianDraw {
 			break;
 
 		case FUNCTION_NVAR:
-			if (((GeoFunctionNVar) geo).isBooleanFunction()
-					&& ((GeoFunctionNVar) geo).getVarNumber() < 3) {
-				d = new DrawInequality(ev, (GeoFunctionNVar) geo);
-			}
+			// create inequality drawable for *all* functions as a placeholder
+			// x+y may later become x>y via SetValue / input box
+			d = new DrawInequality(ev, (FunctionalNVar) geo);
 			break;
-		case INTERVAL:
-			if (((GeoFunction) geo).isBooleanFunction()) {
-				d = new DrawInequality(ev, (GeoFunction) geo);
-			}
-			break;
-
 		case ANGLE:
 			if (geo.isIndependent()) {
 				// independent number may be shown as slider
@@ -310,7 +310,7 @@ public class EuclidianDraw {
 			break;
 
 		case IMAGE:
-			d = new DrawImage(ev, (GeoImage) geo);
+			d = createDrawImage(ev, (GeoImage) geo);
 			break;
 
 		case LOCUS:
@@ -355,7 +355,21 @@ public class EuclidianDraw {
 			break;
 		case INLINE_TEXT:
 			d = new DrawInlineText(ev, (GeoInlineText) geo);
+			break;
+		case TABLE:
+			d = new DrawInlineTable(ev, (GeoInlineTable) geo);
 		}
+		return d;
+	}
+
+	private static DrawableND createDrawImage(EuclidianView ev, GeoImage geo) {
+		DrawableND d;
+		if (ev.getApplication().isWhiteboardActive()) {
+			d = new DrawImageResizable(ev, geo);
+		} else {
+			d = new DrawImage(ev, geo);
+		}
+		d.update();
 		return d;
 	}
 

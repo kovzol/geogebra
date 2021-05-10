@@ -18,6 +18,8 @@ $teal-default: #008475;
 $teal-dark: #006758;
 /*#008475;*/
 $gray: #CCCCCC;
+$classic-toolbar-bg: #F8F8F8;
+$selected-tool-text: #333333;
 /* toolbar color in exam mode by cheating */
 $exam-red: #D32F2F;
 
@@ -42,6 +44,12 @@ $focus-black: $material-black900;
 $white-5-overlay: #F5F5F5;
 $gray-background: #f9f9f9;
 $dialog-text-btn-hover: #6b6b6b;
+$disabled-contained-btn-bg: #E4E4E4;
+$disabled-contained-btn-col: rgba(0,0,0,0.38);
+$disabled-text-btn-col: rgba(0,0,0,0.38);
+$selected-calc-btn-bg: #ebe7f8;
+$hover-calc-btn-bg: #e5e5e5;
+$mebis-text-btn-col: #277ea6;
 
 $red: rgb(255,0,0);
 $red-87: rgba(255,0,0,.87);
@@ -69,11 +77,13 @@ $black-14: rgba(0,0,0,0.14);
 $black-12: rgba(0,0,0,0.12);
 $black-10: rgba(0,0,0,0.1);
 $black-04: rgba(0,0,0,0.04);
+$black-50: rgba(0,0,0,0.50);
 
 $preview-border: rgba(51,51,51,.2);
 
 $text-primary: $black-87;
 $text-secondary: $black-54;
+$text-disabled: rgba(0,0,0,0.38);
 
 $text-light-primary: $white;
 $text-light-secondary: $white-70;
@@ -99,7 +109,6 @@ $mow_dark_87: rgba($mow_dark, 0.87);
 $mow_grey_button: #f5f5f5;
 $mow_card_background: #fafafa;
 $mow_card_background_hover: #e5e5e5;
-$mow_card_divider: $black-30; 
 
 $menu-focus-default: #ccf;
 
@@ -109,5 +118,5 @@ $mow_pdf_left_right_hover: $mow_card_background_hover;
 $mow_material_card_bgd: $mow_card_background;
 $mow_white_hover: #f5f5f5;
 $teal-default-hover: #3DA196;
-$teal-default-20: rgba(0,132,117,0.2);
+$teal-default-20: rgba(0, 132, 117, 0.2);
 $tableview-row: rgba(216, 216, 216, 0.2);

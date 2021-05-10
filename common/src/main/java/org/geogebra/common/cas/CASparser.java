@@ -208,11 +208,11 @@ public class CASparser implements CASParserInterface {
 		} else {
 			expr = (ExpressionNode) ev;
 		}
-        String casString = expr.getCASstring(tpl, true);
-        if (casString.startsWith("?")) {
+		String casString = expr.getCASstring(tpl, true);
+		if (casString.startsWith("?")) {
 			return "?";
 		}
-        return casString;
+		return casString;
 	}
 
 	/**

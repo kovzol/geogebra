@@ -11,7 +11,7 @@ public class ScreenReaderAdapterD implements ScreenReaderAdapter {
 	}
 
 	@Override
-    public void readDelayed(String text) {
+	public void readDelayed(String text) {
 		readText(text);
 	}
 }

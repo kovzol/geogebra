@@ -330,10 +330,8 @@ public final class EuclidianConstants {
 	/** creates a tetrahedron */
 	public static final int MODE_TETRAHEDRON = 537;
 
-    /**
-     * creates a surface by revolving a line around x-axis
-     */
-    public static final int MODE_SURFACE_OF_REVOLUTION = 538;
+	/** creates a surface by revolving a line around x-axis */
+	public static final int MODE_SURFACE_OF_REVOLUTION = 538;
 
 	/** rotate the view */
 	public static final int MODE_ROTATEVIEW = 540;
@@ -458,6 +456,8 @@ public final class EuclidianConstants {
 	public static final int MODE_TABLE = 123;
 	/** Equation */
 	public static final int MODE_EQUATION = 124;
+	/** H5P tool */
+	public static final int MODE_H5P = 125;
 	/** macro tools ID offset */
 	public static final int MACRO_MODE_ID_OFFSET = 100001;
 	/** max delay between taps of a doublecklick */
@@ -541,9 +541,9 @@ public final class EuclidianConstants {
 			return "Prism";
 
 		case EuclidianConstants.MODE_EXTRUSION:
-            return "Extrusion";
+			return "Extrusion";
 
-            case EuclidianConstants.MODE_SURFACE_OF_REVOLUTION:
+		case EuclidianConstants.MODE_SURFACE_OF_REVOLUTION:
 			return "SurfaceOfRevolution";
 
 		case EuclidianConstants.MODE_CONIFY:
@@ -945,23 +945,25 @@ public final class EuclidianConstants {
 		case EuclidianConstants.MODE_AUDIO:
 			return "Audio";
 		case EuclidianConstants.MODE_GRAPHING:
-            return "Graphing";
-            case EuclidianConstants.MODE_CAS:
-                return "CAS";
-            case EuclidianConstants.MODE_GRASPABLE_MATH:
+			return "Graphing";
+		case EuclidianConstants.MODE_CAS:
+				return "CAS";
+        case EuclidianConstants.MODE_GRASPABLE_MATH:
             return "Graspable Math";
 		case EuclidianConstants.MODE_PDF:
 			return "PDF";
 		case EuclidianConstants.MODE_EXTENSION:
 			return "Web";
+		case EuclidianConstants.MODE_H5P:
+			return "H5P";
 		case EuclidianConstants.MODE_SELECT:
 			return "Select";
 		case EuclidianConstants.MODE_SELECT_MOW:
 			return "Select";
 		case EuclidianConstants.MODE_TABLE:
-			return 	"Table";
+			return "Table";
 		case EuclidianConstants.MODE_EQUATION:
-			return 	"Equation";
+			return "Equation";
 
 		default:
 			Log.error("Unknown mode " + mode);

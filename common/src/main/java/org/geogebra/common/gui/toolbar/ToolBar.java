@@ -6,12 +6,11 @@ import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.main.App;
-import org.geogebra.common.main.Feature;
 
 /**
- * @author gabor
+ * Utility class for toolbar strings
  *
- *         This class is not a superclass of ToolBar, only common method stack
+ * @author gabor
  */
 public class ToolBar {
 	static private ToolsRemover defaultToolsRemover = new ToolsRemover();
@@ -32,7 +31,7 @@ public class ToolBar {
 	/**
 	 * any toolbar composed of a set of following menus should be considered as
 	 * default toolbar
-	 *
+	 * 
 	 * The first group depends on selection tool and rotate tool (different for
 	 * desktop x web and prerelease x stable): accept all
 	 */
@@ -52,9 +51,9 @@ public class ToolBar {
 	static private final String[][] DEFAULT_TOOLBAR_3D = { { "0" },
 			{ "1 501 5 19 67" }, { "2 15 45 18 7 37" }, { "514 3 9 13 44 47" },
 			{ "16", "16 51" },
-			{ "551 550 11 20 22 21 23 55 56 57 12", "551 550 11 22 23 55 56 57 12" }, { "69" },
+            { "551 550 11 20 22 21 23 55 56 57 12", "551 550 11 22 23 55 56 57 12" }, { "69" },
 			{ "510 511 512 513" },
-			{ "533 531 534 532 522 523 537 536 535",
+			{ "533 531 534 532 522 523 537 536 535", "533 531 534 532 522 523 537 536 535 538",
 					"533 531 534 532 538 522 523 537 536 535" },
 			{ "521 520" }, { "36 38 49 560" }, { "571 30 29 570 31 33" },
 			{ "17" }, { "540 40 41 42 27 28 35 6 502" } };
@@ -67,7 +66,7 @@ public class ToolBar {
 	/**
 	 * Returns with the default definition of the general tool bar without
 	 * macros.
-	 *
+	 * 
 	 * @param html5
 	 *            true, if all menus must appear. (On the web there are some
 	 *            tools, which don't appear.)
@@ -85,7 +84,7 @@ public class ToolBar {
 	/**
 	 * Returns with the default definition of the general tool bar without
 	 * macros.
-	 *
+	 * 
 	 * @param html5
 	 *            true, if all menus must appear. (On the web there are some
 	 *            tools, which don't appear.)
@@ -344,14 +343,16 @@ public class ToolBar {
 	}
 
 	/**
-	 * @param app
-	 *            the application.
+	 * @param includeGraspableMath whether to include GraspableMath
+	 * @param includeH5P whether to include H5P
 	 * @return definition for MOW media toolbar
 	 */
-	public static String getMOWMediaToolBarDefString(App app, boolean includeGraspableMath) {
+	public static String getMOWMediaToolBarDefString(boolean includeGraspableMath,
+			boolean includeH5P) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(app.has(Feature.MOW_TEXT_TOOL) ? EuclidianConstants.MODE_MEDIA_TEXT
-				: EuclidianConstants.MODE_TEXT);
+		sb.append(EuclidianConstants.MODE_MEDIA_TEXT);
+		sb.append(" ");
+		sb.append(EuclidianConstants.MODE_TABLE);
 		sb.append(" ");
 		sb.append(EuclidianConstants.MODE_EQUATION);
 		sb.append(" ");
@@ -364,6 +365,10 @@ public class ToolBar {
 		}
 		sb.append(" ");
 		sb.append(EuclidianConstants.MODE_EXTENSION);
+		if (includeH5P) {
+			sb.append(" ");
+			sb.append(EuclidianConstants.MODE_H5P);
+		}
 		sb.append(" ");
 		sb.append(EuclidianConstants.MODE_IMAGE);
 		sb.append(" ");
@@ -626,10 +631,6 @@ public class ToolBar {
 		sb.append(EuclidianConstants.MODE_POLAR_DIAMETER);
 		sb.append(" , ");
 		sb.append(EuclidianConstants.MODE_LOCUS);
-		sb.append(" ");
-		sb.append(EuclidianConstants.MODE_LOCUS_EQUATION);
-		sb.append(" ");
-		sb.append(EuclidianConstants.MODE_ENVELOPE);
 		sb.append(" | ");
 
 		// polygons
@@ -771,10 +772,10 @@ public class ToolBar {
 	 * Parses a toolbar definition string like "0 , 1 2 | 3 4 5 || 7 8 9" where
 	 * the int values are mode numbers, "," adds a separator within a menu, "|"
 	 * starts a new menu and "||" adds a separator before starting a new menu.
-	 *
+	 * 
 	 * @param toolbarString
 	 *            toolbar definition string
-	 *
+	 * 
 	 * @return toolbar as nested Vector objects with Integers for the modes.
 	 *         Note: separators have negative values.
 	 * @throws NumberFormatException
@@ -951,7 +952,6 @@ public class ToolBar {
 	}
 
 	final static private boolean isDefaultToolbar(String[] split, String[][] defaultToolbar) {
-
 		if (split.length != defaultToolbar.length) {
 			return false;
 		}

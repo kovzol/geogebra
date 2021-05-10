@@ -1,7 +1,7 @@
 package org.geogebra.common.kernel.geos.description;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import org.geogebra.common.BaseUnitTest;
 import org.geogebra.common.kernel.geos.GeoConic;
@@ -10,7 +10,6 @@ import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
-import org.geogebra.common.main.settings.AppConfigGraphing;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -80,7 +79,7 @@ public class ProtectiveLabelDescriptionConverterTest extends BaseUnitTest {
 
 	@Test
 	public void testFiltersCaptionDependentCopy() {
-		GeoLine line = createRayWithCommand();
+		createRayWithCommand();
 		String dependentCopyString = "g:f";
 		GeoLine lineCopy = addAvInput(dependentCopyString);
 

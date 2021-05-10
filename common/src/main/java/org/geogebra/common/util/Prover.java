@@ -39,7 +39,7 @@ public abstract class Prover {
 
 	/**
 	 * Enum list of supported prover backends for GeoGebra
-	 * 
+	 *
 	 * @author Zoltan Kovacs
 	 *
 	 */
@@ -82,7 +82,7 @@ public abstract class Prover {
 
 	/**
 	 * Possible results of an attempted proof
-	 * 
+	 *
 	 * @author Zoltan Kovacs
 	 *
 	 */
@@ -154,7 +154,7 @@ public abstract class Prover {
 	/**
 	 * An object which contains a condition description (e.g. "AreCollinear")
 	 * and an ordered list of GeoElement's (e.g. A, B, C)
-	 * 
+	 *
 	 * @author Zoltan Kovacs
 	 */
 	public static class NDGCondition {
@@ -176,7 +176,7 @@ public abstract class Prover {
 
 		/**
 		 * Gets readability score for this NDG condition.
-		 * 
+		 *
 		 * @return score
 		 */
 		public double getReadability() {
@@ -185,7 +185,7 @@ public abstract class Prover {
 
 		/**
 		 * Sets readability score for this NDG condition.
-		 * 
+		 *
 		 * @param readability
 		 *            score
 		 */
@@ -195,7 +195,7 @@ public abstract class Prover {
 
 		/**
 		 * A short textual description of the condition
-		 * 
+		 *
 		 * @return the condition
 		 */
 		public String getCondition() {
@@ -204,7 +204,7 @@ public abstract class Prover {
 
 		/**
 		 * Sets a condition text
-		 * 
+		 *
 		 * @param condition
 		 *            the text, e.g. "AreCollinear"
 		 */
@@ -214,7 +214,7 @@ public abstract class Prover {
 
 		/**
 		 * Returns the GeoElements for a given condition
-		 * 
+		 *
 		 * @return the array of GeoElements
 		 */
 		public GeoElement[] getGeos() {
@@ -223,7 +223,7 @@ public abstract class Prover {
 
 		/**
 		 * Sets the GeoElements for a given condition
-		 * 
+		 *
 		 * @param object
 		 *            the array of GeoElements
 		 */
@@ -278,7 +278,7 @@ public abstract class Prover {
 					GeoPoint Q2 = ((GeoLine) ge).getEndPoint();
 					if ((Q1 != null && Q2 != null)
 							&& ((Q1.equals(P1) && Q2.equals(P2))
-									|| (Q1.equals(P2) && Q2.equals(P1)))) {
+							|| (Q1.equals(P2) && Q2.equals(P1)))) {
 						return (GeoLine) ge;
 					}
 				}
@@ -316,7 +316,7 @@ public abstract class Prover {
 					GeoPoint Q2 = ((GeoSegment) ge).getEndPoint();
 					if ((Q1 != null && Q2 != null)
 							&& ((Q1.equals(P1) && Q2.equals(P2))
-									|| (Q1.equals(P2) && Q2.equals(P1)))) {
+							|| (Q1.equals(P2) && Q2.equals(P1)))) {
 						return (GeoSegment) ge;
 					}
 				}
@@ -352,7 +352,7 @@ public abstract class Prover {
 
 		/**
 		 * Rewrites the NDG to a simpler form.
-		 * 
+		 *
 		 * @param cons
 		 *            the current construction
 		 */
@@ -452,7 +452,7 @@ public abstract class Prover {
 
 	/**
 	 * Gives the current statement to prove
-	 * 
+	 *
 	 * @return the statement (usually a GeoBoolean)
 	 */
 	public GeoElement getStatement() {
@@ -461,7 +461,7 @@ public abstract class Prover {
 
 	/**
 	 * Sets the maximal time spent in the Prover for the given proof.
-	 * 
+	 *
 	 * @param timeout
 	 *            The timeout in seconds
 	 */
@@ -471,7 +471,7 @@ public abstract class Prover {
 
 	/**
 	 * Sets the maximal time spent in the Prover for the given proof.
-	 * 
+	 *
 	 * @return The timeout in seconds
 	 */
 	public int getTimeout() {
@@ -480,7 +480,7 @@ public abstract class Prover {
 
 	/**
 	 * Sets the prover engine.
-	 * 
+	 *
 	 * @param engine
 	 *            The engine subsystem
 	 */
@@ -490,7 +490,7 @@ public abstract class Prover {
 
 	/**
 	 * Gets the prover engine.
-	 * 
+	 *
 	 * @return the engine subsystem
 	 */
 	public ProverEngine getProverEngine() {
@@ -500,7 +500,7 @@ public abstract class Prover {
 	/**
 	 * Sets the GeoGebra construction as the set of the used objects in the
 	 * proof.
-	 * 
+	 *
 	 * @param construction
 	 *            The GeoGebra construction
 	 */
@@ -510,7 +510,7 @@ public abstract class Prover {
 
 	/**
 	 * Sets the statement to be proven.
-	 * 
+	 *
 	 * @param root
 	 *            The statement to be proven
 	 */
@@ -520,7 +520,7 @@ public abstract class Prover {
 
 	/**
 	 * Adds a non-degeneracy condition to the prover object
-	 * 
+	 *
 	 * @param ndgc
 	 *            the condition itself
 	 */
@@ -565,15 +565,15 @@ public abstract class Prover {
 		if (algoParent == null) {
 			if (statement.getValueForInputBar().equals("true")) {
 				result = ProofResult.TRUE; // Trust in
-																// kernel's
-																// wisdom
+				// kernel's
+				// wisdom
 			} else if (statement.getValueForInputBar().equals("false")) {
 				result = ProofResult.FALSE; // Trust in kernel's wisdom
 			}
 			else {
 				result = ProofResult.UNKNOWN; // Not sure if this is executed at
 			}
-												// all, but for sure.
+			// all, but for sure.
 			return;
 		}
 
@@ -620,7 +620,7 @@ public abstract class Prover {
 	 * A helper method to override the last found proof result with the new one,
 	 * if the new one is not unknown, or if the result is null yet, then we
 	 * prefer the unknown result.
-	 * 
+	 *
 	 * @param pr
 	 *            the new result
 	 * @return decision which result is better
@@ -655,7 +655,7 @@ public abstract class Prover {
 
 	/**
 	 * Gets non-degeneracy conditions of the current proof.
-	 * 
+	 *
 	 * @return The XML output string of the NDG condition
 	 */
 	public HashSet<NDGCondition> getNDGConditions() {
@@ -664,7 +664,7 @@ public abstract class Prover {
 
 	/**
 	 * Gets the proof result
-	 * 
+	 *
 	 * @return The result (TRUE, FALSE or UNKNOWN)
 	 */
 	public ProofResult getProofResult() {
@@ -674,7 +674,7 @@ public abstract class Prover {
 	/**
 	 * If the result of the proof can be expressed by a boolean value, then it
 	 * returns that value.
-	 * 
+	 *
 	 * @return The result of the proof (true, false or null)
 	 */
 	public ExtendedBoolean getYesNoAnswer() {
@@ -694,7 +694,7 @@ public abstract class Prover {
 	/**
 	 * A minimal version of the construction XML. Only elements/commands are
 	 * preserved, the rest is deleted.
-	 * 
+	 *
 	 * @param cons
 	 *            The construction
 	 * @param statement
@@ -731,7 +731,7 @@ public abstract class Prover {
 
 	/**
 	 * Calls OpenGeoProver
-	 * 
+	 *
 	 * @param pe
 	 *            Prover Engine
 	 * @return the proof result
@@ -740,7 +740,7 @@ public abstract class Prover {
 
 	/**
 	 * Will the prover return extra NDGs?
-	 * 
+	 *
 	 * @return yes or no
 	 */
 	public boolean isReturnExtraNDGs() {
@@ -749,7 +749,7 @@ public abstract class Prover {
 
 	/**
 	 * The prover may return extra NDGs
-	 * 
+	 *
 	 * @param returnExtraNDGs
 	 *            setting for the prover
 	 */
@@ -760,7 +760,7 @@ public abstract class Prover {
 	/**
 	 * Formulate figure in readable format: create a mathematically readable
 	 * statement. TODO: create translation keys.
-	 * 
+	 *
 	 * @param statement
 	 *            the input statement
 	 * @return a localized statement in readable format

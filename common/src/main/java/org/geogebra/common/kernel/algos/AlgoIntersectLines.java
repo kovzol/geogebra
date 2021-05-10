@@ -19,8 +19,10 @@ the Free Software Foundation.
 package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
-import java.util.TreeMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Construction;

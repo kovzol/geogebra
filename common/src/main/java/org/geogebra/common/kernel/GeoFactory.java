@@ -1,6 +1,8 @@
 package org.geogebra.common.kernel;
 
 import org.geogebra.common.kernel.algos.AlgoFunctionableToFunction;
+import org.geogebra.common.kernel.arithmetic.ExpressionNode;
+import org.geogebra.common.kernel.arithmetic.FunctionNVar;
 import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoAudio;
 import org.geogebra.common.kernel.geos.GeoAxis;
@@ -17,9 +19,9 @@ import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.kernel.geos.GeoFunctionNVar;
 import org.geogebra.common.kernel.geos.GeoFunctionable;
 import org.geogebra.common.kernel.geos.GeoImage;
+import org.geogebra.common.kernel.geos.GeoInlineTable;
 import org.geogebra.common.kernel.geos.GeoInlineText;
 import org.geogebra.common.kernel.geos.GeoInputBox;
-import org.geogebra.common.kernel.geos.GeoInterval;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoLocus;
@@ -37,6 +39,8 @@ import org.geogebra.common.kernel.implicit.GeoImplicitCurve;
 import org.geogebra.common.kernel.kernelND.GeoConicND;
 import org.geogebra.common.kernel.kernelND.GeoCurveCartesianND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
+import org.geogebra.common.kernel.kernelND.GeoSurfaceCartesian2D;
+import org.geogebra.common.kernel.kernelND.GeoSurfaceCartesianND;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
 import org.geogebra.common.util.debug.Log;
 
@@ -47,10 +51,10 @@ import org.geogebra.common.util.debug.Log;
 public class GeoFactory {
 	/**
 	 * Creates a new GeoElement object for the given type string.
-	 * 
+	 *
 	 * @param cons1
 	 *            construction
-	 * 
+	 *
 	 * @param type
 	 *            String as produced by GeoElement.getXMLtypeString()
 	 * @return created element
@@ -94,6 +98,7 @@ public class GeoFactory {
 			return new GeoFormula(cons1, null);
 		case "function":
 		case "functionconditional":
+		case "interval":
 			return new GeoFunction(cons1);
 		case "functionnvar":
 			return new GeoFunctionNVar(cons1);
@@ -103,14 +108,14 @@ public class GeoFactory {
 			return newImplicitPoly(cons1).toGeoElement();
 		case "inlinetext":
 			return new GeoInlineText(cons1, null);
-		case "interval":
-			return new GeoInterval(cons1);
 		case "line":
 			GeoLine geoLine = new GeoLine(cons1);
 			geoLine.showUndefinedInAlgebraView(true);
 			return geoLine;
 		case "list":
-			return new GeoList(cons1);
+			GeoList geoList = new GeoList(cons1);
+			geoList.setUndefined();
+			return geoList;
 		case "locus":
 			return new GeoLocus(cons1);
 		case "numeric":
@@ -125,10 +130,14 @@ public class GeoFactory {
 			return new GeoRay(cons1, null);
 		case "segment":
 			return new GeoSegment(cons1, null, null);
+		case "surfacecartesian":
+			return new GeoSurfaceCartesian2D(cons1, null, null);
 		case "text":
 			return new GeoText(cons1);
 		case "textfield":
 			return new GeoInputBox(cons1);
+		case "table":
+			return new GeoInlineTable(cons1, null);
 		case "video":
 			return new GeoVideo(cons1);
 		case "vector":
@@ -229,5 +238,16 @@ public class GeoFactory {
 		GeoFunction ret = new GeoFunction(cons);
 		ret.setFunction(geoLine.getFunction());
 		return ret;
+	}
+
+	/**
+	 * @param cons construction
+	 * @param point point expression
+	 * @param fun x, y (and z) functions
+	 * @return surface
+	 */
+	public GeoSurfaceCartesianND newSurface(Construction cons, ExpressionNode point,
+			FunctionNVar[] fun) {
+		return new GeoSurfaceCartesian2D(cons, point, fun);
 	}
 }

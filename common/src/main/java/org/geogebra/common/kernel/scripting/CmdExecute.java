@@ -63,7 +63,7 @@ public class CmdExecute extends CmdScripting {
 				app.showError(e);
 				break;
 			} catch (Exception e) {
-                app.showError(Errors.InvalidInput);
+				app.showError(Errors.InvalidInput);
 				e.printStackTrace();
 				break;
 			}

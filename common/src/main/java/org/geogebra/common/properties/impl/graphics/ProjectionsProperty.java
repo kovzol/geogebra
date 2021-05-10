@@ -4,9 +4,9 @@ import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian3D.EuclidianView3DInterface;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.settings.EuclidianSettings3D;
-import org.geogebra.common.properties.AbstractEnumerableProperty;
 import org.geogebra.common.properties.IconsEnumerableProperty;
 import org.geogebra.common.properties.PropertyResource;
+import org.geogebra.common.properties.impl.AbstractEnumerableProperty;
 
 /**
  * This property controls the projection type for 3D view.
@@ -50,7 +50,7 @@ public class ProjectionsProperty extends AbstractEnumerableProperty
 
 	@Override
 	public int getIndex() {
-	    if (view.isAREnabled()) {
+	    if (view.isXREnabled()) {
 	        return EuclidianView3DInterface.PROJECTION_PERSPECTIVE;
         }
 		return euclidianSettings.getProjection();
@@ -68,6 +68,6 @@ public class ProjectionsProperty extends AbstractEnumerableProperty
 
     @Override
     public boolean isEnabled() {
-        return !view.isAREnabled();
+        return !view.isXREnabled();
     }
 }

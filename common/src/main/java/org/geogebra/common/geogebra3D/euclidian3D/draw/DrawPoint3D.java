@@ -61,7 +61,7 @@ public class DrawPoint3D extends Drawable3DCurves
 	@Override
 	public void exportToPrinter3D(ExportToPrinter3D exportToPrinter3D, boolean exportSurface) {
 		if (isVisible()) {
-            exportToPrinter3D.exportCurve(this, Type.POINT);
+			exportToPrinter3D.exportCurve(this, Type.POINT);
 		}
 	}
 
@@ -275,14 +275,14 @@ public class DrawPoint3D extends Drawable3DCurves
 		}
 
 		double d = drawable.getView3D().getScaledDistance(p, project);
-        boolean hitOk;
+		boolean hitOk;
 		if (checkRealPointSize) {
-            hitOk = d <= pointSize + 2;
+			hitOk = d <= pointSize + 2;
 		} else {
-            hitOk = d <= DrawPoint
+			hitOk = d <= DrawPoint
 					.getSelectionThreshold(hitting.getThreshold());
 		}
-        if (hitOk) {
+		if (hitOk) {
 			double z = -parameters[0];
 			double dz = pointSize / drawable.getView3D().getScale();
 			drawable.setZPick(z + dz, z - dz, hitting.discardPositiveHits(),

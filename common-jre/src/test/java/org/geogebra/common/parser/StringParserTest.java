@@ -1,7 +1,6 @@
 package org.geogebra.common.parser;
 
 import org.geogebra.common.BaseUnitTest;
-import org.geogebra.common.kernel.parser.stringparser.StringParser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

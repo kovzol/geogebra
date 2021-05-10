@@ -7,7 +7,7 @@ import org.geogebra.common.move.ggtapi.models.Chapter;
 import org.geogebra.common.move.ggtapi.models.Material;
 import org.geogebra.common.util.AsyncOperation;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import elemental2.dom.File;
 
 public interface BrowseViewI {
 
@@ -38,9 +38,10 @@ public interface BrowseViewI {
 
 	void closeAndSave(AsyncOperation<Boolean> callback);
 
-    /**
-     * @param fileToHandle JS file object
-     */
-    void openFile(JavaScriptObject fileToHandle);
+	/**
+	 * @param fileToHandle
+	 *            JS file object
+	 */
+	void openFile(File fileToHandle);
 
 }

@@ -10,7 +10,6 @@ import java.util.TreeSet;
 
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.cas.GeoGebraCAS;
-import org.geogebra.common.euclidian.EmbedManager;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.EuclidianViewInterfaceCommon;
 import org.geogebra.common.euclidian.EuclidianViewInterfaceSlim;
@@ -31,6 +30,7 @@ import org.geogebra.common.kernel.algos.AlgoPointVector;
 import org.geogebra.common.kernel.algos.AlgoVectorPoint;
 import org.geogebra.common.kernel.algos.ConstructionElement;
 import org.geogebra.common.kernel.algos.DependentAlgo;
+import org.geogebra.common.kernel.arithmetic.ArithmeticFactory;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.ExpressionNodeConstants.StringType;
 import org.geogebra.common.kernel.arithmetic.ExpressionNodeEvaluator;
@@ -42,7 +42,6 @@ import org.geogebra.common.kernel.arithmetic.MySpecialDouble;
 import org.geogebra.common.kernel.arithmetic.SymbolicMode;
 import org.geogebra.common.kernel.arithmetic.Traversing;
 import org.geogebra.common.kernel.cas.AlgoUsingTempCASalgo;
-import org.geogebra.common.kernel.cas.UsesCAS;
 import org.geogebra.common.kernel.commands.AlgebraProcessor;
 import org.geogebra.common.kernel.geos.CasEvaluableFunction;
 import org.geogebra.common.kernel.geos.GProperty;
@@ -78,11 +77,9 @@ import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.SelectionManager;
 import org.geogebra.common.main.SpecialPointsListener;
 import org.geogebra.common.main.SpecialPointsManager;
-import org.geogebra.common.media.VideoManager;
 import org.geogebra.common.plugin.Event;
 import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.plugin.GeoClass;
-import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.plugin.script.GgbScript;
 import org.geogebra.common.plugin.script.Script;
 import org.geogebra.common.util.DoubleUtil;
@@ -94,6 +91,7 @@ import org.geogebra.common.util.ScientificFormatAdapter;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
 
+import com.google.j2objc.annotations.Weak;
 import com.himamis.retex.editor.share.util.Unicode;
 
 /**
@@ -163,8 +161,6 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	protected boolean insertLineBreaks = false;
 
 	// angle unit: degree, radians
-	// although this is initialized from the default preferences XML,
-	// we need to initialize this here too for GeoGebraWeb
 	private int angleUnit = Kernel.ANGLE_DEGREE;
 
 	private boolean viewReiniting = false;
@@ -328,6 +324,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	private final StringBuilder sbBuildExplicitLineEquation = new StringBuilder(
 			50);
 	/** Application */
+	@Weak
 	protected App app;
 
 	private EquationSolver eqnSolver;
@@ -339,6 +336,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	/** 3D manager */
 	private Manager3DInterface manager3D;
 	private AlgoDispatcher algoDispatcher;
+	private final ArithmeticFactory arithmeticFactory;
 	private final GeoFactory geoFactory;
 
 	private GeoVec2D imaginaryUnit;
@@ -420,8 +418,9 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	protected Kernel(GeoFactory factory) {
 		nf = FormatFactory.getPrototype().getNumberFormat(2);
 		sf = FormatFactory.getPrototype().getScientificFormat(5, 16, false);
-		this.deleteList = new ArrayList<>();
-		this.geoFactory = factory;
+		deleteList = new ArrayList<>();
+		geoFactory = factory;
+		arithmeticFactory = new ArithmeticFactory();
 		scheduledPreviewFromInputBar = new ScheduledPreviewFromInputBar(this);
 	}
 
@@ -1079,14 +1078,10 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            coefficients
 	 * @param vars
 	 *            variables
-	 * @param keepLeadingSign
-	 *            whether to keep sign of first coefficient
 	 * @param cancelDown
 	 *            whether to cancel GCDs
 	 * @param needsZ
 	 *            whether term in z is needed
-	 * @param op
-	 *            equality operator
 	 * @param tpl
 	 *            string template
 	 * @param implicit
@@ -1094,35 +1089,22 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 * @return serialized equation
 	 */
 	public final StringBuilder buildImplicitEquation(double[] numbers,
-			String[] vars, boolean keepLeadingSign, boolean cancelDown,
-			boolean needsZ, char op, StringTemplate tpl, boolean implicit) {
+			String[] vars, boolean cancelDown,
+			boolean needsZ, StringTemplate tpl, boolean implicit) {
 
 		sbBuildImplicitEquation.setLength(0);
-		double[] temp = buildImplicitVarPart(sbBuildImplicitEquation, numbers,
-				vars, keepLeadingSign || (op == '='), cancelDown, needsZ,
+		double lastCoeff = buildImplicitVarPart(sbBuildImplicitEquation, numbers,
+				vars, cancelDown, needsZ,
 				tpl);
 
-		if (!implicit && !isZeroFigure(temp[vars.length], tpl)) {
-			String sign;
-			double abs;
-			if (temp[vars.length] < 0.0) {
-				sign = " - ";
-				abs = -temp[vars.length];
-			} else {
-				sign = " + ";
-				abs = temp[vars.length];
-			}
-			sbBuildImplicitEquation.append(sign);
-			sbBuildImplicitEquation.append(format(abs, tpl));
+		if (!implicit && !isZeroFigure(lastCoeff, tpl)) {
+			sbBuildImplicitEquation.append(' ');
+			formatSigned(lastCoeff, sbBuildImplicitEquation, tpl);
 		}
-
-		sbBuildImplicitEquation.append(' ');
-		sbBuildImplicitEquation.append(op);
-		sbBuildImplicitEquation.append(' ');
-
+		sbBuildImplicitEquation.append(tpl.getEqualsWithSpace());
 		if (implicit) {
 			// temp is set by buildImplicitVarPart
-			sbBuildImplicitEquation.append(format(-temp[vars.length], tpl));
+			sbBuildImplicitEquation.append(format(-lastCoeff, tpl));
 		} else {
 			sbBuildImplicitEquation.append(format(0.0, tpl));
 		}
@@ -1161,12 +1143,13 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 */
 	final public void formatSigned(double x, StringBuilder sb,
 			StringTemplate tpl) {
+		boolean screenReader = tpl.hasType(StringType.SCREEN_READER);
 		if (x >= 0.0d) {
-			sb.append("+ ");
+			sb.append(screenReader ? " plus " : "+ ");
 			sb.append(format(x, tpl));
 			return;
 		}
-		sb.append("- ");
+		sb.append(screenReader ? " minus " : "- ");
 		sb.append(format(-x, tpl));
 	}
 
@@ -1222,11 +1205,8 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 		} else {
 			String ret = formatterMap.get(x);
 			if (ret != null) {
-				// Log.debug("found " + x + " " + ret);
 				return ret;
 			}
-
-			// Log.debug("not found " + x);
 		}
 
 		// PI
@@ -1568,20 +1548,6 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	}
 
 	/**
-	 * change signs of double array values, write result to array b
-	 * 
-	 * @param a
-	 *            input array
-	 * @param b
-	 *            output array
-	 */
-	final static void negative(double[] a, double[] b) {
-		for (int i = 0; i < a.length; i++) {
-			b[i] = -a[i];
-		}
-	}
-
-	/**
 	 * Computes c[] = a[] / b
 	 * 
 	 * @param a
@@ -1660,8 +1626,6 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            coefficients
 	 * @param vars
 	 *            variables
-	 * @param keepLeadingSign
-	 *            whether output may start with -
 	 * @param cancelDown
 	 *            whether we want to cancel GCD
 	 * @param needsZ
@@ -1670,11 +1634,10 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            template
 	 * @return LHS string
 	 */
-	final public StringBuilder buildLHS(double[] numbers, String[] vars,
-			boolean keepLeadingSign, boolean cancelDown, boolean needsZ,
-			StringTemplate tpl) {
+	final public StringBuilder buildLHS(double[] numbers, String[] vars, boolean cancelDown,
+			boolean needsZ,	StringTemplate tpl) {
 
-		return buildLHS(numbers, vars, keepLeadingSign, cancelDown, needsZ,
+		return buildLHS(numbers, vars, cancelDown, needsZ,
 				false, tpl);
 	}
 
@@ -1685,9 +1648,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            coefficients
 	 * @param vars
 	 *            variable names
-	 * @param KEEP_LEADING_SIGN
-	 *            true to keep leading sign
-	 * @param CANCEL_DOWN
+	 * @param cancelDown
 	 *            true to allow canceling 2x+4y -&gt; x+2y
 	 * @param needsZ
 	 *            whether "+0z" is needed when z is not present
@@ -1698,16 +1659,15 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 * @return string representing LHS
 	 */
 	final public StringBuilder buildLHS(double[] numbers, String[] vars,
-			boolean KEEP_LEADING_SIGN, boolean CANCEL_DOWN, boolean needsZ,
+			boolean cancelDown, boolean needsZ,
 			boolean setConstantIfNoLeading, StringTemplate tpl) {
 		sbBuildLHS.setLength(0);
-		double[] temp = buildImplicitVarPart(sbBuildLHS, numbers, vars,
-				KEEP_LEADING_SIGN, CANCEL_DOWN, needsZ, setConstantIfNoLeading,
+		double lastCoeff = buildImplicitVarPart(sbBuildLHS, numbers, vars,
+				cancelDown, needsZ, setConstantIfNoLeading,
 				tpl);
 
 		// add constant coeff
-		double coeff = temp[vars.length];
-		appendConstant(sbBuildLHS, coeff, tpl);
+		appendConstant(sbBuildLHS, lastCoeff, tpl);
 		return sbBuildLHS;
 	}
 
@@ -1732,49 +1692,21 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 		}
 	}
 
-	// y = k x + d
-	/**
-	 * Inverts the &gt; or &lt; sign
-	 * 
-	 * @param op
-	 *            =,&lt;,&gt;,\u2264 or \u2265
-	 * @return opposite sign
-	 */
-	public static char oppositeSign(char op) {
-		switch (op) {
-		case '=':
-			return '=';
-		case '<':
-			return '>';
-		case '>':
-			return '<';
-		case '\u2264':
-			return '\u2265';
-		case '\u2265':
-			return '\u2264';
-		default:
-			return '?'; // should never happen
-		}
-	}
-
 	// lhs of implicit equation without constant coeff
-	final private double[] buildImplicitVarPart(
+	final private double buildImplicitVarPart(
 			StringBuilder sbBuildImplicitVarPart, double[] numbers,
-			String[] vars, boolean KEEP_LEADING_SIGN, boolean CANCEL_DOWN,
+			String[] vars, boolean CANCEL_DOWN,
 			boolean needsZ, StringTemplate tpl) {
 		return buildImplicitVarPart(sbBuildImplicitVarPart, numbers, vars,
-				KEEP_LEADING_SIGN, CANCEL_DOWN, needsZ, false, tpl);
+				CANCEL_DOWN, needsZ, false, tpl);
 	}
 
 	// lhs of implicit equation without constant coeff
-	final private double[] buildImplicitVarPart(
+	final private double buildImplicitVarPart(
 			StringBuilder sbBuildImplicitVarPart, double[] numbers,
-			String[] vars, boolean KEEP_LEADING_SIGN, boolean CANCEL_DOWN,
+			String[] vars, boolean CANCEL_DOWN,
 			boolean needsZ, boolean setConstantIfNoLeading,
 			StringTemplate tpl) {
-
-		double[] temp = new double[numbers.length];
-
 		int leadingNonZero = -1;
 		sbBuildImplicitVarPart.setLength(0);
 
@@ -1807,50 +1739,31 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 				} else {
 					sbBuildImplicitVarPart.append("0");
 				}
-				return temp;
+				return 0;
 			}
 			sbBuildImplicitVarPart.append("0");
-			return temp;
-		}
-
-		// don't change leading coefficient
-		if (KEEP_LEADING_SIGN) {
-			copy(numbers, temp);
-		} else {
-			if (numbers[leadingNonZero] < 0) {
-				negative(numbers, temp);
-			} else {
-				copy(numbers, temp);
-			}
+			return 0;
 		}
 
 		// BUILD EQUATION STRING
 		// valid left hand side
 		// leading coefficient
-		String strCoeff = formatCoeff(temp[leadingNonZero], tpl);
+		String strCoeff = formatCoeff(numbers[leadingNonZero], tpl);
 		sbBuildImplicitVarPart.append(strCoeff);
 		sbBuildImplicitVarPart.append(vars[leadingNonZero]);
 
 		// other coefficients on lhs
-		String sign;
 		double abs;
 		for (int i = leadingNonZero + 1; i < vars.length; i++) {
-			if (temp[i] < 0.0) {
-				sign = " - ";
-				abs = -temp[i];
-			} else {
-				sign = " + ";
-				abs = temp[i];
-			}
-
+			abs = Math.abs(numbers[i]);
 			if ((abs >= tpl.getPrecision(nf)) || useSignificantFigures
 					|| (needsZ && i == 2)) {
-				sbBuildImplicitVarPart.append(sign);
-				sbBuildImplicitVarPart.append(formatCoeff(abs, tpl));
+				sbBuildImplicitVarPart.append(' ');
+				formatSignedCoefficient(numbers[i], sbBuildImplicitVarPart, tpl);
 				sbBuildImplicitVarPart.append(vars[i]);
 			}
 		}
-		return temp;
+		return numbers[vars.length];
 	}
 
 	/**
@@ -1874,21 +1787,18 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            variables
 	 * @param pos
 	 *            position of y^2 coefficient
-	 * @param KEEP_LEADING_SIGN
-	 *            whether leading sign should be kept
 	 * @param tpl
 	 *            string template
 	 * @return explicit equation of conic
 	 */
 	public final StringBuilder buildExplicitConicEquation(double[] numbers,
-			String[] vars, int pos, boolean KEEP_LEADING_SIGN,
-			StringTemplate tpl) {
+			String[] vars, int pos, StringTemplate tpl) {
 		// y^2-coeff is 0
 		double d, dabs, q = numbers[pos];
 		// coeff of y^2 is 0 or coeff of y is not 0
 		if (DoubleUtil.isZero(q)) {
-			return buildImplicitEquation(numbers, vars, KEEP_LEADING_SIGN, true,
-					false, '=', tpl, true);
+			return buildImplicitEquation(numbers, vars, true,
+					false, tpl, true);
 		}
 
 		int i, leadingNonZero = numbers.length;
@@ -2168,8 +2078,6 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            coefficients
 	 * @param vars
 	 *            expressions
-	 * @param opDefault
-	 *            equality sign; may be flipped for inequalities
 	 * @param tpl
 	 *            string template
 	 * @param explicit
@@ -2177,10 +2085,8 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 * @return explicit equation
 	 */
 	public final StringBuilder buildExplicitEquation(double[] numbers,
-			String[] vars, char opDefault, StringTemplate tpl,
-			boolean explicit) {
+			String[] vars, StringTemplate tpl, boolean explicit) {
 
-		char op = opDefault;
 		double d, dabs, q = numbers[1];
 		sbBuildExplicitLineEquation.setLength(0);
 
@@ -2190,12 +2096,6 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 		// if general eq: form x + constant = 0
 		if (DoubleUtil.isZero(q)) {
 			sbBuildExplicitLineEquation.append(vars[0]);
-
-			sbBuildExplicitLineEquation.append(' ');
-			if (numbers[0] < MIN_PRECISION) {
-				op = oppositeSign(op);
-			}
-
 			if (!explicit) {
 				double constant = numbers[2] / numbers[0];
 				String sign;
@@ -2211,18 +2111,16 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 				String absStr = format(abs, tpl);
 				if (!"0".equals(absStr)) {
 					sbBuildExplicitLineEquation
-							.append(sign + " " + absStr + " ");
+							.append(sign + " " + absStr);
 				}
 			}
 
-			sbBuildExplicitLineEquation.append(op);
-			sbBuildExplicitLineEquation.append(' ');
+			sbBuildExplicitLineEquation.append(tpl.getEqualsWithSpace());
 
 			if (explicit) {
 				sbBuildExplicitLineEquation
 						.append(format(-numbers[2] / numbers[0], tpl));
 			} else {
-				Log.debug("HHH");
 				sbBuildExplicitLineEquation.append(format(0.0, tpl));
 			}
 
@@ -2232,13 +2130,9 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 		// standard case: y-coeff not 0
 		sbBuildExplicitLineEquation.append(vars[1]);
 
-		sbBuildExplicitLineEquation.append(' ');
-		if (numbers[1] < MIN_PRECISION) {
-			op = oppositeSign(op);
-		}
-
 		// general line equation, coeff of x is null
 		if (!explicit) {
+			sbBuildExplicitLineEquation.append(' ');
 			if (useSignificantFigures) {
 				sbBuildExplicitLineEquation
 						.append("+ " + format(0.0, tpl) + vars[0]);
@@ -2248,14 +2142,12 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 			sbBuildExplicitLineEquation.append(sign(d));
 			sbBuildExplicitLineEquation.append(' ');
 			sbBuildExplicitLineEquation.append(format(dabs, tpl));
-			sbBuildExplicitLineEquation.append(' ');
-			sbBuildExplicitLineEquation.append(op);
+			sbBuildExplicitLineEquation.append(tpl.getEqualsWithSpace());
 			sbBuildExplicitLineEquation.append(formatCoeff(0.0, tpl));
 			return sbBuildExplicitLineEquation;
 		}
 
-		sbBuildExplicitLineEquation.append(op);
-		sbBuildExplicitLineEquation.append(' ');
+		sbBuildExplicitLineEquation.append(tpl.getEqualsWithSpace());
 
 		// x coeff
 		d = -numbers[0] / q;
@@ -2296,15 +2188,33 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            string template
 	 * @param unbounded
 	 *            whether to allow angles out of [0,2pi]
-	 * @return formated angle
+	 * @return formatted angle
 	 */
 	final public StringBuilder formatAngle(double phi, StringTemplate tpl,
 			boolean unbounded) {
 		// STANDARD_PRECISION * 10 as we need a little leeway as we've converted
 		// from radians
-		StringBuilder ret = formatAngle(phi, 10, tpl, unbounded);
+		return formatAngle(phi, 10, tpl, unbounded, false);
+	}
 
-		return ret;
+	/**
+	 * Returns formated angle (in degrees if necessary)
+	 *
+	 * @param phi
+	 *            angle in radians
+	 * @param tpl
+	 *            string template
+	 * @param unbounded
+	 *            whether to allow angles out of [0,2pi]\
+	 * @param forceDegrees
+	 *            whether to keep format in degrees]
+	 * @return formatted angle
+	 */
+	final public StringBuilder formatAngle(double phi, StringTemplate tpl,
+			boolean unbounded, boolean forceDegrees) {
+		// STANDARD_PRECISION * 10 as we need a little leeway as we've converted
+		// from radians
+		return formatAngle(phi, 10, tpl, unbounded, forceDegrees);
 	}
 
 	/**
@@ -2319,7 +2229,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 * @return formatted angle
 	 */
 	final public StringBuilder formatAngle(double alpha, double precision,
-			StringTemplate tpl, boolean unbounded) {
+			StringTemplate tpl, boolean unbounded, boolean forceDegrees) {
 		double phi = alpha;
 		sbFormatAngle.setLength(0);
 		switch (tpl.getStringType()) {
@@ -2333,7 +2243,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 				return sbFormatAngle;
 			}
 
-			if (degreesMode()) {
+			if (forceDegrees || degreesMode()) {
 				boolean rtl = getLocalization().isRightToLeftDigits(tpl);
 				if (rtl) {
 					if (tpl.hasCASType()) {
@@ -3039,14 +2949,9 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 
 		if (clearScripts) {
 			resetLibraryJavaScript();
-
-			// This needs to happen *before* cons.clearConstruction() is called
-			// as clearConstruction calls notifyClearView which triggers the
-			// updating of the Python Script
-			// resetLibraryPythonScript();
 		}
-		if (this.ggbCAS != null && this.ggbCAS.getCurrentCAS() != null) {
-			this.ggbCAS.getCurrentCAS().clearResult();
+		if (this.ggbCAS != null) {
+			this.ggbCAS.clearResult();
 		}
 		if (macroManager != null) {
 			macroManager.setAllMacrosUnused();
@@ -3388,7 +3293,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 			SymbolicMode resMode) {
 		GeoElement geo = cons.lookupLabel(label, autoCreate);
 
-        if ((geo == null) && resMode == SymbolicMode.SYMBOLIC) {
+		if ((geo == null) && resMode == SymbolicMode.SYMBOLIC) {
 			// lookup CAS variables too
 			geo = lookupCasCellLabel(label);
 
@@ -4131,11 +4036,30 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	/**
 	 * Notify views about finished paste.
 	 */
-	public void notifyPasteComplete() {
+	public void notifyPasteComplete(ArrayList<GeoElement> pastedGeos) {
 		if (notifyViewsActive && app.hasEventDispatcher()) {
-			app.getEventDispatcher().pasteElmsComplete(
-							app.getSelectionManager().getSelectedGeos());
+			app.getEventDispatcher().pasteElmsComplete(pastedGeos);
 
+		}
+	}
+
+	/**
+	 * @param geo
+	 *            animated geo
+	 */
+	public void notifyStartAnimation(GeoElement geo) {
+		if (notifyViewsActive) {
+			app.getEventDispatcher().startAnimation(geo);
+		}
+	}
+
+	/**
+	 * @param geo
+	 *            animated geo
+	 */
+	public void notifyStopAnimation(GeoElement geo) {
+		if (notifyViewsActive) {
+			app.getEventDispatcher().stopAnimation(geo);
 		}
 	}
 
@@ -4276,39 +4200,13 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	public void redo() {
 		if (undoActive && cons.getUndoManager().redoPossible()) {
 			app.batchUpdateStart();
-			resetBeforeReload();
 			cons.redo();
-			restoreAfterReload();
 			app.batchUpdateEnd();
 			storeStateForModeStarting();
 			app.getEventDispatcher()
-                    .dispatchEvent(new Event(EventType.REDO));
+					.dispatchEvent(new Event(EventType.REDO));
 			app.setUnAutoSaved();
 		}
-	}
-
-	private void resetBeforeReload() {
-		app.getSelectionManager().storeSelectedGeosNames();
-		app.getCompanion().storeViewCreators();
-		notifyReset();
-		clearJustCreatedGeosInViews();
-		getApplication().getActiveEuclidianView().getEuclidianController().clearSelections();
-		VideoManager videoManager = getApplication().getVideoManager();
-		if (videoManager != null) {
-			videoManager.storeVideos();
-		}
-		EmbedManager embedManager = getApplication().getEmbedManager();
-		if (embedManager != null) {
-			embedManager.storeEmbeds();
-		}
-		app.getActiveEuclidianView().resetInlineObjects();
-	}
-
-	private void restoreAfterReload() {
-		notifyReset();
-		app.getCompanion().recallViewCreators();
-		app.getSelectionManager().recallSelectedGeosNames(this);
-		getApplication().getActiveEuclidianView().restoreDynamicStylebar();
 	}
 
 	/**
@@ -4379,9 +4277,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 
 			if (cons.getUndoManager().undoPossible()) {
 				app.batchUpdateStart();
-				resetBeforeReload();
 				cons.undo();
-				restoreAfterReload();
 
 				// repaint needed for last undo in second EuclidianView (bugfix)
 				if (!undoPossible()) {
@@ -4390,7 +4286,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 				app.batchUpdateEnd();
 				storeStateForModeStarting();
 				app.getEventDispatcher()
-                        .dispatchEvent(new Event(EventType.UNDO));
+						.dispatchEvent(new Event(EventType.UNDO));
 				app.setUnAutoSaved();
 			}
 		}
@@ -4429,60 +4325,6 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 */
 	public void setInsertLineBreaks(boolean insertLineBreaks) {
 		this.insertLineBreaks = insertLineBreaks;
-	}
-
-	/**
-	 * @param type
-	 *            trig operation
-	 * @param en
-	 *            argument
-	 * @return type^-1(x)
-	 */
-	public ExpressionNode inverseTrig(Operation type, ExpressionValue en) {
-		switch (type) {
-		case SIN:
-		case COS:
-		case TAN:
-		case SINH:
-		case COSH:
-		case TANH:
-			return new ExpressionNode(this, en, Operation.inverse(type), null);
-
-		// asec(x) = acos(1/x)
-		case SEC:
-			return new ExpressionNode(this, new ExpressionNode(this,
-					(new MyDouble(this, 1)).wrap(), Operation.DIVIDE, en),
-					Operation.ARCCOS, null);
-		case CSC:
-			return new ExpressionNode(this, new ExpressionNode(this,
-					(new MyDouble(this, 1)).wrap(), Operation.DIVIDE, en),
-					Operation.ARCSIN, null);
-		case SECH:
-			return new ExpressionNode(this, new ExpressionNode(this,
-					(new MyDouble(this, 1)).wrap(), Operation.DIVIDE, en),
-					Operation.ACOSH, null);
-		case CSCH:
-			return new ExpressionNode(this, new ExpressionNode(this,
-					(new MyDouble(this, 1)).wrap(), Operation.DIVIDE, en),
-					Operation.ASINH, null);
-		case COTH:
-			return new ExpressionNode(this, new ExpressionNode(this,
-					(new MyDouble(this, 1)).wrap(), Operation.DIVIDE, en),
-					Operation.ATANH, null);
-
-		// acot(x) = pi/2 - atan(x)
-		case COT:
-
-			ExpressionNode halfPi = new ExpressionNode(this,
-					(new MyDouble(this, Math.PI)).wrap(), Operation.DIVIDE,
-					(new MyDouble(this, 2)).wrap());
-			return new ExpressionNode(this, halfPi, Operation.MINUS,
-					new ExpressionNode(this, en, Operation.ARCTAN, null));
-
-		default:
-			return new MyDouble(this, Double.NaN).wrap();
-
-		}
 	}
 
 	/**
@@ -4538,7 +4380,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 		sb.append("<kernel>\n");
 
 		// is 3D?
-        if (cons.requires3D()) {
+		if (cons.requires3D()) {
 			// DO NOT REMOVE
 			// it's important we pick up errors involving this quickly
 			Log.error("file has 3D objects");
@@ -4941,9 +4783,10 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 				}
 			} else if (geo instanceof GeoSymbolicI && parent == null) {
 				((GeoSymbolicI) geo).computeOutput();
+				geosToUpdate.add(geo);
 			}
 		}
-
+		CasAlgoChecker checker = new CasAlgoChecker();
 		for (AlgoElement algo : cons.getAlgoList()) {
 			if (algo instanceof AlgoCasBase) {
 				((AlgoCasBase) algo).clearCasEvalMap();
@@ -4952,7 +4795,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 				((AlgoUsingTempCASalgo) algo).refreshCASResults();
 			}
 
-			if (algo instanceof UsesCAS || algo instanceof AlgoCasCellInterface) {
+			if (checker.isAlgoUsingCas(algo)) {
 				// eg Limit, LimitAbove, LimitBelow, SolveODE
 				// AlgoCasCellInterface: eg Solve[x^2]
 				algo.compute();
@@ -5290,6 +5133,10 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 
 	public GeoImplicit newImplicitPoly(Construction cons2) {
 		return geoFactory.newImplicitPoly(cons2);
+	}
+
+	public ArithmeticFactory getArithmeticFactory() {
+		return arithmeticFactory;
 	}
 
 	/**

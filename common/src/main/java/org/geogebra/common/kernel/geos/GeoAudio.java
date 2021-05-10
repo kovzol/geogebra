@@ -1,7 +1,6 @@
 package org.geogebra.common.kernel.geos;
 
 import org.geogebra.common.kernel.Construction;
-import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.media.MediaFormat;
 import org.geogebra.common.plugin.GeoClass;
@@ -25,8 +24,7 @@ public class GeoAudio extends GeoMedia {
 	 */
 	public GeoAudio(Construction c) {
 		super(c);
-		setWidth(DEFAULT_PLAYER_WIDTH);
-		setHeight(DEFAULT_PLAYER_HEIGHT);
+		setSize(DEFAULT_PLAYER_WIDTH, DEFAULT_PLAYER_HEIGHT);
 		app = getKernel().getApplication();
 		setAnimationStep(DEFAULT_STEP);
 	}
@@ -81,11 +79,6 @@ public class GeoAudio extends GeoMedia {
 	}
 
 	@Override
-	public String toValueString(StringTemplate tpl) {
-		return null;
-	}
-
-	@Override
 	protected void onSourceChanged() {
 		if (!hasSoundManager()) {
 			return;
@@ -123,7 +116,7 @@ public class GeoAudio extends GeoMedia {
 		if (!hasSoundManager()) {
 			return -1;
 		}
-		return app.getSoundManager().getDuration(src);
+		return app.getSoundManager().getDuration(this);
 	}
 
 	@Override
@@ -131,7 +124,7 @@ public class GeoAudio extends GeoMedia {
 		if (!hasSoundManager()) {
 			return -1;
 		}
-		return app.getSoundManager().getCurrentTime(src);
+		return app.getSoundManager().getCurrentTime(this);
 	}
 
 	@Override
@@ -139,7 +132,7 @@ public class GeoAudio extends GeoMedia {
 		if (!hasSoundManager()) {
 			return;
 		}
-		app.getSoundManager().setCurrentTime(src, secs);
+		app.getSoundManager().setCurrentTime(this, secs);
 	}
 
 	/**

@@ -19,6 +19,7 @@ the Free Software Foundation.
 package org.geogebra.common.geogebra3D.kernel3D.geos;
 
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.arithmetic.MyVecNDNode;
 import org.geogebra.common.kernel.arithmetic3D.Vector3DValue;
 import org.geogebra.common.kernel.geos.SpreadsheetTraceable;
 import org.geogebra.common.kernel.geos.Traceable;
@@ -117,14 +118,10 @@ public abstract class GeoVec4D extends GeoElement3D implements GeoCoords4D,
 	@Override
 	protected void getXMLtags(StringBuilder sb) {
 		super.getXMLtags(sb);
-
-		sb.append("\t<coords");
-		sb.append(" x=\"" + getX() + "\"");
-		sb.append(" y=\"" + getY() + "\"");
-		sb.append(" z=\"" + getZ() + "\"");
-		sb.append(" w=\"" + getW() + "\"");
-		sb.append("/>\n");
-
+		sb.append("\t<coords x=\"").append(getX())
+				.append("\" y=\"").append(getY())
+				.append("\" z=\"").append(getZ())
+				.append("\" w=\"").append(getW()).append("\"/>\n");
 	}
 
 	/**
@@ -199,4 +196,9 @@ public abstract class GeoVec4D extends GeoElement3D implements GeoCoords4D,
 		setCoords(v);
 	}
 
+	@Override
+	public boolean hasSpecialEditor() {
+		return isIndependent()
+				|| getDefinition() != null && getDefinition().unwrap() instanceof MyVecNDNode;
+	}
 }

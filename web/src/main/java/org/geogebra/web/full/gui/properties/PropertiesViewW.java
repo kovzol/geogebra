@@ -441,8 +441,7 @@ public class PropertiesViewW extends PropertiesView
 
 	@Override
 	public void onResize() {
-		int width = getWrappedPanel().getOffsetWidth()
-				- (app.isUnbundledOrWhiteboard() ? 40 : 37);
+		int width = getWrappedPanel().getOffsetWidth() - 40;
 		int height = getWrappedPanel().getOffsetHeight();
 		if (height > 0 && width > 0) {
 			contentsPanel.setWidth(width + "px");
@@ -504,7 +503,7 @@ public class PropertiesViewW extends PropertiesView
 		}
 		final Style style = ((AppW) app).getFrameElement().getStyle();
 		style.setOverflow(Overflow.HIDDEN);
-        ((AppWFull) app).centerAndResizeViews();
+		((AppWFull) app).centerAndResizeViews();
 		wrappedPanel.removeStyleName("animateOut");
 		wrappedPanel.addStyleName("animateIn");
 		CSSAnimation.runOnAnimation(new Runnable() {

@@ -257,13 +257,7 @@ public abstract class CommandDispatcher3D extends CommandDispatcher {
 			case Bottom:
 			case Top:
 			case Ends:
-			case Surface:
 				return get3DDispatcher().dispatch(command, kernel);
-			case Function:
-				if (app.areCommands3DEnabled()) {
-					return get3DDispatcher().dispatch(command, kernel);
-				}
-				return getBasicDispatcher().dispatch(command, kernel);
 			default:
 				return super.commandTableSwitch(c);
 			}

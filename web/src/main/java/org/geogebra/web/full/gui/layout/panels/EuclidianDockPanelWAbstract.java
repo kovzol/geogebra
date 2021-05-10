@@ -11,6 +11,7 @@ import org.geogebra.web.full.gui.util.ZoomPanelMow;
 import org.geogebra.web.full.gui.view.consprotocol.ConstructionProtocolNavigationW;
 import org.geogebra.web.full.main.AppWFull;
 import org.geogebra.web.html5.euclidian.EuclidianViewW;
+import org.geogebra.web.html5.euclidian.EuclidianViewWInterface;
 import org.geogebra.web.html5.gui.util.MathKeyboardListener;
 import org.geogebra.web.html5.gui.voiceInput.SpeechRecognitionPanel;
 import org.geogebra.web.html5.gui.zoompanel.ZoomPanel;
@@ -20,8 +21,13 @@ import org.geogebra.web.html5.util.Dom;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.InsertPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
+
+import elemental2.dom.CanvasRenderingContext2D;
+import elemental2.dom.HTMLCanvasElement;
+import jsinterop.base.Js;
 
 /**
  * Abstract class for all "euclidian" panels.
@@ -168,7 +174,7 @@ public abstract class EuclidianDockPanelWAbstract extends DockPanelW
 			add(absoluteEuclidianPanel = absPanel);
 			absoluteEuclidianPanel.addStyleName(EuclidianViewW.ABSOLUTE_PANEL_CLASS);
 			absoluteEuclidianPanel.getElement().getStyle()
-                    .setOverflow(Overflow.HIDDEN);
+					.setOverflow(Overflow.HIDDEN);
 			checkFocus();
 			getElement().setAttribute("role", "application");
 		}
@@ -253,22 +259,20 @@ public abstract class EuclidianDockPanelWAbstract extends DockPanelW
 	}
 
 	@Override
-	protected void addZoomPanel(MyDockLayoutPanel dockPanel) {
+	protected void addZoomPanel(MyDockLayoutPanel dockLayoutPanel,
+			InsertPanel controls) {
 		if (allowZoomPanel()) {
-			// This causes EV overlap toolbar
-			// dockPanel.getElement().getStyle().setProperty("minHeight",
-			// zoomPanel.getMinHeight());
-			dockPanel.addSouth(zoomPanel, 0);
+			dockLayoutPanel.addSouth(zoomPanel, 0);
 		}
 		if (app.isWhiteboardActive() && mowZoomPanel != null) {
-			dockPanel.addNorth(mowZoomPanel, 0);
+			controls.add(mowZoomPanel);
 		}
 		if (app.has(Feature.SPEECH_RECOGNITION)) {
 			if (speechRecPanel == null) {
 				speechRecPanel = new SpeechRecognitionPanel(getApp(),
 						getViewId());
 			}
-			dockPanel.addSouth(speechRecPanel, 0);
+			dockLayoutPanel.addSouth(speechRecPanel, 0);
 		}
 	}
 
@@ -300,7 +304,7 @@ public abstract class EuclidianDockPanelWAbstract extends DockPanelW
 			mowZoomPanel.removeFromParent();
 			mowZoomPanel = null;
 		}
-		if (allowZoomPanel() && app.isWhiteboardActive()) {
+		if (ZoomPanel.needsZoomButtons(app) && app.isWhiteboardActive()) {
 			mowZoomPanel = new ZoomPanelMow(app);
 			((AppWFull) app).setMowZoomPanel(mowZoomPanel);
 		}
@@ -329,11 +333,6 @@ public abstract class EuclidianDockPanelWAbstract extends DockPanelW
 		}
 		if (mowZoomPanel != null) {
 			mowZoomPanel.setLabels();
-		}
-		if (graphicsContextMenuBtn != null) {
-			String titletext = app.getLocalization().getMenu("Settings");
-			graphicsContextMenuBtn.setTitle(titletext);
-			graphicsContextMenuBtn.setAltText(titletext);
 		}
 	}
 
@@ -370,25 +369,25 @@ public abstract class EuclidianDockPanelWAbstract extends DockPanelW
 	 */
 	public void moveZoomPanelUpOrDown(boolean up) {
 		if (zoomPanel != null) {
-            Dom.toggleClass(zoomPanel, "showMowSubmenu", "hideMowSubmenu", up);
-        }
-    }
-
-    /**
-     * Move zoom panel to bottom
-     */
-    public void moveZoomPanelToBottom() {
-        if (zoomPanel != null) {
-            zoomPanel.removeStyleName("narrowscreen");
+			Dom.toggleClass(zoomPanel, "showMowSubmenu", "hideMowSubmenu", up);
 		}
 	}
 
-    /**
-     * Move zoom panel to avoid conflicts with toolbar
-     */
-    public void moveZoomPanelAboveToolbar() {
-        if (zoomPanel != null) {
-            zoomPanel.addStyleName("narrowscreen");
+	/**
+	 * Move zoom panel to bottom
+	 */
+	public void moveZoomPanelToBottom() {
+		if (zoomPanel != null) {
+			zoomPanel.removeStyleName("narrowscreen");
+		}
+	}
+
+	/**
+	 * Move zoom panel to avoid conflicts with toolbar
+	 */
+	public void moveZoomPanelAboveToolbar() {
+		if (zoomPanel != null) {
+			zoomPanel.addStyleName("narrowscreen");
 		}
 	}
 
@@ -424,11 +423,26 @@ public abstract class EuclidianDockPanelWAbstract extends DockPanelW
 	}
 
 	@Override
-    public MathKeyboardListener getKeyboardListener() {
-        EuclidianView ev = getEuclidianView();
-        if (ev instanceof EuclidianViewW) {
-            return ((EuclidianViewW) ev).getKeyboardListener();
-        }
-        return null;
+	public MathKeyboardListener getKeyboardListener() {
+		EuclidianView ev = getEuclidianView();
+		if (ev instanceof EuclidianViewW) {
+			return ((EuclidianViewW) ev).getKeyboardListener();
+		}
+		return null;
+	}
+
+	@Override
+	public void paintToCanvas(CanvasRenderingContext2D context2d,
+			Runnable callback, int left, int top) {
+		if (getEuclidianView() != null) {
+			HTMLCanvasElement evCanvas =
+					Js.uncheckedCast(((EuclidianViewWInterface) getEuclidianView())
+							.getExportCanvas());
+			double pixelRatio = app.getPixelRatio();
+			context2d.scale(1 / pixelRatio, 1 / pixelRatio);
+			context2d.drawImage(evCanvas, pixelRatio * left, pixelRatio * top);
+			context2d.scale(pixelRatio, pixelRatio);
+		}
+		callback.run();
 	}
 }

@@ -7,6 +7,7 @@ import org.geogebra.common.gui.AccessibilityGroup;
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.web.full.css.MaterialDesignResources;
 import org.geogebra.web.html5.Browser;
+import org.geogebra.web.html5.css.GuiResourcesSimple;
 import org.geogebra.web.html5.css.ZoomPanelResources;
 import org.geogebra.web.html5.gui.FastClickHandler;
 import org.geogebra.web.html5.gui.util.ClickStartHandler;
@@ -83,7 +84,7 @@ public class ZoomPanelMow extends FlowPanel
 
 	private void addDragPadButton() {
 		dragPadBtn = new StandardButton(
-				MaterialDesignResources.INSTANCE.move_canvas(), null, 24, appW);
+				MaterialDesignResources.INSTANCE.move_canvas(), null, 24);
 		dragPadBtn.setStyleName("zoomPanelBtn");
 		registerFocusable(dragPadBtn, AccessibilityGroup.ViewControlId.ZOOM_NOTES_DRAG_VIEW);
 		TestHarness.setAttr(dragPadBtn, "panViewTool");
@@ -94,9 +95,7 @@ public class ZoomPanelMow extends FlowPanel
 			public void onClick(Widget source) {
 				getAppW().setMode(EuclidianConstants.MODE_TRANSLATEVIEW);
 				getDragPadBtn().addStyleName("selected");
-				if (getAppW().isMenuShowing()) {
-					getAppW().toggleMenu();
-				}
+				getAppW().hideMenu();
 			}
 		};
 		dragPadBtn.addFastClickHandler(handlerDragPad);
@@ -130,61 +129,47 @@ public class ZoomPanelMow extends FlowPanel
 			addZoomOutButton();
 		}
 		homeBtn = new StandardButton(
-				ZoomPanelResources.INSTANCE.home_zoom_black18(), null, 20,
-				appW);
+				ZoomPanelResources.INSTANCE.home_zoom_black18(), null, 20);
 		registerFocusable(homeBtn, AccessibilityGroup.ViewControlId.ZOOM_NOTES_HOME);
 		homeBtn.setStyleName("zoomPanelBtn");
 		homeBtn.addStyleName("zoomPanelBtnSmall");
 		getZoomController().hideHomeButton(homeBtn);
-		FastClickHandler handlerHome = new FastClickHandler() {
 
-			@Override
-			public void onClick(Widget source) {
-				getZoomController().onHomePressed();
-				deselectDragBtn();
-			}
-		};
-		homeBtn.addFastClickHandler(handlerHome);
+		homeBtn.addFastClickHandler(source -> {
+			getZoomController().onHomePressed();
+			deselectDragBtn();
+		});
+
 		add(homeBtn);
 		// click handler
-		ClickStartHandler.init(this, new ClickStartHandler(true, true) {
-
-			@Override
-			public void onClickStart(int x, int y, PointerEventType type) {
-				// to stopPropagation and preventDefault.
-			}
-		});
+		ClickStartHandler.initDefaults(this, true, true);
 	}
 
 	private void addZoomOutButton() {
 		zoomOutBtn = new StandardButton(
-				ZoomPanelResources.INSTANCE.zoomout_black24(), null, 24, appW);
+				GuiResourcesSimple.INSTANCE.zoom_out(), null, 24);
 		zoomOutBtn.setStyleName("zoomPanelBtn");
 		registerFocusable(zoomOutBtn, AccessibilityGroup.ViewControlId.ZOOM_NOTES_MINUS);
-		FastClickHandler handlerZoomOut = new FastClickHandler() {
-			@Override
-			public void onClick(Widget source) {
-				getZoomController().onZoomOutPressed();
-				deselectDragBtn();
-			}
-		};
-		zoomOutBtn.addFastClickHandler(handlerZoomOut);
+
+		zoomOutBtn.addFastClickHandler(source -> {
+			getZoomController().onZoomOutPressed();
+			deselectDragBtn();
+		});
+
 		add(zoomOutBtn);
 	}
 
 	private void addZoomInButton() {
 		zoomInBtn = new StandardButton(
-				ZoomPanelResources.INSTANCE.zoomin_black24(), null, 24, appW);
+				GuiResourcesSimple.INSTANCE.zoom_in(), null, 24);
 		zoomInBtn.setStyleName("zoomPanelBtn");
 		registerFocusable(zoomInBtn, AccessibilityGroup.ViewControlId.ZOOM_NOTES_PLUS);
-		FastClickHandler handlerZoomIn = new FastClickHandler() {
-			@Override
-			public void onClick(Widget source) {
-				getZoomController().onZoomInPressed();
-				deselectDragBtn();
-			}
-		};
-		zoomInBtn.addFastClickHandler(handlerZoomIn);
+
+		zoomInBtn.addFastClickHandler(source -> {
+			getZoomController().onZoomInPressed();
+			deselectDragBtn();
+		});
+
 		add(zoomInBtn);
 	}
 

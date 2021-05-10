@@ -88,14 +88,13 @@ public class MathFieldInternal
 
 	private Runnable enterCallback;
 
-	private boolean directFormulaBuilder;
 	private boolean scrollOccured = false;
 
 	private boolean longPressOccured = false;
 
 	private boolean selectionMode = false;
 
-	private static final ArrayList<Integer> MATRIX_TOP_LEFT_CARET
+	private static final ArrayList<Integer> LOCKED_CARET_PATH
 			= new ArrayList<>(Arrays.asList(0, 0, 0));
 
 	/**
@@ -103,27 +102,18 @@ public class MathFieldInternal
 	 *            editor component
 	 */
 	public MathFieldInternal(MathField mathField) {
-		this(mathField, false);
-	}
-
-	/**
-	 * @param mathField
-	 *            editor component
-	 * @param directFormulaBuilder
-	 *            whether to create JLM atoms directly (experimental)
-	 */
-	public MathFieldInternal(MathField mathField,
-			boolean directFormulaBuilder) {
 		this.mathField = mathField;
-		this.directFormulaBuilder = directFormulaBuilder;
 		cursorController = new CursorController();
 		inputController = new InputController(mathField.getMetaModel());
 		keyListener = new KeyListenerImpl(cursorController, inputController);
 		mathFormula = MathFormula.newFormula(mathField.getMetaModel());
-		mathFieldController = new MathFieldController(mathField,
-				directFormulaBuilder);
+		mathFieldController = new MathFieldController(mathField);
 		inputController.setMathField(mathField);
 		setupMathField();
+	}
+
+	public void setSyntaxAdapter(SyntaxAdapter syntaxAdapter) {
+		mathFieldController.setSyntaxAdapter(syntaxAdapter);
 	}
 
 	private void setupMathField() {
@@ -160,6 +150,17 @@ public class MathFieldInternal
 	}
 
 	/**
+	 * font type
+	 * @param type font type
+	 */
+	public void setFontAndUpdate(int type) {
+		if (type != mathFieldController.getFontType()) {
+			mathFieldController.setType(type);
+			update();
+		}
+	}
+
+	/**
 	 * @return edited formula
 	 */
 	public MathFormula getFormula() {
@@ -177,13 +178,10 @@ public class MathFieldInternal
 		editorState.setCurrentField(formula.getRootComponent());
 		editorState.setCurrentOffset(editorState.getCurrentField().size());
 		mathFieldController.update(formula, editorState, false);
-		setCaretPathIfMatrix(formula.getRootComponent());
 	}
 
-	private void setCaretPathIfMatrix(MathSequence sequence) {
-		if (sequence.isMatrix()) {
-			setCaretPath(MATRIX_TOP_LEFT_CARET);
-		}
+	public void setLockedCaretPath() {
+		setCaretPath(LOCKED_CARET_PATH);
 	}
 
 	/**
@@ -294,7 +292,7 @@ public class MathFieldInternal
 		if (handled && !tab) {
 			update();
 			if (!arrow && listener != null) {
-				listener.onKeyTyped();
+				listener.onKeyTyped(null);
 			}
 		}
 
@@ -330,7 +328,7 @@ public class MathFieldInternal
 			for (int i = 0; str != null && i < str.length(); i++) {
 				keyListener.onKeyTyped(str.charAt(i), editorState);
 			}
-			notifyAndUpdate();
+			notifyAndUpdate(str);
 		}
 		return false;
 	}
@@ -351,7 +349,7 @@ public class MathFieldInternal
 				|| keyListener.onKeyTyped(keyEvent.getUnicodeKeyChar(),
 						editorState);
 		if (handled && fire) {
-			notifyAndUpdate();
+			notifyAndUpdate(String.valueOf(keyEvent.getUnicodeKeyChar()));
 		}
 		return handled;
 	}
@@ -366,19 +364,18 @@ public class MathFieldInternal
 
 	/**
 	 * Notifies listener about key event and updates the view.
+	 * @param key key name
 	 */
-	public void notifyAndUpdate() {
+	public void notifyAndUpdate(String key) {
 		if (listener != null) {
-			listener.onKeyTyped();
+			listener.onKeyTyped(key);
 		}
 		update();
-
 	}
 
 	@Override
 	public void onPointerDown(int x, int y) {
 		if (selectionMode) {
-			ArrayList<Integer> list = new ArrayList<>();
 			if (SelectionBox.touchSelection) {
 				if (length(SelectionBox.startX - x,
 						SelectionBox.startY - y) < 10) {
@@ -393,7 +390,6 @@ public class MathFieldInternal
 					return;
 				}
 			}
-			mathFieldController.getPath(mathFormula, x, y, list);
 			editorState.resetSelection();
 
 			this.mouseDownPos = new int[] { x, y };
@@ -421,8 +417,6 @@ public class MathFieldInternal
 				selectionDrag = false;
 				return;
 			}
-			ArrayList<Integer> list = new ArrayList<>();
-			mathFieldController.getPath(mathFormula, x, y, list);
 			MathComponent cursor = editorState.getCursorField(
 					editorState.getSelectionEnd() != null && selectionLeft(x));
 
@@ -491,21 +485,8 @@ public class MathFieldInternal
 				|| Math.abs(y - mouseDownPos[1]) > 10);
 	}
 
-	private void moveToSelectionDirect(int x, int y) {
-		ArrayList<Integer> list2 = new ArrayList<>();
-		EditorState mc = mathFieldController.getPath(mathFormula, x, y, list2);
-		if (mc != null && mc.getCurrentField() != null) {
-			editorState.setCurrentField(mc.getCurrentField());
-			editorState.setCurrentOffset(mc.getCurrentOffset());
-		}
-	}
-
 	private void moveToSelection(int x, int y) {
-		if (this.directFormulaBuilder) {
-			this.moveToSelectionDirect(x, y);
-		} else {
-			this.moveToSelectionIterative(x, y);
-		}
+		this.moveToSelectionIterative(x, y);
 	}
 
 	private void moveToSelectionIterative(int x, int y) {
@@ -549,8 +530,6 @@ public class MathFieldInternal
 			mathFieldController.update(mathFormula, editorState, false);
 			return;
 		}
-		ArrayList<Integer> list = new ArrayList<>();
-		mathFieldController.getPath(mathFormula, x, y, list);
 		MathComponent cursor = editorState.getCursorField(
 				editorState.getSelectionEnd() == null || selectionLeft(x));
 		MathSequence current = editorState.getCurrentField();
@@ -670,11 +649,8 @@ public class MathFieldInternal
 	 * @return serialized selection
 	 */
 	public String copy() {
-		if (listener != null) {
-			return listener.serialize(
+		return GeoGebraSerializer.serialize(
 					InputController.getSelectionText(getEditorState()));
-		}
-		return "";
 	}
 
 	/**
@@ -696,7 +672,7 @@ public class MathFieldInternal
 			field = field.getParent();
 		}
 		reverse(path);
-
+		setFormula(GeoGebraSerializer.reparse(getFormula()));
 		if (listener != null) {
 			listener.onInsertString();
 		}
@@ -716,9 +692,7 @@ public class MathFieldInternal
 		} else {
 			mathField.requestViewFocus();
 			// do this as late as possible
-			if (listener != null) {
-				listener.onKeyTyped();
-			}
+			onKeyTyped();
 		}
 	}
 
@@ -727,7 +701,7 @@ public class MathFieldInternal
 	 */
 	protected void onKeyTyped() {
 		if (listener != null) {
-			listener.onKeyTyped();
+			listener.onKeyTyped(null);
 		}
 	}
 
@@ -739,9 +713,7 @@ public class MathFieldInternal
 	 */
 	public void insertFunction(String text) {
 		inputController.newFunction(editorState, text, false, null);
-		if (listener != null) {
-			listener.onKeyTyped();
-		}
+		onKeyTyped();
 	}
 
 	/**

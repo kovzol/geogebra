@@ -682,7 +682,7 @@ public abstract class AlgoLocusND<T extends MyPoint> extends AlgoElement {
 	abstract protected boolean areEqual(GeoPointND p1, GeoPointND p2);
 
 	private static boolean isPathIterable(GeoElement geoElement) {
-		if (geoElement.isGeoImplicitPoly()) {
+		if (geoElement.isGeoImplicitCurve()) {
 			return ((GeoImplicit) geoElement).isOnScreen();
 		}
 		return geoElement.isDefined();
@@ -870,7 +870,7 @@ public abstract class AlgoLocusND<T extends MyPoint> extends AlgoElement {
 
 	void updateScreenBordersIfNecessary() {
 		for (int i = 0; i < visibleEV.length; i++) {
-            if (locus.isVisibleInEV(i + 1) != visibleEV[i]) {
+			if (locus.isVisibleInEV(i + 1) != visibleEV[i]) {
 				updateScreenBorders();
 				return;
 			}
@@ -915,7 +915,7 @@ public abstract class AlgoLocusND<T extends MyPoint> extends AlgoElement {
 	boolean updateScreenBorders() {
 
 		for (int i = 0; i < visibleEV.length; i++) {
-            visibleEV[i] = locus.isVisibleInEV(i + 1);
+			visibleEV[i] = locus.isVisibleInEV(i + 1);
 		}
 
 		if (visibleEV[0] && visibleEV[1]) {

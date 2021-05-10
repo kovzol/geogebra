@@ -24,7 +24,7 @@ public class AlgoCurvatureCurve extends AlgoElement {
 	private GeoCurveCartesianND f;
 	private GeoNumeric K; // output
 	private GeoConicND gc = null;
-    private double kVal;
+	private double kVal;
 
 	/**
 	 * @param cons
@@ -158,9 +158,9 @@ public class AlgoCurvatureCurve extends AlgoElement {
 			try {
 				double t = f.getClosestParameterForCurvature(A,
 						f.getMinParameter());
-                kVal = gc == null ? f.evaluateCurvature(t)
-                        : Math.abs(f.evaluateCurvature(t));
-                K.setValue(kVal);
+				kVal = gc == null ? f.evaluateCurvature(t)
+						: Math.abs(f.evaluateCurvature(t));
+				K.setValue(kVal);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				K.setUndefined();

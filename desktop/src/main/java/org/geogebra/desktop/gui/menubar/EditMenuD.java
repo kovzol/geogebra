@@ -3,7 +3,11 @@ package org.geogebra.desktop.gui.menubar;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 import javax.swing.event.MenuEvent;
 
 import org.geogebra.common.kernel.Kernel;
@@ -72,11 +76,9 @@ public class EditMenuD extends BaseMenu {
 		pasteItem = add(pasteAction);
 		setMenuShortCutAccelerator(pasteItem, 'V');
 
-		if (!app.isMacOS() || !AppD.isJava7()) {
-			copyToClipboardItem = add(copyToClipboardAction);
-			// ctrl-shift-c is also handled in MyKeyListener
-			setMenuShortCutShiftAccelerator(copyToClipboardItem, 'C');
-		}
+		copyToClipboardItem = add(copyToClipboardAction);
+		// ctrl-shift-c is also handled in MyKeyListener
+		setMenuShortCutShiftAccelerator(copyToClipboardItem, 'C');
 
 		addSeparator();
 
@@ -379,7 +381,7 @@ public class EditMenuD extends BaseMenu {
 			// check if there's an image on the clipboard
 			String[] fileName = ((GuiManagerD) app.getGuiManager())
 					.getImageFromTransferable(null);
-            clipboardMenu.setEnabled(fileName != null && fileName.length > 0);
+			clipboardMenu.setEnabled(fileName != null && fileName.length > 0);
 		}
 
 	}

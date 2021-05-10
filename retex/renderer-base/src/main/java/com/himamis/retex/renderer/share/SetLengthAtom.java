@@ -49,32 +49,32 @@ package com.himamis.retex.renderer.share;
  */
 public class SetLengthAtom extends Atom {
 
-    protected final String name;
+	protected final String name;
 	protected final TeXLength l;
-    protected final double f;
-    protected final boolean factor;
+	protected final double f;
+	protected final boolean factor;
 
-    public SetLengthAtom(String name, TeXLength l) {
-        this.name = name;
-        this.l = l;
-        this.f = 0;
-        factor = false;
-    }
+	public SetLengthAtom(String name, TeXLength l) {
+		this.name = name;
+		this.l = l;
+		this.f = 0;
+		factor = false;
+	}
 
-    public SetLengthAtom(String name, double f) {
-        this.name = name;
-        this.l = null;
-        this.f = f;
-        factor = true;
-    }
+	public SetLengthAtom(String name, double f) {
+		this.name = name;
+		this.l = null;
+		this.f = f;
+		factor = true;
+	}
 
 	@Override
 	public Box createBox(TeXEnvironment env) {
-        if (factor) {
-            env.lengthSettings().setFactor(name, f);
-        } else {
-            env.lengthSettings().setLength(name, l);
-        }
+		if (factor) {
+			env.lengthSettings().setFactor(name, f);
+		} else {
+			env.lengthSettings().setLength(name, l);
+		}
 
 		return StrutBox.getEmpty();
 	}

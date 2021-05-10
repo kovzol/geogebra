@@ -61,10 +61,10 @@ abstract public class ImageManager {
 			// make sure 2nd corner is on screen
 			ensure2ndCornerOnScreen(point1.getInhomX(), point2, app);
 		}
-		geoImage.setLabel(null);
 		if (app.isWhiteboardActive()) {
 			centerOnScreen(geoImage, app);
 		}
+		geoImage.setLabel(null);
 		GeoImage.updateInstances(app);
 	}
 
@@ -189,4 +189,8 @@ abstract public class ImageManager {
 	 *            ie something starting "data:image/png;base64,iVBOR..."
 	 */
 	public abstract void addExternalImage(String filename0, String urlBase64);
+
+	public String getExternalImageSrc(String name) {
+		return name;
+	}
 }

@@ -181,7 +181,7 @@ public class DrawInequality1Var extends SetDrawable {
 		}
 		int i = 0;
 		while (i < lines.length && lines[i] != null) {
-            if (isHighlighted()) {
+			if (isHighlighted()) {
 				g2.setPaint(geo.getSelColor());
 				g2.setStroke(selStroke);
 				g2.draw(lines[i]);
@@ -202,7 +202,7 @@ public class DrawInequality1Var extends SetDrawable {
 			return;
 		}
 		while (i < circle.length && circle[i] != null) {
-            if (isHighlighted()) {
+			if (isHighlighted()) {
 				g2.setPaint(geo.getSelColor());
 				g2.setStroke(selStroke);
 				g2.draw(circle[i]);
@@ -223,11 +223,6 @@ public class DrawInequality1Var extends SetDrawable {
 			i++;
 		}
 
-	}
-
-	@Override
-	public GeoElement getGeoElement() {
-		return geo;
 	}
 
 	@Override
@@ -280,6 +275,7 @@ public class DrawInequality1Var extends SetDrawable {
 			GArea a = AwtFactory.getPrototype().newArea();
 			for (int i = 0; 2 * i + j + 1 < numOfX; i++) {
 				gp[i] = new GeneralPathClipped(view);
+				gp[i].resetWithThickness(geo.getLineThickness());
 				gp[i].moveTo(-10, x[2 * i + j]);
 				gp[i].lineTo(view.getWidth() + 10, x[2 * i + j]);
 				gp[i].lineTo(view.getWidth() + 10, x[2 * i + j + 1]);
@@ -345,6 +341,7 @@ public class DrawInequality1Var extends SetDrawable {
 
 				for (int i = 0; 2 * i + j + 1 < numOfX; i++) {
 					gp[i] = new GeneralPathClipped(view);
+					gp[i].resetWithThickness(geo.getLineThickness());
 					gp[i].moveTo(x[2 * i + j], -10);
 					gp[i].lineTo(x[2 * i + j], view.getHeight() + 10);
 					gp[i].lineTo(x[2 * i + j + 1], view.getHeight() + 10);

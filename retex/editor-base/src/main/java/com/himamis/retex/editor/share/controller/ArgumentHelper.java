@@ -19,8 +19,7 @@ public class ArgumentHelper {
 	 * @param container
 	 *            function
 	 */
-	public static void passArgument(EditorState editorState,
-			MathContainer container) {
+	public static void passArgument(EditorState editorState, MathContainer container) {
 		MathSequence currentField = editorState.getCurrentField();
 		int currentOffset = editorState.getCurrentOffset();
 		// get pass to argument
@@ -86,8 +85,7 @@ public class ArgumentHelper {
 		editorState.setCurrentOffset(currentOffset);
 	}
 
-	private static void passCharacters(EditorState editorState,
-			MathContainer container) {
+	private static void passCharacters(EditorState editorState, MathContainer container) {
 		int currentOffset = editorState.getCurrentOffset();
 		MathSequence currentField = editorState.getCurrentField();
 		// get pass to argument

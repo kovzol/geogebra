@@ -7,8 +7,8 @@ package org.geogebra.web.full.gui.components;
  */
 public interface MathFieldEditorDecorator {
 
-    /**
-     * Update editor state.
-     */
-    void update();
+	/**
+	 * Update editor state.
+	 */
+	void update();
 }

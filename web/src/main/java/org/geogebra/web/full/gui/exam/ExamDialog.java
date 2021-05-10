@@ -4,7 +4,6 @@ import org.geogebra.common.gui.toolbar.ToolBar;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.web.full.css.GuiResources;
-import org.geogebra.web.full.gui.dialog.InputDialogW.DialogBoxKbW;
 import org.geogebra.web.full.gui.layout.DockManagerW;
 import org.geogebra.web.full.gui.layout.DockPanelW;
 import org.geogebra.web.full.gui.layout.LayoutW;
@@ -30,7 +29,7 @@ public class ExamDialog implements ClickHandler {
 	/** Application */
 	protected AppW app;
 	/** Wrapped box */
-	protected DialogBoxKbW box;
+	protected DialogBoxW box;
 	private CheckBox cas;
 	private Button btnCancel;
 
@@ -49,9 +48,9 @@ public class ExamDialog implements ClickHandler {
 		ensureExamStyle();
 		Localization loc = app.getLocalization();
 		final GuiManagerInterfaceW guiManager = app.getGuiManager();
-		final boolean hasGraphing = app.getArticleElement()
+		final boolean hasGraphing = app.getAppletParameters()
 				.hasDataParamEnableGraphing();
-		box = new DialogBoxKbW(false, true, null, app.getPanel(), app) {
+		box = new DialogBoxW(false, true, null, app.getPanel(), app) {
 			@Override
 			protected void onCancel() {
 				if (!hasGraphing) {
@@ -69,7 +68,6 @@ public class ExamDialog implements ClickHandler {
 		Button btnOk = new Button();
 		btnCancel = new Button();
 		Button btnHelp = new Button();
-		// mainWidget.add(btnPanel);
 
 		btnPanel.add(btnOk);
 		// we don't need cancel and help buttons for tablet exam apps
@@ -95,12 +93,12 @@ public class ExamDialog implements ClickHandler {
 			cas.addStyleName("examCheckbox");
 			cas.setValue(true);
 
-			app.getExam().setCasEnabled(true);
+			app.getExam().setCasEnabled(true, app.getSettings().getCasSettings());
 			cbxPanel.add(cas);
 			cas.addClickHandler(this); 
 		}
 		
-		if (!app.getSettings().getEuclidian(-1).isEnabledSet()) {
+		if (!app.getAppletParameters().hasDataParamEnable3D()) {
 			checkboxes++;
 			final CheckBox allow3D = new CheckBox(loc.getMenu("Perspective.3DGraphics"));
 			allow3D.addStyleName("examCheckbox");
@@ -109,12 +107,9 @@ public class ExamDialog implements ClickHandler {
 			app.getSettings().getEuclidian(-1).setEnabled(true);
 
 			cbxPanel.add(allow3D);
-			allow3D.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					app.getSettings().getEuclidian(-1).setEnabled(allow3D.getValue());
-					guiManager.updateToolbarActions();
-				}
+			allow3D.addClickHandler(event -> {
+				app.getSettings().getEuclidian(-1).setEnabled(allow3D.getValue());
+				guiManager.updateToolbarActions();
 			});
 		}
 		guiManager.updateToolbarActions();
@@ -130,7 +125,7 @@ public class ExamDialog implements ClickHandler {
 			btnPanel.addStyleName("DialogButtonPanel");
 			box.getCaption().setText(loc.getMenu("exam_custom_header"));
 		} else {
-			if (app.getArticleElement().hasDataParamEnableGraphing()) {
+			if (app.getAppletParameters().hasDataParamEnableGraphing()) {
 				boolean supportsCAS = app.getSettings().getCasSettings().isEnabled();
 				boolean supports3D = app.getSettings().getEuclidian(-1).isEnabled();
 				Log.debug(supportsCAS + "," + supports3D + "," + app.enableGraphing());
@@ -164,37 +159,23 @@ public class ExamDialog implements ClickHandler {
 		// start exam button
 		startPanel.setVisible(true);
 		btnOk.setText(loc.getMenu("exam_start_button"));
-		btnOk.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				startExam(box, app);
-			}
-		});
+		btnOk.addClickHandler(event -> startExam(box, app));
 
 		mainWidget.add(btnPanel);
 		box.setWidget(mainWidget);
 
-		if ((app.getArticleElement().hasDataParamEnableGraphing())) {
+		if ((app.getAppletParameters().hasDataParamEnableGraphing())) {
 			btnOk.addStyleName("ExamTabletStartButton");
 		}
-		app.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				box.center();
-			}
-		});
+		app.invokeLater(() -> box.center());
 
 		// Cancel button
 		btnCancel.addStyleName("cancelBtn");
 		btnCancel.addClickHandler(this);
 		// Help button
 		btnHelp.addStyleName("cancelBtn");
-		btnHelp.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				app.getFileManager().open("https://www.geogebra.org/tutorial/exam");
-			}
-		});
+		btnHelp.addClickHandler(
+				event -> app.getFileManager().open("https://www.geogebra.org/tutorial/exam"));
 	}
 
 	/**
@@ -241,7 +222,7 @@ public class ExamDialog implements ClickHandler {
 		LayoutW.resetPerspectives(app);
 		if (app.enableGraphing()) {
 			// don't check for CAS supported but for data param
-			if (app.getArticleElement().getDataParamEnableCAS(false)) {
+			if (app.getAppletParameters().getDataParamEnableCAS(false)) {
 				// set CAS start view for Exam CAS
 				app.getGgbApi().setPerspective("4");
 			} else {
@@ -295,7 +276,7 @@ public class ExamDialog implements ClickHandler {
 		if (examStyle) {
 			return;
 		}
-		StyleInjector.inject(GuiResources.INSTANCE.examStyleLTR().getText());
+		StyleInjector.inject(GuiResources.INSTANCE.examStyle().getText());
 		examStyle = true;
 	}
 
@@ -321,7 +302,7 @@ public class ExamDialog implements ClickHandler {
 	}
 
 	private void onCasChecked() {
-		app.getExam().setCasEnabled(cas.getValue());
+		app.getExam().setCasEnabled(cas.getValue(), app.getSettings().getCasSettings());
 		app.getGuiManager().updateToolbarActions();
 	}
 }

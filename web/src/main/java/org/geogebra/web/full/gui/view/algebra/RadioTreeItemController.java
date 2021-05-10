@@ -33,10 +33,10 @@ import org.geogebra.web.html5.gui.util.CancelEventTimer;
 import org.geogebra.web.html5.gui.util.LongTouchManager;
 import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.html5.util.EventUtil;
+import org.gwtproject.timer.client.Timer;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -56,7 +56,6 @@ import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.dom.client.TouchStartHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -169,7 +168,7 @@ public class RadioTreeItemController implements ClickHandler,
 				ZeroOffset.INSTANCE);
 		onPointerDown(wrappedEvent);
 
-        CancelEventTimer.avRestoreWidth();
+		CancelEventTimer.avRestoreWidth();
 		if (CancelEventTimer.cancelMouseEvent() || isMarbleHit(event)
 				|| app.isRightClick(wrappedEvent)) {
 			return;
@@ -288,13 +287,7 @@ public class RadioTreeItemController implements ClickHandler,
 	}
 
 	private void setFocusDeferred() {
-		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-			@Override
-			public void execute() {
-				setFocus(true);
-			}
-		});
+		Scheduler.get().scheduleDeferred(() -> setFocus(true));
 	}
 
 	/**
@@ -486,15 +479,7 @@ public class RadioTreeItemController implements ClickHandler,
 		if (!isEditing()) {
 			setEditHeigth(item.getEditHeight());
 			getAV().startEditItem(geo);
-
-			Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-				@Override
-				public void execute() {
-
-					item.adjustStyleBar();
-				}
-			});
-
+			Scheduler.get().scheduleDeferred(() -> item.adjustStyleBar());
 			showKeyboard();
 		}
 	}

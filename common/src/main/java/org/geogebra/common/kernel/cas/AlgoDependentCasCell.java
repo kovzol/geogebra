@@ -139,7 +139,7 @@ public class AlgoDependentCasCell extends AlgoElement
 			casCell.computeOutput();
 		} else {
 			casCell.setUndefined();
-            casCell.setError(Errors.UndefinedVariable.getKey()
+			casCell.setError(Errors.UndefinedVariable.getKey()
 					+ undefinedGeo.getLabel(StringTemplate.defaultTemplate));
 		}
 	}

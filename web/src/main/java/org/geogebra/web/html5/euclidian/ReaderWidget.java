@@ -3,14 +3,11 @@ package org.geogebra.web.html5.euclidian;
 import org.geogebra.common.euclidian.ScreenReaderAdapter;
 import org.geogebra.common.main.ScreenReader;
 import org.geogebra.web.html5.Browser;
+import org.gwtproject.timer.client.Timer;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.Position;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Widget to able screen readers to read text from
@@ -21,7 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ReaderWidget extends SimplePanel implements ScreenReaderAdapter {
 	private Timer timer;
-    private Element anchor;
+	private Element anchor;
 
 	/**
 	 * Constructor.
@@ -31,29 +28,19 @@ public class ReaderWidget extends SimplePanel implements ScreenReaderAdapter {
 	 * @param anchor
 	 *            object to focus afterwards
 	 */
-    public ReaderWidget(int evNo, Element anchor) {
+	public ReaderWidget(int evNo, Element anchor) {
 		this.anchor = anchor;
 		getElement().setId("screenReader" + evNo);
+		getElement().addClassName("screenReaderStyle");
 		// can't be tabbed, but can get the focus programmatically
 		getElement().setTabIndex(-1);
 		getElement().setAttribute("role", "status");
 		getElement().setAttribute("aria-live", "polite");
 		getElement().setAttribute("aria-atomic", "true");
 		getElement().setAttribute("aria-relevant", "additions text");
-        if (Browser.needsAccessibilityView()) {
-            setVisible(false);
-        } else {
-            offscreen(this);
-        }
-	}
-
-	/**
-	 * @param widget
-	 *            widget to hide offscreen
-	 */
-    private static void offscreen(Widget widget) {
-		widget.getElement().getStyle().setTop(-1000.0, Unit.PX);
-		widget.getElement().getStyle().setPosition(Position.ABSOLUTE);
+		if (Browser.needsAccessibilityView()) {
+			setVisible(false);
+		}
 	}
 
 	private void createTimer() {
@@ -72,14 +59,14 @@ public class ReaderWidget extends SimplePanel implements ScreenReaderAdapter {
 	 * @param text
 	 *            to set.
 	 */
-    private void setText(String text) {
+	private void setText(String text) {
 		getElement().setInnerHTML(text);
 	}
 
 	/**
 	 * Resets the widget.
 	 */
-    private void reset() {
+	private void reset() {
 		setText("");
 	}
 
@@ -114,27 +101,27 @@ public class ReaderWidget extends SimplePanel implements ScreenReaderAdapter {
 	 */
 	@Override
 	public void readText(String text) {
-        if (!hasParentWindow() && !Browser.needsAccessibilityView()) {
-            readTextImmediate(text);
-        }
-    }
+		if (!hasParentWindow() && !Browser.needsAccessibilityView()) {
+			readTextImmediate(text);
+		}
+	}
 
-    @Override
-    public void readDelayed(final String text) {
-        new Timer() {
-            @Override
-            public void run() {
-                readTextImmediate(text);
-            }
-        }.schedule(200);
-    }
+	@Override
+	public void readDelayed(final String text) {
+		new Timer() {
+			@Override
+			public void run() {
+				readTextImmediate(text);
+			}
+		}.schedule(200);
+	}
 
-    private void readTextImmediate(String text) {
-        JavaScriptObject scrollState = JavaScriptObject.createObject();
-        int scrolltop = getScrollTop(scrollState);
-        read(text);
-        anchor.focus();
-        setScrollTop(scrolltop, scrollState);
+	private void readTextImmediate(String text) {
+		JavaScriptObject scrollState = JavaScriptObject.createObject();
+		int scrolltop = getScrollTop(scrollState);
+		read(text);
+		anchor.focus();
+		setScrollTop(scrolltop, scrollState);
 	}
 
 	private static native int getScrollTop(JavaScriptObject scrollState)/*-{

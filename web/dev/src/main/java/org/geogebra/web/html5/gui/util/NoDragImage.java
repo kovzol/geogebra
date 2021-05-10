@@ -19,7 +19,7 @@ public class NoDragImage extends Image implements HasResource {
 	 */
 	public NoDragImage(String uri, int width) {
 		this(uri);
-        setWidth(width);
+		setWidth(width);
 	}
 
 	/**
@@ -32,9 +32,9 @@ public class NoDragImage extends Image implements HasResource {
 	 */
 	public NoDragImage(ResourcePrototype uri, int width, int height) {
 		this(safeURI(uri));
-        setWidth(width);
+		setWidth(width);
 		if (height > 0) {
-            setHeight(height);
+			setHeight(height);
 		}
 	}
 
@@ -75,31 +75,31 @@ public class NoDragImage extends Image implements HasResource {
 
 	public void setResource(ResourcePrototype res) {
 		this.setUrl(NoDragImage.safeURI(res));
-    }
+	}
 
-    /**
-     * Sets the width of the image.
-     *
-     * @param width width in pixels
-     */
-    public void setWidth(int width) {
-        setWidth(width + "px");
-    }
+	/**
+	 * Sets the width of the image.
+	 *
+	 * @param width width in pixels
+	 */
+	public void setWidth(int width) {
+		setWidth(width + "px");
+	}
 
-    /**
-     * Sets the height of the image.
-     *
-     * @param height height in pixels
-     */
-    public void setHeight(int height) {
-        setHeight(height + "px");
-    }
+	/**
+	 * Sets the height of the image.
+	 *
+	 * @param height height in pixels
+	 */
+	public void setHeight(int height) {
+		setHeight(height + "px");
+	}
 
-    /**
-     * Sets the ARIA role to presentation, effectively making this invisible to
-     * screen readers
-     */
-    public void setPresentation() {
-        getElement().setAttribute("role", "presentation");
+	/**
+	 * Sets the ARIA role to presentation, effectively making this invisible to
+	 * screen readers
+	 */
+	public void setPresentation() {
+		getElement().setAttribute("role", "presentation");
 	}
 }

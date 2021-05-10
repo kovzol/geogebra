@@ -6,8 +6,8 @@ package org.geogebra.web.html5.gui.zoompanel;
  */
 public interface FullScreenHandler {
 
-    /**
-     * Change fullscreen state of the iframe.
-     */
-    public void toggleFullscreen();
+	/**
+	 * Change fullscreen state of the iframe.
+	 */
+	public void toggleFullscreen();
 }

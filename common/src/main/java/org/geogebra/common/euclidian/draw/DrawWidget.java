@@ -11,12 +11,12 @@ import org.geogebra.common.euclidian.BoundingBox;
 import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianBoundingBoxHandler;
 import org.geogebra.common.euclidian.EuclidianView;
-import org.geogebra.common.euclidian.RotatableBoundingBox;
+import org.geogebra.common.euclidian.MediaBoundingBox;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoWidget;
 import org.geogebra.common.kernel.geos.RectangleTransformable;
 
-public abstract class DrawWidget extends Drawable {
+public abstract class DrawWidget extends Drawable implements HasTransformation {
 
 	private final TransformableRectangle rectangle;
 
@@ -24,9 +24,10 @@ public abstract class DrawWidget extends Drawable {
 	 * @param view view
 	 * @param geo construction element
 	 */
-	public DrawWidget(EuclidianView view, GeoElement geo) {
+	public DrawWidget(EuclidianView view, GeoElement geo, boolean fixedRatio) {
 		super(view, geo);
-		this.rectangle = new TransformableRectangle(view, (RectangleTransformable) geo);
+		this.rectangle = new TransformableRectangle(view, (RectangleTransformable) geo,
+				fixedRatio);
 	}
 
 	protected void updateBounds() {
@@ -49,29 +50,13 @@ public abstract class DrawWidget extends Drawable {
 	}
 
 	@Override
-	public RotatableBoundingBox getBoundingBox() {
+	public MediaBoundingBox getBoundingBox() {
 		return rectangle.getBoundingBox();
 	}
 
 	@Override
 	public BoundingBox<? extends GShape> getSelectionBoundingBox() {
 		return getBoundingBox();
-	}
-
-	/**
-	 * @param newWidth
-	 *            pixel width at current zoom
-	 */
-	public void setWidth(int newWidth) {
-		getGeoElement().setWidth(newWidth);
-	}
-
-	/**
-	 * @param newHeight
-	 *            pixel height at current zoom
-	 */
-	public void setHeight(int newHeight) {
-		getGeoElement().setHeight(newHeight);
 	}
 
 	/**
@@ -122,11 +107,6 @@ public abstract class DrawWidget extends Drawable {
 	public abstract GeoWidget getGeoElement();
 
 	/**
-	 * @return whether aspect ratio is fixed for this widget
-	 */
-	public abstract boolean isFixedRatio();
-
-	/**
 	 * @return embed ID
 	 */
 	public abstract int getEmbedID();
@@ -135,6 +115,7 @@ public abstract class DrawWidget extends Drawable {
 
 	public abstract void setBackground(boolean b);
 
+	@Override
 	public GAffineTransform getTransform() {
 		return rectangle.getDirectTransform();
 	}

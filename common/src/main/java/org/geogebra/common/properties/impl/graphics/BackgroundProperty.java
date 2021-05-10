@@ -4,7 +4,7 @@ import org.geogebra.common.geogebra3D.euclidian3D.EuclidianView3D;
 import org.geogebra.common.geogebra3D.euclidian3D.openGL.Renderer;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
-import org.geogebra.common.properties.AbstractEnumerableProperty;
+import org.geogebra.common.properties.impl.AbstractEnumerableProperty;
 
 public class BackgroundProperty extends AbstractEnumerableProperty {
 
@@ -28,7 +28,7 @@ public class BackgroundProperty extends AbstractEnumerableProperty {
 	protected void setValueSafe(String value, int index) {
 		// after settings
 		EuclidianView3D euclidianView3D = (EuclidianView3D) app.getActiveEuclidianView();
-		if (euclidianView3D.isAREnabled()) {
+		if (euclidianView3D.isXREnabled()) {
             euclidianView3D.getRenderer().setBackgroundStyle(
                     Renderer.BackgroundStyle.values()[index]);
 		}

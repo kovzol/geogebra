@@ -79,20 +79,23 @@ public interface GeoVectorND
 	 */
 	public void setCoords(double x, double y, double z, double w);
 
-    /**
-     * @return x component
-     */
-    public double getX();
+	/**
+	 * 
+	 * @return x component
+	 */
+	public double getX();
 
-    /**
-     * @return y component
-     */
-    public double getY();
+	/**
+	 * 
+	 * @return y component
+	 */
+	public double getY();
 
-    /**
-     * @return z component
-     */
-    public double getZ();
+	/**
+	 * 
+	 * @return z component
+	 */
+	public double getZ();
 
 	/**
 	 * Get string as column vector for editing.
@@ -102,10 +105,4 @@ public interface GeoVectorND
 	 * @return the column vector that can be rendered by editor.
 	 */
 	String toValueStringAsColumnVector(StringTemplate tpl);
-
-	/**
-	 *
-	 * @return true if the vector is column-editable.
-	 */
-	boolean isColumnEditable();
 }

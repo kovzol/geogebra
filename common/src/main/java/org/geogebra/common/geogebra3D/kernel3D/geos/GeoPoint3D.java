@@ -105,8 +105,6 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 	// region
 	private Region region;
 	private RegionParameters regionParameters;
-	/** 2D coord sys when point is on a region */
-	// private GeoCoordSys2D coordSys2D = null;
 	/** 2D x-coord when point is on a region */
 	private double x2D = 0;
 	/** 2D y-coord when point is on a region */
@@ -654,16 +652,6 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 	}
 
 	/**
-	 * set the 2D coord sys where the region lies
-	 * 
-	 * @param cs
-	 *            2D coord sys
-	 */
-	/*
-	 * public void setCoordSys2D(GeoCoordSys2D cs){ this.coordSys2D = cs; }
-	 */
-
-	/**
 	 * update the 2D coords on the region (regarding willing coords and
 	 * direction)
 	 */
@@ -723,7 +711,7 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 			RegionParameters rp = getRegionParameters();
 			rp.setT1(project[1].get(1));
 			rp.setT2(project[1].get(2));
-			rp.setNormal(((GeoElement) reg).getMainDirection());
+			rp.setNormal(reg.getMainDirection());
 		}
 	}
 
@@ -962,6 +950,9 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 			// TODO ? moveMode = p.getMoveMode();
 			updateCoords();
 			setMode(p.getToStringMode()); // complex etc
+			reuseDefinition(geo);
+		} else {
+			setUndefined();
 		}
 		/*
 		 * TODO else if (geo.isGeoVector()) { GeoVector v = (GeoVector) geo;
@@ -1126,8 +1117,7 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 	}
 
 	@Override
-	public String getStartPointXML() {
-		StringBuilder sb = new StringBuilder();
+	public void appendStartPointXML(StringBuilder sb) {
 		sb.append("\t<startPoint ");
 
 		if (isAbsoluteStartPoint()) {
@@ -1145,7 +1135,6 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 			StringUtil.encodeXML(sb, getLabel(StringTemplate.xmlTemplate));
 			sb.append("\"/>\n");
 		}
-		return sb.toString();
 	}
 
 	@Override
@@ -1417,16 +1406,13 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 	public String getTraceDialogAsValues() {
 		String name = getLabelTextOrHTML(false);
 
-		StringBuilder sb1 = new StringBuilder();
-		sb1.append("x(");
-		sb1.append(name);
-		sb1.append("), y(");
-		sb1.append(name);
-		sb1.append("), z(");
-		sb1.append(name);
-		sb1.append(")");
-
-		return sb1.toString();
+		return "x("
+				+ name
+				+ "), y("
+				+ name
+				+ "), z("
+				+ name
+				+ ")";
 	}
 
 	@Override
@@ -1445,8 +1431,8 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 		double x = getX();
 		double y = getY();
 
-		Double x1 = a * x + b * y;
-		Double y1 = c * x + d * y;
+		double x1 = a * x + b * y;
+		double y1 = c * x + d * y;
 
 		setCoords(x1, y1, getZ(), getW());
 	}
@@ -1536,9 +1522,8 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 		double z = getZ();
 		double w = getW();
 
-		Coords Q = point;
-		double qx = w * Q.getX();
-		double qy = w * Q.getY();
+		double qx = w * point.getX();
+		double qy = w * point.getY();
 
 		setCoords((x - qx) * cos + (qy - y) * sin + qx,
 				(x - qx) * sin + (y - qy) * cos + qy, z, w);
@@ -1629,7 +1614,7 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 	@Override
 	public void pointChanged(GeoPointND p) {
 		if (p.isGeoElement3D()) {
-			((GeoPoint3D) p).setCoords(this.getCoords(), false);
+			p.setCoords(this.getCoords(), false);
 		} else {
 			Coords coords = this.getCoords();
 			if (!DoubleUtil.isZero(coords.getZ())) {
@@ -2088,12 +2073,10 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 			}
 		}
 
-		boolean ret = (num1 instanceof GeoNumeric
+		return (num1 instanceof GeoNumeric
 				&& ((GeoNumeric) num1).isPointerChangeable())
 				|| (num2 instanceof GeoNumeric
 						&& ((GeoNumeric) num2).isPointerChangeable());
-
-		return ret;
 	}
 
 	@Override
@@ -2127,21 +2110,18 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 		else {
 			// only change if GeoNumeric
 			if (xvar instanceof GeoNumeric) {
-				double newXval = xvar.getDouble() - getInhomX()
-						+ endPosition.getX();
-				((GeoNumeric) xvar).setValue(newXval);
+				GeoPoint.incrementParentNumeric(endPosition.getX() - getInhomX(),
+						(GeoNumeric) xvar, targetPosition);
 			}
 
 			if (xvar != yvar && yvar instanceof GeoNumeric) {
-				double newYval = yvar.getDouble() - getInhomY()
-						+ endPosition.getY();
-				((GeoNumeric) yvar).setValue(newYval);
+				GeoPoint.incrementParentNumeric(endPosition.getY() - getInhomY(),
+						(GeoNumeric) yvar, targetPosition);
 			}
 
 			if (zvar != yvar && zvar != xvar && zvar instanceof GeoNumeric) {
-				double newZval = zvar.getDouble() - getInhomZ()
-						+ endPosition.getZ();
-				((GeoNumeric) zvar).setValue(newZval);
+				GeoPoint.incrementParentNumeric(endPosition.getZ() - getInhomZ(),
+						(GeoNumeric) zvar, targetPosition);
 			}
 		}
 
@@ -2210,69 +2190,69 @@ public class GeoPoint3D extends GeoVec4D implements GeoPointND, PathOrPoint,
 		return true;
 	}
 
-    @Override
-    public void setRegionChanged(double x, double y) {
-        setCoords2D(x, y, 1);
-        updateCoordsFrom2D(false, null);
-    }
+	@Override
+	public void setRegionChanged(double x, double y) {
+		setCoords2D(x, y, 1);
+		updateCoordsFrom2D(false, null);
+	}
 
-    @Override
-    public void pointChanged(GeoPolygon polygon) {
-        Coords coordsOld = getInhomCoords().copyVector();
+	@Override
+	public void pointChanged(GeoPolygon polygon) {
+		Coords coordsOld = getInhomCoords().copyVector();
 
-        // prevent from region bad coords calculations
-        Region oldRegion = getRegion();
-        setRegion(null);
+		// prevent from region bad coords calculations
+		Region oldRegion = getRegion();
+		setRegion(null);
 
-        double minDist = Double.POSITIVE_INFINITY;
-        Coords res = null;
-        double param = 0;
+		double minDist = Double.POSITIVE_INFINITY;
+		Coords res = null;
+		double param = 0;
 
-        // use auxiliary segment if no or not enough segments
-        GeoSegment3D segment = null;
-        GeoSegmentND[] segments = polygon.getSegments();
-        if (segments == null || segments.length < polygon.getPointsLength()) {
-            segment = new GeoSegment3D(cons);
-        }
+		// use auxiliary segment if no or not enough segments
+		GeoSegment3D segment = null;
+		GeoSegmentND[] segments = polygon.getSegments();
+		if (segments == null || segments.length < polygon.getPointsLength()) {
+			segment = new GeoSegment3D(cons);
+		}
 
-        // find closest point on each segment
-        for (int i = 0; i < polygon.getPointsLength(); i++) {
+		// find closest point on each segment
+		for (int i = 0; i < polygon.getPointsLength(); i++) {
 
-            setCoords(coordsOld, false); // prevent circular path.pointChanged
+			setCoords(coordsOld, false); // prevent circular path.pointChanged
 
-            if (segment == null) {
-                segments[i].pointChanged(this);
-            } else {
-                segment.setCoordFromPoints(polygon.getPoint3D(i),
-                        polygon.getPoint3D(
-                                (i + 1) % polygon.getPointsLength()));
-                segment.pointChanged(this);
-            }
+			if (segment == null) {
+				segments[i].pointChanged(this);
+			} else {
+				segment.setCoordFromPoints(polygon.getPoint3D(i),
+						polygon.getPoint3D(
+								(i + 1) % polygon.getPointsLength()));
+				segment.pointChanged(this);
+			}
 
-            double dist; // = P.getInhomCoords().sub(coordsOld).squareNorm();
-            // double dist = 0;
-            if (hasWillingCoords() && hasWillingDirection()) {
-                dist = getInhomCoords().distLine(getWillingCoords(),
-                        getWillingDirection());
-            } else {
-                dist = getInhomCoords().sub(coordsOld).squareNorm();
-            }
+			double dist; // = P.getInhomCoords().sub(coordsOld).squareNorm();
+			// double dist = 0;
+			if (hasWillingCoords() && hasWillingDirection()) {
+				dist = getInhomCoords().distLine(getWillingCoords(),
+						getWillingDirection());
+			} else {
+				dist = getInhomCoords().sub(coordsOld).squareNorm();
+			}
 
-            if (dist < minDist) {
-                minDist = dist;
-                // remember closest point
-                res = getInhomCoords().copyVector();
-                param = i + pp.getT();
-                // Application.debug(i);
-            }
-        }
+			if (dist < minDist) {
+				minDist = dist;
+				// remember closest point
+				res = getInhomCoords().copyVector();
+				param = i + pp.getT();
+				// Application.debug(i);
+			}
+		}
 
-        if (res != null) {
-            setCoords(res, false);
-            pp.setT(param);
-        }
+		if (res != null) {
+			setCoords(res, false);
+			pp.setT(param);
+		}
 
-        setRegion(oldRegion);
-    }
+		setRegion(oldRegion);
+	}
 
 }

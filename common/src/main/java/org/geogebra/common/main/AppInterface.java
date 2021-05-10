@@ -7,9 +7,9 @@ import org.geogebra.common.factories.Factory;
 import org.geogebra.common.gui.view.algebra.AlgebraView;
 import org.geogebra.common.io.MyXMLio;
 import org.geogebra.common.kernel.Construction;
-import org.geogebra.common.kernel.UndoManager;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoElementGraphicsAdapter;
+import org.geogebra.common.main.undo.UndoManager;
 import org.geogebra.common.plugin.GgbAPI;
 import org.geogebra.common.plugin.ScriptManager;
 import org.geogebra.common.sound.SoundManager;
@@ -176,7 +176,7 @@ public interface AppInterface {
 	 */
 	public abstract GlobalKeyDispatcher getGlobalKeyDispatcher();
 
-    public abstract void callAppletJavaScript(String string, String args);
+	public abstract void callAppletJavaScript(String string, String args);
 
 	/**
 	 * Updates menubar

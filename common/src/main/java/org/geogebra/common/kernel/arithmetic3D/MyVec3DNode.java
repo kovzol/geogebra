@@ -47,6 +47,8 @@ import org.geogebra.common.main.MyParseError;
 import org.geogebra.common.plugin.GeoClass;
 import org.geogebra.common.util.StringUtil;
 
+import com.google.j2objc.annotations.Weak;
+
 /**
  * 
  * @author Markus + ggb3D
@@ -57,6 +59,7 @@ public class MyVec3DNode extends ValidExpression
 	private ExpressionValue x;
 	private ExpressionValue y;
 	private ExpressionValue z;
+	@Weak
 	private Kernel kernel;
 	private int mode = Kernel.COORD_CARTESIAN_3D;
 	private boolean isCASVector;
@@ -121,24 +124,24 @@ public class MyVec3DNode extends ValidExpression
 	/**
 	 * @return x coordinate
 	 */
-    @Override
-    public ExpressionValue getX() {
+	@Override
+	public ExpressionValue getX() {
 		return x;
 	}
 
 	/**
 	 * @return y coordinate
 	 */
-    @Override
-    public ExpressionValue getY() {
+	@Override
+	public ExpressionValue getY() {
 		return y;
 	}
 
 	/**
 	 * @return z coordinate
 	 */
-    @Override
-    public ExpressionValue getZ() {
+	@Override
+	public ExpressionValue getZ() {
 		return z;
 	}
 
@@ -157,17 +160,17 @@ public class MyVec3DNode extends ValidExpression
 		StringTemplate tpl = StringTemplate.defaultTemplate;
 		ExpressionValue evx = x.evaluate(tpl);
 		if (!(evx instanceof NumberValue)) {
-            throw new MyParseError(kernel.getLocalization(), Errors.NumberExpected,
+			throw new MyParseError(kernel.getLocalization(), Errors.NumberExpected,
 					evx.wrap().toString(tpl));
 		}
 		ExpressionValue evy = y.evaluate(tpl);
 		if (!(evy instanceof NumberValue)) {
-            throw new MyParseError(kernel.getLocalization(), Errors.NumberExpected,
+			throw new MyParseError(kernel.getLocalization(), Errors.NumberExpected,
 					evy.wrap().toString(tpl));
 		}
 		ExpressionValue evz = z.evaluate(tpl);
 		if (!(evz instanceof NumberValue)) {
-            throw new MyParseError(kernel.getLocalization(), Errors.NumberExpected,
+			throw new MyParseError(kernel.getLocalization(), Errors.NumberExpected,
 					evz.wrap().toString(tpl));
 		}
 
@@ -371,7 +374,7 @@ public class MyVec3DNode extends ValidExpression
 		if (mode == Kernel.COORD_CARTESIAN_3D) {
 			stringifier.setPrintingMode(VectorPrintingMode.Cartesian);
 		} else {
-			stringifier.setPrintingMode(VectorPrintingMode.Default);
+			stringifier.setPrintingMode(VectorPrintingMode.Polar);
 		}
 	}
 

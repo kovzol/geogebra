@@ -119,9 +119,9 @@ public class AppCacheLinker extends AbstractLinker {
 		ServiceWorkerBuilder serviceWorkerBuilder = new ServiceWorkerBuilder(
 				context, artifacts, logger);
 
-        String sworkerContentLocked = serviceWorkerBuilder
-                .getWorkerCode(GeoGebraConstants.VERSION_STRING);
-        toReturn.add(emitString(logger, sworkerContentLocked, SWORKER_LOCKED));
+		String sworkerContentLocked = serviceWorkerBuilder
+				.getWorkerCode(GeoGebraConstants.VERSION_STRING);
+		toReturn.add(emitString(logger, sworkerContentLocked, SWORKER_LOCKED));
 	}
 
 }

@@ -25,7 +25,7 @@ public class Unicode {
 	final public static char SUPERSCRIPT_7 = '\u2077';
 	final public static char SUPERSCRIPT_8 = '\u2078';
 	final public static char SUPERSCRIPT_9 = '\u2079';
-	final public static List<Character> SUPERSCRIPTS = Arrays.asList(
+	final private static List<Character> SUPERSCRIPTS = Arrays.asList(
 			Unicode.SUPERSCRIPT_0, Unicode.SUPERSCRIPT_1,
 			Unicode.SUPERSCRIPT_2, Unicode.SUPERSCRIPT_3,
 			Unicode.SUPERSCRIPT_4, Unicode.SUPERSCRIPT_5,
@@ -35,7 +35,6 @@ public class Unicode {
 	final public static char RIGHT_TO_LEFT_MARK = '\u200f';
 	final public static String RIGHT_TO_LEFT_UNARY_MINUS_SIGN = "\u200f-\u200f";
 	final public static char LEFT_TO_RIGHT_MARK = '\u200e';
-	final public static String SUPERSCRIPT_MINUS_ONE_BRACKET_STRING = "\u207b\u00b9(";
 
 	// degrees, minutes, seconds
 	final public static char DEGREE_CHAR = '\u00b0';
@@ -75,9 +74,9 @@ public class Unicode {
 	public static final char tau = '\u03C4';
 	public static final char upsilon = '\u03C5';
 
-	// \\varphi, curly
+	/** \\varphi, curly */
 	public static final char phi = '\u03C6';
-	// \\phi "straight"
+	/** \\phi "straight" */
 	public static final char phi_symbol = '\u03D5';
 
 	public static final char chi = '\u03C7';
@@ -239,5 +238,21 @@ public class Unicode {
 		return ((c >= Unicode.SUPERSCRIPT_0) && (c <= Unicode.SUPERSCRIPT_9))
 				|| (c == Unicode.SUPERSCRIPT_1) || (c == Unicode.SUPERSCRIPT_2)
 				|| (c == Unicode.SUPERSCRIPT_3);
+	}
+
+	/**
+	 * @param num decimal digit
+	 * @return digit converted to unicode superscript
+	 */
+	public static char numberToSuperscript(int num) {
+		return SUPERSCRIPTS.get(num);
+	}
+
+	/**
+	 * @param superscript superscript unicode character
+	 * @return unicode character converted to numeric value
+	 */
+	public static int superscriptToNumber(char superscript) {
+		return Unicode.SUPERSCRIPTS.indexOf(superscript);
 	}
 }

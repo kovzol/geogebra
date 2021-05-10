@@ -10,9 +10,9 @@ import org.geogebra.common.geogebra3D.euclidian3D.EuclidianController3D;
 import org.geogebra.common.geogebra3D.euclidian3D.EuclidianController3D.IntersectionCurve;
 import org.geogebra.common.geogebra3D.euclidian3D.EuclidianView3D;
 import org.geogebra.common.geogebra3D.euclidian3D.Hitting;
-import org.geogebra.common.geogebra3D.euclidian3D.ar.ARManagerInterface;
 import org.geogebra.common.geogebra3D.euclidian3D.draw.DrawLabel3D;
 import org.geogebra.common.geogebra3D.euclidian3D.draw.Drawable3D;
+import org.geogebra.common.geogebra3D.euclidian3D.xr.XRManagerInterface;
 import org.geogebra.common.io.MyXMLio;
 import org.geogebra.common.kernel.geos.AnimationExportSlider;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -199,7 +199,7 @@ public abstract class Renderer {
 	 */
     public void mayStartAR() {
         if (arShouldStart) {
-            doStartAR();
+			doStartAR();
             arShouldStart = false;
         }
     }
@@ -213,11 +213,11 @@ public abstract class Renderer {
      * @param ret Hitting Direction from AR. Override in RendererWithImplA
 	 */
     public void getHittingDirectionAR(Coords ret) {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            arManager.fromARCoordsToGGBCoords(arManager.getHittingDirection(), ret);
-            ret.normalize();
-        }
+		XRManagerInterface<?> arManager = getXRManager();
+		if (arManager != null) {
+            arManager.fromXRCoordsToGGBCoords(arManager.getHittingDirection(), ret);
+			ret.normalize();
+		}
     }
 
 	/**
@@ -225,10 +225,10 @@ public abstract class Renderer {
      *            Hitting Origin from AR. Override in RendererWithImplA
 	 */
 	public void getHittingOriginAR(Coords ret) {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            arManager.fromARCoordsToGGBCoords(arManager.getHittingOrigin(), ret);
-        }
+		XRManagerInterface<?> arManager = getXRManager();
+		if (arManager != null) {
+            arManager.fromXRCoordsToGGBCoords(arManager.getHittingOrigin(), ret);
+		}
 	}
 
     /**
@@ -237,16 +237,16 @@ public abstract class Renderer {
      * @return true if there is an hitting on floor
      */
     public boolean getHittingFloorAR(Coords ret) {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            Coords hittingFloor = arManager.getHittingFloor();
-            if (hittingFloor == null) {
-                return false;
-            }
-            arManager.fromARCoordsToGGBCoords(hittingFloor, ret);
-            return true;
-        }
-        return false;
+		XRManagerInterface<?> arManager = getXRManager();
+		if (arManager != null) {
+			Coords hittingFloor = arManager.getHittingFloor();
+			if (hittingFloor == null) {
+				return false;
+			}
+            arManager.fromXRCoordsToGGBCoords(hittingFloor, ret);
+			return true;
+		}
+		return false;
 
     }
 
@@ -255,11 +255,11 @@ public abstract class Renderer {
      * @return current hitting distance (in AR)
      */
     public double getHittingDistanceAR() {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            return arManager.getHittingDistance();
-        }
-        return 0;
+		XRManagerInterface<?> arManager = getXRManager();
+		if (arManager != null) {
+			return arManager.getHittingDistance();
+		}
+		return 0;
     }
 
     /**
@@ -268,11 +268,11 @@ public abstract class Renderer {
      * @return hit z value (if already computed)
      */
     public double checkHittingFloorZ(double z) {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            return arManager.checkHittingFloorZ(z) + view3D.getARFloorShift();
-        }
-        return 0;
+		XRManagerInterface<?> arManager = getXRManager();
+		if (arManager != null) {
+			return arManager.checkHittingFloorZ(z) + view3D.getARFloorShift();
+		}
+		return 0;
     }
 
 	/**
@@ -402,7 +402,7 @@ public abstract class Renderer {
 				draw();
 			} else {
 				rendererImpl.clearDepthBuffer();
-				if (!view3D.isAREnabled()) {
+				if (!view3D.isXREnabled()) {
 					setView();
 				}
 				draw();
@@ -688,7 +688,7 @@ public abstract class Renderer {
 		if (enableClipPlanes) {
 			rendererImpl.enableClipPlanes();
 		}
-        if (view3D.isARDrawing()) {
+        if (view3D.isXRDrawing()) {
             view3D.updateAxesDecorationPosition();
         }
 		drawFaceToScreen();
@@ -1194,8 +1194,8 @@ public abstract class Renderer {
 	 * Update projection matrix for view's projection.
 	 */
 	public final void setProjectionMatrix() {
-		if (view3D.isARDrawing()) {
-            rendererImpl.setProjectionMatrixViewForAR();
+		if (view3D.isXRDrawing()) {
+			rendererImpl.setProjectionMatrixViewForAR();
 		} else {
 			switch (view3D.getProjection()) {
 				default:
@@ -1678,16 +1678,16 @@ public abstract class Renderer {
 	 * @return true (default) if reduce "window" for clipping box
 	 */
 	public boolean reduceForClipping() {
-        return !view3D.isAREnabled();
+		return !view3D.isXREnabled();
 	}
 
 	/**
 	 * Set scale for AR
 	 */
 	public void setARScaleAtStart() {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            arManager.setARScaleAtStart();
+		XRManagerInterface<?> arManager = getXRManager();
+		if (arManager != null) {
+            arManager.setXRScaleAtStart();
 		}
 	}
 
@@ -1695,7 +1695,7 @@ public abstract class Renderer {
 	 * set background color
 	 */
 	public void setBackgroundColor() {
-		ARManagerInterface<?> arManager = getARManager();
+		XRManagerInterface<?> arManager = getXRManager();
 	    if (arManager != null) {
             arManager.setBackgroundColor();
         }
@@ -1708,7 +1708,7 @@ public abstract class Renderer {
 	 *            style
 	 */
 	public void setBackgroundStyle(BackgroundStyle backgroundStyle) {
-		ARManagerInterface<?> arManager = getARManager();
+		XRManagerInterface<?> arManager = getXRManager();
         if (arManager != null) {
             arManager.setBackgroundStyle(backgroundStyle);
         }
@@ -1718,7 +1718,7 @@ public abstract class Renderer {
 	 * @return background for AR, opaque otherwise
 	 */
 	public BackgroundStyle getBackgroundStyle() {
-		ARManagerInterface<?> arManager = getARManager();
+		XRManagerInterface<?> arManager = getXRManager();
         if (arManager != null) {
             return arManager.getBackgroundStyle();
         }
@@ -1730,10 +1730,10 @@ public abstract class Renderer {
      * @param z altitude
      */
     public void setARFloorZ(double z) {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
+		XRManagerInterface<?> arManager = getXRManager();
+		if (arManager != null) {
             arManager.setFirstFloor(z);
-        }
+		}
     }
 
 	/**
@@ -2038,11 +2038,11 @@ public abstract class Renderer {
 	 * set AR to end
 	 */
 	public void setARShouldEnd() {
-        resetScaleFromAR();
+		resetScaleFromAR();
 		killARSession();
-        view3D.resetViewFromAR();
-		view3D.setARDrawing(false);
-		view3D.setAREnabled(false);
+		view3D.resetViewFromAR();
+		view3D.setXRDrawing(false);
+		view3D.setXREnabled(false);
 	}
 
 	/**
@@ -2143,106 +2143,51 @@ public abstract class Renderer {
 
     /**
      *
-     * @return AR manager (can be null)
+     * @return XR manager (can be null)
      */
-    public ARManagerInterface<?> getARManager() {
-        return null;
+	public XRManagerInterface<?> getXRManager() {
+	    return null;
     }
 
-    /**
-     * @return ArViewMatrix.
-     */
-    public CoordMatrix4x4 getArViewModelMatrix() {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            return arManager.getViewModelMatrix();
-        }
-        return CoordMatrix4x4.IDENTITY;
-    }
+	/**
+	 * @return ArViewMatrix.
+	 */
+	public CoordMatrix4x4 getArViewModelMatrix() {
+		XRManagerInterface<?> arManager = getXRManager();
+		if (arManager != null) {
+			return arManager.getViewModelMatrix();
+		}
+		return CoordMatrix4x4.IDENTITY;
+	}
 
-    /**
-     * @return undoRotationMatrixAR.
-     */
-    public CoordMatrix4x4 getUndoRotationMatrixAR() {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            return arManager.getUndoRotationMatrix();
-        }
-        return CoordMatrix4x4.IDENTITY;
-    }
+	/**
+	 * @return undoRotationMatrixAR.
+	 */
+	public CoordMatrix4x4 getUndoRotationMatrixAR() {
+		XRManagerInterface<?> arManager = getXRManager();
+		if (arManager != null) {
+			return arManager.getUndoRotationMatrix();
+		}
+		return CoordMatrix4x4.IDENTITY;
+	}
 
-    /**
-     * fit thickness to screen distance in AR.
-     */
-    public void fitThicknessInAR() {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            arManager.fitThickness();
-        }
+	/**
+	 * fit thickness to screen distance in AR.
+	 */
+	public void fitThicknessInAR() {
+		XRManagerInterface<?> arManager = getXRManager();
+		if (arManager != null) {
+			arManager.fitThickness();
+		}
     }
 
     /**
      * reset 3D view scale if AR has changed it
      */
     protected void resetScaleFromAR() {
-        ARManagerInterface<?> arManager = getARManager();
+        XRManagerInterface<?> arManager = getXRManager();
         if (arManager != null) {
-            arManager.resetScaleFromAR();
-        }
-    }
-
-    /**
-     * @return ar ratio (can be null)
-     */
-    public String getARRatio() {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            return arManager.getARRatioInString();
-        }
-        return null;
-    }
-
-    /**
-     * set AR ratio
-     *
-     * @param ratio new ratio for AR
-     */
-    public void setARRatio(double ratio) {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            arManager.setARRatio(ratio);
-        }
-    }
-
-    /**
-     * @return ar ratio units (can be null)
-     */
-    public String getARRatioUnits() {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            return arManager.getUnits();
-        }
-        return null;
-    }
-
-    /**
-     * @return ar ratio metric system (cm or inch)
-     */
-    public int getARRatioMetricSystem() {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            return arManager.getARRatioMetricSystem();
-        }
-        return 0;
-    }
-
-    /**
-     * @param metricSystem ar ratio metric system (cm or inch)
-     */
-    public void setARRatioMetricSystem(int metricSystem) {
-        ARManagerInterface<?> arManager = getARManager();
-        if (arManager != null) {
-            arManager.setARRatioMetricSystem(metricSystem);
+            arManager.resetScaleFromXR();
         }
     }
 }

@@ -16,7 +16,6 @@
 
 package org.geogebra.web.full.gui.advanced.client.ui.widget;
 
-import org.geogebra.web.full.css.GuiResources;
 import org.geogebra.web.full.css.MaterialDesignResources;
 import org.geogebra.web.full.gui.advanced.client.ui.AdvancedWidget;
 import org.geogebra.web.html5.gui.inputfield.AutoCompleteTextFieldW;
@@ -25,9 +24,8 @@ import org.geogebra.web.html5.gui.view.button.MyToggleButton;
 import org.geogebra.web.html5.main.AppW;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
@@ -44,13 +42,11 @@ public abstract class TextButtonPanel<T> extends SimplePanel
 		implements AdvancedWidget, HasValue<T>,
 		HasInputElement {
 	/** widget layout */
-	private FlexTable layout;
+	private FlowPanel layout;
 	/** a selected value box */
 	private AutoCompleteTextFieldW selectedValue;
 	/** a choice button */
 	private MyToggleButton choiceButton;
-	/** a choice button image */
-	private Image choiceButtonImage;
 	/** this flag means whether it's possible to enter a custom text */
 	private boolean customTextAllowed;
 
@@ -78,7 +74,7 @@ public abstract class TextButtonPanel<T> extends SimplePanel
 	 */
 	protected TextButtonPanel(AppW app) {
 		this.app = app;
-		getLayout().setWidget(0, 0, getSelectedValue());
+		getLayout().add(getSelectedValue());
 		setChoiceButtonVisible(true);
 		setCustomTextAllowed(false);
 		setStyleName("advanced-TextButtonPanel");
@@ -107,16 +103,6 @@ public abstract class TextButtonPanel<T> extends SimplePanel
 	}
 
 	/**
-	 * Setter for property 'choiceButtonImage'.
-	 *
-	 * @param choiceButtonImage
-	 *            Value to set for property 'choiceButtonImage'.
-	 */
-	public void setChoiceButtonImage(Image choiceButtonImage) {
-		this.choiceButtonImage = choiceButtonImage;
-	}
-
-	/**
 	 * Getter for property 'choiceButtonVisible'.
 	 *
 	 * @return Value for property 'choiceButtonVisible'.
@@ -133,9 +119,9 @@ public abstract class TextButtonPanel<T> extends SimplePanel
 	 */
 	public void setChoiceButtonVisible(boolean choiceButtonVisible) {
 		if (!choiceButtonVisible && isChoiceButtonVisible()) {
-			getLayout().removeCell(0, 1);
+			getLayout().getWidget(1).removeFromParent();
 		} else if (choiceButtonVisible && !isChoiceButtonVisible()) {
-			getLayout().setWidget(0, 1, getChoiceButton());
+			getLayout().add(getChoiceButton());
 			prepareChoiceButton();
 		}
 		this.choiceButtonVisible = choiceButtonVisible;
@@ -219,13 +205,11 @@ public abstract class TextButtonPanel<T> extends SimplePanel
 
 		if (getHeight() != null) {
 			getLayout().setHeight("100%");
-			getLayout().getCellFormatter().setHeight(0, 0, "100%");
 			getSelectedValue().setHeight("100%");
 		}
 
 		if (getWidth() != null) {
 			getLayout().setWidth("100%");
-			getLayout().getCellFormatter().setWidth(0, 0, "100%");
 			getSelectedValue().setWidth("100%");
 		}
 	}
@@ -235,14 +219,10 @@ public abstract class TextButtonPanel<T> extends SimplePanel
 	 */
 	protected void prepareChoiceButton() {
 		MyToggleButton dropDownButton = getChoiceButton();
-		if (app.isUnbundledOrWhiteboard()) {
-			dropDownButton.setUpfaceDownfaceImg(
-					MaterialDesignResources.INSTANCE.arrow_drop_down(),
-					MaterialDesignResources.INSTANCE.arrow_drop_up());
-		} else {
-			dropDownButton.getUpFace().setImage(getChoiceButtonImage());
-			dropDownButton.getDownFace().setImage(getChoiceButtonImage());
-		}
+		dropDownButton.setUpfaceDownfaceImg(
+				MaterialDesignResources.INSTANCE.arrow_drop_down(),
+				MaterialDesignResources.INSTANCE.arrow_drop_up());
+
 		dropDownButton.setStyleName("choice-button");
 	}
 
@@ -251,12 +231,9 @@ public abstract class TextButtonPanel<T> extends SimplePanel
 	 *
 	 * @return Value for property 'layout'.
 	 */
-	protected FlexTable getLayout() {
+	protected FlowPanel getLayout() {
 		if (layout == null) {
-			layout = new FlexTable();
-			layout.setCellPadding(0);
-			layout.setCellSpacing(0);
-			layout.getFlexCellFormatter().setWidth(0, 0, "100%");
+			layout = new FlowPanel();
 		}
 		return layout;
 	}
@@ -293,19 +270,6 @@ public abstract class TextButtonPanel<T> extends SimplePanel
 			choiceButton = new MyToggleButton(app);
 		}
 		return choiceButton;
-	}
-
-	/**
-	 * Getter for property 'choiceButtonImage'.
-	 *
-	 * @return Value for property 'choiceButtonImage'.
-	 */
-	private Image getChoiceButtonImage() {
-		if (choiceButtonImage == null) {
-			choiceButtonImage = new Image(
-					GuiResources.INSTANCE.little_triangle_down());
-		}
-		return choiceButtonImage;
 	}
 
 	/**

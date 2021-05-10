@@ -4,6 +4,7 @@ import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoFractionText;
 import org.geogebra.common.kernel.algos.Algos;
+import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.cas.AlgoSolve;
@@ -47,6 +48,15 @@ public class AlgebraItem {
 			}
 			((HasSymbolicMode) geo).setSymbolicMode(
 					!((HasSymbolicMode) geo).isSymbolicMode(), true);
+
+			if (geo instanceof GeoSymbolic) {
+				GeoSymbolic symbolic = (GeoSymbolic) geo;
+				if (isSymbolicSolve(symbolic)) {
+					toggleNumeric(symbolic);
+					symbolic.setDescriptionNeedsUpdateInAV(true);
+				}
+			}
+
 			geo.updateRepaint();
 			return ((HasSymbolicMode) geo).isSymbolicMode();
 
@@ -85,7 +95,9 @@ public class AlgebraItem {
 		}
 		if (geo instanceof GeoSymbolic) {
 			GeoSymbolic symbolic = (GeoSymbolic) geo;
-			if (!(symbolic.getTwinGeo() instanceof HasSymbolicMode)) {
+			if (isSymbolicSolve(symbolic)) {
+				return isSymbolicSolveDiffers(symbolic);
+			} else if (!(symbolic.getTwinGeo() instanceof HasSymbolicMode)) {
 				return false;
 			}
 		}
@@ -108,9 +120,8 @@ public class AlgebraItem {
 
 		sm.setSymbolicMode(orig, false);
 		if (text1 == null) {
-			return true;
+			return text2 != null;
 		}
-
 		return !text1.equals(text2);
 	}
 
@@ -234,7 +245,7 @@ public class AlgebraItem {
 		if (element.isLaTeXDrawableGeo()
 				|| AlgebraItem.isGeoFraction(element)) {
 			outputText = element.getLaTeXDescriptionRHS(true,
-					StringTemplate.latexTemplate);
+					getOutputStringTemplate(element));
 		} else {
 			if (needsPacking(element)) {
 				outputText = element.getAlgebraDescriptionLaTeX();
@@ -258,6 +269,7 @@ public class AlgebraItem {
 	public static boolean buildPlainTextItemSimple(GeoElement geo1,
 			IndexHTMLBuilder builder, StringTemplate stringTemplate) {
 		int avStyle = geo1.getKernel().getAlgebraStyle();
+		boolean showLabel =  geo1.getApp().getConfig().hasLabelForDescription();
 		if (geo1.isIndependent() && geo1.isGeoPoint()
 				&& avStyle == Kernel.ALGEBRA_STYLE_DESCRIPTION) {
 			builder.clear();
@@ -271,10 +283,14 @@ public class AlgebraItem {
 		}
 		switch (avStyle) {
 		case Kernel.ALGEBRA_STYLE_VALUE:
-			if (!geo1.isAllowedToShowValue()) {
-				buildDefinitionString(geo1, builder, stringTemplate);
+			if (geo1.isAllowedToShowValue()) {
+				if (showLabel) {
+					geo1.getAlgebraDescriptionTextOrHTMLDefault(builder);
+				} else {
+					geo1.getAlgebraDescriptionTextOrHTMLRHS(builder);
+				}
 			} else {
-				geo1.getAlgebraDescriptionTextOrHTMLDefault(builder);
+				buildDefinitionString(geo1, builder, stringTemplate);
 			}
 			return true;
 
@@ -282,8 +298,13 @@ public class AlgebraItem {
 			if (needsPacking(geo1)) {
 				geo1.getAlgebraDescriptionTextOrHTMLDefault(builder);
 			} else {
-				geo1.addLabelTextOrHTML(
-						geo1.getDefinitionDescription(stringTemplate), builder);
+				if (showLabel) {
+					geo1.addLabelTextOrHTML(geo1
+							.getDefinitionDescription(StringTemplate.defaultTemplate), builder);
+				} else {
+					builder.clear();
+					builder.append(geo1.getDefinitionDescription(stringTemplate));
+				}
 			}
 			return true;
 
@@ -416,6 +437,7 @@ public class AlgebraItem {
 						&& (!geoElement.isIndependent() || (geoElement
 						.getDescriptionMode() == DescriptionMode.DEFINITION_VALUE
 						&& geoElement.getParentAlgorithm() == null))
+						|| geoElement.evaluatesToNumber(false)
 						? DescriptionMode.DEFINITION_VALUE
 						: DescriptionMode.DEFINITION;
 			case AlgebraStyle.DEFINITION:
@@ -434,6 +456,7 @@ public class AlgebraItem {
 	 * @return whether the output should be shown or not
 	 */
 	public static boolean shouldShowOutputRowForAlgebraStyle(GeoElement geoElement, int style) {
+
 		if (style == AlgebraStyle.DESCRIPTION) {
 			return getDescriptionModeForGeo(geoElement, style) != DescriptionMode.DEFINITION;
 		} else if ((style == AlgebraStyle.DEFINITION_AND_VALUE
@@ -452,7 +475,8 @@ public class AlgebraItem {
 	 * @return true if both rows should be shown.
 	 */
 	public static boolean shouldShowBothRows(GeoElement element) {
-		return (hasDefinitionAndValueMode(element) || isDependentText(element))
+		return (hasDefinitionAndValueMode(element) || isDependentText(element)
+				|| isSymbolicDiffers(element))
 				&& shouldShowOutputRowForAlgebraStyle(element, getAlgebraStyle(element.getApp()));
 	}
 
@@ -533,7 +557,7 @@ public class AlgebraItem {
 			} else if (Algos.isUsedFor(Algos.Expression, geo1)) {
 				return geo1.getAssignmentLHS(StringTemplate.latexTemplate)
 						+ geo1.getLabelDelimiter() + geo1.getDefinition(
-								StringTemplate.latexTemplateHideLHS);
+						StringTemplate.latexTemplate);
 			} else {
 				return null;
 			}
@@ -553,6 +577,10 @@ public class AlgebraItem {
 		return null;
 	}
 
+	private static StringTemplate getOutputStringTemplate(GeoElement element) {
+		return element.getApp().getConfig().getOutputStringTemplate();
+	}
+
 	/**
 	 *
 	 * @param element
@@ -564,10 +592,12 @@ public class AlgebraItem {
 		int algebraStyle = element.getKernel().getAlgebraStyle();
 		if (element.getParentAlgorithm() instanceof AlgoFractionText) {
 			return element.getAlgebraDescription(stringTemplate);
+		} else if (element.isPenStroke()) {
+			return element.getLabelSimple();
 		} else if ((algebraStyle == Kernel.ALGEBRA_STYLE_DESCRIPTION
 				|| algebraStyle == Kernel.ALGEBRA_STYLE_VALUE)
-				&& !AlgebraItem.isTextItem(element)) {
-			return AlgebraItem.getDescriptionString(element, algebraStyle,
+				&& !isTextItem(element)) {
+			return getDescriptionString(element, algebraStyle,
 					stringTemplate);
 		} else {
 			return null;
@@ -584,5 +614,42 @@ public class AlgebraItem {
 		return geo instanceof GeoNumeric
 				&& ((GeoNumeric) geo).isShowingExtendedAV() && geo.isSimple()
 				&& MyDouble.isFinite(((GeoNumeric) geo).value);
+	}
+
+	private static boolean isSymbolicSolve(GeoSymbolic symbolic) {
+		Command topLevelCommand = symbolic.getDefinition().getTopLevelCommand();
+		return topLevelCommand != null
+				&& (Commands.Solve.getCommand().equals(topLevelCommand.getName())
+				|| Commands.NSolve.getCommand().equals(topLevelCommand.getName()));
+	}
+
+	private static boolean isSymbolicSolveDiffers(GeoSymbolic symbolic) {
+		Command topLevelCommand = symbolic.getDefinition().getTopLevelCommand();
+		Commands original = Commands.Solve.getCommand()
+				.equals(topLevelCommand.getName()) ? Commands.Solve : Commands.NSolve;
+
+		Commands opposite = original == Commands.Solve ? Commands.NSolve : Commands.Solve;
+
+		String textOriginal = symbolic.getLaTeXAlgebraDescription(true,
+				StringTemplate.latexTemplate);
+
+		topLevelCommand.setName(opposite.getCommand());
+		symbolic.computeOutput();
+		String textOpposite = symbolic.getLaTeXAlgebraDescription(true,
+				StringTemplate.latexTemplate);
+
+		topLevelCommand.setName(original.getCommand());
+		symbolic.computeOutput();
+
+		return !textOriginal.equals(textOpposite);
+	}
+
+	private static void toggleNumeric(GeoSymbolic symbolic) {
+		Commands opposite = Commands.NSolve.getCommand()
+				.equals(symbolic.getDefinition().getTopLevelCommand().getName())
+				? Commands.Solve : Commands.NSolve;
+
+		symbolic.getDefinition().getTopLevelCommand().setName(opposite.getCommand());
+		symbolic.computeOutput();
 	}
 }

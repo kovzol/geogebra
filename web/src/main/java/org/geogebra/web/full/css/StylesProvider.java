@@ -7,20 +7,20 @@ import org.geogebra.web.resources.SassResource;
  */
 public interface StylesProvider {
 
-    /**
-     * @return mowStyle resource
-     */
-    SassResource mowStyle();
+	/**
+	 * @return mowStyle resource
+	 */
+	SassResource mowStyle();
 
-    /**
-     * @return mowToolbarStyle resource
-     */
-    SassResource mowToolbarStyle();
+	/**
+	 * @return mowToolbarStyle resource
+	 */
+	SassResource mowToolbarStyle();
 
-    /**
-     * @return openScreenStyle resource
-     */
-    SassResource openScreenStyle();
+	/**
+	 * @return openScreenStyle resource
+	 */
+	SassResource openScreenStyle();
 
 	/**
 	 * @return dialogStylesScss resource

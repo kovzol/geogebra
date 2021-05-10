@@ -71,8 +71,8 @@ public class MathAtom extends Atom implements HasTrueBase {
 		return box;
 	}
 
-    @Override
-    public Atom getTrueBase() {
-        return base;
-    }
+	@Override
+	public Atom getTrueBase() {
+		return base;
+	}
 }

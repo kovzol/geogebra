@@ -20,7 +20,7 @@ public interface RelationPane {
 	public class RelationRow {
 
 		private String info;
-        private Relation callback;
+		private Relation callback;
 
 		/**
 		 * @return The information shown in the left column.
@@ -40,7 +40,7 @@ public interface RelationPane {
 		/**
 		 * @return The action to be started when the user clicks on "More...".
 		 */
-        public Relation getCallback() {
+		public Relation getCallback() {
 			return callback;
 		}
 
@@ -49,7 +49,7 @@ public interface RelationPane {
 		 *            The action to be started when the user clicks on
 		 *            "More...".
 		 */
-        public void setCallback(Relation callback) {
+		public void setCallback(Relation callback) {
 			this.callback = callback;
 		}
 	}

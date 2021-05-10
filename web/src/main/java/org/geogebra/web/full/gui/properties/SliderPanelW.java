@@ -29,8 +29,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -114,103 +112,53 @@ public class SliderPanelW extends OptionPanel implements ISliderOptionsListener 
 				app.getLocalization(), new ExtendedAVModel(null, app));
 
 		cbSliderFixed = new CheckBox();
-		cbSliderFixed.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				getModel().applyFixed(getCbSliderFixed().getValue());
-
-			}
-		});
+		cbSliderFixed.addClickHandler(event -> getModel()
+				.applyFixed(getCbSliderFixed().getValue()));
 		positionPanel.add(cbSliderFixed);
 
 		cbRandom = new CheckBox();
-		cbRandom.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				getModel().applyRandom(getCbRandom().getValue());
-
-			}
-		});
+		cbRandom.addClickHandler(event -> getModel().applyRandom(getCbRandom().getValue()));
 		positionPanel.add(cbRandom);
 
 		lbSliderHorizontal = new ListBox();
-		lbSliderHorizontal.addChangeHandler(new ChangeHandler() {
-
-			@Override
-			public void onChange(ChangeEvent event) {
-				getModel()
-						.applyDirection(
-								getLbSliderHorizontal().getSelectedIndex());
-
-			}
-		});
+		lbSliderHorizontal.addChangeHandler(event -> getModel()
+				.applyDirection(
+						getLbSliderHorizontal().getSelectedIndex()));
 
 		positionPanel.add(lbSliderHorizontal);
 
 		tfMin = new AngleTextFieldW(6, app);
-		tfMin.addKeyDownHandler(new KeyDownHandler() {
-
-			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				if (event.getNativeEvent().getKeyCode() == 13) {
-					applyMin();
-				}
+		tfMin.addKeyDownHandler(event -> {
+			if (event.getNativeEvent().getKeyCode() == 13) {
+				applyMin();
 			}
 		});
 		tfMin.enableGGBKeyboard();
 		
-		tfMin.addBlurHandler(new BlurHandler() {
-			
-			@Override
-			public void onBlur(BlurEvent event) {
-				applyMin();
-			}
-		});
+		tfMin.addBlurHandler(event -> applyMin());
 
 		tfMax = new AngleTextFieldW(6, app);
-		tfMax.addKeyDownHandler(new KeyDownHandler() {
-
-			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				if (event.getNativeEvent().getKeyCode() == 13) {
-					applyMax();
-				}
+		tfMax.addKeyDownHandler(event -> {
+			if (event.getNativeEvent().getKeyCode() == 13) {
+				applyMax();
 			}
 		});
 
 		tfMax.enableGGBKeyboard();
 
-		tfMax.addBlurHandler(new BlurHandler() {
-			
-			@Override
-			public void onBlur(BlurEvent event) {
-				applyMax();
-			}
-		});
+		tfMax.addBlurHandler(event -> applyMax());
 
 		tfWidth = new AutoCompleteTextFieldW(8, app);
 		tfWidth.removeSymbolTable();
-		tfWidth.addKeyHandler(new KeyHandler() {
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if (e.isEnterKey()) {
-					applyWidth();
-				}
+		tfWidth.addKeyHandler(e -> {
+			if (e.isEnterKey()) {
+				applyWidth();
 			}
 		});
 		
 		tfWidth.enableGGBKeyboard();
 		
-		tfWidth.addBlurHandler(new BlurHandler() {
-			
-			@Override
-			public void onBlur(BlurEvent event) {
-				applyWidth();
-			}
-		});
+		tfWidth.addBlurHandler(event -> applyWidth());
 
 		createBlobSizeTextField(app);
 		createBlobColorChooserBtn(app);
@@ -231,13 +179,6 @@ public class SliderPanelW extends OptionPanel implements ISliderOptionsListener 
 		blobSizeUnitLabel = new Label("px");
 		pointStyleTitleLbl = new Label();
 		lineStyleTitleLbl = new Label();
-		if (kernel.getApplication().isUnbundledOrWhiteboard()) {
-			maxLabel.setStyleName("coloredLabel");
-			minLabel.setStyleName("coloredLabel");
-			widthLabel.setStyleName("coloredLabel");
-			blobSizeLabel.setStyleName("coloredLabel");
-			lineThicknessLabel.setStyleName("coloredLabel");
-		}
 
 		FlowPanel minPanel = new FlowPanel();
 		minPanel.add(minLabel);
@@ -253,16 +194,11 @@ public class SliderPanelW extends OptionPanel implements ISliderOptionsListener 
 		widthPanel.setStyleName("optionsPanel");
 		widthPanel.setStyleName("sliderWidthPanel");
 		widthPanel.add(widthLabel);
-		if (app.isUnbundledOrWhiteboard()) {
-			tfWidth.add(widthUnitLabel);
-			widthUnitLabel.setStyleName("unitLabel");
-		}
+		tfWidth.add(widthUnitLabel);
+		widthUnitLabel.setStyleName("unitLabel");
 		widthPanel.add(tfWidth);
-		if (!app.isUnbundledOrWhiteboard()) {
-			widthPanel.add(widthUnitLabel);
-		}
 
-		createSliderStylePanel(app);
+		createSliderStylePanel();
 
 		// add increment to intervalPanel
 		stepPanel = new AnimationStepPanelW(app);
@@ -281,36 +217,28 @@ public class SliderPanelW extends OptionPanel implements ISliderOptionsListener 
 		return model;
 	}
 
-	private void createPointStylePanel(AppW app) {
+	private void createPointStylePanel() {
 		FlowPanel blobSizePanel = new FlowPanel();
 		blobSizePanel.setStyleName("sliderWidthPanel");
 		blobSizePanel.add(blobSizeLabel);
-		if (app.isUnbundled()) {
-			tfBlobSize.add(blobSizeUnitLabel);
-		}
+		tfBlobSize.add(blobSizeUnitLabel);
 		blobSizeUnitLabel.setStyleName("unitLabel");
 		blobSizePanel.add(tfBlobSize);
-		if (!app.isUnbundled()) {
-			blobSizePanel.add(blobSizeUnitLabel);
-		}
+
 		sliderStylePanel.add(blobSizePanel);
 		sliderStylePanel
 				.add(LayoutUtilW.panelRow(blobColorLbl, blobColorChooserBtn));
 	}
 
-	private void createLineStylePanel(AppW app) {
+	private void createLineStylePanel() {
 		sliderStylePanel.add(widthPanel);
 		FlowPanel lineThicknessPanel = new FlowPanel();
 		lineThicknessPanel.setStyleName("sliderWidthPanel");
 		lineThicknessPanel.add(lineThicknessLabel);
-		if (app.isUnbundled()) {
-			tfLineThickness.add(lineThicknessUnitLabel);
-		}
+		tfLineThickness.add(lineThicknessUnitLabel);
 		lineThicknessUnitLabel.setStyleName("unitLabel");
 		lineThicknessPanel.add(tfLineThickness);
-		if (!app.isUnbundled()) {
-			lineThicknessPanel.add(lineThicknessUnitLabel);
-		}
+
 		sliderStylePanel.add(lineThicknessPanel);
 		sliderStylePanel
 				.add(LayoutUtilW.panelRow(lineColorLbl, lineColorChooserBtn));
@@ -321,13 +249,13 @@ public class SliderPanelW extends OptionPanel implements ISliderOptionsListener 
 		sliderStylePanel.add(transparencySliderPanel);
 	}
 
-	private void createSliderStylePanel(AppW app) {
+	private void createSliderStylePanel() {
 		pointStyleTitleLbl.addStyleName("panelTitle");
 		sliderStylePanel.add(pointStyleTitleLbl);
-		createPointStylePanel(app);
+		createPointStylePanel();
 		lineStyleTitleLbl.addStyleName("panelTitle");
 		sliderStylePanel.add(lineStyleTitleLbl);
-		createLineStylePanel(app);
+		createLineStylePanel();
 	}
 
 	private void createTransparencySlider() {
@@ -656,16 +584,14 @@ public class SliderPanelW extends OptionPanel implements ISliderOptionsListener 
 			lbSliderHorizontal.addItem(comboStr[i]);
 		}
 		lbSliderHorizontal.setSelectedIndex(selectedIndex);
-		String suffix = kernel.getApplication().isUnbundledOrWhiteboard() ? ""
-				: ":";
-		minLabel.setText(loc.getMenu("min") + suffix);
-		maxLabel.setText(loc.getMenu("max") + suffix);
-		widthLabel.setText(loc.getMenu("Width") + suffix);
-		blobSizeLabel.setText(loc.getMenu("Size") + suffix);
+		minLabel.setText(loc.getMenu("min"));
+		maxLabel.setText(loc.getMenu("max"));
+		widthLabel.setText(loc.getMenu("Width"));
+		blobSizeLabel.setText(loc.getMenu("Size"));
 		blobColorLbl.setText(loc.getMenu("Color") + ":");
 		lineColorLbl.setText(loc.getMenu("Color") + ":");
 		lineThicknessLabel
-				.setText(loc.getMenu("Thickness") + suffix);
+				.setText(loc.getMenu("Thickness"));
 		transparencyLabel
 				.setText(loc.getMenu("LineOpacity") + ":");
 		model.setLabelForWidthUnit();

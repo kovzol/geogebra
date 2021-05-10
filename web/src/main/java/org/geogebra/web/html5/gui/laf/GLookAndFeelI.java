@@ -46,7 +46,7 @@ public interface GLookAndFeelI {
 
 	Platform getPlatform(int dim, String appName);
 
-	void storeLanguage(String language, AppW app);
+	void storeLanguage(String language);
 
 	String getFrameStyleName();
 
@@ -72,4 +72,6 @@ public interface GLookAndFeelI {
 	 * @return client id
 	 */
 	String getClientId();
+
+	boolean isExternalLoginAllowed();
 }

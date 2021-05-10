@@ -4,67 +4,62 @@ import org.geogebra.common.main.App;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.web.full.gui.dialog.image.UploadImageDialog;
 import org.geogebra.web.html5.gui.FastClickHandler;
-import org.geogebra.web.html5.gui.tooltip.ToolTipManagerW;
 import org.geogebra.web.html5.gui.view.button.StandardButton;
 import org.geogebra.web.html5.main.AppW;
-import org.geogebra.web.tablet.Tablet;
-import org.geogebra.web.touch.PhoneGapManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.googlecode.gwtphonegap.client.camera.PictureCallback;
-import com.googlecode.gwtphonegap.client.camera.PictureOptions;
 
 /**
- *
+ * image input dialog for touch
  */
-public class ImageInputDialogT extends UploadImageDialog {
+public class ImageInputDialogT extends UploadImageDialog implements ClickHandler {
 	private static final int PREVIEW_HEIGHT = 155;
 	private static final int PREVIEW_WIDTH = 213;
-	private static final int PICTURE_QUALITY = 25;
 	private SimplePanel cameraPanel;
 	private SimplePanel picturePanel;
 	private Label camera;
 	private String pictureFromCameraString = "";
 	private String pictureFromFileString = "";
 	private FlowPanel filePanel;
-	private StandardButton chooseFromFile;
-	private PictureOptions options;
 	private boolean cameraIsActive;
-	private PictureCallback pictureCallback;
 
 	/**
 	 * @param app
 	 *            {@link App}
 	 */
-	public ImageInputDialogT(final App app) {
-		super((AppW) app, PREVIEW_WIDTH, PREVIEW_HEIGHT);
-		this.pictureCallback = new PictureCallback() {
+	public ImageInputDialogT(final AppW app) {
+		super(app, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 
-			@Override
-			public void onSuccess(final String pictureBase64) {
-				setPicturePreview(pictureBase64);
-			}
+		exportJavascriptMethods();
 
-			@Override
-			public void onFailure(final String arg0) {
-				ToolTipManagerW.sharedInstance().showBottomMessage(
-						"Couldn't open chosen image", true, (AppW) app);
-			}
-		};
+		setOnNegativeAction(() -> app.getImageManager().setPreventAuxImage(false));
+		setOnPositiveAction(this::positiveAction);
+	}
 
-		if (!Tablet.useCordova()) {
-			exportJavascriptMethods();
+	private void positiveAction() {
+		if (location != null && !location.isLabelSet()) {
+			location.setLabel(null);
+		}
+		if (this.cameraIsActive
+				&& !"".equals(this.pictureFromCameraString)) {
+			((AppW) app).imageDropHappened("devicePicture",
+					this.pictureFromCameraString);
+		} else if (!this.cameraIsActive
+				&& !"".equals(this.pictureFromFileString)) {
+			((AppW) app).imageDropHappened("devicePicture",
+					this.pictureFromFileString);
 		}
 	}
 
 	@Override
-	protected void initGUI() {
-		super.initGUI();
-		listPanel.add(camera = new Label(""));
+	protected void buildContent() {
+		super.buildContent();
+		listPanel.add(camera = new Label(app.getLocalization().getMenu("Camera")));
 
 		initFilePanel();
 		initCameraPanel();
@@ -77,14 +72,10 @@ public class ImageInputDialogT extends UploadImageDialog {
 	}
 
 	private void initFilePanel() {
-		this.options = new PictureOptions(ImageInputDialogT.PICTURE_QUALITY);
-		// PICTURE_SOURCE_TYPE_PHOTO_LIBRARY
-		this.options.setSourceType(
-				PictureOptions.PICTURE_SOURCE_TYPE_SAVED_PHOTO_ALBUM);
-
 		filePanel = new FlowPanel();
+		StandardButton chooseFromFile;
 		filePanel.add(chooseFromFile = new StandardButton(
-				appw.getLocalization().getMenu("ChooseFromFile"), appw));
+				((AppW) app).getLocalization().getMenu("ChooseFromFile")));
 		chooseFromFile.addStyleName("gwt-Button");
 		chooseFromFile.addFastClickHandler(new FastClickHandler() {
 
@@ -103,12 +94,7 @@ public class ImageInputDialogT extends UploadImageDialog {
 	 * Callback for file open button
 	 */
 	void openFromFileClicked() {
-		if (Tablet.useCordova()) {
-			PhoneGapManager.getPhoneGap().getCamera().getPicture(options,
-					this.pictureCallback);
-		} else {
-			openFromFileClickedNative();
-		}
+		openFromFileClickedNative();
 	}
 
 	private native void openFromFileClickedNative() /*-{
@@ -117,40 +103,15 @@ public class ImageInputDialogT extends UploadImageDialog {
 		}
 	}-*/;
 
-	@Override
 	protected void initActions() {
-		super.initActions();
+		upload.addClickHandler(this);
 		camera.addClickHandler(this);
-	}
-
-	@Override
-	public void setLabels() {
-		super.setLabels();
-		// TODO Translation needed
-		camera.setText("Camera");
 	}
 
 	@Override
 	public void onClick(ClickEvent event) {
 		Object source = event.getSource();
-		if (source == insertBtn) {
-			if (location != null && !location.isLabelSet()) {
-				location.setLabel(null);
-			}
-			if (this.cameraIsActive
-					&& !"".equals(this.pictureFromCameraString)) {
-				appw.imageDropHappened("devicePicture",
-						this.pictureFromCameraString);
-			} else if (!this.cameraIsActive
-					&& !"".equals(this.pictureFromFileString)) {
-				appw.imageDropHappened("devicePicture",
-						this.pictureFromFileString);
-			}
-			hide();
-		} else if (source == cancelBtn) {
-			appw.getImageManager().setPreventAuxImage(false);
-			hide();
-		} else if (source == upload) {
+		if (source == upload) {
 			uploadClicked();
 		} else if (source == camera) {
 			cameraClicked();
@@ -185,17 +146,7 @@ public class ImageInputDialogT extends UploadImageDialog {
 		this.camera.addStyleDependentName("highlighted");
 		this.upload.removeStyleDependentName("highlighted");
 		this.inputPanel.setWidget(this.cameraPanel);
-		PictureOptions pictureOptions = new PictureOptions(
-				ImageInputDialogT.PICTURE_QUALITY);
-		pictureOptions.setAllowEdit(false);
-		pictureOptions.setCorrectOrientation(true);
-
-		if (Tablet.useCordova()) {
-			PhoneGapManager.getPhoneGap().getCamera().getPicture(pictureOptions,
-					this.pictureCallback);
-		} else {
-			getCameraPictureNative();
-		}
+		getCameraPictureNative();
 	}
 
 	private native void getCameraPictureNative() /*-{

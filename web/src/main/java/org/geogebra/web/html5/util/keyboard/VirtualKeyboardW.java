@@ -21,7 +21,7 @@ public interface VirtualKeyboardW extends IsWidget, RequiresResize {
 
 	void prepareShow(boolean animated);
 
-    void showMoreButton();
+	void showMoreButton();
 
 	void hideMoreButton();
 

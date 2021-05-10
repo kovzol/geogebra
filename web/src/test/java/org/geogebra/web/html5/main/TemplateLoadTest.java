@@ -5,18 +5,19 @@ import static org.junit.Assert.assertEquals;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.main.settings.EuclidianSettings;
 import org.geogebra.web.full.main.AppWFull;
+import org.geogebra.web.html5.util.AppletParameters;
 import org.geogebra.web.test.AppMocker;
+import org.geogebra.web.test.GgbMockitoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
 import com.himamis.retex.renderer.web.graphics.JLMContext2d;
 
 
-@RunWith(GwtMockitoTestRunner.class)
+@RunWith(GgbMockitoTestRunner.class)
 @WithClassesToStub({JLMContext2d.class, RootPanel.class})
 public class TemplateLoadTest {
 	private static AppWFull app;
@@ -24,7 +25,7 @@ public class TemplateLoadTest {
 
 	@Before
 	public void init() {
-		TestArticleElement articleElement = new TestArticleElement("prerelease", "notes");
+		AppletParameters articleElement = new AppletParameters("notes");
 		app = AppMocker.mockApplet(articleElement);
 		app.setXML("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<geogebra format=\"5.0\" " +
 				"version=\"5.0.570.0\" app=\"notes\" platform=\"w\" " +

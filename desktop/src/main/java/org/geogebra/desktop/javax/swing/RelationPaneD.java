@@ -1,12 +1,24 @@
 package org.geogebra.desktop.javax.swing;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -39,7 +51,7 @@ public class RelationPaneD implements RelationPane, ActionListener {
 	/**
 	 * This stores the array of the actions to be fired when click on "More...".
 	 */
-    Relation[] callbacks;
+	Relation[] callbacks;
 	private boolean areCallbacks = false;
 	private int morewidth = 0;
 
@@ -92,7 +104,7 @@ public class RelationPaneD implements RelationPane, ActionListener {
 			data = new Object[rels][1];
 		}
 
-        callbacks = new Relation[rels];
+		callbacks = new Relation[rels];
 		int height = 0;
 
 		for (int i = 0; i < rels; ++i) {
@@ -255,13 +267,14 @@ public class RelationPaneD implements RelationPane, ActionListener {
 		frame.revalidate();
 	}
 
-    /**
-     * Update UI after More button clicked
-     *
-     * @param row row number
-     */
-    protected synchronized void updateRow(int row) {
-        RelationRow relation = callbacks[row].getExpandedRow(row);
+	/**
+	 * Update UI after More button clicked
+	 *
+	 * @param row
+	 *            row number
+	 */
+	protected synchronized void updateRow(int row) {
+		RelationRow relation = callbacks[row].getExpandedRow(row);
 		table.setValueAt(relation.getInfo(), row, 0);
 		callbacks[row] = relation.getCallback();
 		table.setRowHeight(row, (int) (ROWHEIGHT * (countLines(relation.getInfo()))
@@ -348,8 +361,8 @@ public class RelationPaneD implements RelationPane, ActionListener {
 		private int row, col;
 		private RelationPaneD pane;
 
-        public ClientsTableRenderer(RelationPaneD p, JCheckBox checkBox) {
-            super(checkBox);
+		public ClientsTableRenderer(RelationPaneD p, JCheckBox checkBox) {
+			super(checkBox);
 			pane = p;
 			button = new JButton();
 			button.setOpaque(true);
@@ -379,8 +392,8 @@ public class RelationPaneD implements RelationPane, ActionListener {
 		@Override
 		public Object getCellEditorValue() {
 			if (clicked) {
-                pane.updateRow(row);
-            }
+				pane.updateRow(row);
+			}
 			if ((col == 1) && callbacks[row] == null) {
 				label = "";
 			}

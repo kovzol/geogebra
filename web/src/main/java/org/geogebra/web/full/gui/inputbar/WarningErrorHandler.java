@@ -1,4 +1,3 @@
-
 package org.geogebra.web.full.gui.inputbar;
 
 import org.geogebra.common.kernel.Kernel;

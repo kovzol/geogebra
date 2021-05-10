@@ -1,13 +1,16 @@
 package org.geogebra.desktop.gui;
 
-import java.awt.*;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -93,7 +96,7 @@ public class ContextMenuChooseGeoD extends ContextMenuGeoElementD {
 
 			if (geo.getMetasLength() > 0) {
 				for (GeoElement meta : ((FromMeta) geo).getMetas()) {
-                    if (!metas.contains(meta) && (meta != geoSelected || !app.has(Feature.G3D_SELECT_META))) {
+					if (!metas.contains(meta) && (meta != geoSelected || !app.has(Feature.G3D_SELECT_META))) {
 						addGeo(meta);
 					}
 				}

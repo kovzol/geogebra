@@ -34,9 +34,9 @@ import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
+import org.gwtproject.regexp.shared.MatchResult;
+import org.gwtproject.regexp.shared.RegExp;
 
-import com.google.gwt.regexp.shared.MatchResult;
-import com.google.gwt.regexp.shared.RegExp;
 import com.himamis.retex.editor.share.util.Unicode;
 
 public class RelativeCopy {
@@ -975,7 +975,7 @@ public class RelativeCopy {
 			// objects
 		} catch (CircularDefinitionException ce) {
 			// circular definition
-            kernel.getApplication().showError(Errors.CircularDefinition);
+			kernel.getApplication().showError(Errors.CircularDefinition);
 			return null;
 		} catch (Exception e) {
 			// create text if something went wrong
@@ -1041,7 +1041,7 @@ public class RelativeCopy {
 			@Override
 			public void showError(String msg) {
 				Log.debug(msg);
-                if (Errors.CircularDefinition.getError(kernel.getLocalization())
+				if (Errors.CircularDefinition.getError(kernel.getLocalization())
 						.equals(msg)) {
 					kernel.getApplication().getDefaultErrorHandler()
 							.showError(msg);

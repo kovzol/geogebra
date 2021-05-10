@@ -66,6 +66,7 @@ import org.geogebra.common.geogebra3D.euclidian3D.openGL.PlotterCursor;
 import org.geogebra.common.geogebra3D.euclidian3D.openGL.Renderer;
 import org.geogebra.common.geogebra3D.euclidian3D.printer3D.ExportToPrinter3D;
 import org.geogebra.common.geogebra3D.euclidian3D.printer3D.Format;
+import org.geogebra.common.geogebra3D.euclidian3D.xr.XRManagerInterface;
 import org.geogebra.common.geogebra3D.kernel3D.Kernel3D;
 import org.geogebra.common.geogebra3D.kernel3D.geos.GeoClippingCube3D;
 import org.geogebra.common.geogebra3D.kernel3D.geos.GeoConicSection;
@@ -82,7 +83,9 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.EVProperty;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Path;
+import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.arithmetic.NumberValue;
 import org.geogebra.common.kernel.geos.GProperty;
 import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -126,6 +129,7 @@ import org.geogebra.common.plugin.Event;
 import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.util.DoubleUtil;
 import org.geogebra.common.util.NumberFormatAdapter;
+import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
 
 /**
@@ -202,13 +206,11 @@ public abstract class EuclidianView3D extends EuclidianView
 	protected GColor bgColor;
 	protected GColor bgApplyedColor;
 
-	// cursor
-	// private Kernel kernel;
 	private Kernel3D kernel3D;
 	// list of 3D objects
 	private boolean waitForUpdate = true; // says if it waits for update...
-	// public boolean waitForPick = false; //says if it waits for update...
-	private Drawable3DListsForView drawable3DLists; // = new DrawList3D();
+
+	private Drawable3DListsForView drawable3DLists;
 	/**
 	 * list for drawables that will be added on next frame
 	 */
@@ -232,8 +234,8 @@ public abstract class EuclidianView3D extends EuclidianView
 	private double a = ANGLE_ROT_OZ;
 	private double b = ANGLE_ROT_XOY; // angles (in degrees)
 	private double translationZzeroForAR = 0;
-    private double arFloorZ = 0;
-    private double arZZeroAtStart;
+	private double arFloorZ = 0;
+	private double arZZeroAtStart;
 
 	/**
 	 * direction of view
@@ -301,16 +303,24 @@ public abstract class EuclidianView3D extends EuclidianView
 
 	private EuclidianView3DAnimator animator;
 
-	//Augmented Reality
-	private boolean mIsARDrawing;
-	private boolean mIsAREnabled;
+	//Mixed Reality and Augmented Reality
+	private boolean mIsXRDrawing;
+	private boolean mIsXREnabled;
 	private Target target;
 
-    // AR Ratio
-    final public static int RATIO_UNIT_METERS_CENTIMETERS_MILLIMETERS = 1;
-    final public static int RATIO_UNIT_INCHES = 2;
-    final public static float FROM_INCH_TO_CM = 2.54f;
-    final public static float FROM_CM_TO_INCH = 0.393700787f;
+	// AR Ratio
+	final public static int RATIO_UNIT_METERS_CENTIMETERS_MILLIMETERS = 1;
+	final public static int RATIO_UNIT_INCHES = 2;
+	final public static float FROM_INCH_TO_CM = 2.54f;
+	final public static float FROM_CM_TO_INCH = 0.393700787f;
+	private boolean arRatioIsShown = true;
+	private String arRatioUnit = "cm";
+	private int arRatioMetricSystem;
+
+	/** possibly dynamic z min */
+	protected NumberValue zminObject;
+	/** possibly dynamic z max */
+	protected NumberValue zmaxObject;
 
 	/**
 	 * common constructor
@@ -336,7 +346,6 @@ public abstract class EuclidianView3D extends EuclidianView
 		viewDirection.set3(Coords.VZ);
 
 		target = new Target();
-
 		start();
 	}
 
@@ -858,7 +867,7 @@ public abstract class EuclidianView3D extends EuclidianView
 	}
 
 	private void updateRotationMatrix() {
-		if (mIsARDrawing) {
+		if (mIsXRDrawing) {
             CoordMatrix.setRotation3DMatrix(CoordMatrix.X_AXIS,
                     (-90) * EuclidianController3D.ANGLE_TO_DEGREES, tmpMatrix1);
             CoordMatrix.setRotation3DMatrix(CoordMatrix.Z_AXIS,
@@ -894,42 +903,60 @@ public abstract class EuclidianView3D extends EuclidianView
 		scaleMatrix.set(3, 3, getZscale());
 	}
 
+	public double getXTranslationUnity() {
+		return 0;
+	}
+
+	public double getYTranslationUnity() {
+		return 0;
+	}
+
+	public double getZTranslationUnity() {
+		return 0;
+	}
+
+	protected CoordMatrix4x4 getTranslationMatrixWithScale() {
+		return translationMatrixWithScale;
+	}
+
 	/**
 	 * Update translation matrices (do and undo).
 	 */
 	public void updateTranslationMatrices() {
 
-        double translationZzero = getZZero() + translationZzeroForAR;
+        double translationZzero = getZZero() + translationZzeroForAR + getZTranslationUnity();
+        double translationXzero = getXZero() + getXTranslationUnity();
+        double translationYzero = getYZero() + getYTranslationUnity();
 
 		// scene to screen translation matrices
-		translationMatrixWithScale.set(1, 4, getXZero() * getXscale());
-		translationMatrixWithScale.set(2, 4, getYZero() * getYscale());
+		translationMatrixWithScale.set(1, 4, translationXzero * getXscale());
+		translationMatrixWithScale.set(2, 4, translationYzero * getYscale());
 		translationMatrixWithScale.set(3, 4, translationZzero * getZscale());
-		translationMatrixWithoutScale.set(1, 4, getXZero());
-		translationMatrixWithoutScale.set(2, 4, getYZero());
+		translationMatrixWithoutScale.set(1, 4, translationXzero);
+		translationMatrixWithoutScale.set(2, 4, translationYzero);
 		translationMatrixWithoutScale.set(3, 4, translationZzero);
 
 		// screen to scene translation matrix
-        undoTranslationMatrix.set(1, 4, -getXZero());
-        undoTranslationMatrix.set(2, 4, -getYZero());
+        undoTranslationMatrix.set(1, 4, -translationXzero);
+        undoTranslationMatrix.set(2, 4, -translationYzero);
         undoTranslationMatrix.set(3, 4, -translationZzero);
     }
 
     @Override
-    protected Map<String, Object> getCoordinates() {
-        Map<String, Object> coordinates = super.getCoordinates();
-        coordinates.put("zZero", getZZero());
-        coordinates.put("zscale", getZscale());
-        coordinates.put("xAngle", getAngleA());
-        coordinates.put("zAngle", getAngleB());
+	protected Map<String, Object> getCoordinates() {
+		Map<String, Object> coordinates = super.getCoordinates();
+		coordinates.put("zZero", getZZero());
+		coordinates.put("zscale", getZscale());
+		coordinates.put("xAngle", getAngleA());
+		coordinates.put("zAngle", getAngleB());
 
-        return coordinates;
-    }
+		return coordinates;
+	}
 
-    private void dispatch3DViewChangeEvent() {
-        app.dispatchEvent(new Event(EventType.VIEW_CHANGED_3D)
-                .setJsonArgument(getCoordinates()));
-    }
+	private void dispatch3DViewChangeEvent() {
+		app.dispatchEvent(new Event(EventType.VIEW_CHANGED_3D)
+				.setJsonArgument(getCoordinates()));
+	}
 
 	/**
 	 * Update scale and rotation matrices.
@@ -1020,15 +1047,15 @@ public abstract class EuclidianView3D extends EuclidianView
 	}
 
 	/**
-     * Gives direction vector from user input, e.g. if user clicks on screen, it
-     * will return the user-to-screen vector in ggb scene coordinate system; for
-     * orthographic projection, the vector will be orthogonal to the screen.
-     *
+	 * Gives direction vector from user input, e.g. if user clicks on screen, it
+	 * will return the user-to-screen vector in ggb scene coordinate system; for
+	 * orthographic projection, the vector will be orthogonal to the screen.
+	 * 
 	 * @param ret
-     *            returned direction
+	 *            returned direction
 	 */
 	final public void getHittingDirection(Coords ret) {
-        if (mIsAREnabled) {
+		if (mIsXREnabled) {
 			renderer.getHittingDirectionAR(ret);
 		} else {
 			getCompanion().getHittingDirection(ret);
@@ -1118,6 +1145,54 @@ public abstract class EuclidianView3D extends EuclidianView
 	final public void setCoordSystemFromAxisScale(double factor,
 			double scaleOld, int mode) {
 		animator.setCoordSystemFromAxisScale(factor, scaleOld, mode);
+	}
+
+	/**
+	 * @return the zminObject
+	 */
+	public GeoNumeric getZminObject() {
+		return (GeoNumeric) zminObject;
+	}
+
+	/**
+	 * @param zminObjectNew
+	 *            the zminObject to set
+	 */
+	public void setZminObject(NumberValue zminObjectNew) {
+		if (zminObject != null) {
+			((GeoNumeric) zminObject).removeEVSizeListener(this);
+		}
+		if (zminObjectNew == null && kernel.getConstruction() != null) {
+			this.zminObject = new GeoNumeric(kernel.getConstruction());
+			updateBoundObjects();
+		} else {
+			this.zminObject = zminObjectNew;
+		}
+		setSizeListeners();
+	}
+
+	/**
+	 * @return the zmaxObject
+	 */
+	public GeoNumeric getZmaxObject() {
+		return (GeoNumeric) zmaxObject;
+	}
+
+	/**
+	 * @param zmaxObjectNew
+	 *            the zmaxObject to set
+	 */
+	public void setZmaxObject(NumberValue zmaxObjectNew) {
+		if (zmaxObject != null) {
+			((GeoNumeric) zmaxObject).removeEVSizeListener(this);
+		}
+		if (zmaxObjectNew == null && kernel.getConstruction() != null) {
+			this.zmaxObject = new GeoNumeric(kernel.getConstruction());
+			updateBoundObjects();
+		} else {
+			this.zmaxObject = zmaxObjectNew;
+		}
+		setSizeListeners();
 	}
 
 	/*
@@ -1430,17 +1505,17 @@ public abstract class EuclidianView3D extends EuclidianView
 	}
 
 	/**
-     * Gives origin coordinates from user input, e.g. if user clicks on screen,
-     * it will return the click coordinates in ggb scene coordinate system. The
-     * depth position is calculated to be between the user and scene objects.
-     *
+	 * Gives origin coordinates from user input, e.g. if user clicks on screen,
+	 * it will return the click coordinates in ggb scene coordinate system. The
+	 * depth position is calculated to be between the user and scene objects.
+	 * 
 	 * @param mouse
 	 *            mouse position
-     * @param ret
-     *            returned origin
+	 * @param ret
+	 *            returned origin
 	 */
 	final public void getHittingOrigin(GPoint mouse, Coords ret) {
-        if (isAREnabled()) {
+		if (isXREnabled()) {
 			renderer.getHittingOriginAR(ret);
 		} else {
 			getCompanion().getHittingOrigin(mouse, ret);
@@ -1655,28 +1730,6 @@ public abstract class EuclidianView3D extends EuclidianView
 	public boolean getShowXaxis() {
 		return axis[AXIS_X].isEuclidianVisible();
 	}
-
-	/*
-	 * Point pOld = null;
-	 *
-	 *
-	 * public void setHits(Point p) {
-	 *
-	 *
-	 *
-	 * if (p.equals(pOld)){ //Application.printStacktrace(""); return; }
-	 *
-	 *
-	 * pOld = p;
-	 *
-	 * //sets the flag and mouse location for openGL picking
-	 * renderer.setMouseLoc(p.x,p.y,Renderer.PICKING_MODE_LABELS);
-	 *
-	 * //calc immediately the hits renderer.display();
-	 *
-	 *
-	 * }
-	 */
 
 	@Override
 	public boolean getShowYaxis() {
@@ -1905,9 +1958,9 @@ public abstract class EuclidianView3D extends EuclidianView
 	@Override
 	public void setRotAnimation(Coords vn, boolean checkSameValues,
 			boolean animated) {
-        tmpCoords1.set3(vn);
-        scaleXYZ(tmpCoords1);
-        CoordMatrixUtil.sphericalCoords(tmpCoords1, tmpCoordsLength3);
+		tmpCoords1.set3(vn);
+		scaleXYZ(tmpCoords1);
+		CoordMatrixUtil.sphericalCoords(tmpCoords1, tmpCoordsLength3);
 		setRotAnimation(tmpCoordsLength3.get(2) * 180 / Math.PI,
 				tmpCoordsLength3.get(3) * 180 / Math.PI, checkSameValues,
 				animated);
@@ -1998,7 +2051,7 @@ public abstract class EuclidianView3D extends EuclidianView
 
 	@Override
 	public void setHits(GPoint p, PointerEventType type) {
-	    if (isAREnabled() && ((EuclidianController3D) euclidianController)
+	    if (isXREnabled() && ((EuclidianController3D) euclidianController)
                 .isCurrentModeForCreatingPoint()) {
             renderer.setHits(p, getCapturingThreshold(PointerEventType.MOUSE));
         } else {
@@ -2251,10 +2304,10 @@ public abstract class EuclidianView3D extends EuclidianView
 		return new DrawExtrusion3D(this, selectedPolygons, selectedConics);
 	}
 
-    public Previewable createPreviewSurfaceOfRevolution(
-            ArrayList<Path> selectedPaths) {
-        return new DrawSurfaceOfRevolution(this, selectedPaths);
-    }
+	public Previewable createPreviewSurfaceOfRevolution(
+			ArrayList<Path> selectedPaths) {
+		return new DrawSurfaceOfRevolution(this, selectedPaths);
+	}
 
 	/**
 	 * @return a preview pyramid/cone (basis and height)
@@ -2344,7 +2397,7 @@ public abstract class EuclidianView3D extends EuclidianView
 	}
 
 	private void flipCursorNormal() {
-	    if (isAREnabled()) {
+	    if (isXREnabled()) {
 	        getHittingDirection(tmpCoordsLength4);
             if (cursorNormal.dotproduct3(tmpCoordsLength4) > 0) {
                 cursorNormal.mulInside(-1);
@@ -2361,7 +2414,7 @@ public abstract class EuclidianView3D extends EuclidianView
 	 * update cursor3D matrix
 	 */
 	public void updateMatrixForCursor3D() {
-	    if (isAREnabled() && !isARDrawing()) {
+	    if (isXREnabled() && !isXRDrawing()) {
 	        return;
         }
 		double t;
@@ -2627,17 +2680,6 @@ public abstract class EuclidianView3D extends EuclidianView
 	 *            renderer
 	 */
 	public void drawCursor(Renderer renderer1) {
-		// Log.debug("\nhasMouse="
-		// + hasMouse
-		// + "\n!getEuclidianController().mouseIsOverLabel() "
-		// + !getEuclidianController().mouseIsOverLabel()
-		// +
-		// "\ngetEuclidianController().cursor3DVisibleForCurrentMode(getCursor3DType())"
-		// + ((EuclidianController3D) getEuclidianController())
-		// .cursor3DVisibleForCurrentMode(getCursor3DType())
-		// + "\ncursor=" + cursor + "\ngetCursor3DType()="
-		// + getCursor3DType());
-
 		if (companion3D != null && companion3D.shouldDrawCursor()) {
 			if (shouldDrawCursorAtEnd()) {
 				// draw here for hidden parts
@@ -2966,33 +3008,54 @@ public abstract class EuclidianView3D extends EuclidianView
 	 */
 	@Override
 	public void getXML(StringBuilder sb, boolean asPreference) {
+		StringTemplate tpl = StringTemplate.xmlTemplate;
 		sb.append("<euclidianView3D>\n");
 
 		// coord system
-		sb.append("\t<coordSystem");
-
-		sb.append(" xZero=\"");
-		sb.append(getXZero());
-		sb.append("\" yZero=\"");
-		sb.append(getYZero());
-		sb.append("\" zZero=\"");
-		sb.append(getZZero());
-		sb.append("\"");
-
-		sb.append(" scale=\"");
-		sb.append(getXscale());
-		sb.append("\"");
-
-		if (!getSettings().hasSameScales()) {
-			sb.append(" yscale=\"");
-			sb.append(getYscale());
+		if (!isZoomable() && !asPreference) {
+			sb.append("\t<coordSystem");
+			sb.append(" xMin=\"");
+			StringUtil.encodeXML(sb, ((GeoNumeric) xminObject).getLabel(tpl));
+			sb.append("\"");
+			sb.append(" xMax=\"");
+			StringUtil.encodeXML(sb, ((GeoNumeric) xmaxObject).getLabel(tpl));
+			sb.append("\"");
+			sb.append(" yMin=\"");
+			StringUtil.encodeXML(sb, ((GeoNumeric) yminObject).getLabel(tpl));
+			sb.append("\"");
+			sb.append(" yMax=\"");
+			StringUtil.encodeXML(sb, ((GeoNumeric) ymaxObject).getLabel(tpl));
+			sb.append("\"");
+			sb.append(" zMin=\"");
+			StringUtil.encodeXML(sb, ((GeoNumeric) zminObject).getLabel(tpl));
+			sb.append("\"");
+			sb.append(" zMax=\"");
+			StringUtil.encodeXML(sb, ((GeoNumeric) zmaxObject).getLabel(tpl));
+			sb.append("\"");
+		} else {
+			sb.append("\t<coordSystem");
+			sb.append(" xZero=\"");
+			sb.append(getXZero());
+			sb.append("\" yZero=\"");
+			sb.append(getYZero());
+			sb.append("\" zZero=\"");
+			sb.append(getZZero());
 			sb.append("\"");
 
-			sb.append(" zscale=\"");
-			sb.append(getZscale());
+			sb.append(" scale=\"");
+			sb.append(getXscale());
 			sb.append("\"");
+
+			if (!getSettings().hasSameScales()) {
+				sb.append(" yscale=\"");
+				sb.append(getYscale());
+				sb.append("\"");
+
+				sb.append(" zscale=\"");
+				sb.append(getZscale());
+				sb.append("\"");
+			}
 		}
-
 		sb.append(" xAngle=\"");
 		sb.append(b);
 		sb.append("\" zAngle=\"");
@@ -3421,6 +3484,72 @@ public abstract class EuclidianView3D extends EuclidianView
 				axesNumberingDistances[i] = axesDistanceObjects[i].getDouble();
 			}
 		}
+
+		if (getSettings().getXminObject() != null
+				&& getSettings().getZminObject() != null
+				&& getSettings().isUpdateScaleOrigin()) {
+			double[][] minmax2 = new double[3][2];
+			double xmin2 = getSettings().getXminObject().getDouble();
+			double xmax2 = getSettings().getXmaxObject().getDouble();
+			double ymin2 = getSettings().getYminObject().getDouble();
+			double ymax2 = getSettings().getYmaxObject().getDouble();
+			double zmin2 = getSettings().getZminObject().getDouble();
+			double zmax2 = getSettings().getZmaxObject().getDouble();
+
+			if (((xmax2 - xmin2) > Kernel.MAX_PRECISION) && ((ymax2 - ymin2) > Kernel.MAX_PRECISION)
+					&& ((zmax2 - zmin2 > Kernel.MAX_PRECISION))) {
+				minmax2[0][0] = xmin2;
+				minmax2[0][1] = xmax2;
+				minmax2[1][0] = ymin2;
+				minmax2[1][1] = ymax2;
+				minmax2[2][0] = zmin2;
+				minmax2[2][1] = zmax2;
+
+				double width = renderer.getWidth();
+				double top = renderer.getTop();
+				double bottom = renderer.getBottom();
+				double rv = clippingCubeDrawable.getRV(clippingCube.getReduction());
+				xZero = (xmin2 * (width / 2.0 - rv * width) - xmax2 * (-width / 2.0 + rv * width))
+						/ (2 * rv * width - width);
+				double xscale = (-width / 2.0 + rv * width) / (xmin2 + xZero);
+				double yscale;
+				double zscale;
+				if (getYAxisVertical()) {
+					yZero = (ymin2 * (top - rv * (top - bottom)) - ymax2 * (bottom + rv * (top
+							- bottom))) / (bottom - top + 2 * rv * (top - bottom));
+					zZero = (zmin2 * (width / 2.0 - rv * width) - zmax2 * (-width / 2.0
+							+ rv * width)) / (
+							2 * rv * width - width);
+					yscale = (bottom) / (ymin2 + yZero) + rv * (top - bottom) / (ymin2 + yZero);
+					zscale = (-width / 2.0 + rv * width) / (zmin2 + zZero);
+				} else {
+					yZero = (ymin2 * (width / 2.0 - rv * width) - ymax2 * (-width / 2.0
+							+ rv * width)) / (
+							2 * rv * renderer.getWidth() - width);
+					zZero = (zmin2 * (top - rv * (top - bottom)) - zmax2 * (bottom + rv * (top
+							- bottom))) / (bottom - top + 2 * rv * (top - bottom));
+					yscale = (-width / 2.0 + rv * width) / (ymin2 + yZero);
+					zscale = (bottom) / (zmin2 + zZero) + rv * (top - bottom) / (zmin2 + zZero);
+				}
+
+				if (updateSettings && getSettings() != null) {
+					getSettings()
+							.setCoordSystem(xZero, yZero, zZero, xscale, yscale, zscale, false);
+				}
+				clippingCubeDrawable.doUpdateMinMax();
+
+				if (!isZoomable()) {
+					if (!getSettings().isSetStandardCoordSystem()) {
+						getSettings().setSetStandardCoordSystem(true);
+					} else {
+						updateMatrix();
+					}
+					updateAllDrawables();
+				}
+
+				updateDecorations(minmax2);
+			}
+		}
 		updateBounds();
 	}
 
@@ -3429,7 +3558,7 @@ public abstract class EuclidianView3D extends EuclidianView
 		// update, but not in case where view changed by rotation
 		if (viewChangedByTranslate() || viewChangedByZoom()) {
 			// update clipping cube
-            double[][] minMax = isAREnabled()
+			double[][] minMax = isXREnabled()
 					? clippingCubeDrawable.updateMinMaxLarge()
 					: updateClippingCubeMinMax();
 			// e.g. Corner[] algos are updated by clippingCubeDrawable
@@ -3439,13 +3568,12 @@ public abstract class EuclidianView3D extends EuclidianView
 			xOyPlaneDrawable.setWaitForUpdate();
 
 			// update decorations and wait for update
-			for (int i = 0; i < 3; i++) {
-				axisDrawable[i].setDrawMinMaxImmediatly(minMax);
-				axisDrawable[i].updateDecorations();
-				setAxesIntervals(getScale(i), i);
+			updateDecorations(minMax);
 
-				axisDrawable[i].setWaitForUpdate();
+			if (getOptionPanel() != null) {
+				getOptionPanel().updateBounds();
 			}
+			updateBoundObjects();
 		}
 
 		// we need to update renderer clip planes even for rotation, since they
@@ -3458,6 +3586,28 @@ public abstract class EuclidianView3D extends EuclidianView
 
 			// update e.g. Corner[]
 			kernel.notifyEuclidianViewCE(EVProperty.ROTATION);
+		}
+	}
+
+	private void updateDecorations(double[][] minMax) {
+		for (int i = 0; i < 3; i++) {
+			axisDrawable[i].setDrawMinMaxImmediatly(minMax);
+			axisDrawable[i].updateDecorations();
+			setAxesIntervals(getScale(i), i);
+
+			axisDrawable[i].setWaitForUpdate();
+		}
+	}
+
+	@Override
+	public void updateBoundObjects() {
+		if (isZoomable() && xminObject != null) {
+			((GeoNumeric) xminObject).setValue(getXmin());
+			((GeoNumeric) xmaxObject).setValue(getXmax());
+			((GeoNumeric) yminObject).setValue(getYmin());
+			((GeoNumeric) ymaxObject).setValue(getYmax());
+			((GeoNumeric) zminObject).setValue(getZmin());
+			((GeoNumeric) zmaxObject).setValue(getZmax());
 		}
 	}
 
@@ -3704,13 +3854,13 @@ public abstract class EuclidianView3D extends EuclidianView
 	 * Reset all viewChanged* flags
 	 */
 	public void resetViewChanged() {
-        if (viewChanged()) {
-            dispatch3DViewChangeEvent();
+		if (viewChanged()) {
+			dispatch3DViewChangeEvent();
 
-            viewChangedByZoom = false;
-            viewChangedByTranslate = false;
-            viewChangedByRotate = false;
-        }
+			viewChangedByZoom = false;
+			viewChangedByTranslate = false;
+			viewChangedByRotate = false;
+		}
 	}
 
 	final public int getPointStyle() {
@@ -3883,7 +4033,7 @@ public abstract class EuclidianView3D extends EuclidianView
 	 */
 	public boolean isGrayScaled() {
 		return projection == PROJECTION_GLASSES
-                && !isAREnabled()
+                && !isXREnabled()
 				&& !getCompanion().isStereoBuffered()
 				&& isGlassesGrayScaled();
 	}
@@ -3998,19 +4148,35 @@ public abstract class EuclidianView3D extends EuclidianView
 		return true;
 	}
 
-	/*
-	 * @Override public geogebra.common.awt.GColor getBackgroundCommon() {
-	 * return new geogebra.awt.GColorD(getBackground());
-	 *
-	 * }
-	 */
-
 	// ////////////////////////////////////
 	// PICKING
 
 	@Override
-	public void replaceBoundObject(GeoNumeric num, GeoNumeric geoNumeric) {
-		// TODO fix this for 3D dynamic bounds
+	public void replaceBoundObject(GeoNumeric num, GeoNumeric num2) {
+		if (xmaxObject == num) {
+			xmaxObject = num2;
+		}
+		if (xminObject == num) {
+			xminObject = num2;
+		}
+		if (ymaxObject == num) {
+			ymaxObject = num2;
+		}
+		if (yminObject == num) {
+			yminObject = num2;
+		}
+		if (zmaxObject == num) {
+			zmaxObject = num2;
+		}
+		if (zminObject == num) {
+			zminObject = num2;
+		}
+		for (int i = 0; i < axesDistanceObjects.length; i++) {
+			if (axesDistanceObjects[i] == num) {
+				axesDistanceObjects[i] = num2;
+			}
+		}
+		updateBounds(true, true);
 	}
 
 	public GColor getBackground() {
@@ -4231,10 +4397,8 @@ public abstract class EuclidianView3D extends EuclidianView
 
 		setProjection(evs.getProjection());
 
-        boolean colored = evs.getHasColoredAxes();
-        for (GeoAxisND ax : axis) {
-            ax.setColoredFor3D(colored);
-        }
+		boolean colored = evs.getHasColoredAxes();
+		setColoredAxes(colored);
 
 		updateMatrix();
 		getEuclidianController().onCoordSystemChanged();
@@ -4249,10 +4413,32 @@ public abstract class EuclidianView3D extends EuclidianView
 		}
 	}
 
+	protected void setColoredAxes(boolean colored) {
+		for (GeoAxisND ax : axis) {
+			ax.setColoredFor3D(colored);
+		}
+	}
+
+    /**
+     * Updates the objects before showing all objects
+     */
+    public void showAllObjectsKeepRatioUpdate() {
+        // add drawables to lists
+        update();
+        // update own drawables to get correct clipping
+        updateOwnDrawablesNow();
+        // update drawables to compute bounds
+        updateDrawables();
+        // show all objects, no step
+        setViewShowAllObjects(false, true, 0);
+    }
+
 	@Override
 	public final void setViewShowAllObjects(boolean storeUndo,
 			boolean keepRatio) {
-		setViewShowAllObjects(storeUndo, keepRatio, 15);
+    	if (isZoomable()) {
+			setViewShowAllObjects(storeUndo, keepRatio, 15);
+		}
 	}
 
 	@Override
@@ -4269,14 +4455,14 @@ public abstract class EuclidianView3D extends EuclidianView
 	 *
 	 */
 	private boolean updateObjectsBounds() {
-        return updateObjectsBounds(false, false, false);
+		return updateObjectsBounds(false, false, false);
 	}
 
 	/**
 	 * update bounds that enclose all objects
 	 *
-     * @param includeXYAxesIfVisible
-     *            if x & y axes should enlarge bounds
+	 * @param includeXYAxesIfVisible
+	 *            if x & y axes should enlarge bounds
      * @param includeZAxisIfVisible
      *            if z axis should enlarge bounds
 	 * @param dontExtend
@@ -4285,7 +4471,7 @@ public abstract class EuclidianView3D extends EuclidianView
 	 *
 	 * @return true if bounds were computed
 	 */
-    protected boolean updateObjectsBounds(boolean includeXYAxesIfVisible,
+	protected boolean updateObjectsBounds(boolean includeXYAxesIfVisible,
                                           boolean includeZAxisIfVisible,
                                           boolean dontExtend) {
 		if (boundsMin == null) {
@@ -4297,18 +4483,18 @@ public abstract class EuclidianView3D extends EuclidianView
 		boundsMax.setNegativeInfinity();
 
 		drawable3DLists.enlargeBounds(boundsMin, boundsMax, dontExtend);
-        if (includeXYAxesIfVisible) {
+		if (includeXYAxesIfVisible) {
             enlargeBounds(axisDrawable[AXIS_X], dontExtend);
             enlargeBounds(axisDrawable[AXIS_Y], dontExtend);
-        }
-        if (includeZAxisIfVisible) {
+		}
+		if (includeZAxisIfVisible) {
             enlargeBounds(axisDrawable[AXIS_Z], dontExtend);
         }
 
-        return !Double.isInfinite(boundsMin.getX());
-    }
+		return !Double.isInfinite(boundsMin.getX());
+	}
 
-    private void enlargeBounds(DrawAxis3D d, boolean dontExtend) {
+	private void enlargeBounds(DrawAxis3D d, boolean dontExtend) {
         if (d.isVisible()) {
             d.enlargeBounds(boundsMin, boundsMax, dontExtend);
         }
@@ -4471,7 +4657,7 @@ public abstract class EuclidianView3D extends EuclidianView
 		if (renderer != null) {
 			renderer.setWaitForUpdateClearColor();
 		}
-		if (isAREnabled()) {
+		if (isXREnabled()) {
 			renderer.setBackgroundColor();
 		}
 	}
@@ -4594,9 +4780,6 @@ public abstract class EuclidianView3D extends EuclidianView
 		setWaitForUpdate();
 	}
 
-	// private CoordMatrix4x4 startTranslationScreen =
-	// CoordMatrix4x4.Identity();
-
 	/**
 	 * set mouse start pos
 	 *
@@ -4710,8 +4893,10 @@ public abstract class EuclidianView3D extends EuclidianView
 
 	@Override
 	public void setStandardView(boolean storeUndo) {
-		setAnimatedCoordSystem(STANDARD_VIEW_STEPS);
-		animator.setRotAnimation(ANGLE_ROT_OZ, ANGLE_ROT_XOY, false, true, storeUndo);
+		if (isZoomable()) {
+			setAnimatedCoordSystem(STANDARD_VIEW_STEPS);
+			animator.setRotAnimation(ANGLE_ROT_OZ, ANGLE_ROT_XOY, false, true, storeUndo);
+		}
 	}
 
 	@Override
@@ -4832,13 +5017,13 @@ public abstract class EuclidianView3D extends EuclidianView
 	}
 
 	/**
-	 * @param isARDrawing
-	 *            whether AR is active
+	 * @param isXRDrawing
+	 *            whether XR is active
 	 */
-	public void setARDrawing(boolean isARDrawing) {
-		if (mIsARDrawing != isARDrawing) {
-			mIsARDrawing = isARDrawing;
-			if (isARDrawing) {
+	public void setXRDrawing(boolean isXRDrawing) {
+		if (mIsXRDrawing != isXRDrawing) {
+			mIsXRDrawing = isXRDrawing;
+			if (isXRDrawing) {
                 boolean boundsNeededUpdate = updateObjectsBounds(true,
                         false, true);
                 if (boundsNeededUpdate) {
@@ -4850,7 +5035,7 @@ public abstract class EuclidianView3D extends EuclidianView
                     // ensure showing plane if visible and not too far
                     if (translationZzeroForAR < 0
                             && (((getShowGrid() || getShowPlane()) && getZmin() < 0)
-                            || isAtLeastOneAxisVisible())) {
+                                || isAtLeastOneAxisVisible())) {
                         translationZzeroForAR = 0;
                     }
                 } else {
@@ -4869,29 +5054,31 @@ public abstract class EuclidianView3D extends EuclidianView
 		}
 	}
 
-    private boolean isAtLeastOneAxisVisible() {
-        for (int i = 0; i < 3; i++) {
-            if (axisDrawable[i].isVisible()) {
-                return true;
+	private boolean isAtLeastOneAxisVisible() {
+	    for (int i = 0; i < 3; i++) {
+	        if (axisDrawable[i].isVisible()) {
+	            return true;
             }
         }
-        return false;
+	    return false;
     }
 
-    private void setARFloorZ(double z) {
-        arFloorZ = z;
+	private void setARFloorZ(double z) {
+	    arFloorZ = z;
         getRenderer().setARFloorZ(z);
         arZZeroAtStart = getZZero();
     }
 
-    /**
-     * @return shift used for AR floor
-     */
+	/**
+	 * 
+	 * @return shift used for AR floor
+	 */
     public double getARFloorShift() {
         return arZZeroAtStart - getZZero();
     }
 
     /**
+     *
      * @return z value which stands on the floor (AR)
      */
     public double getARMinZ() {
@@ -4899,20 +5086,20 @@ public abstract class EuclidianView3D extends EuclidianView
     }
 
 	/**
-	 * @return whether AR is active
+	 * @return whether XR is active
 	 */
-	public boolean isARDrawing() {
-		return mIsARDrawing;
+	public boolean isXRDrawing() {
+		return mIsXRDrawing;
 	}
 
 	/**
-	 * set AR enabled/disabled
+	 * set XR enabled/disabled
 	 * 
-	 * @param isAREnabled
+	 * @param isXREnabled
 	 *            flag
 	 */
-	public void setAREnabled(boolean isAREnabled) {
-		mIsAREnabled = isAREnabled;
+	public void setXREnabled(boolean isXREnabled) {
+		mIsXREnabled = isXREnabled;
         if (euclidianController.isCreatingPointAR()) {
             target.updateType(this);
         }
@@ -4921,8 +5108,8 @@ public abstract class EuclidianView3D extends EuclidianView
 	}
 
 	@Override
-	public boolean isAREnabled() {
-		return mIsAREnabled;
+	public boolean isXREnabled() {
+		return mIsXREnabled;
 	}
 
 	@Override
@@ -4931,7 +5118,7 @@ public abstract class EuclidianView3D extends EuclidianView
 	}
 
 	public boolean showPlaneOutlineIfNeeded() {
-		return !isARDrawing();
+		return !isXRDrawing();
 	}
 
 	@Override
@@ -4979,7 +5166,7 @@ public abstract class EuclidianView3D extends EuclidianView
 	 *            point
 	 */
     public void enlargeClippingForPoint(GeoPointND point) {
-        if (isAREnabled()) {
+        if (isXREnabled()) {
             if (clippingCubeDrawable.enlargeFor(point.getInhomCoordsInD3())) {
                 setViewChangedByZoom();
                 setWaitForUpdate();
@@ -4987,11 +5174,11 @@ public abstract class EuclidianView3D extends EuclidianView
         }
     }
 
-    /**
+	/**
 	 * enlarge clipping for AR
      */
     public void enlargeClippingWhenAREnabled() {
-        if (isAREnabled()) {
+        if (isXREnabled()) {
             if (updateObjectsBounds(true, true, true)) {
                 boolean needsUpdate1 = clippingCubeDrawable.enlargeFor(boundsMin);
                 boolean needsUpdate2 = clippingCubeDrawable.enlargeFor(boundsMax);
@@ -5008,9 +5195,9 @@ public abstract class EuclidianView3D extends EuclidianView
 	 */
 	public void resetViewFromAR() {
 		resetSettings();
-    }
+	}
 
-    @Override
+	@Override
     public void resetSettings() {
         super.resetSettings();
         // reset rendering
@@ -5035,18 +5222,18 @@ public abstract class EuclidianView3D extends EuclidianView
 
 	private boolean shouldDrawCursorAtEnd() {
 		return euclidianController.isCreatingPointAR();
-    }
+	}
+
+	/**
+	 * queue runnable on GL thread (needs platform-specific implementation)
+	 * @param runnable runnable
+	 */
+	public void queueOnGLThread(Runnable runnable) {
+		runnable.run();
+	}
 
     /**
-     * queue runnable on GL thread (needs platform-specific implementation)
      *
-     * @param runnable runnable
-     */
-    public void queueOnGLThread(Runnable runnable) {
-        runnable.run();
-    }
-
-    /**
      * @param value value in dip
      * @return value in pixels
      */
@@ -5054,4 +5241,142 @@ public abstract class EuclidianView3D extends EuclidianView
         return value;
     }
 
+	/**
+	 * set ARRatio is shown
+	 */
+	public void setARRatioIsShown(boolean arRatioIsShown) {
+		this.arRatioIsShown = arRatioIsShown;
+		XRManagerInterface arManager = renderer.getXRManager();
+		if (arManager != null) {
+			arManager.setRatioIsShown(arRatioIsShown);
+		}
+	}
+
+	/**
+	 * @return ARRatio is shown
+	 */
+	public boolean isARRatioShown() {
+		return arRatioIsShown;
+	}
+
+	/**
+	 * set AR Ratio Unit
+	 */
+	public void setARRatioUnit(String arRatioUnit) {
+		this.arRatioUnit = arRatioUnit;
+	}
+
+	/**
+	 * @return AR Ratio Unit
+	 */
+	public String getARRatioUnit() {
+		return arRatioUnit;
+	}
+
+	/**
+	 * set AR Ratio Metric System
+	 */
+	public void setARRatioMetricSystem(int arRatioMetricSystem) {
+		this.arRatioMetricSystem = arRatioMetricSystem;
+		XRManagerInterface arManager = renderer.getXRManager();
+		if (arManager != null) {
+			arManager.calculateAndShowRatio();
+		}
+	}
+
+	/**
+	 * @return AR Ratio Metric System
+	 */
+	public int getARRatioMetricSystem() {
+		return arRatioMetricSystem;
+	}
+
+	private void set3DCoordSystem(double xzero, double yzero, double zzero, double xscale,
+			double yscale, double zscale) {
+		if (Double.isNaN(xscale) || (xscale < Kernel.MAX_DOUBLE_PRECISION)
+				|| (xscale > Kernel.INV_MAX_DOUBLE_PRECISION)) {
+			return;
+		}
+		if (Double.isNaN(yscale) || (yscale < Kernel.MAX_DOUBLE_PRECISION)
+				|| (yscale > Kernel.INV_MAX_DOUBLE_PRECISION)) {
+			return;
+		}
+		if (Double.isNaN(zscale) || (zscale < Kernel.MAX_DOUBLE_PRECISION)
+				|| (zscale > Kernel.INV_MAX_DOUBLE_PRECISION)) {
+			return;
+		}
+		this.xZero = xzero;
+		this.yZero = yzero;
+		this.zZero = zzero;
+		EuclidianSettings3D settings = getSettings();
+		settings.setXscaleValue(xscale);
+		settings.setYscaleValue(yscale);
+		settings.setZscaleValue(zscale);
+		clippingCubeDrawable.doUpdateMinMax();
+	}
+
+	@Override
+	protected void setStandardCoordSystem(boolean repaint) {
+		if (getSettings() != null && !getSettings().isSetStandardCoordSystem()) {
+			return;
+		}
+		set3DCoordSystem(XZERO_SCENE_STANDARD, YZERO_SCENE_STANDARD, ZZERO_SCENE_STANDARD,
+				SCALE_STANDARD, SCALE_STANDARD, SCALE_STANDARD);
+		getSettings().setUpdateScaleOrigin(
+				getSettings() != null && !getSettings().isSetStandardCoordSystem());
+	}
+
+	@Override
+	protected void setSizeListeners() {
+		super.setSizeListeners();
+		if (zminObject != null) {
+			((GeoNumeric) zmaxObject).addEVSizeListener(this);
+			((GeoNumeric) zminObject).addEVSizeListener(this);
+		}
+	}
+
+	@Override
+	public void resetXYMinMaxObjects() {
+		if ((evNo == 1) || (evNo == 2)) {
+			EuclidianSettings3D es =
+					(EuclidianSettings3D) getApplication().getSettings().getEuclidian(evNo);
+
+			GeoNumeric xmao = new GeoNumeric(kernel.getConstruction(),
+					xmaxObject.getNumber().getDouble());
+			GeoNumeric xmio = new GeoNumeric(kernel.getConstruction(),
+					xminObject.getNumber().getDouble());
+			GeoNumeric ymao = new GeoNumeric(kernel.getConstruction(),
+					ymaxObject.getNumber().getDouble());
+			GeoNumeric ymio = new GeoNumeric(kernel.getConstruction(),
+					yminObject.getNumber().getDouble());
+			GeoNumeric zmao = new GeoNumeric(kernel.getConstruction(),
+					zminObject.getNumber().getDouble());
+			GeoNumeric zmio = new GeoNumeric(kernel.getConstruction(),
+					zminObject.getNumber().getDouble());
+			es.setXmaxObject(xmao, false);
+			es.setXminObject(xmio, false);
+			es.setYmaxObject(ymao, false);
+			es.setYminObject(ymio, false);
+			es.setZmaxObject(zmao, false);
+			es.setZminObject(zmio, true);
+		}
+	}
+
+	@Override
+	protected void setMinMaxObjects() {
+		super.setMinMaxObjects();
+		zminObject = new GeoNumeric(kernel.getConstruction());
+		zmaxObject = new GeoNumeric(kernel.getConstruction());
+	}
+
+	@Override
+	public boolean isZoomable() {
+		if (super.isZoomable()) {
+			if (!GeoNumeric.isChangeable(zminObject)) {
+				return false;
+			}
+			return GeoNumeric.isChangeable(zmaxObject);
+		}
+		return false;
+	}
 }

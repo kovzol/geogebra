@@ -253,15 +253,15 @@ public class Hits extends ArrayList<GeoElement> {
 	/**
 	 * A polygon is only kept if none of its sides is also in hits.
 	 */
-    final public void removeHasSegmentsIfSidePresent() {
-        removeHasSegmentsDependingSidePresent(false);
+	final public void removeHasSegmentsIfSidePresent() {
+		removeHasSegmentsDependingSidePresent(false);
 	}
 
 	/**
 	 * Removes polygons that are in hits but none of their sides is hit
 	 */
-    final public void removeHasSegmentsIfSideNotPresent() {
-        removeHasSegmentsDependingSidePresent(true);
+	final public void removeHasSegmentsIfSideNotPresent() {
+		removeHasSegmentsDependingSidePresent(true);
 	}
 
 	/**
@@ -269,7 +269,7 @@ public class Hits extends ArrayList<GeoElement> {
 	 * if one of its sides is also in hits.
 	 */
 	final public void keepOnlyHitsForNewPointMode() {
-        removeHasSegmentsDependingSidePresent(true);
+		removeHasSegmentsDependingSidePresent(true);
 	}
 
 	/**
@@ -293,9 +293,9 @@ public class Hits extends ArrayList<GeoElement> {
 		Iterator<GeoElement> it = this.iterator();
 		while (it.hasNext()) {
 			GeoElement geo = it.next();
-            if (geo instanceof HasSegments) {
+			if (geo instanceof HasSegments) {
 				boolean sidePresent = false;
-                GeoSegmentND[] sides = ((HasSegments) geo).getSegments();
+				GeoSegmentND[] sides = ((HasSegments) geo).getSegments();
 				if (sides != null) {
 					for (GeoSegmentND side : sides) {
 						if (this.contains(side)) {
@@ -312,24 +312,24 @@ public class Hits extends ArrayList<GeoElement> {
 		}
 	}
 
-    /**
-     * remove HasFaces geos if a face is present in this
-     */
-    final public void removeHasFacesIfFacePresent() {
-        Iterator<GeoElement> it = this.iterator();
-        while (it.hasNext()) {
-            GeoElement geo = it.next();
-            if (geo instanceof HasFaces) {
-                HasFaces hasFaces = (HasFaces) geo;
-                for (int k = 0; k < hasFaces.getFacesSize(); k++) {
-                    if (this.contains(hasFaces.getFace(k))) {
-                        it.remove();
-                        break;
-                    }
-                }
-            }
-        }
-    }
+	/**
+	 * remove HasFaces geos if a face is present in this
+	 */
+	final public void removeHasFacesIfFacePresent() {
+		Iterator<GeoElement> it = this.iterator();
+		while (it.hasNext()) {
+			GeoElement geo = it.next();
+			if (geo instanceof HasFaces) {
+				HasFaces hasFaces = (HasFaces) geo;
+				for (int k = 0; k < hasFaces.getFacesSize(); k++) {
+					if (this.contains(hasFaces.getFace(k))) {
+						it.remove();
+						break;
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * remove sliders from hits
@@ -998,37 +998,38 @@ public class Hits extends ArrayList<GeoElement> {
 			}
 		}
 		return false;
-    }
+	}
 
-    private Hits getWithMetaHits(GPredicate<GeoElement> filter) {
+	private Hits getWithMetaHits(GPredicate<GeoElement> filter) {
 		Hits result = new Hits();
 
 		for (GeoElement geo : this) {
 			if (geo.getMetasLength() > 0) {
 				for (GeoElement meta : ((FromMeta) geo).getMetas()) {
-                    if (filter.test(meta) && !result.contains(meta)) {
-                        result.add(meta);
-                    }
-                }
-            }
+					if (filter.test(meta) && !result.contains(meta)) {
+						result.add(meta);
+					}
+				}
+			}
 
-            if (filter.test(geo)) {
-                result.add(geo);
+			if (filter.test(geo)) {
+				result.add(geo);
 			}
 		}
 
 		return result;
-    }
+	}
 
-    /**
-     * @return hits that has finite volume
-     */
-    public Hits getFiniteVolumeIncludingMetaHits() {
-        return getWithMetaHits(new GPredicate<GeoElement>() {
-            @Override
-            public boolean test(GeoElement geo) {
-                return geo instanceof HasVolume && ((HasVolume) geo).hasFiniteVolume();
-            }
+	/**
+	 * 
+	 * @return hits that has finite volume
+	 */
+	public Hits getFiniteVolumeIncludingMetaHits() {
+		return getWithMetaHits(new GPredicate<GeoElement>() {
+			@Override
+			public boolean test(GeoElement geo) {
+				return geo instanceof HasVolume && ((HasVolume) geo).hasFiniteVolume();
+			}
 		});
 	}
 
@@ -1037,11 +1038,11 @@ public class Hits extends ArrayList<GeoElement> {
 	 * @return hits that has finite volume
 	 */
 	public Hits getPolyhedronsIncludingMetaHits() {
-        return getWithMetaHits(new GPredicate<GeoElement>() {
-            @Override
-            public boolean test(GeoElement geo) {
-                return geo.isGeoPolyhedron();
-            }
+		return getWithMetaHits(new GPredicate<GeoElement>() {
+			@Override
+			public boolean test(GeoElement geo) {
+				return geo.isGeoPolyhedron();
+			}
 		});
 	}
 

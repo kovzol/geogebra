@@ -20,8 +20,9 @@ package org.geogebra.common.kernel.geos;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeMap;
 
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
@@ -100,8 +101,6 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 	/** end point */
 	public GeoPoint endPoint;
 
-	// enable negative sign of first coefficient in implicit equations
-	private static final boolean KEEP_LEADING_SIGN = true;
 	private static final String[] vars = { "x", "y" };
 
 	private PVariable[] botanaVars; // only for an axis or a fixed slope line
@@ -690,7 +689,7 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 
 		GeoLine l = (GeoLine) geo;
 		parameter = l.parameter;
-		setModeIfEquationFormIsNotForced(l.toStringMode);
+		toStringMode = l.toStringMode;
 		reuseDefinition(geo);
 	}
 
@@ -1015,7 +1014,6 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 
 		double[] P = new double[2];
 		double[] g = new double[3];
-		char op = '=';
 
 		if (!coefficientsDefined() || (DoubleUtil.isZero(x) && DoubleUtil.isZero(y)
 				&& getToStringMode() != EQUATION_USER)) {
@@ -1032,7 +1030,7 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 			g[0] = x;
 			g[1] = y;
 			g[2] = z;
-			return kernel.buildExplicitEquation(g, vars, op, tpl, true).toString();
+			return kernel.buildExplicitEquation(g, vars, tpl, true).toString();
 
 		case PARAMETRIC:
 			getInhomPointOnLine(P); // point
@@ -1061,19 +1059,19 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 			g[1] = y;
 			g[2] = z;
 			if (DoubleUtil.isZero(x) || DoubleUtil.isZero(y)) {
-				return kernel.buildExplicitEquation(g, vars, op, tpl,
+				return kernel.buildExplicitEquation(g, vars, tpl,
 						EQUATION_IMPLICIT_NON_CANONICAL == getToStringMode()).toString();
 			}
-			return kernel.buildImplicitEquation(g, vars, KEEP_LEADING_SIGN,
-					false, false, op, tpl,
+			return kernel.buildImplicitEquation(g, vars,
+					false, false, tpl,
 					EQUATION_IMPLICIT_NON_CANONICAL == getToStringMode()).toString();
 		case EQUATION_USER:
 			if (getDefinition() != null) {
 				return getDefinition().toValueString(tpl);
 			}
-			return buildImplicitEquation(g, tpl, op);
+			return buildImplicitEquation(g, tpl);
 		default: // EQUATION_IMPLICIT
-			return buildImplicitEquation(g, tpl, op);
+			return buildImplicitEquation(g, tpl);
 		}
 	}
 
@@ -1084,16 +1082,16 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 		return sbToStr.toString();
 	}
 
-	private String buildImplicitEquation(double[] g, StringTemplate tpl, char op) {
+	private String buildImplicitEquation(double[] g, StringTemplate tpl) {
 		g[0] = x;
 		g[1] = y;
 		g[2] = z;
 		if (DoubleUtil.isZero(x) || DoubleUtil.isZero(y)) {
-			return kernel.buildExplicitEquation(g, vars, op, tpl, true).toString();
+			return kernel.buildExplicitEquation(g, vars, tpl, true).toString();
 		}
 		boolean useGCD = true;
-		return kernel.buildImplicitEquation(g, vars, KEEP_LEADING_SIGN, useGCD, false, op, tpl,
-				true).toString();
+		return kernel.buildImplicitEquation(g, vars, useGCD, false, tpl, true)
+				.toString();
 	}
 
 	/**
@@ -1111,8 +1109,7 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 			g[0] = x;
 			g[1] = y;
 			g[2] = z;
-			sb.append(kernel.buildLHS(g, vars, KEEP_LEADING_SIGN, true, false,
-					tpl));
+			sb.append(kernel.buildLHS(g, vars, true, false, tpl));
 			return;
 		}
 		sb.append(sbToStringLHS);
@@ -2009,5 +2006,10 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 			default:
 				toStringMode = EQUATION_IMPLICIT;
 		}
+	}
+
+	@Override
+	public boolean hasSpecialEditor() {
+		return false;
 	}
 }

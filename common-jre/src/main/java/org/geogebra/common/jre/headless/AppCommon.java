@@ -22,10 +22,9 @@ import org.geogebra.common.jre.io.MyXMLioCommon;
 import org.geogebra.common.jre.kernel.commands.CommandDispatcherJre;
 import org.geogebra.common.jre.main.LocalizationJre;
 import org.geogebra.common.jre.plugin.GgbAPIJre;
+import org.geogebra.common.jre.util.UtilFactoryJre;
 import org.geogebra.common.kernel.Construction;
-import org.geogebra.common.kernel.DefaultUndoManager;
 import org.geogebra.common.kernel.Kernel;
-import org.geogebra.common.kernel.UndoManager;
 import org.geogebra.common.kernel.commands.CommandDispatcher;
 import org.geogebra.common.kernel.geos.GeoAudio;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -33,21 +32,21 @@ import org.geogebra.common.kernel.geos.GeoElementGraphicsAdapter;
 import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.AppConfig;
-import org.geogebra.common.main.AppConfigDefault;
 import org.geogebra.common.main.DialogManager;
 import org.geogebra.common.main.FontManager;
 import org.geogebra.common.main.GlobalKeyDispatcher;
 import org.geogebra.common.main.GuiManagerInterface;
-import org.geogebra.common.main.Localization;
-import org.geogebra.common.main.MyError;
-import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.SpreadsheetTableModel;
 import org.geogebra.common.main.SpreadsheetTableModelSimple;
-import org.geogebra.common.main.settings.AppConfigCas;
-import org.geogebra.common.main.settings.AppConfigGeometry;
-import org.geogebra.common.main.settings.AppConfigGraphing;
-import org.geogebra.common.main.settings.AppConfigGraphing3D;
 import org.geogebra.common.main.settings.DefaultSettings;
+import org.geogebra.common.main.settings.config.AppConfigCas;
+import org.geogebra.common.main.settings.config.AppConfigDefault;
+import org.geogebra.common.main.settings.config.AppConfigGeometry;
+import org.geogebra.common.main.settings.config.AppConfigGraphing;
+import org.geogebra.common.main.settings.config.AppConfigGraphing3D;
+import org.geogebra.common.main.settings.config.AppConfigNotes;
+import org.geogebra.common.main.undo.DefaultUndoManager;
+import org.geogebra.common.main.undo.UndoManager;
 import org.geogebra.common.plugin.GgbAPI;
 import org.geogebra.common.plugin.ScriptManager;
 import org.geogebra.common.sound.SoundManager;
@@ -64,12 +63,13 @@ import org.geogebra.common.util.debug.Log;
  */
 public class AppCommon extends App {
 
-	private LocalizationJre localization;
+	private final LocalizationJre localization;
 	private DialogManagerNoGui dialogManager;
 	private DefaultSettings defaultSettings;
 	private SpreadsheetTableModel tableModel;
-    private AppConfig config = new AppConfigDefault();
-    private CASFactory casFactory = new CASFactoryDummy();
+	private AppConfig config = new AppConfigDefault();
+	private CASFactory casFactory = new CASFactoryDummy();
+	private boolean appletFlag = false;
 
 	/**
 	 * Construct an AppCommon.
@@ -80,7 +80,7 @@ public class AppCommon extends App {
 	 *            AWT factory
 	 */
 	public AppCommon(LocalizationJre loc, AwtFactory awtFactory) {
-        super(Platform.ANDROID);
+		super(Platform.ANDROID);
 		AwtFactory.setPrototypeIfNull(awtFactory);
         initFactories();
 		initKernel();
@@ -93,14 +93,8 @@ public class AppCommon extends App {
 		Log.setLogger(new Log() {
 
 			@Override
-			protected void print(String logEntry, Level level) {
+			public void print(Level level, Object logEntry) {
 				System.out.println(logEntry); // NOPMD
-			}
-
-			@Override
-			public void doPrintStacktrace(String message) {
-				new Throwable(message).printStackTrace();
-
 			}
 		});
     }
@@ -120,9 +114,10 @@ public class AppCommon extends App {
     }
 
 	private static void initFactories() {
-        FormatFactory.setPrototypeIfNull(new FormatFactoryJre());
+		FormatFactory.setPrototypeIfNull(new FormatFactoryJre());
 		StringUtil.setPrototypeIfNull(new StringUtil());
-    }
+		UtilFactoryJre.setupRegexFactory();
+	}
 
     @Override
     protected void showErrorDialog(String msg) {
@@ -143,7 +138,7 @@ public class AppCommon extends App {
 				createGraphics());
     }
 
-	private static GGraphics2D createGraphics() {
+	protected GGraphics2D createGraphics() {
 		return AwtFactory.getPrototype().createBufferedImage(800, 600, false)
 				.createGraphics();
 	}
@@ -155,12 +150,12 @@ public class AppCommon extends App {
 
     @Override
     protected int getWindowWidth() {
-        return 800;
+		return 800;
     }
 
     @Override
     protected int getWindowHeight() {
-        return 600;
+		return 600;
     }
 
     @Override
@@ -185,7 +180,7 @@ public class AppCommon extends App {
 
     @Override
     public boolean isApplet() {
-        return false;
+        return appletFlag;
     }
 
     @Override
@@ -203,38 +198,38 @@ public class AppCommon extends App {
 
     @Override
     public GTimer newTimer(GTimerListener listener, int delay) {
-        return new GTimer() {
+		return new GTimer() {
 
-            @Override
-            public void start() {
-                // stub
+			@Override
+			public void start() {
+				// stub
 
-            }
+			}
 
-            @Override
-            public void startRepeat() {
-                // stub
+			@Override
+			public void startRepeat() {
+				// stub
 
-            }
+			}
 
-            @Override
-            public void stop() {
-                // stub
+			@Override
+			public void stop() {
+				// stub
 
-            }
+			}
 
-            @Override
-            public boolean isRunning() {
-                // stub
-                return false;
-            }
+			@Override
+			public boolean isRunning() {
+				// stub
+				return false;
+			}
 
-            @Override
-            public void setDelay(int timerDelay) {
-                // stub
+			@Override
+			public void setDelay(int timerDelay) {
+				// stub
 
-            }
-        };
+			}
+		};
     }
 
     @Override
@@ -326,19 +321,19 @@ public class AppCommon extends App {
 
 			@Override
 			public MyImage getFillImage() {
-                // stub
+				// stub
 				return null;
 			}
 
 			@Override
 			public void setImageFileName(String fileName) {
-                // stub
+				// stub
 
 			}
 
 			@Override
 			public void convertToSaveableFormat() {
-                // stub
+				// stub
 
 			}
 		};
@@ -374,168 +369,158 @@ public class AppCommon extends App {
 	}
 
     @Override
-	public void setXML(String xml, boolean clearAll) {
-		// TODO copied from AppDNoGui
-		if (xml == null) {
-			return;
-		}
-		if (clearAll) {
-			resetCurrentFile();
-		}
-
-		try {
-
-			// make sure objects are displayed in the correct View
-			setActiveView(App.VIEW_EUCLIDIAN);
-
-			getXMLio().processXMLString(xml, clearAll, false);
-		} catch (MyError err) {
-			err.printStackTrace();
-			showError(err);
-		} catch (Exception e) {
-			e.printStackTrace();
-            showError(Errors.LoadFileFailed);
-		}
-    }
-
-    @Override
     public GgbAPI getGgbApi() {
 		return new GgbAPIJre(this) {
 
 			@Override
 			public byte[] getGGBfile() {
-                // stub
+				// stub
 				return null;
 			}
 
 			@Override
 			public void setErrorDialogsActive(boolean flag) {
-                // stub
+				// stub
 			}
 
 			@Override
 			public void refreshViews() {
-                // stub
+				// stub
 			}
 
 			@Override
 			public void openFile(String strURL) {
-                // stub
+				// stub
 			}
 
 			@Override
 			public boolean writePNGtoFile(String filename, double exportScale,
 					boolean transparent, double DPI, boolean greyscale) {
-                // stub
+				// stub
 				return false;
+			}
+
+			@Override
+			public void handleSlideAction(String eventType, String pageIdx, String appStat) {
+				// stub
+			}
+
+			@Override
+			public void selectSlide(String pageIdx) {
+				// stub
+			}
+
+			@Override
+			public void previewRefresh() {
+				// stub
 			}
 
 			@Override
 			protected void exportPNGClipboard(boolean transparent, int DPI,
 					double exportScale, EuclidianView ev) {
-                // stub
+				// stub
 
 			}
 
 			@Override
 			protected void exportPNGClipboardDPIisNaN(boolean transparent,
 					double exportScale, EuclidianView ev) {
-                // stub
+				// stub
 
 			}
 
 			@Override
 			protected String base64encodePNG(boolean transparent, double DPI,
 					double exportScale, EuclidianView ev) {
-                // stub
-                return "";
+				// stub
+				return "";
 			}
 		};
     }
 
     @Override
     public SoundManager getSoundManager() {
-        return new SoundManager() {
+		return new SoundManager() {
 
-            @Override
-            public void pauseResumeSound(boolean b) {
-                // stub
-            }
+			@Override
+			public void pauseResumeSound(boolean b) {
+				// stub
+			}
 
-            @Override
-            public void playSequenceNote(int double1, double double2, int i,
-                                         int j) {
-                // stub
-            }
+			@Override
+			public void playSequenceNote(int double1, double double2, int i,
+					int j) {
+				// stub
+			}
 
-            @Override
-            public void playSequenceFromString(String string, int double1) {
-                // stub
-            }
+			@Override
+			public void playSequenceFromString(String string, int double1) {
+				// stub
+			}
 
-            @Override
-            public void playFunction(GeoFunction geoFunction, double double1,
-                                     double double2) {
-                // stub
-            }
+			@Override
+			public void playFunction(GeoFunction geoFunction, double double1,
+					double double2) {
+				// stub
+			}
 
-            @Override
-            public void playFile(String string) {
-                // stub
-            }
+			@Override
+			public void playFile(GeoElement geoElement, String file) {
+				// stub
+			}
 
-            @Override
-            public void playFunction(GeoFunction geoFunction, double double1,
-                                     double double2, int double3, int double4) {
-                // stub
-            }
+			@Override
+			public void playFunction(GeoFunction geoFunction, double double1,
+					double double2, int double3, int double4) {
+				// stub
+			}
 
-            @Override
-            public void loadGeoAudio(GeoAudio geo) {
-                // stub
-            }
+			@Override
+			public void loadGeoAudio(GeoAudio geo) {
+				// stub
+			}
 
-            @Override
-            public int getDuration(String url) {
-                // stub
-                return 0;
-            }
+			@Override
+			public int getDuration(GeoAudio geoAudio) {
+				// stub
+				return 0;
+			}
 
-            @Override
-            public int getCurrentTime(String url) {
-                // stub
-                return 0;
-            }
+			@Override
+			public int getCurrentTime(GeoAudio geoAudio) {
+				// stub
+				return 0;
+			}
 
-            @Override
-            public void setCurrentTime(String url, int pos) {
-                // stub
+			@Override
+			public void setCurrentTime(GeoAudio geoAudio, int pos) {
+				// stub
 
-            }
+			}
 
-            @Override
-            public void checkURL(String url, AsyncOperation<Boolean> callback) {
-                // stub
+			@Override
+			public void checkURL(String url, AsyncOperation<Boolean> callback) {
+				// stub
 
-            }
+			}
 
-            @Override
-            public void play(GeoAudio geo) {
-                // stub
+			@Override
+			public void play(GeoAudio geo) {
+				// stub
 
-            }
+			}
 
-            @Override
-            public void pause(GeoAudio geo) {
-                // stub
+			@Override
+			public void pause(GeoAudio geo) {
+				// stub
 
-            }
+			}
 
-            @Override
-            public boolean isPlaying(GeoAudio geo) {
-                return false;
-            }
-        };
+			@Override
+			public boolean isPlaying(GeoAudio geo) {
+				return false;
+			}
+		};
     }
 
     @Override
@@ -645,7 +630,7 @@ public class AppCommon extends App {
 
     @Override
     public CASFactory getCASFactory() {
-        return casFactory;
+		return casFactory;
     }
 
     @Override
@@ -655,7 +640,7 @@ public class AppCommon extends App {
 
     @Override
     public NormalizerMinimal getNormalizer() {
-        return new NormalizerMinimal();
+		return new NormalizerMinimal();
     }
 
     @Override
@@ -679,14 +664,14 @@ public class AppCommon extends App {
     }
 
     @Override
-    public Localization getLocalization() {
+    public LocalizationJre getLocalization() {
         return localization;
     }
 
-    @Override
-    public MyXMLio createXMLio(Construction cons) {
-        return new MyXMLioCommon(cons.getKernel(), cons);
-    }
+	@Override
+	public MyXMLio createXMLio(Construction cons) {
+		return new MyXMLioCommon(cons.getKernel(), cons);
+	}
 
     @Override
     public void showCustomizeToolbarGUI() {
@@ -724,14 +709,14 @@ public class AppCommon extends App {
 		dialogManager = clear ? null : new DialogManagerNoGui(this, inputs);
 	}
 
-    @Override
-    public AppConfig getConfig() {
-        return config;
-    }
+	@Override
+	public AppConfig getConfig() {
+		return config;
+	}
 
-    public void setConfig(AppConfig config) {
-        this.config = config;
-    }
+	public void setConfig(AppConfig config) {
+		this.config = config;
+	}
 
 	public void setCASFactory(CASFactory casFactory) {
 		this.casFactory = casFactory;
@@ -784,5 +769,14 @@ public class AppCommon extends App {
 
 	public void setScriptManager(ScriptManager scriptManager) {
 		this.scriptManager = scriptManager;
+	}
+
+	public void setAppletFlag(boolean appletFlag) {
+		this.appletFlag = appletFlag;
+	}
+
+	@Override
+	public boolean isWhiteboardActive() {
+		return getConfig() instanceof AppConfigNotes;
 	}
 }

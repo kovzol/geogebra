@@ -428,7 +428,7 @@ public class DrawLabel3D {
 		labelOrigin[1] *= view.getYscale();
 		labelOrigin[2] *= view.getZscale();
 
-        if (!view.isAREnabled() || !anchor) {
+		if (!view.isXREnabled() || !anchor) {
 			drawX = (int) (vScreen.getX() + xOffset);
 			if (anchor && xOffset < 0) {
 				drawX -= width / getFontScale();
@@ -448,32 +448,33 @@ public class DrawLabel3D {
 	}
 
 	/**
-     *
-     * update position for axes labels (x/y/z)
-     *
-     * @param xOffset1
-     *            x offset
-     * @param yOffset1
-     *            y offset
-     * @param zOffset1
-     *            z offset
-     * @param tickSize
-     *            tick size
+	 * 
+	 * update position for axes labels (x/y/z)
+	 * 
+	 * @param xOffset1
+	 *            x offset
+	 * @param yOffset1
+	 *            y offset
+	 * @param zOffset1
+	 *            z offset
+	 * @param tickSize
+	 *            tick size
 	 */
-    public void updateDrawPositionAxes(float xOffset1, float yOffset1,
-                                       float zOffset1, int tickSize) {
-        this.xOffset = xOffset1;
-        this.yOffset = yOffset1;
-        this.zOffset = zOffset1;
-        updateDrawPositionAxes(tickSize);
+	public void updateDrawPositionAxes(float xOffset1, float yOffset1,
+			float zOffset1, int tickSize) {
+		this.xOffset = xOffset1;
+		this.yOffset = yOffset1;
+		this.zOffset = zOffset1;
+	    updateDrawPositionAxes(tickSize);
     }
 
-    /**
-     * update position for axes numbers
-     *
-     * @param tickSize tick sizes
-     */
-    private void updateDrawPositionAxes(int tickSize) {
+	/**
+	 * update position for axes numbers
+	 * 
+	 * @param tickSize
+	 *            tick sizes
+	 */
+	private void updateDrawPositionAxes(int tickSize) {
 		drawX = (int) (vScreen.getX());
 		drawY = (int) (vScreen.getY());
 		drawZ = (int) (vScreen.getZ());
@@ -484,12 +485,12 @@ public class DrawLabel3D {
 		drawZ += radius * zOffset;
 
 		double f = 1.5;
-        drawX += f * tickSize * xOffset;
-        drawY += f * tickSize * yOffset;
-        drawZ += f * tickSize * zOffset;
-    }
+		drawX += f * tickSize * xOffset;
+		drawY += f * tickSize * yOffset;
+		drawZ += f * tickSize * zOffset;
+	}
 
-    /**
+	/**
 	 * 
 	 * @param x
 	 *            mouse x position
@@ -541,8 +542,8 @@ public class DrawLabel3D {
 			return;
 		}
 
-		if (view.isARDrawing()) {
-            if (positionMatrix == null) {
+		if (view.isXRDrawing()) {
+		    if (positionMatrix == null) {
                 positionMatrix = new CoordMatrix4x4();
             }
             positionMatrix.set(renderer.getUndoRotationMatrixAR());
@@ -731,15 +732,15 @@ public class DrawLabel3D {
 		}
 
 		int old = textIndex;
-        if (view.isARDrawing()) {
-            if (!view.isAREnabled() || !anchor) {
-                textIndex = drawRectangle(renderer, 0, 0, 0,
+        if (view.isXRDrawing()) {
+			if (!view.isXREnabled() || !anchor) {
+				textIndex = drawRectangle(renderer, 0, 0, 0,
 						width2 / getFontScale(), height2 / getFontScale(), textIndex);
 			} else {
 				double w = width2 / getFontScale();
 				double h = height2 / getFontScale();
-				textIndex = drawRectangle(renderer, -(pickingX + pickingW / 2) / getFontScale(),
-						-(pickingY + pickingH / 2) / getFontScale(), 0,
+				textIndex = drawRectangle(renderer, -(pickingX + pickingW / 2d) / getFontScale(),
+						-(pickingY + pickingH / 2d) / getFontScale(), 0,
 						w, h, textIndex);
 			}
         } else {
@@ -757,8 +758,8 @@ public class DrawLabel3D {
 		renderer.getGeometryManager().remove(old);
 
 		old = backgroundIndex;
-		if (view.isARDrawing()) {
-            backgroundIndex = drawRectangle(renderer, 0, 0, 0,
+		if (view.isXRDrawing()) {
+			backgroundIndex = drawRectangle(renderer, 0, 0, 0,
 					width / getFontScale(),
 					height / getFontScale(), backgroundIndex);
 		} else {

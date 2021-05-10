@@ -10,16 +10,16 @@ import org.junit.Test;
 
 public class CoordinatesParserTest {
 
-    private static final String COORDS_JSON_STRING =
-            "{coords:[{\"x\":0, \"y\":1, \"time\":2},\n{\"touchEnd\":1}]}";
+	private static final String COORDS_JSON_STRING =
+			"{coords:[{\"x\":0, \"y\":1, \"time\":2},\n{\"touchEnd\":1}]}";
 
-    @Test
-    public void parseCoordinates() throws JSONException {
-        List<Coordinate> coordinates = CoordinatesParser.parseCoordinates(COORDS_JSON_STRING);
-        Coordinate coordinate = coordinates.get(0);
-        assertThat(coordinate.getX(), equalTo(0.0));
-        assertThat(coordinate.getY(), equalTo(1.0));
-        assertThat(coordinate.getTime(), equalTo(2L));
-        assertThat(coordinate.isTouchEnd(), equalTo(true));
-    }
+	@Test
+	public void parseCoordinates() throws JSONException {
+		List<Coordinate> coordinates = CoordinatesParser.parseCoordinates(COORDS_JSON_STRING);
+		Coordinate coordinate = coordinates.get(0);
+		assertThat(coordinate.getX(), equalTo(0.0));
+		assertThat(coordinate.getY(), equalTo(1.0));
+		assertThat(coordinate.getTime(), equalTo(2L));
+		assertThat(coordinate.isTouchEnd(), equalTo(true));
+	}
 }

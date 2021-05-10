@@ -73,4 +73,24 @@ public interface ClientView extends View {
 	 *            The full list of pasted elms, in their finished state.
 	 */
 	public void pasteElmsComplete(ArrayList<GeoElement> pastedElms);
+
+	/**
+	 * Notifies client that the animation for a geoElement is starting.
+	 *
+	 * @param geo
+	 * 			The geoElement that is to be animated
+	 */
+	public void startAnimation(GeoElement geo);
+
+	/**
+	 * Notifies client that the animation for a geoElement is stopping.
+	 *
+	 * @param geo
+	 * 			The animated geoElement
+	 */
+	public void stopAnimation(GeoElement geo);
+
+	public void groupObjects(ArrayList<GeoElement> geos);
+
+	public void ungroupObjects(ArrayList<GeoElement> geos);
 }

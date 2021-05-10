@@ -5,13 +5,16 @@ import java.util.ArrayList;
 import org.geogebra.common.gui.menubar.OptionsMenu;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
-import org.geogebra.common.properties.AbstractEnumerableProperty;
+import org.geogebra.common.properties.impl.AbstractEnumerableProperty;
+
+import com.google.j2objc.annotations.Weak;
 
 /**
  * Property for setting the rounding.
  */
 public class RoundingProperty extends AbstractEnumerableProperty {
 
+    @Weak
     private App app;
     private OptionsMenu optionsMenu;
     private int figuresIndex;

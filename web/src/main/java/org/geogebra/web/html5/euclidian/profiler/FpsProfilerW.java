@@ -7,15 +7,15 @@ import org.geogebra.common.util.profiler.FpsProfiler;
  */
 public class FpsProfilerW extends FpsProfiler {
 
-    @Override
-    protected long now() {
-        return (long) getMillisecondTimeNative();
-    }
+	@Override
+	protected long now() {
+		return (long) getMillisecondTimeNative();
+	}
 
-    /**
-     * @return current milliseconds
-     */
-    public static native double getMillisecondTimeNative() /*-{
+	/**
+	 * @return current milliseconds
+	 */
+	public static native double getMillisecondTimeNative() /*-{
     	return $wnd.performance.now();
 	}-*/;
 }

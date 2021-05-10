@@ -49,9 +49,9 @@ public class CommandDispatcherProver implements CommandDispatcherInterface {
         case Envelope:
             return new CmdEnvelope(kernel);
         case Discover:
-                return new CmdDiscover(kernel);
-            case Compare:
-                return new CmdCompare(kernel);
+            return new CmdDiscover(kernel);
+        case Compare:
+            return new CmdCompare(kernel);
         default:
             return null;
         }

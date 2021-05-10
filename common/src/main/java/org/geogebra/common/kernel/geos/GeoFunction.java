@@ -51,6 +51,7 @@ import org.geogebra.common.kernel.arithmetic.NumberValue;
 import org.geogebra.common.kernel.arithmetic.PolyFunction;
 import org.geogebra.common.kernel.arithmetic.ValueType;
 import org.geogebra.common.kernel.cas.AlgoDerivative;
+import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.commands.EvalInfo;
 import org.geogebra.common.kernel.geos.properties.TableProperties;
 import org.geogebra.common.kernel.implicit.GeoImplicit;
@@ -103,7 +104,6 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 	protected double intervalMax;
 	private boolean evalSwapped;
 	// parent conditional function
-	// private GeoFunctionConditional parentCondFun = null;
 
 	private Boolean isInequality = null;
 	private String shortLHS;
@@ -120,14 +120,6 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 	protected StringBuilder sbToString = new StringBuilder(80);
 
 	private boolean showOnAxis;
-	/**
-	 * we don't care about values of these
-	 */
-	final private static String[] dummy1 = { "", "" };
-	/**
-	 * we don't care about values of these
-	 */
-	final private static char[] dummy2 = { ' ', ' ' };
 
 	private double[] bounds;
 
@@ -313,7 +305,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 		// If labels are suppressed (processing command arguments) accept y and
 		// z as
 		// functions
-		if (suppressLabel || isBooleanFunction()) {
+		if (suppressLabel || isBooleanFunction() || isForceInequality()) {
 			return true;
 		}
 		if ((this.isFunctionOfY()
@@ -335,7 +327,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 
 	@Override
 	public String getTypeString() {
-		return (isInequality != null && isInequality) ? "Inequality"
+		return ((isInequality != null && isInequality) || isForceInequality()) ? "Inequality"
 				: "Function";
 	}
 
@@ -399,6 +391,9 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 					algoMacro.initFunction(this.fun);
 				}
 			}
+			if (geo instanceof GeoFunction) {
+				setForceInequality(((GeoFunction) geo).isForceInequality());
+			}
 			isInequality = null;
 		} else {
 			setUndefined();
@@ -412,6 +407,9 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 	 *            function
 	 */
 	public void setFunction(Function f) {
+		if (fun != null && f != null && fun.isForceInequality()) {
+			f.setForceInequality(true);
+		}
 		fun = f;
 		// reset this for garbage collection, also the flag needs update for
 		// #5054
@@ -451,10 +449,10 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 				if (geo instanceof SurfaceEvaluable) {
 
 					// the cast here is needed for FindBugs
-                    // leave as separate statement so it's not automatically removed
-                    SurfaceEvaluable surface = (SurfaceEvaluable) geo;
+					// leave as separate statement so it's not automatically removed
+					SurfaceEvaluable surface = (SurfaceEvaluable) geo;
 
-                    surfaceEvaluables.remove(surface);
+					surfaceEvaluables.remove(surface);
 				}
 			}
 		}
@@ -463,9 +461,9 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 	}
 
 	/**
-     * initializes function type; if boolean, uses default style for inequalities
-	 *
-     * @param simplifyInt whether integer sub-expressions should be simplified
+	 * initializes function type; if boolean, uses default style for inequalities
+	 * 
+	 * @param simplifyInt whether integer sub-expressions should be simplified
 	 */
 	public void initFunction(boolean simplifyInt) {
 		fun.initFunction(simplifyInt);
@@ -578,8 +576,8 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 		GeoFunction ff = (GeoFunction) f;
 
 		if (ff.isDefined()) {
-			fun = (Function) ff.fun.evalCasCommand(ggbCasCmd, symbolic,
-					arbconst);
+			setFunction((Function) ff.fun.evalCasCommand(ggbCasCmd, symbolic,
+					arbconst));
 
 			checkDefined();
 
@@ -804,7 +802,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 
 	@Override
 	public boolean isDefined() {
-		return isDefined && fun != null;
+		return isDefined && fun != null && isFunctionDefined(fun);
 	}
 
 	@Override
@@ -867,7 +865,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 	 * @param fn
 	 *            function; to determine what kind of LHS we want
 	 */
-	public final static void initStringBuilder(StringBuilder stringBuilder,
+	public static void initStringBuilder(StringBuilder stringBuilder,
 			StringTemplate tpl, String label,
 			FunctionalNVar fn) {
 		stringBuilder.append(label);
@@ -875,7 +873,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 			stringBuilder.append(": ");
 			stringBuilder.append(fn.getShortLHS());
 			stringBuilder.append(tpl.getEqualsWithSpace());
-		} else if (fn.isBooleanFunction()
+		} else if ((fn.isBooleanFunction() || fn.isForceInequality())
 				&& !tpl.hasType(StringType.GEOGEBRA_XML)) {
 			stringBuilder.append(": ");
 		} else {
@@ -935,7 +933,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 	 * save object in xml format
 	 */
 	@Override
-	public final void getXML(boolean getListenersToo, StringBuilder sbxml) {
+	public void getXML(boolean getListenersToo, StringBuilder sbxml) {
 		// an independent function needs to add
 		// its expression itself
 		// e.g. f(x) = x^2 - 3x
@@ -945,19 +943,12 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 			sbxml.append(label);
 			sbxml.append("\" exp=\"");
 			StringUtil.encodeXML(sbxml, toString(StringTemplate.xmlTemplate));
-			// expression
-			sbxml.append("\" type=\"function\"/>\n");
+			sbxml.append("\" type=\"");
+			sbxml.append(getFunctionType());
+			sbxml.append("\"/>\n");
 		}
 
-		sbxml.append("<element");
-		sbxml.append(" type=\"function\"");
-		sbxml.append(" label=\"");
-		sbxml.append(label);
-		if (getDefaultGeoType() >= 0) {
-			sbxml.append("\" default=\"");
-			sbxml.append(getDefaultGeoType());
-		}
-		sbxml.append("\">\n");
+		getElementOpenTagXML(sbxml);
 		getXMLtags(sbxml);
 		getCaptionXML(sbxml);
 		printCASEvalMapXML(sbxml);
@@ -965,6 +956,15 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 			getListenerTagsXML(sbxml);
 		}
 		sbxml.append("</element>\n");
+	}
+
+	/**
+	 * function type
+	 * @return type of function (inequality or function)
+	 */
+	public String getFunctionType() {
+		return isForceInequality() ? "inequality"
+				: "function";
 	}
 
 	/**
@@ -1003,10 +1003,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 			return;
 
 		case AND_INTERVAL:
-
-			GeoInterval.updateBoundaries(inequalityEn, bounds0,
-					GeoFunction.dummy1, GeoFunction.dummy2);
-
+			GeoIntervalUtil.updateBoundaries(inequalityEn, bounds0);
 			break;
 
 		case LESS:
@@ -1078,8 +1075,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 							if (bounds == null) {
 								bounds = new double[2];
 							}
-							GeoInterval.updateBoundaries(inequalityEn, bounds,
-									dummy1, dummy2);
+							GeoIntervalUtil.updateBoundaries(inequalityEn, bounds);
 
 							if (P.getX() < bounds[0]) {
 								P.setX(bounds[0]);
@@ -1162,10 +1158,10 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 	private void pointChanged(GeoPointND P, boolean closestPoly) {
 
 		Coords coords = P.getCoordsInD2();
-        if (!coords.isDefined() && P.isMoveable()) {
-            // TRAC-3494
-            coords.setX(0);
-        }
+		if (!coords.isDefined() && P.isMoveable()) {
+			// TRAC-3494
+			coords.setX(0);
+		}
 		pointChanged(coords, closestPoly);
 
 		// set path parameter for compatibility with
@@ -1461,23 +1457,24 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 			return ((GeoLine) geo).isEqual(this);
 		}
 
-		if (!geo.isGeoFunction()
-				|| geo.getGeoClassType().equals(GeoClass.INTERVAL)) {
+		if (!geo.isGeoFunction()) {
 			return false;
 		}
 
 		GeoFunction geoFun = (GeoFunction) geo;
-		if (differAt(this, geoFun, 0) || differAt(this, geoFun, 1)) {
+		// check equality in two points; avoid discontinuities of common functions (1/x, tan(x))
+		if (differAt(this, geoFun, 0.31) || differAt(this, geoFun, 10.89)
+				|| !isDefined() || !geoFun.isDefined()) {
 			return false;
 		}
 		PolyFunction poly1 = getFunction()
 				.expandToPolyFunction(getFunctionExpression(), false, true);
-		if (poly1 != null) {
+		if (poly1 != null && isDefined()) {
 			PolyFunction poly2 = geoFun.getFunction().expandToPolyFunction(
 					geoFun.getFunctionExpression(), false, true);
 
 			if (poly2 != null) {
-				return poly1.isEqual(poly2);
+				return geoFun.isDefined() && poly1.isEqual(poly2);
 			}
 		}
 
@@ -1488,10 +1485,21 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 		return isDifferenceZeroInCAS(geo);
 	}
 
+	protected static boolean isFunctionDefined(FunctionNVar fun) {
+		// function defined as "?"
+		ExpressionValue def = fun.getExpression().unwrap();
+		return !(def instanceof MyDouble && def.isConstant()
+				&& Double.isNaN(def.evaluateDouble()));
+	}
+
+	/*
+	 * Check that the functions differ at given point; false negatives if values are
+	 * too big, too close to each othe or one is undefined.
+	 */
 	private static boolean differAt(GeoFunction f1, GeoFunction f2, double x) {
 		double v1 = f1.value(x);
 		double v2 = f2.value(x);
-		if (!MyDouble.isFinite(v2) || Math.abs(v1) > 1E8) {
+		if (!MyDouble.isFinite(v1) || Math.abs(v1) > 1E8) {
 			return false;
 		}
 		if (!MyDouble.isFinite(v2) || Math.abs(v2) > 1E8) {
@@ -1641,9 +1649,12 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 		}
 		if (lt instanceof GeoFunctionNVar) {
 			MyList varList = new MyList(kernel);
-			for (int i = 0; i < lt.getFunction().getVarNumber(); i++) {
-				varList.addListElement(varMap.get(lt.getFunction()
-						.getVarString(i, StringTemplate.defaultTemplate)));
+			FunctionNVar function = lt.getFunction();
+			if (function != null) {
+				for (int i = 0; i < function.getVarNumber(); i++) {
+					varList.addListElement(varMap.get(function
+							.getVarString(i, StringTemplate.defaultTemplate)));
+				}
 			}
 			return new ExpressionNode(kernel, lt, Operation.FUNCTION_NVAR,
 					varList);
@@ -1796,7 +1807,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 				.getCopy(kernel);
 
 		ExpressionNode product = new ExpressionNode(kernel, left,
-				Operation.MULTIPLY, right.replace(xold, x).wrap());
+				Operation.MULTIPLY, right.replace(xold, x).unwrap());
 
 		Function f = new Function(product, x);
 
@@ -2105,7 +2116,8 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 
 	@Override
 	public char getLabelDelimiter() {
-		return isBooleanFunction() || shortLHS != null ? ':' : '=';
+		return isBooleanFunction() || shortLHS != null
+				|| isForceInequality() ? ':' : '=';
 	}
 
 	/**
@@ -2307,7 +2319,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 		if (str == null || str.length() == 0) {
 			return true;
 		}
-		if ("?".equals(str) || "{?}".equals(str)) {
+		if (isUndefined(str)) {
 			return true; // undefined/NaN
 		}
 		// if (str.indexOf("%i") > -1 ) return true; // complex answer
@@ -2319,6 +2331,15 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * @param str
+	 *            CAS output
+	 * @return whether output is undefined
+	 */
+	static boolean isUndefined(String str) {
+		return "?".equals(str) || "{?}".equals(str);
 	}
 
 	/**
@@ -2499,13 +2520,13 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 	 * Reset all inequalities (slow, involves parser)
 	 */
 	public void resetIneqs() {
-		isInequality = fun.initIneqs(getFunctionExpression(), this);
+		isInequality = fun.initIneqs(getFunctionExpression());
 	}
 
 	@Override
 	public IneqTree getIneqs() {
 		if (fun.getIneqs() == null) {
-			isInequality = fun.initIneqs(fun.getExpression(), this);
+			isInequality = fun.initIneqs(fun.getExpression());
 		} else if (isInequality == null) {
 			isInequality = fun.getIneqs().isValid();
 		}
@@ -2540,7 +2561,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 
 	@Override
 	public boolean isGeoFunctionBoolean() {
-		return isBooleanFunction();
+		return isBooleanFunction() || isForceInequality();
 	}
 
 	@Override
@@ -2577,7 +2598,7 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 					ret = "?";
 				} else {
 					ret = substituteNumbers ? getFunction().toValueString(tpl)
-							: getFunction().toString(tpl);
+							: getParentAlgorithm().getDefinition(tpl);
 				}
 			}
 		} else {
@@ -2595,15 +2616,13 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 		 */
 
 		if (tpl.hasType(StringType.LATEX)) {
-			if ("?".equals(ret)) {
-				ret = "?";
-			} else if ((Unicode.INFINITY + "").equals(ret)) {
+			if ((Unicode.INFINITY + "").equals(ret)) {
 				ret = "\\infty";
 			} else if ((Unicode.MINUS_INFINITY_STRING).equals(ret)) {
 				ret = "-\\infty";
 			}
 		}
-		if (shortLHS != null) {
+		if (shortLHS != null && tpl.allowShortLhs()) {
 			return shortLHS + " = " + ret;
 		}
 		return ret;
@@ -2854,6 +2873,9 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 
 	@Override
 	public DescriptionMode getDescriptionMode() {
+		if (algoParent != null && algoParent.getClassName() == Commands.LineGraph) {
+			return DescriptionMode.DEFINITION;
+		}
 		if (hideDefinitionInAlgebra(getFunctionExpression())) {
 			return DescriptionMode.VALUE;
 		}
@@ -3004,5 +3026,41 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 	@Override
 	protected boolean canBeFunctionOrEquationFromUser() {
 		return true;
+	}
+
+	@Override
+	public boolean isForceInequality() {
+		return fun != null && fun.isForceInequality();
+	}
+
+	@Override
+	public void setForceInequality(boolean forceInequality) {
+		if (fun != null) {
+			fun.setForceInequality(forceInequality);
+		}
+	}
+
+	/**
+	 * @return the left bound if this is an interval
+	 */
+	public double getMin() {
+		if (!isDefined()) {
+			return Double.NaN;
+		}
+		double[] minmax = new double[2];
+		GeoIntervalUtil.updateBoundaries(fun.getExpression(), minmax);
+		return minmax[0];
+	}
+
+	/**
+	 * @return the right bound if this is an interval
+	 */
+	public double getMax() {
+		if (!isDefined()) {
+			return Double.NaN;
+		}
+		double[] minmax = new double[2];
+		GeoIntervalUtil.updateBoundaries(fun.getExpression(), minmax);
+		return minmax[1];
 	}
 }

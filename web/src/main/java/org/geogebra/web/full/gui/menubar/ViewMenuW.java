@@ -14,8 +14,7 @@ import org.geogebra.web.full.javax.swing.GCheckBoxMenuItem;
 import org.geogebra.web.html5.gui.util.ImgResourceHelper;
 import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.resources.SVGResource;
-
-import com.google.gwt.user.client.Timer;
+import org.gwtproject.timer.client.Timer;
 
 /**
  * The "View" menu for the applet. For application use ViewMenuApplicationW
@@ -97,8 +96,8 @@ public class ViewMenuW extends Submenu {
 					@Override
 					public void doExecute() {
 						app.persistWidthAndHeight();
-						app.getArticleElement()
-								.attr("showAlgebraInput", "true");
+						app.getAppletParameters()
+								.setAttribute("showAlgebraInput", "true");
 
 						app.setShowAlgebraInput(true, false);
 						app.setInputPosition(

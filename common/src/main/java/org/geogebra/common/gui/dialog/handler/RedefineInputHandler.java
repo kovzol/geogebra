@@ -101,7 +101,7 @@ public class RedefineInputHandler implements InputHandler {
 
 			return;
 		} catch (Exception e) {
-            app.showError(Errors.ReplaceFailed);
+			app.showError(Errors.ReplaceFailed);
 		} catch (MyError err) {
 			app.showError(err);
 		}

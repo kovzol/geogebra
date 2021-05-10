@@ -66,7 +66,7 @@ public class SpaceAtom extends Atom {
 	private double depth;
 
 	// units for the dimensions
-    private Unit unit;
+	private Unit unit;
 
 	public SpaceAtom() {
 		blankSpace = true;
@@ -77,15 +77,15 @@ public class SpaceAtom extends Atom {
 		blankType = type;
 	}
 
-    public SpaceAtom(Unit unit, double width, double height,
-                     double depth) {
+	public SpaceAtom(Unit unit, double width, double height,
+			double depth) {
 		this.unit = unit;
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
 	}
 
-    public SpaceAtom(Unit unit, double width) {
+	public SpaceAtom(Unit unit, double width) {
 		this.unit = unit;
 		this.width = width;
 		this.height = 0.;
@@ -109,7 +109,7 @@ public class SpaceAtom extends Atom {
 	public Box createBox(TeXEnvironment env) {
 		if (blankSpace) {
 			if (blankType == TeXConstants.Muskip.NONE) {
-				return new StrutBox(env.getSpace(), 0., 0., 0.);
+				return new StrutBox(env.getSpace(), 0., 0., 0.).setAtom(this);
 			} else {
 				Box b;
 				if (blankType == TeXConstants.Muskip.THIN
@@ -138,9 +138,9 @@ public class SpaceAtom extends Atom {
 		}
 	}
 
-    private final double conv(final double x, final Unit unit,
-                              final TeXEnvironment env) {
-        return x == 0. ? 0. : x * unit.getFactor(env);
+	private final double conv(final double x, final Unit unit,
+			final TeXEnvironment env) {
+		return x == 0. ? 0. : x * unit.getFactor(env);
 	}
 
 	public double getHeight() {

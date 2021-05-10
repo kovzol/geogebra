@@ -7,7 +7,7 @@ public class ClientInfo {
 	private int width;
 	private int height;
 	private String language;
-    private String appName;
+	private String appName;
 
 	public AuthenticationModel getModel() {
 		return model;
@@ -57,11 +57,11 @@ public class ClientInfo {
 		this.language = language;
 	}
 
-    public String getAppName() {
-        return appName;
-    }
+	public String getAppName() {
+		return appName;
+	}
 
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
 }

@@ -3,11 +3,11 @@ package org.geogebra.web.full.gui.laf;
 import org.geogebra.common.GeoGebraConstants.Platform;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
+import org.geogebra.web.html5.Browser;
+import org.geogebra.web.html5.gui.util.BrowserStorage;
 import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.shared.SignInController;
-import org.geogebra.web.shared.ggtapi.BASEURL;
-
-import com.google.gwt.storage.client.Storage;
+import org.geogebra.web.shared.ggtapi.StaticFileUrls;
 
 /**
  * For offline browser
@@ -41,17 +41,14 @@ public class BundleLookAndFeel extends GLookAndFeel {
 	}-*/;
 
 	@Override
-	public void storeLanguage(String s, AppW app) {
-		Storage storage = Storage.getLocalStorageIfSupported();
-		if (storage != null) {
-			storage.setItem("GeoGebraLangUI", s);
-		}
+	public void storeLanguage(String s) {
+		BrowserStorage.LOCAL.setItem("GeoGebraLangUI", s);
 	}
 
 	@Override
 	public SignInController getSignInController(App app) {
 		return new SignInController(app, 0,
-				BASEURL.getCallbackUrl().replace("file://", "app://"));
+				StaticFileUrls.getCallbackUrl().replace("file://", "app://"));
 	}
 
 	@Override
@@ -79,4 +76,8 @@ public class BundleLookAndFeel extends GLookAndFeel {
 		return true;
 	}
 
+	@Override
+	public boolean isExternalLoginAllowed() {
+		return !Browser.isMacOS();
+	}
 }

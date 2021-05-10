@@ -57,7 +57,6 @@ public class MathFieldInputSuggestions extends InputSuggestions
 	protected GSuggestBox.SuggestionCallback sugCallback = new GSuggestBox.SuggestionCallback() {
 		@Override
 		public void onSuggestionSelected(Suggestion s) {
-
 			String sugg = s.getReplacementString();
 			autocompleteAndHide(sugg);
 		}
@@ -86,7 +85,7 @@ public class MathFieldInputSuggestions extends InputSuggestions
 
 	/**
 	 * Show suggestions.
-	 *
+	 * 
 	 * @return true
 	 */
 	public boolean popupSuggestions() {
@@ -118,7 +117,7 @@ public class MathFieldInputSuggestions extends InputSuggestions
 
 	/**
 	 * Hide the suggestions.
-	 *
+	 * 
 	 * @return true
 	 */
 	public boolean hideSuggestions() {
@@ -130,7 +129,7 @@ public class MathFieldInputSuggestions extends InputSuggestions
 
 	/**
 	 * Update the suggestions.
-	 *
+	 * 
 	 * @param res
 	 *            oracle response
 	 */

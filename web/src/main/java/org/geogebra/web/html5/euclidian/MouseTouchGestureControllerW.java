@@ -23,6 +23,7 @@ import org.geogebra.web.html5.gui.util.CancelEventTimer;
 import org.geogebra.web.html5.gui.util.LongTouchManager;
 import org.geogebra.web.html5.gui.util.LongTouchTimer.LongTouchHandler;
 import org.geogebra.web.html5.main.AppW;
+import org.gwtproject.timer.client.Timer;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.NativeEvent;
@@ -41,7 +42,6 @@ import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 
 @SuppressWarnings("javadoc")
@@ -80,9 +80,9 @@ public class MouseTouchGestureControllerW extends MouseTouchGestureController
 	private boolean comboboxFocused;
 	private boolean euclidianOffsetsInited = false;
 
-    private DrawingEmulator drawingEmulator;
-    private DrawingRecorder drawingRecorder;
-    private boolean isRecording;
+	private DrawingEmulator drawingEmulator;
+	private DrawingRecorder drawingRecorder;
+	private boolean isRecording;
 
 	/**
 	 * ignore events after first touchEnd of a multi touch event
@@ -104,9 +104,9 @@ public class MouseTouchGestureControllerW extends MouseTouchGestureController
 		style = new EnvironmentStyleW();
 		style.setxOffset(getEnvXoffset());
 		style.setyOffset(getEnvYoffset());
-		double scaleX = ((AppW) app).getArticleElement().getScaleX();
+		double scaleX = ((AppW) app).getGeoGebraElement().getScaleX();
 		style.setScaleX(scaleX);
-		style.setScaleY(((AppW) app).getArticleElement().getScaleY());
+		style.setScaleY(((AppW) app).getGeoGebraElement().getScaleY());
 
 		setZoomOffsets(scaleX);
 
@@ -331,7 +331,7 @@ public class MouseTouchGestureControllerW extends MouseTouchGestureController
 		if (!dragModeMustBeSelected) {
 			ec.wrapMouseMoved(event);
 		} else {
-            wrapMouseDraggedWithProfiling(event, startCapture);
+			wrapMouseDraggedWithProfiling(event, startCapture);
 		}
 
 		this.waitingTouchMove = null;
@@ -368,8 +368,8 @@ public class MouseTouchGestureControllerW extends MouseTouchGestureController
 			// mouseLoc was already adjusted to the EVs coords, do not use
 			// offset again
 			ec.wrapMouseReleased(new PointerEvent(ec.mouseLoc.x,
-                    ec.mouseLoc.y,
-                    PointerEventType.TOUCH, ZeroOffset.INSTANCE));
+					ec.mouseLoc.y,
+					PointerEventType.TOUCH, ZeroOffset.INSTANCE));
 		} else {
 			// multitouch-event
 			// ignore next touchMove and touchEnd events with one touch
@@ -380,24 +380,24 @@ public class MouseTouchGestureControllerW extends MouseTouchGestureController
 		ec.resetModeAfterFreehand();
 	}
 
-    /**
-     * Ends the touch without the TouchEndEvent object.
-     */
-    public void onTouchEnd() {
-        dragModeMustBeSelected = false;
-        if (moveCounter < 2) {
-            ec.resetModeAfterFreehand();
-        }
+	/**
+	 * Ends the touch without the TouchEndEvent object.
+	 */
+	public void onTouchEnd() {
+		dragModeMustBeSelected = false;
+		if (moveCounter < 2) {
+			ec.resetModeAfterFreehand();
+		}
 
-        this.moveIfWaiting();
-        resetDelay();
-        longTouchManager.cancelTimer();
-        ec.wrapMouseReleased(new PointerEvent(ec.mouseLoc.x,
-                ec.mouseLoc.y,
-                PointerEventType.TOUCH, ZeroOffset.INSTANCE));
-        CancelEventTimer.touchEventOccured();
-        ec.resetModeAfterFreehand();
-    }
+		this.moveIfWaiting();
+		resetDelay();
+		longTouchManager.cancelTimer();
+		ec.wrapMouseReleased(new PointerEvent(ec.mouseLoc.x,
+				ec.mouseLoc.y,
+				PointerEventType.TOUCH, ZeroOffset.INSTANCE));
+		CancelEventTimer.touchEventOccured();
+		ec.resetModeAfterFreehand();
+	}
 
 	/**
 	 * Handle touch start
@@ -587,35 +587,35 @@ public class MouseTouchGestureControllerW extends MouseTouchGestureController
 	 *            whether to start capturing
 	 */
 	public void onMouseMoveNow(PointerEvent event, long time,
-                               boolean startCapture) {
-        this.lastMoveEvent = time;
-        if (!dragModeMustBeSelected) {
-            ec.wrapMouseMoved(event);
-        } else {
-            event.setIsRightClick(dragModeIsRightClick);
-            wrapMouseDraggedWithProfiling(event, startCapture);
-            if (isRecording) {
-                drawingRecorder
-                        .recordCoordinate(event.getX(), event.getY(), System.currentTimeMillis());
-            }
-        }
-        event.release();
-        this.waitingMouseMove = null;
-        this.waitingTouchMove = null;
-        int dragTime = (int) (System.currentTimeMillis() - time);
-        if (dragTime > delayUntilMoveFinish) {
-            delayUntilMoveFinish = dragTime + 10;
-        }
+	        boolean startCapture) {
+		this.lastMoveEvent = time;
+		if (!dragModeMustBeSelected) {
+			ec.wrapMouseMoved(event);
+		} else {
+			event.setIsRightClick(dragModeIsRightClick);
+			wrapMouseDraggedWithProfiling(event, startCapture);
+			if (isRecording) {
+				drawingRecorder
+						.recordCoordinate(event.getX(), event.getY(), System.currentTimeMillis());
+			}
+		}
+		event.release();
+		this.waitingMouseMove = null;
+		this.waitingTouchMove = null;
+		int dragTime = (int) (System.currentTimeMillis() - time);
+		if (dragTime > delayUntilMoveFinish) {
+			delayUntilMoveFinish = dragTime + 10;
+		}
 
-        moveCounter++;
-    }
+		moveCounter++;
+	}
 
-    private void wrapMouseDraggedWithProfiling(PointerEvent event, boolean startCapture) {
-        double dragStart = FpsProfilerW.getMillisecondTimeNative();
-        ec.wrapMouseDragged(event, startCapture);
-        GeoGebraProfiler.addDrag(
-                (long) (FpsProfilerW.getMillisecondTimeNative() - dragStart));
-    }
+	private void wrapMouseDraggedWithProfiling(PointerEvent event, boolean startCapture) {
+		double dragStart = FpsProfilerW.getMillisecondTimeNative();
+		ec.wrapMouseDragged(event, startCapture);
+		GeoGebraProfiler.addDrag(
+				(long) (FpsProfilerW.getMillisecondTimeNative() - dragStart));
+	}
 
 	/**
 	 * Handle mouse up event.
@@ -640,27 +640,27 @@ public class MouseTouchGestureControllerW extends MouseTouchGestureController
 	 * @param e
 	 *            pointer up event
 	 */
-    public void onPointerEventEnd(AbstractEvent e) {
-        app.getFpsProfiler().notifyTouchEnd();
-        if (isRecording) {
-            drawingRecorder.recordTouchEnd();
-        }
-        if (moveCounter < 2) {
-            ec.resetModeAfterFreehand();
-        }
-        this.moveIfWaiting();
-        resetDelay();
-        dragModeMustBeSelected = false;
+	public void onPointerEventEnd(AbstractEvent e) {
+		app.getFpsProfiler().notifyTouchEnd();
+		if (isRecording) {
+			drawingRecorder.recordTouchEnd();
+		}
+		if (moveCounter < 2) {
+			ec.resetModeAfterFreehand();
+		}
+		this.moveIfWaiting();
+		resetDelay();
+		dragModeMustBeSelected = false;
 
-        // hide dialogs if they are open
-        // but don't hide context menu if we just opened it via long tap in IE
-        if (ec.getDefaultEventType() == PointerEventType.MOUSE
-                && app.getGuiManager() != null) {
-            ((AppW) app).getGuiManager().removePopup();
-        }
+		// hide dialogs if they are open
+		// but don't hide context menu if we just opened it via long tap in IE
+		if (ec.getDefaultEventType() == PointerEventType.MOUSE
+				&& app.getGuiManager() != null) {
+			((AppW) app).getGuiManager().removePopup();
+		}
 
-        ec.wrapMouseReleased(e);
-        e.release();
+		ec.wrapMouseReleased(e);
+		e.release();
 
 		ec.resetModeAfterFreehand();
 	}
@@ -694,6 +694,10 @@ public class MouseTouchGestureControllerW extends MouseTouchGestureController
 	 */
 	public void onPointerEventStart(AbstractEvent event) {
 		app.getFpsProfiler().notifyTouchStart();
+
+		if (((AppW) app).isMenuShowing()) {
+			((AppW) app).toggleMenu();
+		}
 		if (isRecording) {
 			drawingRecorder
 					.recordCoordinate(event.getX(), event.getY(), System.currentTimeMillis());
@@ -749,7 +753,7 @@ public class MouseTouchGestureControllerW extends MouseTouchGestureController
 	 */
 	public boolean hitResetIcon() {
 		return app.showResetIcon()
-                && ((ec.mouseLoc.y < 32) && (ec.mouseLoc.x > (ec.getView().getViewWidth() - 32)));
+				&& ((ec.mouseLoc.y < 32) && (ec.mouseLoc.x > (ec.getView().getViewWidth() - 32)));
 	}
 
 	@Override
@@ -835,9 +839,9 @@ public class MouseTouchGestureControllerW extends MouseTouchGestureController
 	/**
 	 * Close all popups.
 	 */
-	public void closePopups() {
+	public void closePopups(PointerEvent e) {
 		((AppW) app).onUnhandledClick();
-		app.closePopups();
+		app.closePopups(e.getX(), e.getY());
 	}
 
 	/**
@@ -871,4 +875,3 @@ public class MouseTouchGestureControllerW extends MouseTouchGestureController
 		isRecording = false;
 	}
 }
-

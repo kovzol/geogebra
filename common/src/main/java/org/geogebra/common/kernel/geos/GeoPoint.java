@@ -23,8 +23,9 @@ package org.geogebra.common.kernel.geos;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.TreeMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -261,6 +262,14 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 		this.region = region;
 	}
 
+	/**
+	 * @return whether given geo is a point with complex coordinates
+	 */
+	public static boolean isComplexNumber(GeoElementND geo) {
+		return geo.isGeoPoint()
+				&& ((GeoPointND) geo).getToStringMode() == Kernel.COORD_COMPLEX;
+	}
+
 	@Override
 	public void setZero() {
 		setCoords(0, 0, 1);
@@ -465,7 +474,7 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 			GeoPoint p = new GeoPoint(cons, endPosition.getX(),
 					endPosition.getY(), 1);
 
-            ExpressionNode exp = getDefinition();
+			ExpressionNode exp = getDefinition();
 
 			GeoCurveCartesian curve = (GeoCurveCartesian) exp.getLeft();
 			GeoNumeric param = (GeoNumeric) exp.getRight();
@@ -534,30 +543,15 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 		else {
 
 			// only change if GeoNumeric
+
 			if (xvar instanceof GeoNumeric) {
-
-				GeoNumeric num = (GeoNumeric) xvar;
-
-				double newXval = xvar.getDouble() - inhomX + endPosition.getX();
-
-				if (num.isSlider()) {
-					newXval = num.restrictToSliderValues(newXval);
-				}
-
-				num.setValue(newXval);
+				incrementParentNumeric(endPosition.getX() - inhomX,
+						(GeoNumeric) xvar, targetPosition);
 			}
 
 			if (xvar != yvar && yvar instanceof GeoNumeric) {
-
-				GeoNumeric num = (GeoNumeric) yvar;
-
-				double newYval = yvar.getDouble() - inhomY + endPosition.getY();
-
-				if (num.isSlider()) {
-					newYval = num.restrictToSliderValues(newYval);
-				}
-
-				num.setValue(newYval);
+				incrementParentNumeric(endPosition.getY() - inhomY,
+						(GeoNumeric) yvar, targetPosition);
 			}
 		}
 
@@ -571,6 +565,23 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 		}
 
 		return true;
+	}
+
+	/**
+	 * Increment single coordinate of a draggable point depending on sliders.
+	 * If we know target position, use the diff, if not use max(slider increment, diff)
+	 * @param diff suggested increment
+	 * @param num number/slider to be increased
+	 * @param target target position
+	 */
+	public static void incrementParentNumeric(double diff, GeoNumeric num, Coords target) {
+		double increment = target != null ? diff
+				: Math.max(Math.abs(diff), num.getAnimationStep()) * Math.signum(diff);
+		double newVal = num.getDouble()  + increment;
+		if (num.isSlider()) {
+			newVal = num.restrictToSliderValues(newVal);
+		}
+		num.setValue(newVal);
 	}
 
 	/**
@@ -637,9 +648,9 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 	 *         Slider a
 	 */
 	private boolean isPointOnCurveWithSlider() {
-        ExpressionNode exp = getDefinition();
-
-        if (exp == null) {
+		ExpressionNode exp = getDefinition();
+		
+		if (exp == null) {
 			return false;
 		}
 
@@ -670,11 +681,11 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 		// init changeableCoordNumbers
 		if (changeableCoordNumbers == null) {
 			changeableCoordNumbers = new ArrayList<>(2);
-            ExpressionNode en = getDefinition();
+			ExpressionNode en = getDefinition();
 			// dependent point of form P = (a, b)
-            if (!isIndependent() && en != null) {
+			if (!isIndependent() && en != null) {
 				// (xExpression, yExpression)
-                if (en.unwrap() instanceof MyVecNode) {
+				if (en.unwrap() instanceof MyVecNode) {
 					// (xExpression, yExpression)
 					MyVecNode vn = (MyVecNode) en.getLeft();
 					hasPolarParentNumbers = vn.hasPolarCoords();
@@ -1602,20 +1613,15 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 	 */
 	public static final String buildValueStringSeparator(Kernel kernel,
 			StringTemplate tpl) {
-		String separator;
-		switch (tpl.getCoordStyle(kernel.getCoordStyle())) {
-		case Kernel.COORD_STYLE_AUSTRIAN:
-			separator = " |";
-			break;
-
-		default:
-			separator = Character
-					.toString(kernel.getLocalization().getComma());
-		}
 		if (tpl.hasCASType()) {
-			separator = ",";
+			return ",";
 		}
-		return separator;
+		if (tpl.getCoordStyle(kernel.getCoordStyle()) == Kernel.COORD_STYLE_AUSTRIAN) {
+			return " |";
+		}
+		StringBuilder sb = new StringBuilder();
+		tpl.getComma(sb, kernel.getLocalization());
+		return sb.toString();
 	}
 
 	/**
@@ -1687,7 +1693,7 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 			break;
 
 		default: // CARTESIAN
-            sbBuildValueString.append(tpl.leftBracket());
+			sbBuildValueString.append(tpl.leftBracket());
 			sbBuildValueString.append(kernel.format(x, tpl));
 			switch (tpl.getCoordStyle(kernel.getCoordStyle())) {
 			case Kernel.COORD_STYLE_AUSTRIAN:
@@ -1697,12 +1703,11 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 				break;
 
 			default:
-				sbBuildValueString
-						.append(kernel.getLocalization().getComma());
+				tpl.getComma(sbBuildValueString, kernel.getLocalization());
 				tpl.appendOptionalSpace(sbBuildValueString);
 			}
 			sbBuildValueString.append(kernel.format(y, tpl));
-            sbBuildValueString.append(tpl.rightBracket());
+			sbBuildValueString.append(tpl.rightBracket());
 		}
 
 	}
@@ -1777,12 +1782,11 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 	}
 
 	@Override
-	public String getStartPointXML() {
-		StringBuilder sb = new StringBuilder();
+	public void appendStartPointXML(StringBuilder sb) {
 		sb.append("\t<startPoint ");
 
 		if (isAbsoluteStartPoint()) {
-			sb.append(" x=\"");
+			sb.append("x=\"");
 			sb.append(x);
 			sb.append("\"");
 			sb.append(" y=\"");
@@ -1794,11 +1798,9 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 		} else {
 			sb.append("exp=\"");
 			StringUtil.encodeXML(sb, getLabel(StringTemplate.xmlTemplate));
-
 			sb.append("\"");
 		}
 		sb.append("/>\n");
-		return sb.toString();
 	}
 
 	@Override
@@ -1883,6 +1885,7 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 		}
 
 		cons.getDiscoveryPool().removePoint((GeoPoint) this);
+
 		super.doRemove();
 	}
 

@@ -20,7 +20,6 @@ import org.geogebra.common.awt.GRectangle;
 import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.factories.AwtFactory;
-import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.matrix.Coords;
@@ -58,6 +57,8 @@ public final class DrawText extends Drawable {
 	// private Image eqnImage;
 	private int oldXpos;
 	private int oldYpos;
+	private int oldHorizontal;
+	private int oldVertical;
 	private boolean needsBoundingBoxOld;
 	/**
 	 * thickness for the highlight frame
@@ -101,13 +102,9 @@ public final class DrawText extends Drawable {
 			updateStrokes(text);
 		}
 
-		if (isLaTeX) {
-			updateStrokes(text);
-		}
-
 		String newText = text.getTextString();
 
-		boolean textChanged = labelDesc == null || !labelDesc.equals(newText)
+		final boolean textChanged = labelDesc == null || !labelDesc.equals(newText)
 				|| isLaTeX != text.isLaTeX()
 				|| text.isNeedsUpdatedBoundingBox() != needsBoundingBoxOld;
 		labelDesc = newText;
@@ -115,6 +112,56 @@ public final class DrawText extends Drawable {
 		needsBoundingBoxOld = text.isNeedsUpdatedBoundingBox();
 
 		// compute location of text
+		updateLabelPosition();
+
+		boolean positionChanged = xLabel != oldXpos || yLabel != oldYpos
+				|| oldVertical != getVerticalAlignment()
+				|| oldHorizontal != getVerticalAlignment();
+		oldXpos = xLabel;
+		oldYpos = yLabel;
+		oldVertical = getVerticalAlignment();
+		oldHorizontal = getHorizontalAlignment();
+
+		boolean fontChanged = doUpdateFontSize();
+
+		// some commented code for LaTeX speedup removed in r22321
+
+		// We need check for null bounding box because of
+		// SetValue[text,Text["a",(1,1)]] makes it null
+		if (needsBoundingBoxUpdate(textChanged || positionChanged || fontChanged)) {
+			// ensure that bounding box gets updated by drawing text once
+			updateLabelRectangle();
+			if (hasAlignment()) {
+				handleTextAlignment();
+				if (text.isNeedsUpdatedBoundingBox()) {
+					updateLabelRectangle(); // recompute again to make Corner correct
+				}
+			}
+			// update corners for Corner[] command
+			double xRW = view.toRealWorldCoordX(labelRectangle.getX());
+			double yRW = view.toRealWorldCoordY(labelRectangle.getY());
+			text.setBoundingBox(xRW, yRW, labelRectangle.getWidth() * view.getInvXscale(),
+					- labelRectangle.getHeight() * view.getInvYscale());
+		} else if (hasAlignment()) {
+			handleTextAlignment();
+		}
+	}
+
+	private boolean needsBoundingBoxUpdate(boolean changed) {
+		if (geo.getBackgroundColor() != null) {
+			return true;
+		}
+		return (text.isNeedsUpdatedBoundingBox() || hasAlignment()) && (changed
+				|| text.getKernel().getForceUpdatingBoundingBox()
+				|| text.getBoundingBox() == null);
+	}
+
+	private boolean hasAlignment() {
+		return text.getVerticalAlignment() != null
+				|| text.getHorizontalAlignment() != null;
+	}
+
+	private void updateLabelPosition() {
 		if (text.isAbsoluteScreenLocActive()) {
 			xLabel = text.getAbsoluteScreenLocX();
 			yLabel = text.getAbsoluteScreenLocY();
@@ -146,34 +193,14 @@ public final class DrawText extends Drawable {
 			text.setTotalHeight((int) labelRectangle.getHeight());
 
 		}
+	}
 
-		boolean positionChanged = xLabel != oldXpos || yLabel != oldYpos;
-		oldXpos = xLabel;
-		oldYpos = yLabel;
-
-		boolean fontChanged = doUpdateFontSize();
-
-		// some commented code for LaTeX speedup removed in r22321
-
-		// We need check for null bounding box because of
-		// SetValue[text,Text["a",(1,1)]] makes it null
-		if (text.isNeedsUpdatedBoundingBox() && (textChanged || positionChanged || fontChanged
-				|| text.getKernel().getForceUpdatingBoundingBox()
-				|| text.getBoundingBox() == null)) {
-			// ensure that bounding box gets updated by drawing text once
-			if (isLaTeX) {
-				drawMultilineLaTeX(view.getTempGraphics2D(textFont), textFont, geo.getObjectColor(),
-						view.getBackgroundCommon());
-			} else {
-				drawMultilineText(view.getTempGraphics2D(textFont), textFont);
-			}
-
-			// update corners for Corner[] command
-			double xRW = view.toRealWorldCoordX(labelRectangle.getX());
-			double yRW = view.toRealWorldCoordY(labelRectangle.getY());
-
-			text.setBoundingBox(xRW, yRW, labelRectangle.getWidth() * view.getInvXscale(),
-					-labelRectangle.getHeight() * view.getInvYscale());
+	private void updateLabelRectangle() {
+		if (isLaTeX) {
+			drawMultilineLaTeX(view.getTempGraphics2D(textFont), textFont, geo.getObjectColor(),
+					view.getBackgroundCommon());
+		} else {
+			drawMultilineText(view.getTempGraphics2D(textFont), textFont);
 		}
 	}
 
@@ -183,16 +210,6 @@ public final class DrawText extends Drawable {
 			GColor bg = geo.getBackgroundColor();
 
 			if (bg != null) {
-
-				// nee0ded to calculate labelRectangle
-				if (isLaTeX) {
-					drawMultilineLaTeX(view.getTempGraphics2D(textFont),
-							textFont, geo.getObjectColor(),
-							view.getBackgroundCommon());
-				} else {
-					drawMultilineText(view.getTempGraphics2D(textFont),
-							textFont);
-				}
 				g2.setStroke(objStroke);
 				g2.setPaint(bg);
 				g2.fill(labelRectangle);
@@ -214,12 +231,53 @@ public final class DrawText extends Drawable {
 			}
 
 			// draw label rectangle
-            if (isHighlighted()) {
+			if (isHighlighted()) {
 				g2.setStroke(rectangleStroke);
 				g2.setPaint(HIGHLIGHT_COLOR);
 				g2.draw(labelRectangle);
 			}
 		}
+	}
+
+	private void handleTextAlignment() {
+		if (isLaTeX) {
+			yLabel -= labelRectangle.getHeight() - 12;
+		} else {
+			double lineSpread = textFont.getSize() * 1.5f;
+			int newLineNr = labelDesc.length()
+					- labelDesc.replaceAll("\n", "").length();
+			// adjust y position according to nr of lines and line height
+			// needed for multiline texts
+			yLabel -= lineSpread * newLineNr;
+		}
+
+		int horizontalVal = getHorizontalAlignment();
+		int verticalVal = getVerticalAlignment();
+		if (horizontalVal == -1) {
+			xLabel -= labelRectangle.getWidth();
+		}
+		if (verticalVal == -1) {
+			// magic number 6 comes from EuclidianStatic::drawMultiLineText
+	 		yLabel += labelRectangle.getHeight() - 6;
+		}
+		if (horizontalVal == 0) {
+			xLabel -= (labelRectangle.getWidth() / 2);
+		}
+		if (verticalVal == 0) {
+			yLabel += (labelRectangle.getHeight() / 2) - 6;
+		}
+	}
+
+	private int getVerticalAlignment() {
+		return text.getVerticalAlignment() != null
+				? (int) text.getVerticalAlignment().getValue()
+				: 1;
+	}
+
+	private int getHorizontalAlignment() {
+		return text.getHorizontalAlignment() != null
+				? (int) text.getHorizontalAlignment().getValue()
+				: 1;
 	}
 
 	/**
@@ -260,11 +318,6 @@ public final class DrawText extends Drawable {
 	@Override
 	public boolean hitLabel(int x, int y) {
 		return false;
-	}
-
-	@Override
-	public GeoElement getGeoElement() {
-		return geo;
 	}
 
 	private boolean doUpdateFontSize() {

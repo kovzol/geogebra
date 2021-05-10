@@ -158,7 +158,7 @@ public final class DrawList extends Drawable implements RemoveNeeded {
 	public void draw(GGraphics2D g2) {
 
 		if (isVisible) {
-            boolean doHighlight = isHighlighted();
+			boolean doHighlight = isHighlighted();
 
 			int size = drawables.size();
 			for (int i = 0; i < size; i++) {
@@ -257,11 +257,6 @@ public final class DrawList extends Drawable implements RemoveNeeded {
 	static boolean needsLatex(GeoElement geoItem) {
 		return geoItem instanceof FunctionalNVar
 				|| (geoItem.isGeoText() && geoItem.isLaTeXDrawableGeo());
-	}
-
-	@Override
-	public GeoElement getGeoElement() {
-		return geo;
 	}
 
 }

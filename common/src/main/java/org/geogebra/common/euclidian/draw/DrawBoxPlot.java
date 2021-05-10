@@ -10,7 +10,6 @@ import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.GeneralPathClipped;
 import org.geogebra.common.kernel.algos.AlgoBoxPlot;
 import org.geogebra.common.kernel.arithmetic.NumberValue;
-import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.util.debug.Log;
 
@@ -56,7 +55,7 @@ public class DrawBoxPlot extends Drawable {
 	public void draw(GGraphics2D g2) {
 		if (isVisible) {
 			try {
-                if (isHighlighted()) {
+				if (isHighlighted()) {
 					g2.setPaint(sum.getSelColor());
 					g2.setStroke(selStroke);
 					g2.draw(gp);
@@ -88,11 +87,6 @@ public class DrawBoxPlot extends Drawable {
 				drawLabel(g2);
 			}
 		}
-	}
-
-	@Override
-	public GeoElement getGeoElement() {
-		return geo;
 	}
 
 	@Override
@@ -128,7 +122,7 @@ public class DrawBoxPlot extends Drawable {
 			gp = new GeneralPathClipped(view);
 		}
 		// init gp
-		gp.reset();
+		gp.resetWithThickness(geo.getLineThickness());
 		double yOff = a.getDouble();
 		double yScale = b.getDouble();
 

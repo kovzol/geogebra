@@ -70,9 +70,9 @@ import com.himamis.retex.editor.share.util.Unicode;
  *
  */
 public abstract class GeoConicND extends GeoQuadricND
-        implements Translateable, GeoConicNDConstants,
+		implements Translateable, GeoConicNDConstants,
 		MatrixTransformable, PointRotateable, Transformable, Mirrorable,
-        Dilateable, GeoCoordSys2D, FromMeta, Parametrizable {
+		Dilateable, GeoCoordSys2D, FromMeta, Parametrizable {
 	/** avoid very large and small coefficients for numerical stability */
 	protected static final double MAX_COEFFICIENT_SIZE = 100000;
 	/** avoid very large and small coefficients for numerical stability */
@@ -101,9 +101,6 @@ public abstract class GeoConicND extends GeoQuadricND
 			"y" };
 	/** variable strings for CAS output */
 	final private static String[] varsCAS = { "x^2", "x*y", "y^2", "x", "y" };
-
-	/** enable negative sign of first coefficient in implicit equations */
-	protected final static boolean KEEP_LEADING_SIGN = false;
 
 	/** point in case of single point degenerate conic */
 	protected GeoPoint singlePoint;
@@ -1773,7 +1770,7 @@ public abstract class GeoConicND extends GeoQuadricND
 		case EQUATION_SPECIFIC:
 			if (!isSpecificPossible()) {
 				return kernel.buildImplicitEquation(coeffs, myVars,
-						KEEP_LEADING_SIGN, true, false, '=', tpl, true);
+						true, false, tpl, true);
 			}
 
 			switch (type) {
@@ -1824,7 +1821,7 @@ public abstract class GeoConicND extends GeoQuadricND
 					return sbToValueString;
 				}
 				return kernel.buildImplicitEquation(coeffs, myVars,
-						KEEP_LEADING_SIGN, true, false, '=', tpl, true);
+						true, false, tpl, true);
 
 			case CONIC_HYPERBOLA:
 				if (DoubleUtil.isZero(coeffs[1])) { // xy coeff = 0
@@ -1880,20 +1877,16 @@ public abstract class GeoConicND extends GeoQuadricND
 					return sbToValueString;
 				}
 				return kernel.buildImplicitEquation(coeffs, myVars,
-						KEEP_LEADING_SIGN, true, false, '=', tpl, true);
+						true, false, tpl, true);
 
 			case CONIC_PARABOLA:
 				if (!DoubleUtil.isZero(coeffs[2])) {
-					return kernel.buildExplicitConicEquation(coeffs, myVars, 2,
-							KEEP_LEADING_SIGN, tpl);
+					return kernel.buildExplicitConicEquation(coeffs, myVars, 2, tpl);
 				} else if (!DoubleUtil.isZero(coeffs[0])) {
-					return kernel.buildExplicitConicEquation(coeffs, myVars, 0,
-							KEEP_LEADING_SIGN, tpl);
+					return kernel.buildExplicitConicEquation(coeffs, myVars, 0, tpl);
 				} else {
 					return kernel.buildImplicitEquation(coeffs, myVars,
-							KEEP_LEADING_SIGN,
-
-							true, false, '=', tpl, true);
+							true, false, tpl, true);
 				}
 
 			case CONIC_DOUBLE_LINE:
@@ -1917,8 +1910,7 @@ public abstract class GeoConicND extends GeoQuadricND
 
 		case EQUATION_EXPLICIT:
 			if (isExplicitPossible()) {
-				return kernel.buildExplicitConicEquation(coeffs, myVars, 4,
-						KEEP_LEADING_SIGN, tpl);
+				return kernel.buildExplicitConicEquation(coeffs, myVars, 4, tpl);
 			}
 
 		case EQUATION_VERTEX:
@@ -1933,7 +1925,7 @@ public abstract class GeoConicND extends GeoQuadricND
 
 		default: // implicit
 			return kernel.buildImplicitEquation(coeffs, myVars,
-					KEEP_LEADING_SIGN, true, false, '=', tpl, true);
+					true, false, tpl, true);
 		}
 	}
 
@@ -3027,12 +3019,6 @@ public abstract class GeoConicND extends GeoQuadricND
 		halfAxes[1] = Math.sqrt(mu1[1]);
 		linearEccentricity = Math.sqrt(mu1[0] + mu1[1]);
 		eccentricity = linearEccentricity / Math.sqrt(mu1[0]);
-
-		/*
-		 * Application.debug("Hyperbola"); Application.debug("a : " +
-		 * halfAxes[0]); Application.debug("b : " + halfAxes[1]);
-		 * Application.debug("e : " + excent);
-		 */
 	}
 
 	/*
@@ -3854,7 +3840,7 @@ public abstract class GeoConicND extends GeoQuadricND
 		}
 	}
 
-    @Override
+	@Override
 	public void toGeoCurveCartesian(GeoCurveCartesianND curve) {
 		FunctionVariable fv = new FunctionVariable(kernel, "t");
 		ExpressionNode evX = null, evY = null;
@@ -3884,7 +3870,7 @@ public abstract class GeoConicND extends GeoQuadricND
 				|| type == CONIC_CIRCLE && curve.getDimension() == 3) {
 			evX = new ExpressionNode(kernel,
 					new ExpressionNode(kernel, fv, Operation.COS, null),
-                    Operation.MULTIPLY, new MyDouble(kernel, halfAxes[0]));
+					Operation.MULTIPLY, new MyDouble(kernel, halfAxes[0]));
 			evY = new ExpressionNode(kernel,
 					new ExpressionNode(kernel, fv, Operation.SIN, null),
 					Operation.MULTIPLY, new MyDouble(kernel, halfAxes[1]));

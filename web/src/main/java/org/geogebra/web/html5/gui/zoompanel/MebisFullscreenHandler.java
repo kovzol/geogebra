@@ -5,8 +5,8 @@ package org.geogebra.web.html5.gui.zoompanel;
  */
 public class MebisFullscreenHandler implements FullScreenHandler {
 
-    @Override
-    public native void toggleFullscreen() /*-{
+	@Override
+	public native void toggleFullscreen() /*-{
 		try {
 			// the CSS class is defined in https://git.geogebra.org/mow/mow-front/blob/master/app.php
 			$wnd.parent.$($wnd.parent.document.body).toggleClass(

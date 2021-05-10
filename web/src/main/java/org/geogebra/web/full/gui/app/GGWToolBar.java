@@ -2,6 +2,8 @@ package org.geogebra.web.full.gui.app;
 
 import java.util.ArrayList;
 
+import javax.annotation.CheckForNull;
+
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.common.javax.swing.SwingConstants;
@@ -34,7 +36,7 @@ import com.google.gwt.animation.client.AnimationScheduler.AnimationCallback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.TextDecoration;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -52,6 +54,10 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import elemental2.dom.HTMLCollection;
+import elemental2.dom.HTMLElement;
+import jsinterop.base.Js;
 
 /**
  * Toolbar for web, includes ToolbarW, undo panel and search / menu
@@ -77,8 +83,8 @@ public class GGWToolBar extends Composite
 	private boolean menuBarShowing = false;
 
 	private FlowPanel rightButtonPanel;
-	private StandardButton openSearchButton;
-	private StandardButton openMenuButton;
+	private @CheckForNull StandardButton openSearchButton;
+	private @CheckForNull StandardButton openMenuButton;
 	/** undo button */
 	StandardButton undoButton;
 	private StandardButton redoButton;
@@ -185,39 +191,22 @@ public class GGWToolBar extends Composite
 	private void addUndoPanel() {
 		SvgPerspectiveResources pr = SvgPerspectiveResources.INSTANCE;
 
-		redoButton = new StandardButton(pr.menu_header_redo(), null, 32, app);
-		redoButton.getUpHoveringFace()
-				.setImage(getImage(pr.menu_header_redo_hover(), 32));
+		redoButton = new StandardButton(pr.menu_header_redo(), null, 32);
+		redoButton.getElement().getStyle().setPosition(Style.Position.RELATIVE);
 
-		redoButton.addFastClickHandler(new FastClickHandler() {
-			@Override
-			public void onClick(Widget source) {
-				app.getGuiManager().redo();
-				app.hideKeyboard();
-			}
+		redoButton.addFastClickHandler(source -> {
+			app.getGuiManager().redo();
+			app.hideKeyboard();
 		});
 
-		redoButton.addStyleName("redoButton");
-		// redoButton.getElement().addClassName("button");
+		undoButton = new StandardButton(pr.menu_header_undo(), null, 32);
+		undoButton.getElement().getStyle().setPosition(Style.Position.RELATIVE);
 
-		redoButton.getElement().getStyle().setOverflow(Overflow.HIDDEN);
-
-		undoButton = new StandardButton(pr.menu_header_undo(), null, 32, app);
-		undoButton.getUpHoveringFace()
-				.setImage(getImage(pr.menu_header_undo_hover(), 32));
-
-		undoButton.addFastClickHandler(new FastClickHandler() {
-			@Override
-			public void onClick(Widget source) {
-				app.getGuiManager().undo();
-				app.hideKeyboard();
-			}
+		undoButton.addFastClickHandler(source -> {
+			app.getGuiManager().undo();
+			app.hideKeyboard();
 		});
 
-		undoButton.addStyleName("undoButton");
-		// undoButton.getElement().addClassName("button");
-
-		// toolBarPanel.add(redoButton);
 		updateUndoActions();
 		rightButtonPanel.add(undoButton);
 		rightButtonPanel.add(redoButton);
@@ -250,7 +239,7 @@ public class GGWToolBar extends Composite
 				if (app.getExam() != null) {
 					if (app.getExam().isCheating()) {
 						ExamUtil.makeRed(getElement(), true);
-						makeTimerWhite(getElement());
+						makeTimerWhite(Js.uncheckedCast(getElement()));
 					}
 
 					timer.setText(app.getExam()
@@ -282,7 +271,7 @@ public class GGWToolBar extends Composite
 				HTMLLogBuilder htmlBuilder = new HTMLLogBuilder();
 				exam.getLog(loc, settings, htmlBuilder);
 				HTML html = htmlBuilder.getHTML();
-				if (app.getArticleElement().hasDataParamEnableGraphing()) {
+				if (app.getAppletParameters().hasDataParamEnableGraphing()) {
 					exam.setHasGraph(true);
 					boolean supportsCAS = app.getKernel().getAlgebraProcessor()
 							.getCommandDispatcher().isCASAllowed();
@@ -319,14 +308,17 @@ public class GGWToolBar extends Composite
 	 *            element to be changed to red timer text elements get changed
 	 *            to white
 	 */
-	native void makeTimerWhite(Element element) /*-{
-		var timerElements = element.getElementsByClassName("rightButtonPanel")[0]
+	private void makeTimerWhite(elemental2.dom.Element element) {
+		HTMLCollection<elemental2.dom.Element> timerElements = element
+				.getElementsByClassName("rightButtonPanel")
+				.getAt(0)
 				.getElementsByClassName("timer");
-		var i;
-		for (i = 0; i < timerElements.length; i++) {
-			timerElements[i].style.setProperty("color", "white", "important");
+
+		for (int i = 0; i < timerElements.length; i++) {
+			((HTMLElement) timerElements.getAt(i)).style
+					.setProperty("color", "white", "important");
 		}
-	}-*/;
+	}
 
 	// Undo, redo, open, menu (and exam mode)
 	private void addRightButtonPanel() {
@@ -374,8 +366,8 @@ public class GGWToolBar extends Composite
 			addUndoPanel();
 		}
 		this.menuBarShowing = false;
-		if (app.getArticleElement().getDataParamShowMenuBar(false)
-				|| app.getArticleElement().getDataParamApp()) {
+		if (app.getAppletParameters().getDataParamShowMenuBar(false)
+				|| app.getAppletParameters().getDataParamApp()) {
 			initMenuButton();
 
 			if (!exam && app.enableFileFeatures()) {
@@ -396,11 +388,7 @@ public class GGWToolBar extends Composite
 		SvgPerspectiveResources pr = SvgPerspectiveResources.INSTANCE;
 		this.menuBarShowing = true;
 
-		openMenuButton = new StandardButton(pr.menu_header_open_menu(), null,
-				32, app);
-
-		openMenuButton.getUpHoveringFace()
-				.setImage(getImage(pr.menu_header_open_menu_hover(), 32));
+		StandardButton openMenuButton = new StandardButton(pr.menu_header_open_menu(), null, 32);
 
 		openMenuButton.addFastClickHandler(new FastClickHandler() {
 			@Override
@@ -426,16 +414,13 @@ public class GGWToolBar extends Composite
 			}
 		}, KeyUpEvent.getType());
 
+		this.openMenuButton = openMenuButton;
 	}
 
 	private void initOpenSearchButton() {
 		SvgPerspectiveResources pr = SvgPerspectiveResources.INSTANCE;
-		openSearchButton = new StandardButton(pr.menu_header_open_search(),
-				null, 32, 32, app);
-		openSearchButton.getUpFace()
-				.setImage(getImage(pr.menu_header_open_search(), 32));
-		openSearchButton.getUpHoveringFace()
-				.setImage(getImage(pr.menu_header_open_search_hover(), 32));
+		StandardButton openSearchButton = new StandardButton(pr.menu_header_open_search(),
+				null, 32, 32);
 
 		openSearchButton.addFastClickHandler(new FastClickHandler() {
 			@Override
@@ -458,9 +443,8 @@ public class GGWToolBar extends Composite
 				}
 			}
 		}, KeyUpEvent.getType());
-
+		this.openSearchButton = openSearchButton;
 		this.rightButtonPanel.add(openSearchButton);
-
 	}
 
 	/**
@@ -638,10 +622,10 @@ public class GGWToolBar extends Composite
 			return resourceBundle.mode_createpolyline_32();
 
 		case EuclidianConstants.MODE_SPREADSHEET_CREATE_TABLETEXT:
-			return resourceBundle.mode_createtable_32();
+				return resourceBundle.mode_createtable_32();
 
 		case EuclidianConstants.MODE_DELETE:
-			return resourceBundle.mode_delete_32();
+			return resourceBundle.mode_eraser_32();
 
 		case EuclidianConstants.MODE_CAS_DERIVATIVE:
 			return resourceBundle.mode_derivative_32();
@@ -768,8 +752,7 @@ public class GGWToolBar extends Composite
 			return resourceBundle.mode_parallel_32();
 
 		case EuclidianConstants.MODE_PEN:
-			return app.isWhiteboardActive() ? resourceBundle.mode_pen()
-					: resourceBundle.mode_pen_32();
+			return resourceBundle.mode_pen();
 
 		case EuclidianConstants.MODE_POINT:
 			return resourceBundle.mode_point_32();
@@ -870,11 +853,11 @@ public class GGWToolBar extends Composite
 		case EuclidianConstants.MODE_SPREADSHEET_TWOVARSTATS:
 			return resourceBundle.mode_twovarstats_32();
 
-            case EuclidianConstants.MODE_GRASPABLE_MATH:
-                return resourceBundle.mode_graspablemath_32();
+		case EuclidianConstants.MODE_GRASPABLE_MATH:
+			return resourceBundle.mode_graspablemath_32();
 
-            case EuclidianConstants.MODE_CAS:
-                return resourceBundle.mode_cas_32();
+		case EuclidianConstants.MODE_CAS:
+			return resourceBundle.mode_cas_32();
 
 		case EuclidianConstants.MODE_VECTOR:
 			return resourceBundle.mode_vector_32();
@@ -967,7 +950,7 @@ public class GGWToolBar extends Composite
 		case EuclidianConstants.MODE_SURFACE_OF_REVOLUTION:
 			return resourceBundle.mode_surface_of_revolution();
 
-		/** WHITEBOARD TOOLS */
+		/* WHITEBOARD TOOLS */
 		case EuclidianConstants.MODE_SHAPE_LINE:
 			return resourceBundle.mode_shape_line_32();
 
@@ -1016,6 +999,9 @@ public class GGWToolBar extends Composite
 		case EuclidianConstants.MODE_EXTENSION:
 			return ToolbarSvgResourcesSync.INSTANCE.mode_extension();
 
+		case EuclidianConstants.MODE_H5P:
+			return ToolbarSvgResourcesSync.INSTANCE.mode_h5p();
+
 		case EuclidianConstants.MODE_PDF:
 			return resourceBundle.mode_pdf_32();
 
@@ -1044,13 +1030,13 @@ public class GGWToolBar extends Composite
 	 * @return colored img for selected on tool
 	 */
 	public static ResourcePrototype getColoredImageForMode(
-            ToolbarResources resourceBundle, int mode, AppW app, String color) {
-        ResourcePrototype prototype = getImageURLNotMacro(resourceBundle, mode, app);
-        if (prototype instanceof SVGResource) {
-            SVGResource resource = (SVGResource) prototype;
-            prototype = resource.withFill(color);
-        }
-        return prototype;
+			ToolbarResources resourceBundle, int mode, AppW app, String color) {
+		ResourcePrototype prototype = getImageURLNotMacro(resourceBundle, mode, app);
+		if (prototype instanceof SVGResource) {
+			SVGResource resource = (SVGResource) prototype;
+			prototype = resource.withFill(color);
+		}
+		return prototype;
 	}
 
 	/**
@@ -1072,22 +1058,6 @@ public class GGWToolBar extends Composite
 		return toolbars.get(0).setMode(mode, ms);
 	}
 
-	@Override
-	protected void onAttach() {
-		super.onAttach();
-		// gwt sets openSearcButton's tabindex to 0 at onAttach (see
-		// FocusWidget.onAttach())
-		// but we don't want to select openSearchButton with tab, so tabindex
-		// will
-		// be set back to -1 after attach all time.
-		if (this.openSearchButton != null) {
-			this.openSearchButton.setTabIndex(-1);
-		}
-		if (this.openMenuButton != null) {
-			this.openMenuButton.setTabIndex(-1);
-		}
-	}
-
 	/**
 	 * @param index
 	 *            0 for open, 1 for menu
@@ -1095,16 +1065,9 @@ public class GGWToolBar extends Composite
 	public void selectMenuButton(int index) {
 		deselectButtons();
 
-		// MyToggleButton2 focused = index == 0 ? this.openSearchButton
-		// : this.openMenuButton;
-		// if(focused != null){
-		// focused.setFocus(true);
-		// focused.getElement().addClassName("selectedButton");
-		// }
-
-		if (index == 0) {
+		if (index == 0 && this.openSearchButton != null) {
 			this.openSearchButton.getElement().addClassName("selectedButton");
-		} else {
+		} else if (this.openMenuButton != null) {
 			this.openMenuButton.getElement().addClassName("selectedButton");
 		}
 
@@ -1114,8 +1077,10 @@ public class GGWToolBar extends Composite
 	 * Deselect both menu and open
 	 */
 	public void deselectButtons() {
-		this.openSearchButton.getElement().removeClassName("selectedButton");
-		this.openMenuButton.getElement().removeClassName("selectedButton");
+		if (this.openMenuButton != null && openSearchButton != null) {
+			this.openSearchButton.getElement().removeClassName("selectedButton");
+			this.openMenuButton.getElement().removeClassName("selectedButton");
+		}
 	}
 
 	/**
@@ -1217,11 +1182,11 @@ public class GGWToolBar extends Composite
 	public void setSubmenuDimensions(double width) {
 		if (toolBar.isMobileToolbar() && !toolBar.isVisible()) {
 			int maxButtons = getMaxButtons((int) width);
-            int submenuButtonCount = 0;
-            if (submenuPanel.getWidgetCount() != 0) {
-                submenuButtonCount = ((ToolbarSubmenuP) submenuPanel
-                        .getWidget(0)).getButtonCount();
-            }
+			int submenuButtonCount = 0;
+			if (submenuPanel.getWidgetCount() != 0) {
+				submenuButtonCount = ((ToolbarSubmenuP) submenuPanel
+						.getWidget(0)).getButtonCount();
+			}
 			submenuScrollPanel.setWidth((maxButtons - 1) * 45 + "px");
 			submenuPanel.setWidth((submenuButtonCount) * 45 + "px");
 		}
@@ -1230,8 +1195,8 @@ public class GGWToolBar extends Composite
 	/**
 	 * @return the Element object of the open menu button
 	 */
-	public Element getOpenMenuButtonElement() {
-		return openMenuButton.getElement();
+	public @CheckForNull Element getOpenMenuButtonElement() {
+		return openMenuButton == null ? null : openMenuButton.getElement();
 	}
 
 	/**

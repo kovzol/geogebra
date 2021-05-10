@@ -84,7 +84,7 @@ public class AccentSetAtom extends Atom {
 		}
 
 		// calculate delta
-        final double delta = -2. * Unit.MU.getFactor(env);
+		final double delta = -2. * Unit.MU.getFactor(env);
 
 		// create vertical box
 		VerticalBox vBox = new VerticalBox();

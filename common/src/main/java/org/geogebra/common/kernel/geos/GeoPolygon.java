@@ -1659,8 +1659,8 @@ public class GeoPolygon extends GeoElement implements GeoNumberValue,
 	}
 
 	@Override
-    final public void pointChanged(GeoPointND PI) {
-        PI.pointChanged(this);
+	final public void pointChanged(GeoPointND PI) {
+		PI.pointChanged(this);
 	}
 
 	/*
@@ -1777,7 +1777,7 @@ public class GeoPolygon extends GeoElement implements GeoNumberValue,
 	 *            y-coord
 	 */
 	public void setRegionChanged(GeoPointND PI, double x, double y) {
-        PI.setRegionChanged(x, y);
+		PI.setRegionChanged(x, y);
 	}
 
 	@Override

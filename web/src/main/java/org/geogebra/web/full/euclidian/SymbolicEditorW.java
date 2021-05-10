@@ -9,9 +9,11 @@ import org.geogebra.common.euclidian.draw.LaTeXTextRenderer;
 import org.geogebra.common.kernel.geos.GeoInputBox;
 import org.geogebra.common.main.App;
 import org.geogebra.web.full.gui.components.MathFieldEditor;
+import org.geogebra.web.full.main.AppWFull;
 import org.geogebra.web.html5.euclidian.EuclidianViewW;
 import org.geogebra.web.html5.euclidian.HasMathKeyboardListener;
 import org.geogebra.web.html5.gui.util.MathKeyboardListener;
+import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.html5.main.GlobalKeyDispatcherW;
 
 import com.google.gwt.animation.client.AnimationScheduler;
@@ -21,6 +23,7 @@ import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.himamis.retex.editor.share.editor.MathFieldInternal;
+import com.himamis.retex.renderer.share.TeXFont;
 
 /**
  * MathField-capable editor for EV, Web implementation.
@@ -46,7 +49,7 @@ public class SymbolicEditorW extends SymbolicEditor implements HasMathKeyboardLi
 		editor.addBlurHandler(this);
 		editor.getMathField().setChangeListener(this);
 		editor.getMathField().setFixMargin(LaTeXTextRenderer.MARGIN);
-		editor.getMathField().setMinHeight(DrawInputBox.MIN_HEIGHT);
+		editor.getMathField().setMinHeight(DrawInputBox.SYMBOLIC_MIN_HEIGHT);
 		int baseFontSize = app.getSettings()
 				.getFontSettings().getAppFontSize() + 3;
 
@@ -63,7 +66,12 @@ public class SymbolicEditorW extends SymbolicEditor implements HasMathKeyboardLi
 		this.bounds = bounds;
 		// add to DOM, but hidden => getHeight works, but widget is not shown in wrong position
 		editor.setVisible(false);
+		editor.getMathField().setPixelRatio(((AppW) app).getPixelRatio());
+		editor.setFontType(geoInputBox.isSerifContent() ? TeXFont.SERIF
+				:  TeXFont.SANSSERIF);
 		editor.attach(((EuclidianViewW) view).getAbsolutePanel());
+		((AppWFull) app).setInputBoxType(geoInputBox.getInputBoxType());
+		((AppWFull) app).setInputBoxFunctionVars(geoInputBox.getFunctionVars());
 		// update size and show
 		resetChanges();
 	}
@@ -86,12 +94,13 @@ public class SymbolicEditorW extends SymbolicEditor implements HasMathKeyboardLi
 		editor.setVisible(true);
 		editor.setText(getGeoInputBox().getTextForEditor());
 		editor.setLabel(getGeoInputBox().getAuralText());
-		Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				editor.requestFocus();
-			}
-		});
+		editor.setErrorStyle(getGeoInputBox().hasError());
+		if (getGeoInputBox().getLinkedGeo().hasSpecialEditor()) {
+			getMathFieldInternal().getFormula().getRootComponent().setProtected();
+			getMathFieldInternal().setLockedCaretPath();
+		}
+
+		Scheduler.get().scheduleDeferred(() -> editor.requestFocus());
 	}
 
 	@Override
@@ -110,21 +119,17 @@ public class SymbolicEditorW extends SymbolicEditor implements HasMathKeyboardLi
 			return;
 		}
 
+		((AppWFull) app).resetInputBox();
 		applyChanges();
 		getDrawInputBox().setEditing(false);
 		editor.setVisible(false);
 
 		AnimationScheduler.get()
-				.requestAnimationFrame(new AnimationScheduler.AnimationCallback() {
-			@Override
-			public void execute(double timestamp) {
-				((EuclidianViewW) view).doRepaint2();
-			}
-		});
+				.requestAnimationFrame(timestamp -> ((EuclidianViewW) view).doRepaint2());
 	}
 
 	@Override
-	public void onKeyTyped() {
+	public void onKeyTyped(String key) {
 		decorator.update();
 		getGeoInputBox().update();
 		editor.scrollHorizontally();

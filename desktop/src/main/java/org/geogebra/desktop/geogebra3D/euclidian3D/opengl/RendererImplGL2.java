@@ -938,4 +938,3 @@ public class RendererImplGL2 extends RendererImpl
 		setLight(0);
 	}
 }
-

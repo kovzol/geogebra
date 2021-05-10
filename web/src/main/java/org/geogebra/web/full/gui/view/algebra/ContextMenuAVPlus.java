@@ -2,7 +2,6 @@ package org.geogebra.web.full.gui.view.algebra;
 
 import java.util.Vector;
 
-import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.common.gui.toolbar.ToolBar;
@@ -13,7 +12,6 @@ import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
 import org.geogebra.keyboard.base.KeyboardType;
 import org.geogebra.web.full.css.MaterialDesignResources;
-import org.geogebra.web.full.gui.images.StyleBarResources;
 import org.geogebra.web.full.gui.menubar.MainMenu;
 import org.geogebra.web.full.gui.util.VirtualKeyboardGUI;
 import org.geogebra.web.full.javax.swing.GPopupMenuW;
@@ -22,7 +20,6 @@ import org.geogebra.web.html5.gui.util.AriaMenuItem;
 import org.geogebra.web.resources.SVGResource;
 import org.geogebra.web.shared.SharedResources;
 
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 
 /**
@@ -56,11 +53,7 @@ public class ContextMenuAVPlus implements SetLabels {
 		this.item = item;
 		kbd = app.getKeyboardManager().getOnScreenKeyboard();
 		wrappedPopup = new GPopupMenuW(app);
-		if (app.isUnbundled()) {
-			wrappedPopup.getPopupPanel().addStyleName("matMenu");
-		} else {
-			wrappedPopup.getPopupPanel().addStyleName("mioMenu");
-		}
+
 		buildGUI();
 	}
 
@@ -103,7 +96,7 @@ public class ContextMenuAVPlus implements SetLabels {
 	}
 
 	private void addExpressionItem() {
-		ImageResource img = StyleBarResources.INSTANCE.description();
+		SVGResource img = MaterialDesignResources.INSTANCE.description();
 		AriaMenuItem mi = new AriaMenuItem(
 				MainMenu.getMenuBarHtml(img,
 						loc.getMenu("Expression")),
@@ -169,17 +162,6 @@ public class ContextMenuAVPlus implements SetLabels {
 	}
 
 	/**
-	 * Show popup menu at a given point.
-	 * 
-	 * @param p
-	 *            point to show the menu at.
-	 */
-	public void show(GPoint p) {
-		wrappedPopup.show(p);
-		wrappedPopup.getPopupMenu().focusDeferred();
-	}
-
-	/**
 	 * Show popup menu at (x, y) screen coordinates.
 	 * 
 	 * @param x
@@ -188,8 +170,7 @@ public class ContextMenuAVPlus implements SetLabels {
 	 *            y coordinate.
 	 */
 	public void show(int x, int y) {
-		wrappedPopup.show(new GPoint(x, y));
-		wrappedPopup.getPopupMenu().focusDeferred();
+		wrappedPopup.show(x, y);
 	}
 
 	@Override

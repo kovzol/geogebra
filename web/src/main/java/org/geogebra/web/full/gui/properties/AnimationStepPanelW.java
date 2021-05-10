@@ -26,23 +26,25 @@ implements ITextFieldListener {
 	 * @param app
 	 *            application
 	 */
-    public AnimationStepPanelW(AppW app) {
-        this(new AnimationStepModel(app), app);
-    }
+	public AnimationStepPanelW(AppW app) {
+		this(new AnimationStepModel(app), app);
+	}
 
-    /**
-     * @param m   model
-     * @param app application
-     */
-    public AnimationStepPanelW(AnimationStepModel m, final AppW app) {
+	/**
+	 *
+	 * @param m model
+	 * @param app application
+	 */
+	public AnimationStepPanelW(AnimationStepModel m, final AppW app) {
 		kernel = app.getKernel();
-        model = m;
-        model.setListener(this);
+		model = m;
+		model.setListener(this);
 		setModel(model);
 		// text field for animation step
 		label = new Label();
 		tfAnimStep = new AngleTextFieldW(6, app);
 		FlowPanel mainPanel = new FlowPanel();
+		mainPanel.addStyleName("optionsInput");
 		mainPanel.add(label);
 		mainPanel.add(tfAnimStep);
 		setWidget(mainPanel);
@@ -88,13 +90,7 @@ implements ITextFieldListener {
 
 	@Override
 	public void setLabels() {
-		if (kernel.getApplication().isUnbundledOrWhiteboard()) {
-			label.setStyleName("coloredLabel");
-		}
-		label.setText(
-				kernel.getApplication().isUnbundledOrWhiteboard()
-				? kernel.getLocalization().getMenu("AnimationStep")
-				: kernel.getLocalization().getMenu("AnimationStep") + ": ");
+		label.setText(kernel.getLocalization().getMenu("AnimationStep"));
 	}
 
 	public void setPartOfSliderPanel() {

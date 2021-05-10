@@ -1,20 +1,16 @@
 package org.geogebra.web.html5.js;
 
-import org.geogebra.web.html5.Browser;
 import org.geogebra.web.html5.css.GuiResourcesSimple;
-import org.geogebra.web.html5.util.ArticleElementInterface;
+import org.geogebra.web.html5.util.AppletParameters;
 import org.geogebra.web.html5.util.Dom;
-import org.geogebra.web.html5.util.PDFEncoderW;
 import org.geogebra.web.html5.util.ScriptLoadCallback;
 import org.geogebra.web.resources.JavaScriptInjector;
 import org.geogebra.web.resources.StyleInjector;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.ScriptElement;
-import com.google.gwt.user.client.Window.Location;
 
 /**
  * @author gabor
@@ -25,25 +21,23 @@ import com.google.gwt.user.client.Window.Location;
 public class ResourcesInjector {
 
 	private static boolean resourcesInjected = false;
-	private static ResourcesInjector instance;
 
 	/**
 	 * Inject all JS/CSS resources
-     * @param ae article element
+	 * @param ae article element
 	 */
-    public static void injectResources(ArticleElementInterface ae) {
+	public void injectResources(AppletParameters ae) {
 		if (resourcesInjected) {
 			return;
 		}
-		resourcesInjected = true;
+		setResourcesInjected();
 		// always need English properties available, eg Function.sin
 		fixComputedStyle();
-		// insert zip.js
-		JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.zipJs());
 
-		if (instance == null) {
-			instance = (ResourcesInjector) GWT.create(ResourcesInjector.class);
-		}
+		JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.clipboardJs());
+
+		JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.fflateJs());
+		JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.base64Js());
 
 		JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.visibilityJs());
 		JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.domvas());
@@ -52,30 +46,13 @@ public class ResourcesInjector {
 		StyleInjector.inject(GuiResourcesSimple.INSTANCE.modernStyleGlobal());
 
 		injectScss();
-        instance.injectResourcesGUI(ae);
+		injectResourcesGUI(ae);
 
-		Browser.setWebWorkerSupported(Location
-				.getParameter("GeoGebraDebug") == null
-				&& Browser.checkWorkerSupport(GWT.getModuleBaseURL()));
-		if (!Browser.webWorkerSupported()) {
-			loadCodecs();
-		}
-		// strange, but iPad can blow it away again...
-		if (Browser.zipjsLoadedWithoutWebWorkers()
-				&& Browser.webWorkerSupported()) {
-			loadCodecs();
-		}
-		JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.dataViewJs());
+		JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.xmlUtil());
 	}
 
-	/**
-	 * Load PAKO
-	 */
-	public static void loadCodecs() {
-		if (!PDFEncoderW.pakoLoaded()) {
-			JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.pakoJs());
-		}
-		JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.pakoCodecJs());
+	private void setResourcesInjected() { // extracted to make SpotBugs happy
+		resourcesInjected = true;
 	}
 
 	/** Works around https://bugzilla.mozilla.org/show_bug.cgi?id=548397 */
@@ -90,9 +67,9 @@ public class ResourcesInjector {
 	 * Inject resources for GUI, overridden in ReTeX injector (to add JQuery +
 	 * JqueryUI for sliders)
 	 *
-     * @param ae article element
+	 * @param ae article element
 	 */
-    protected void injectResourcesGUI(ArticleElementInterface ae) {
+	protected void injectResourcesGUI(AppletParameters ae) {
 		// overridden elsewhere
 	}
 
@@ -153,22 +130,12 @@ public class ResourcesInjector {
 	}
 
 	/**
-	 * @param fontsCssUrl
-	 *            font CSS url
-	 */
-	public static void loadFont(String fontsCssUrl) {
-		if (instance != null) {
-			instance.loadWebFont(fontsCssUrl);
-		}
-	}
-
-	/**
 	 * Load Mathsans font if needed + additional fonts if specified by param.
 	 *
 	 * @param dataParamFontsCssUrl
 	 *            font CSS url
 	 */
-	protected void loadWebFont(String dataParamFontsCssUrl) {
+	public void loadWebFont(String dataParamFontsCssUrl) {
 		// intentionally
 	}
 }

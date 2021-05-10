@@ -219,7 +219,7 @@ public class GeoNumeric extends GeoElement
 
 	@Override
 	public boolean isFillable() {
-		return isDrawable;
+		return isDrawable && !isSlider() && getDrawAlgorithm() != null;
 	}
 
 	/**
@@ -350,7 +350,7 @@ public class GeoNumeric extends GeoElement
 				sliderPos.y = 50 + 40 * count;
 			}
 			// make sure slider is visible on screen
-			sliderPos.y = (int) sliderPos.y / 400 * 10 + sliderPos.y % 400;
+			sliderPos.y = (int) (sliderPos.y / 400) * 10 + sliderPos.y % 400;
 		} else {
 			sliderPos.x = -5;
 			sliderPos.y = 10 - count;
@@ -648,7 +648,7 @@ public class GeoNumeric extends GeoElement
 				}
 			}
 			if (!sendValueToCas) {
-                return "(" + Kernel.TMP_VARIABLE_PREFIX + label + ")";
+				return "(" + Kernel.TMP_VARIABLE_PREFIX + label + ")";
 			}
 			// make sure random() works inside Sequence, see #3558 TRAC-1465
 			if (this.isRandomGeo() && !this.isLabelSet()
@@ -725,7 +725,7 @@ public class GeoNumeric extends GeoElement
 			sb.append(" random=\"true\"");
 		}
 		sb.append("/>\n");
-        XMLBuilder.appendSymbolicMode(sb, this, false);
+		XMLBuilder.appendSymbolicMode(sb, this, false);
 		// colors
 		getXMLvisualTags(sb);
 
@@ -1048,18 +1048,19 @@ public class GeoNumeric extends GeoElement
 	 * 
 	 * @return true iff slider is fixed in graphics view
 	 */
-	public final boolean isSliderFixed() {
+	@Override
+	public final boolean isLockedPosition() {
 		return sliderFixed;
 	}
 
 	/**
 	 * Sets whether slider is fixed in graphics view
 	 * 
-	 * @param isSliderFixed
+	 * @param lockedPosition
 	 *            true iff slider is fixed in graphics view
 	 */
-	public final void setSliderFixed(boolean isSliderFixed) {
-		sliderFixed = isSliderFixed;
+	public final void setSliderFixed(boolean lockedPosition) {
+		sliderFixed = lockedPosition;
 	}
 
 	/**
@@ -1550,9 +1551,6 @@ public class GeoNumeric extends GeoElement
 	 * @return interval min
 	 */
 	public NumberValue getIntervalMinObject() {
-		if (intervalMin == null) {
-			return null;
-		}
 		return intervalMin;
 	}
 
@@ -1562,9 +1560,6 @@ public class GeoNumeric extends GeoElement
 	 * @return interval max
 	 */
 	public NumberValue getIntervalMaxObject() {
-		if (intervalMax == null) {
-			return null;
-		}
 		return intervalMax;
 	}
 
@@ -1687,7 +1682,7 @@ public class GeoNumeric extends GeoElement
 				.getDefaultNumber(false);
 		GeoNumeric defaultAngleOrNum = num.getKernel().getAlgoDispatcher()
 				.getDefaultNumber(isAngle);
-		num.setSliderFixed(defaultNum.isSliderFixed());
+		num.setSliderFixed(defaultNum.isLockedPosition());
 		num.setEuclidianVisible(visible);
 		num.setIntervalMin(defaultAngleOrNum.getIntervalMinObject());
 		num.setIntervalMax(defaultAngleOrNum.getIntervalMaxObject());
@@ -1869,10 +1864,12 @@ public class GeoNumeric extends GeoElement
 
 	@Override
 	public DescriptionMode getDescriptionMode() {
-		if (getDefinition() != null && getDefinition().isFraction()) {
+		if (getDefinition() != null
+				&& (getDefinition().isFraction() || value != Math.round(value))
+				&& !"?".equals(getDefinition(StringTemplate.defaultTemplate))) {
 			return DescriptionMode.DEFINITION_VALUE;
 		}
-		if (isSimple()) {
+		if (isSimple() || (!isDefined() && isIndependent())) {
 			// matters in scientific where we don't have AV sliders
 			return DescriptionMode.VALUE;
 		}
@@ -1964,11 +1961,6 @@ public class GeoNumeric extends GeoElement
 		return getDouble();
 	}
 
-	@Override
-	protected boolean mayShowDescriptionInsteadOfDefinitionNoAlgoParent() {
-		return false;
-	}
-
 	private void addAuralSliderValue(ScreenReaderBuilder sb) {
 		if (!addAuralCaption(sb)) {
 			sb.append(getLabelSimple());
@@ -1978,13 +1970,13 @@ public class GeoNumeric extends GeoElement
 	}
 
 	@Override
-	public void addAuralName(Localization loc, ScreenReaderBuilder sb) {
+	public void addAuralName(ScreenReaderBuilder sb) {
 		if (!isSliderable()) {
-			super.addAuralName(loc, sb);
+			super.addAuralName(sb);
 			return;
 		}
 		if (StringUtil.empty(getCaptionSimple())) {
-			sb.append(loc.getMenuDefault("Slider", "Slider"));
+			sb.appendMenuDefault("Slider", "Slider");
 			sb.appendSpace();
 		}
 		addAuralSliderValue(sb);
@@ -2026,7 +2018,7 @@ public class GeoNumeric extends GeoElement
 		}
 
 		Localization loc = kernel.getLocalization();
-		ScreenReaderBuilder sb = new ScreenReaderBuilder();
+		ScreenReaderBuilder sb = new ScreenReaderBuilder(loc);
 		if (isAnimating()) {
 
 			// don't need this for stopping as the value is read out afterwards
@@ -2047,7 +2039,7 @@ public class GeoNumeric extends GeoElement
 	 * @return the current value as readable, aural text.
 	 */
 	public String getAuralCurrentValue() {
-		ScreenReaderBuilder sb = new ScreenReaderBuilder();
+		ScreenReaderBuilder sb = new ScreenReaderBuilder(kernel.getLocalization());
 		addAuralSliderValue(sb);
 		return sb.toString().trim();
 	}
@@ -2069,7 +2061,7 @@ public class GeoNumeric extends GeoElement
 
 	@Override
 	public boolean showLineProperties() {
-		return isDrawable() && !isSlider();
+		return isDrawable() && !isSlider() && getDrawAlgorithm() != null;
 	}
 
 	/**
@@ -2090,5 +2082,10 @@ public class GeoNumeric extends GeoElement
 		intervalMax = null;
 		intervalMin = null;
 		setEuclidianVisible(false);
+	}
+
+	@Override
+	public String toLaTeXString(boolean symbolic, boolean symbolicContext, StringTemplate tpl) {
+		return toLaTeXString(symbolic || symbolicContext, tpl);
 	}
 }

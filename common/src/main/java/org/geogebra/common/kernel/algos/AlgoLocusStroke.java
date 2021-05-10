@@ -119,7 +119,7 @@ public class AlgoLocusStroke extends AlgoElement {
 			xmlPoints = new StringBuilder();
 			// add expression
 			xmlPoints.append(" exp=\"PolyLine[");
-            appendPoints(xmlPoints);
+			appendPoints(xmlPoints);
 			xmlPoints.append("]\" />\n");
 		}
 		poly.setXMLPointBuilder(xmlPoints);
@@ -164,8 +164,8 @@ public class AlgoLocusStroke extends AlgoElement {
 
 		sbAE.append(tpl.leftSquareBracket());
 		// input legth is 0 for ConstructionStep[]
-
-        appendPoints(sbAE);
+		
+		appendPoints(sbAE);
 		sbAE.append(tpl.rightSquareBracket());
 		return sbAE.toString();
 	}

@@ -179,16 +179,16 @@ public class BigOperatorAtom extends Atom implements HasTrueBase {
 		return b;
 	}
 
-    public Atom getBottom() {
-        return under;
-    }
+	public Atom getBottom() {
+		return under;
+	}
 
-    public Atom getTop() {
-        return over;
-    }
+	public Atom getTop() {
+		return over;
+	}
 
-    @Override
-    public Atom getTrueBase() {
-        return base;
-    }
+	@Override
+	public Atom getTrueBase() {
+		return base;
+	}
 }

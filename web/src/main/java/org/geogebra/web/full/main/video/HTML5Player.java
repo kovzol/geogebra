@@ -15,7 +15,7 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class HTML5Player extends VideoPlayer implements VideoListener {
-    private HTML5VideoWidget v;
+	private HTML5VideoWidget v;
 	private PersistablePanel main;
 
 	/**
@@ -51,8 +51,7 @@ public class HTML5Player extends VideoPlayer implements VideoListener {
 	@Override
 	public void onLoad(int width, int height) {
 		if (!getVideo().hasSize()) {
-			getVideo().setWidth(width);
-			getVideo().setHeight(height);
+			getVideo().setSize(width, height);
 		}
 		getVideo().update();
 		update();
@@ -60,14 +59,14 @@ public class HTML5Player extends VideoPlayer implements VideoListener {
 
 	@Override
 	public void onError() {
-        app.getVideoManager().onError(video);
+		app.getVideoManager().onError(video);
 	}
 
 	/**
 	 * @return the error widget needs to be displayed.
 	 */
 	protected Widget getErrorWidget() {
-        return new Label();
+		return new Label();
 	}
 
 	@Override

@@ -140,10 +140,18 @@ public abstract class LogInOperation extends BaseOperation<EventRenderable> {
 		String apiURL = getGeoGebraTubeAPI().getLoginUrl()
 				.replace("http://", "").replace("https://", "");
 		apiURL = apiURL.substring(0, apiURL.indexOf('/'));
-		return "https://" + apiURL + "/user/signin" + "/caller/"
+		String url = "https://" + apiURL + "/user/signin/caller/"
 				+ getURLLoginCaller() + "/expiration/"
 				+ getURLTokenExpirationMinutes() + "/clientinfo/"
 				+ getURLClientInfo() + "/?lang=" + languageCode;
+		if (!isExternalLoginAllowed()) {
+			return url + "&external=false";
+		}
+		return url;
+	}
+
+	protected boolean isExternalLoginAllowed() {
+		return true;
 	}
 
 	/**
@@ -220,9 +228,15 @@ public abstract class LogInOperation extends BaseOperation<EventRenderable> {
 	 * @return whether current user can share materials
 	 */
 	public boolean canUserShare() {
-		return this.getGeoGebraTubeAPI()
-				.canUserShare(getModel().getLoggedInUser() == null
-				|| getModel().getLoggedInUser().isStudent());
+		return getGeoGebraTubeAPI().canUserShare(!isTeacherLoggedIn());
+	}
+
+	/**
+	 * @return whether a user is logged in and is a teacher
+	 */
+	public boolean isTeacherLoggedIn() {
+		return getModel().getLoggedInUser() != null
+				&& !getModel().getLoggedInUser().isStudent();
 	}
 
 	/**

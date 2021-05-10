@@ -31,7 +31,7 @@ abstract public class Suggestion {
 			if (algo != null
 					&& algo.getOutputLength() > 0
 					&& algo.getOutput(0).isLabelSet()
-                    && sug.allAlgosExist(extractClassName(algo), algo.getInput(),
+					&& sug.allAlgosExist(extractClassName(algo), algo.getInput(),
 							algosMissing)) {
 				return true;
 			}
@@ -43,19 +43,19 @@ abstract public class Suggestion {
 		return false;
 	}
 
-    static private GetCommand extractClassName(AlgoElement algo) {
-        if (algo instanceof AlgoDependentSymbolic) {
-            ExpressionValue definition = algo.getOutput(0).getDefinition().unwrap();
-            if (definition instanceof Command) {
-                try {
-                    return Commands.valueOf(((Command) definition).getName());
-                } catch (Exception e) {
-                    return null;
-                }
-            }
-        }
-        return algo.getClassName();
-    }
+	static private GetCommand extractClassName(AlgoElement algo) {
+		if (algo instanceof AlgoDependentSymbolic) {
+			ExpressionValue definition = algo.getOutput(0).getDefinition().unwrap();
+			if (definition instanceof Command) {
+				try {
+					return Commands.valueOf(((Command) definition).getName());
+				} catch (Exception e) {
+					return null;
+				}
+			}
+		}
+		return algo.getClassName();
+	}
 
 	/**
 	 * @param className

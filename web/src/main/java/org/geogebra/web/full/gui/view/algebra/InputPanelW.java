@@ -5,6 +5,7 @@ import org.geogebra.web.full.gui.dialog.TextEditPanel;
 import org.geogebra.web.html5.gui.inputfield.AutoCompleteTextFieldW;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
@@ -91,6 +92,14 @@ public class InputPanelW extends FlowPanel {
 	}
 
 	/**
+	 * sets focus into textfield and selects the content
+	 */
+	public void setFocusAndSelectAll() {
+		getTextComponent().setFocus(true);
+		getTextComponent().selectAll();
+	}
+
+	/**
 	 * @return multiline editable field
 	 */
 	public TextEditPanel getTextAreaComponent() {
@@ -108,21 +117,28 @@ public class InputPanelW extends FlowPanel {
 	}
 
 	/**
+	 * adds KeyUpHandler to TextComponent
+	 */
+	public void addTextComponentKeyUpHandler(KeyUpHandler k) {
+		getTextComponent().addKeyUpHandler(k);
+	}
+
+	/**
+	 * adds InsertHandler to TextComponent
+	 */
+	public void addTextComponentInsertHandler(AutoCompleteTextFieldW.InsertHandler t) {
+		getTextComponent().addInsertHandler(t);
+	}
+
+	/**
 	 * Focus text component
 	 */
 	public void setTextComponentFocus() {
 		if (textComponent != null) {
 			textComponent.getTextBox().getElement().focus();
 		} else {
-			Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-				@Override
-				public void execute() {
-					focusTextImmediate();
-				}
-			});
-
+			Scheduler.get().scheduleDeferred(() -> focusTextImmediate());
 		}
-
 	}
 	
 	/**

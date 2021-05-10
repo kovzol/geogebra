@@ -1,10 +1,11 @@
 package org.geogebra.web.html5.kernel;
 
 import java.math.BigInteger;
-import java.util.TreeMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.geogebra.common.kernel.algos.SymbolicParameters;
 import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;

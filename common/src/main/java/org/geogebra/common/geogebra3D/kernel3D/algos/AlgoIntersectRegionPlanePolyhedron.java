@@ -122,7 +122,7 @@ public class AlgoIntersectRegionPlanePolyhedron
 
 		@Override
 		public int hashCode() {
-            return DoubleUtil.hashCode(parameter) ^ parent.hashCode();
+			return DoubleUtil.hashCode(parameter) ^ parent.hashCode();
 		}
 
 		/**

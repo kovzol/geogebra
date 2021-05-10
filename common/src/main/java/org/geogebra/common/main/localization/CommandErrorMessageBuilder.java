@@ -47,7 +47,7 @@ public class CommandErrorMessageBuilder {
 
 		if (argNumber > -1) {
 			builder.append(":\n");
-            builder.append(Errors.IllegalArgumentNumber.getError(localization));
+			builder.append(Errors.IllegalArgumentNumber.getError(localization));
 			builder.append(": ");
 			builder.append(argNumber);
 		}
@@ -69,7 +69,7 @@ public class CommandErrorMessageBuilder {
 		buildPrefix(command);
 
 		builder.append(":\n");
-        builder.append(Errors.IllegalArgument.getError(localization));
+		builder.append(Errors.IllegalArgument.getError(localization));
 		builder.append(": ");
 		if (arg instanceof GeoElement) {
 			builder.append(((GeoElement) arg).getNameDescription());

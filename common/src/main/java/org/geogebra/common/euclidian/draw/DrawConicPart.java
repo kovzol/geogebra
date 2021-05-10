@@ -317,7 +317,7 @@ public class DrawConicPart extends Drawable implements Previewable {
 				fill(g2, shape); // fill using default/hatching/image as
 									// appropriate
 
-                if (isHighlighted()) {
+				if (isHighlighted()) {
 					g2.setPaint(geo.getSelColor());
 					g2.setStroke(selStroke);
 					g2.draw(shape);
@@ -653,11 +653,6 @@ public class DrawConicPart extends Drawable implements Previewable {
 		default:
 			return false;
 		}
-	}
-
-	@Override
-	public GeoElement getGeoElement() {
-		return geo;
 	}
 
 }

@@ -5,9 +5,7 @@ import java.util.Locale;
 import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.common.util.DoubleUtil;
 import org.geogebra.common.util.StringUtil;
-import org.geogebra.web.html5.webcam.WebCamAPI;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -16,11 +14,14 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.Window.Navigator;
 
+import elemental2.core.Function;
 import elemental2.core.Global;
 import elemental2.dom.DomGlobal;
+import jsinterop.base.Js;
+import jsinterop.base.JsPropertyMap;
 
 public class Browser {
-	private static boolean webWorkerSupported = false;
+	public static final String ACTION_RESET_URL = "{\"action\": \"resetUrl\"}";
 	private static Boolean webglSupported = null;
 
 	/**
@@ -79,98 +80,26 @@ public class Browser {
 		return "Apple Computer, Inc." === $wnd.navigator.vendor;
 	}-*/;
 
-	/**
-	 * https://github.com/cheton/is-electron/blob/master/index.js MIT
-	 *
-	 * @return true if running in Electron
-	 */
-	public static native boolean isElectron() /*-{
-		// Renderer process
-		if (typeof $wnd !== 'undefined' && typeof $wnd.process === 'object'
-				&& $wnd.process.type === 'renderer') {
-			return true;
-		}
-
-		// Main process
-		if (typeof $wnd.process !== 'undefined'
-				&& typeof $wnd.process.versions === 'object'
-				&& !!$wndprocess.versions.electron) {
-			return true;
-		}
-
-		// Detect the user agent when the `nodeIntegration` option is set to true
-		if (typeof $wnd.navigator === 'object'
-				&& typeof $wnd.navigator.userAgent === 'string'
-				&& $wnd.navigator.userAgent.indexOf('Electron') >= 0) {
-			return true;
-		}
-
-		return false;
-	}-*/;
-
 	public native static boolean externalCAS() /*-{
 		return typeof $wnd.evalGeoGebraCASExternal == 'function'
 				&& $wnd.evalGeoGebraCASExternal("1+1") == "2";
 	}-*/;
 
 	/**
-	 * @param workerpath
-	 *            JS folder with workers
-	 * @return whether workers are supported
-	 */
-	public static boolean checkWorkerSupport(String workerpath) {
-		if ("tablet".equals(GWT.getModuleName())
-				|| "tabletWin".equals(GWT.getModuleName())) {
-			return false;
-		}
-		return nativeCheckWorkerSupport(workerpath);
-	}
-
-	private static native boolean nativeCheckWorkerSupport(
-			String workerpath) /*-{
-		// Web workers are not supported in cross domain situations, and the
-		// following check only correctly detects them in chrome, so this
-		// condition must stay here until the end of times.
-		if (navigator.userAgent.toLowerCase().indexOf("firefox") != -1
-			|| navigator.userAgent.toLowerCase().indexOf("safari") != -1
-			&& navigator.userAgent.toLowerCase().indexOf("chrome") == -1) {
-			@org.geogebra.common.util.debug.Log::debug(Ljava/lang/String;)("INIT: workers might not be supported");
-			return false;
-		}
-
-		try {
-			var worker = new $wnd.Worker(workerpath+"js/workercheck.js");
-		} catch (e) {
-			@org.geogebra.common.util.debug.Log::debug(Ljava/lang/String;)("INIT: workers are not supported (no worker at " + workerpath + "), fallback for simple js");
-			return false;
-		}
-
-		@org.geogebra.common.util.debug.Log::debug(Ljava/lang/String;)("INIT: workers are supported");
-		worker.terminate();
-		return true;
-	}-*/;
-
-	public static native boolean zipjsLoadedWithoutWebWorkers() /*-{
-		return !!($wnd.zip && $wnd.zip.useWebWorkers === false);
-	}-*/;
-
-	/**
 	 *
 	 * @return true if WebAssembly supported
 	 */
-	public static native boolean webAssemblySupported()/*-{
+	public static boolean webAssemblySupported() {
+		return hasGlobal("WebAssembly");
+	}
 
-		// currently iOS11 giac.wasm gives slightly wrong results
-		// eg Numeric(fractionalPart(2.7)) gives 0.6999999999999 rather than 0.7
-		var iOS = /iPad|iPhone|iPod/.test($wnd.navigator.userAgent)
-				&& !$wnd.MSStream;
+	public static boolean hasGlobal(String propertyName) {
+		return Js.isTruthy(Js.asPropertyMap(DomGlobal.window).get(propertyName));
+	}
 
-		return !iOS && !!$wnd.WebAssembly;
-	}-*/;
-
-	public static native boolean supportsPointerEvents() /*-{
-		return !!$wnd.PointerEvent;
-	}-*/;
+	public static boolean supportsPointerEvents() {
+		return hasGlobal("PointerEvent");
+	}
 
 	private static boolean isHTTP() {
 		return !"file:".equals(Location.getProtocol());
@@ -246,21 +175,23 @@ public class Browser {
 	}-*/;
 
 	/**
-	 * @return whether TRIANGLE_FAN is supported in WebGL
+	 * @return whether we are running on geogebra.org
 	 */
-	public static native boolean supportsWebGLTriangleFan()/*-{
-		return $wnd.WebGLRenderingContext
-				&& (!!$wnd.WebGLRenderingContext.TRIANGLE_FAN);
-	}-*/;
+	public static boolean isGeoGebraOrg() {
+		String host = Location.getHost();
+		return host != null && host.contains("geogebra.org");
+	}
 
 	/**
-	 * @return whether we are running this from another website (local install
-	 *         of app bundle)
+	 * @return right now GraspableMath is only enabled on geogebra.org and
+	 * development hosts
 	 */
-	public static boolean runningLocal() {
-		return Location.getProtocol().startsWith("http")
-				&& Location.getHost() != null
-				&& !Location.getHost().contains("geogebra.org");
+	public static boolean isGraspableMathEnabled() {
+		String host = Location.getHost();
+		return host != null
+				&& (host.contains("geogebra.org")
+					|| host.contains("localhost")
+					|| host.contains("apps-builds.s3-eu-central-1.amazonaws.com"));
 	}
 
 	public native static String navigatorLanguage() /*-{
@@ -328,7 +259,7 @@ public class Browser {
 	 * @return whether webcam input is supported in the browser
 	 */
 	public static boolean supportsWebcam() {
-		return WebCamAPI.isSupported();
+		return DomGlobal.window.navigator.mediaDevices != null;
 	}
 
 	/**
@@ -530,27 +461,45 @@ public class Browser {
 	 *            new URL
 	 */
 	public static void changeUrl(String string) {
-		if ((Location.getHost() != null
-				&& Location.getHost().contains("geogebra.org")
-				&& !Location.getHost().contains("autotest"))
-				|| string.startsWith("#") || string.startsWith("?")) {
+		if (isAppsServer() || string.startsWith("?")) {
 			nativeChangeUrl(string);
 		}
 	}
 
-	public static native void changeMetaTitle(String title) /*-{
-		$wnd.changeMetaTitle && $wnd.changeMetaTitle(title);
-	}-*/;
+	private static boolean isAppsServer() {
+		String host = Location.getHost();
+		return host != null
+				&& (host.contains("geogebra.org") || host.equals("localhost"))
+				&& !Location.getPath().contains(".html");
+	}
 
-	private static native void nativeChangeUrl(String name) /*-{
-		if (name && $wnd.history && $wnd.history.pushState) {
+	/**
+	 * Change title and OpenGraph title using a global function from app.html
+	 * @param title document title
+	 */
+	public static void changeMetaTitle(String title) {
+		Function changeTitle = GeoGebraGlobal.getChangeMetaTitle();
+		if (changeTitle != null) {
+			changeTitle.call(DomGlobal.window, title);
+		}
+	}
+
+	private static void nativeChangeUrl(String name) {
+		if (!StringUtil.empty(name)) {
 			try {
-				$wnd.history.pushState({}, "GeoGebra", name);
-			} catch (e) {
+				DomGlobal.history.pushState(JsPropertyMap.of(), "GeoGebra", name);
+			} catch (Exception e) {
 				// on dev server trying to push production URL
 			}
 		}
-	}-*/;
+	}
+
+	/**
+	 * resets url to base: no materials or query string.
+	 */
+	public static void resetUrl() {
+		DomGlobal.window.parent.postMessage(ACTION_RESET_URL, "*");
+	}
 
 	/**
 	 * Opens GeoGebraTube material in a new window
@@ -558,9 +507,9 @@ public class Browser {
 	 * @param url
 	 *            GeoGebraTube url
 	 */
-	public native static void openWindow(String url)/*-{
-		$wnd.open(url, '_blank');
-	}-*/;
+	public static void openWindow(String url) {
+		DomGlobal.window.open(url, "_blank");
+	}
 
 	/**
 	 * Returns a string based on base 64 encoded value
@@ -598,10 +547,6 @@ public class Browser {
 		}
 	}-*/;
 
-	public static native boolean isXWALK() /*-{
-		return !!$wnd.ggbExamXWalkExtension;
-	}-*/;
-
 	public native static boolean isAndroid()/*-{
 		var userAgent = $wnd.navigator.userAgent;
 		if (userAgent) {
@@ -633,14 +578,6 @@ public class Browser {
 	@Deprecated
 	public static boolean isTabletBrowser() {
 		return isAndroid() || isiOS();
-	}
-
-	public static void setWebWorkerSupported(boolean b) {
-		webWorkerSupported = b;
-	}
-
-	public static boolean webWorkerSupported() {
-		return webWorkerSupported;
 	}
 
 	public static native int getScreenWidth() /*-{
@@ -780,7 +717,7 @@ public class Browser {
 	public native static int getIOSArrowKeys(NativeEvent event) /*-{
 
 		var key = event.key;
-		@org.geogebra.common.util.debug.Log::debug(Ljava/lang/String;)("KeyDownEvent: " + key);
+		@org.geogebra.common.util.debug.Log::debug(Ljava/lang/Object;)("KeyDownEvent: " + key);
 		switch (key) {
 		case "UIKeyInputUpArrow":
 			return @com.himamis.retex.editor.share.util.GWTKeycodes::KEY_UP;

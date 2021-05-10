@@ -12,8 +12,6 @@ import org.geogebra.common.move.ggtapi.models.GeoGebraTubeUser;
 import org.geogebra.common.move.ggtapi.models.Material;
 import org.geogebra.common.move.ggtapi.models.Material.MaterialType;
 import org.geogebra.common.move.ggtapi.models.Material.Provider;
-import org.geogebra.common.move.ggtapi.models.SyncEvent;
-import org.geogebra.common.move.ggtapi.requests.SyncCallback;
 import org.geogebra.common.move.views.BooleanRenderable;
 import org.geogebra.common.move.views.EventRenderable;
 import org.geogebra.common.util.AsyncOperation;
@@ -29,12 +27,13 @@ import org.geogebra.web.html5.gui.view.button.StandardButton;
 import org.geogebra.web.html5.main.AppW;
 import org.geogebra.web.shared.ggtapi.LoginOperationW;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import elemental2.dom.File;
 
 /**
  * GeoGebraTube Search and Browse GUI
@@ -104,25 +103,6 @@ public class BrowseGUI extends MyHeaderPanel implements BooleanRenderable,
 		if (app.getGoogleDriveOperation() != null) {
 			app.getGoogleDriveOperation().initGoogleDriveApi();
 		}
-		if (app.getLoginOperation().isLoggedIn()) {
-			sync();
-		}
-	}
-
-	private void sync() {
-		if (!app.getFileManager().isSyncing()) {
-			app.getLoginOperation().getGeoGebraTubeAPI()
-					.sync(0, new SyncCallback() {
-
-			        @Override
-			        public void onSync(ArrayList<SyncEvent> events) {
-							Log.debug("Start sync upload");
-				        app.getFileManager().uploadUsersMaterials(events);
-
-			        }
-		        });
-		}
-
 	}
 
 	/**
@@ -147,7 +127,7 @@ public class BrowseGUI extends MyHeaderPanel implements BooleanRenderable,
 		this.providerPanel = new FlowPanel();
 
 		locationTube = new StandardButton(
-				BrowseResources.INSTANCE.location_tube(), app);
+				BrowseResources.INSTANCE.location_tube());
 		locationTube.addFastClickHandler(new FastClickHandler() {
 
 			@Override
@@ -164,7 +144,7 @@ public class BrowseGUI extends MyHeaderPanel implements BooleanRenderable,
 
 		if (locationDrive == null) {
 			locationDrive = new StandardButton(
-					BrowseResources.INSTANCE.location_drive(), app);
+					BrowseResources.INSTANCE.location_drive());
 			locationDrive.addFastClickHandler(new FastClickHandler() {
 
 				@Override
@@ -257,23 +237,10 @@ public class BrowseGUI extends MyHeaderPanel implements BooleanRenderable,
 		this.materialListPanel.rememberSelected(materialElement);
 	}
 
-	// public void setFrame(final GeoGebraAppFrame frame) {
-	// super.setFrame(frame);
-	// }
-
 	@Override
-	public void openFile(final JavaScriptObject fileToHandle) {
+	public void openFile(final File fileToHandle) {
 		showLoading();
-		if (app.getLAF().supportsLocalSave()) {
-			app.getFileManager().setFileProvider(Provider.LOCAL);
-		}
-
-		app.getGuiManager().getBrowseView().closeAndSave(new AsyncOperation<Boolean>() {
-			@Override
-			public void callback(Boolean obj) {
-						app.openFile(fileToHandle);
-			}
-		});
+		closeAndSave(success -> app.openFile(fileToHandle));
 	}
 
 	/**
@@ -299,15 +266,13 @@ public class BrowseGUI extends MyHeaderPanel implements BooleanRenderable,
 				                key.substring(key.indexOf("#",
 				                        key.indexOf("#") + 1) + 1));
 				if (material.getType() != MaterialType.ggt) {
-				app.updateMaterialURL(material.getId(),
-							material.getSharingKeyOrId(), material.getTitle());
+				app.updateMaterialURL(material);
 				}
 				app.setLocalID(material.getLocalID());
 			} else if (!getLastSelected().localMaterial
 			        && getLastSelected().ownMaterial) {
 				app.getKernel().getConstruction().setTitle(material.getTitle());
-				app.updateMaterialURL(material.getId(),
-						material.getSharingKeyOrId(), material.getTitle());
+				app.updateMaterialURL(material);
 			} else {
 				app.setTubeId(null);
 				app.updateMaterialURL(0, material.getSharingKeyOrId(),
@@ -385,7 +350,6 @@ public class BrowseGUI extends MyHeaderPanel implements BooleanRenderable,
 			setAvailableProviders();
 			if (event instanceof LoginEvent
 			        && ((LoginEvent) event).isSuccessful()) {
-				sync();
 				this.materialListPanel.loadUsersMaterials();
 			} else if (event instanceof LogOutEvent) {
 				this.materialListPanel.removeUsersMaterials();
@@ -396,9 +360,6 @@ public class BrowseGUI extends MyHeaderPanel implements BooleanRenderable,
 	@Override
 	public void render(final boolean online) {
 		if (online) {
-			if (app.getLoginOperation().isLoggedIn()) {
-				sync();
-			}
 			this.materialListPanel.loadAllMaterials();
 		} else {
 			this.clearMaterials();

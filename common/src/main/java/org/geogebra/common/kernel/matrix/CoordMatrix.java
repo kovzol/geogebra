@@ -568,8 +568,11 @@ public class CoordMatrix {
 	}
 
     /**
-     * @param digits    digits length
-     * @param precision decimal precision
+     *
+     * @param digits
+     *            digits length
+     * @param precision
+     *            decimal precision
      * @return string representation with +/-XXXX for too large values
      */
     public String toString(int digits, int precision) {

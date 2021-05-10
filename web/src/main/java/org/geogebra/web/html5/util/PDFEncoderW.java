@@ -6,10 +6,10 @@ import org.geogebra.web.html5.awt.GGraphics2DW;
 import org.geogebra.web.html5.css.GuiResourcesSimple;
 import org.geogebra.web.html5.euclidian.EuclidianViewW;
 import org.geogebra.web.html5.euclidian.EuclidianViewWInterface;
+import org.geogebra.web.html5.export.ExportLoader;
 import org.geogebra.web.resources.JavaScriptInjector;
 
-import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.JavaScriptObject;
+import elemental2.dom.CanvasRenderingContext2D;
 
 /**
  * Wrapper class for the canvas2pdf.js library to allow multi-page PDF export
@@ -20,7 +20,7 @@ public class PDFEncoderW implements Encoder {
 
 	private EuclidianViewW ev;
 
-	private Context2d ctx;
+	private CanvasRenderingContext2D ctx;
 
 	private GGraphics2D g4copy;
 
@@ -30,7 +30,7 @@ public class PDFEncoderW implements Encoder {
 	 * @param view
 	 *            EV to export
 	 */
-    public PDFEncoderW(EuclidianViewWInterface view) {
+	public PDFEncoderW(EuclidianViewWInterface view) {
 
 		this.ev = (EuclidianViewW) view;
 
@@ -86,7 +86,7 @@ public class PDFEncoderW implements Encoder {
 	 *            height
 	 * @return canvas2pdf object
 	 */
-	public static native Context2d getCanvas2PDF(double width,
+	public static native CanvasRenderingContext2D getCanvas2PDF(double width,
 			double height) /*-{
 		if ($wnd.canvas2pdf) {
 			return new $wnd.canvas2pdf.PdfContext(width, height);
@@ -97,27 +97,11 @@ public class PDFEncoderW implements Encoder {
 
 	/**
 	 * 
-	 * @return true if canvas2pdf is already loaded
-	 */
-	public static native boolean canvas2PdfLoaded() /*-{
-		return !!$wnd.canvas2pdf;
-	}-*/;
-
-	/**
-	 * 
-	 * @return true if pako is already loaded
-	 */
-	public static native boolean pakoLoaded() /*-{
-		return !!$wnd.pako;
-	}-*/;
-
-	/**
-	 * 
 	 * @param pdfcontext
 	 *            canvas2pdf object
 	 * @return the resulting PDF (as base64 URL)
 	 */
-	public static native String getPDF(JavaScriptObject pdfcontext) /*-{
+	public static native String getPDF(CanvasRenderingContext2D pdfcontext) /*-{
 		return pdfcontext.getPDFbase64();
 	}-*/;
 
@@ -125,7 +109,7 @@ public class PDFEncoderW implements Encoder {
 	 * @param ctx
 	 *            context
 	 */
-	public static native void addPagePDF(JavaScriptObject ctx) /*-{
+	public static native void addPagePDF(CanvasRenderingContext2D ctx) /*-{
 		ctx.addPage();
 	}-*/;
 
@@ -136,16 +120,10 @@ public class PDFEncoderW implements Encoder {
 	 *            height
 	 * @return context if available (or null)
 	 */
-	public static Context2d getContext(int width, int height) {
-
-		if (!PDFEncoderW.pakoLoaded()) {
-			JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.pakoJs());
-		}
-
-		if (!PDFEncoderW.canvas2PdfLoaded()) {
+	public static CanvasRenderingContext2D getContext(int width, int height) {
+		if (ExportLoader.getCanvas2Pdf() == null) {
 			JavaScriptInjector.inject(GuiResourcesSimple.INSTANCE.canvas2Pdf());
 		}
-
 		return PDFEncoderW.getCanvas2PDF(width, height);
 	}
 

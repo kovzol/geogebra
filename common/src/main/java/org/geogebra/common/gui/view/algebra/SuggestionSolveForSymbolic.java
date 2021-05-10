@@ -39,7 +39,7 @@ public final class SuggestionSolveForSymbolic extends SuggestionSolve {
 		labelGeosIfNeeded();
 		String command = getCommandText();
 		geo.getKernel().getAlgebraProcessor().processAlgebraCommand(
-                command, false, new LabelHiderCallback());
+				command, false, new LabelHiderCallback());
 	}
 
 	private void labelGeosIfNeeded() {

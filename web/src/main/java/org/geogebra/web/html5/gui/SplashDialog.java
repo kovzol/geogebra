@@ -1,16 +1,17 @@
 package org.geogebra.web.html5.gui;
 
 import org.geogebra.common.GeoGebraConstants;
-import org.geogebra.common.main.AppConfigDefault;
+import org.geogebra.common.main.settings.config.AppConfigDefault;
 import org.geogebra.web.html5.css.GuiResourcesSimple;
 import org.geogebra.web.html5.gui.util.NoDragImage;
-import org.geogebra.web.html5.util.ArticleElementInterface;
+import org.geogebra.web.html5.util.AppletParameters;
+import org.geogebra.web.html5.util.GeoGebraElement;
+import org.gwtproject.timer.client.Timer;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -22,7 +23,7 @@ public class SplashDialog extends SimplePanel {
 	boolean appLoaded = false;
 	boolean timerEllapsed = false;
 	boolean previewExists = false;
-	private Element article;
+	private GeoGebraElement geoGebraElement;
 
 	private Timer t = new Timer() {
 		@Override
@@ -39,18 +40,18 @@ public class SplashDialog extends SimplePanel {
 	/**
 	 * @param showLogo
 	 *            whether to show GeoGebra logo
-	 * @param article
+	 * @param geoGebraElement
 	 *            configuration element
 	 * @param frame
 	 *            frame
 	 */
-	public SplashDialog(boolean showLogo, ArticleElementInterface article,
-			GeoGebraFrameW frame) {
-		this.article = article.getElement();
+	public SplashDialog(boolean showLogo, GeoGebraElement geoGebraElement,
+			AppletParameters parameters, GeoGebraFrameW frame) {
+		this.geoGebraElement = geoGebraElement;
 		this.geogebraFrame = frame;
-		previewExists = checkIfPreviewExists(this.article)
+		previewExists = checkIfPreviewExists(geoGebraElement)
 				|| AppConfigDefault
-						.isUnbundledOrNotes(article.getDataParamAppName());
+						.isUnbundledOrNotes(parameters.getDataParamAppName());
 
 		if (!previewExists) {
 			FlowPanel panel = new FlowPanel();
@@ -58,11 +59,13 @@ public class SplashDialog extends SimplePanel {
 			style.setPosition(Position.ABSOLUTE);
 			style.setZIndex(1000000);
 			style.setBackgroundColor("white");
+			// This part is different in GeoGebra Discovery.
 			HTML logo = new HTML(GuiResourcesSimple.INSTANCE
 					.ggbSplashHtml().getText());
 			if (showLogo) {
 				panel.add(logo);
 			}
+
 			Image spinner = new NoDragImage(GuiResourcesSimple.INSTANCE
 					.getGeoGebraWebSpinner().getSafeUri().asString());
 			Style sstyle = spinner.getElement().getStyle();
@@ -72,7 +75,8 @@ public class SplashDialog extends SimplePanel {
 			sstyle.setPosition(Position.ABSOLUTE);
 			sstyle.setMarginLeft(-8, Unit.PX);
 
-			//panel.add(spinner);
+			// From this part, the code is different in GeoGebra Discovery.
+			// panel.add(spinner);
 			addNativeLoadHandler(spinner.getElement());
 			add(panel);
 
@@ -136,7 +140,7 @@ public class SplashDialog extends SimplePanel {
 	 */
 	protected void hide() {
 		this.removeFromParent();
-		removePreviewImg(article);
+		removePreviewImg(geoGebraElement);
 	}
 
 	private native void removePreviewImg(Element thisArticle) /*-{

@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.MyModeChangedListener;
 import org.geogebra.common.euclidian.event.PointerEventType;
+import org.geogebra.common.io.layout.DockPanelData.TabIds;
 import org.geogebra.common.io.layout.PerspectiveDecoder;
 import org.geogebra.common.javax.swing.SwingConstants;
 import org.geogebra.common.kernel.kernelND.GeoEvaluatable;
@@ -74,20 +75,6 @@ public class ToolbarPanel extends FlowPanel
 
 	private EventDispatcher eventDispatcher;
 
-	/**
-	 * Tab ids.
-	 */
-	enum TabIds {
-		/** tab one */
-		ALGEBRA,
-
-		/** tab two */
-		TOOLS,
-
-		/** tab three */
-		TABLE
-	}
-
 	/** Header of the panel with buttons and tabs */
 	Header header;
 
@@ -99,14 +86,8 @@ public class ToolbarPanel extends FlowPanel
 	private TableTab tabTable;
 	private ToolsTab tabTools;
 	private TabContainer tabContainer;
-	private TabIds selectedTabId;
 	private boolean isOpen;
-	private ScheduledCommand deferredOnRes = new ScheduledCommand() {
-		@Override
-		public void execute() {
-			resize();
-		}
-	};
+	private ScheduledCommand deferredOnRes = this::resize;
 
 	/**
 	 * Selects MODE_MOVE as mode and changes visual settings accordingly of
@@ -244,7 +225,7 @@ public class ToolbarPanel extends FlowPanel
 		if (isAnimating() && !app.isPortrait()) {
 			w -= HDRAGGER_WIDTH;
 		}
-		return w > 0 ? w : 0;
+		return Math.max(w, 0);
 	}
 
 	private void initClickStartHandler() {
@@ -261,8 +242,12 @@ public class ToolbarPanel extends FlowPanel
 	/**
 	 * Init gui, don't open any panels
 	 */
-	private void initGUI() {
+	public void initGUI() {
 		clear();
+		if (header != null) {
+			header.removeUndoRedoPanel();
+		}
+
 		addStyleName("toolbar");
 		header = new Header(this);
 		add(header);
@@ -288,9 +273,8 @@ public class ToolbarPanel extends FlowPanel
 
 	@Override
 	public void onBrowserEvent(Event event) {
-		if (DOM.eventGetType(event) == Event.ONCLICK
-				&& app.isMenuShowing()) {
-			toggleMenu();
+		if (DOM.eventGetType(event) == Event.ONCLICK) {
+			app.hideMenu();
 		}
 		super.onBrowserEvent(event);
 	}
@@ -322,8 +306,7 @@ public class ToolbarPanel extends FlowPanel
 
 	private void addMoveBtn() {
 		moveBtn = new StandardButton(
-				MaterialDesignResources.INSTANCE.mode_move(), null, 24,
-				app);
+				MaterialDesignResources.INSTANCE.mode_move(), null, 24);
 		AriaHelper.hide(moveBtn);
 		String altText = app.getLocalization().getMenu(
 				EuclidianConstants.getModeText(EuclidianConstants.MODE_MOVE))
@@ -339,13 +322,7 @@ public class ToolbarPanel extends FlowPanel
 		moveBtn.addStyleName("moveMoveBtnDown");
 		main.add(moveBtn);
 		hideMoveFloatingButton();
-		FastClickHandler moveBtnHandler = new FastClickHandler() {
-			
-			@Override
-			public void onClick(Widget source) {
-				moveBtnClicked();
-			}
-		};
+		FastClickHandler moveBtnHandler = source -> moveBtnClicked();
 		moveBtn.addFastClickHandler(moveBtnHandler);
 	}
 
@@ -532,7 +509,7 @@ public class ToolbarPanel extends FlowPanel
 	private void updateHeightForClosing(DockSplitPaneW dockParent, Widget evPanel) {
 		dockParent.setWidgetSize(evPanel,
 				app.getHeight() - header.getOffsetHeight()
-						- app.getArticleElement().getBorderThickness()
+						- app.getAppletParameters().getBorderThickness()
 						- VSHADOW_OFFSET);
 		dockParent.addStyleName("hide-VDragger");
 	}
@@ -694,13 +671,6 @@ public class ToolbarPanel extends FlowPanel
 	}
 
 	/**
-	 * Opens and closes Burger Menu
-	 */
-	void toggleMenu() {
-		app.toggleMenu();
-	}
-
-	/**
 	 * Opens algebra tab.
 	 * 
 	 * @param fade
@@ -764,7 +734,7 @@ public class ToolbarPanel extends FlowPanel
 	 *            decides if tab should fade during animation.
 	 */
 	public void openTableView(@Nullable GeoEvaluatable geo, boolean fade) {
-		if (!app.showToolBar()) {
+		if (!app.showToolBar() || !app.getConfig().hasTableView()) {
 			openAlgebra(fade);
 			return;
 		}
@@ -856,7 +826,7 @@ public class ToolbarPanel extends FlowPanel
 	 * @return true if AV is selected and ready to use.
 	 */
 	public boolean isAlgebraViewActive() {
-		return tabAlgebra != null && selectedTabId == TabIds.ALGEBRA;
+		return tabAlgebra != null && getSelectedTabId() == TabIds.ALGEBRA;
 	}
 
 	/**
@@ -873,7 +843,7 @@ public class ToolbarPanel extends FlowPanel
 	 * @return the selected tab id.
 	 */
 	public TabIds getSelectedTabId() {
-		return selectedTabId;
+		return getToolbarDockPanel().getTabId();
 	}
 
 	/**
@@ -882,7 +852,7 @@ public class ToolbarPanel extends FlowPanel
 	 *            to set.
 	 */
 	public void setSelectedTabId(TabIds tabId) {
-		this.selectedTabId = tabId;
+		this.getToolbarDockPanel().doSetTabId(tabId);
 	}
 
 	/**

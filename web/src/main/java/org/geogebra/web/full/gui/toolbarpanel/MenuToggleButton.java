@@ -75,7 +75,7 @@ public class MenuToggleButton extends MyToggleButton
 
 	@Override
 	public void setTitle(String title) {
-		AriaHelper.setTitle(this, title, appW);
+		AriaHelper.setTitle(this, title);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class MenuToggleButton extends MyToggleButton
 		removeFromParent();
 		RootPanel root = RootPanel.get("headerID");
 		Element dummy = Dom.querySelectorForElement(root.getElement(),
-				"menuBtn");
+				".menuBtn");
 		Event.sinkEvents(root.getElement(), Event.KEYEVENTS);
 		Event.setEventListener(root.getElement(),
 				appW.getGlobalKeyDispatcher().getGlobalShortcutHandler());

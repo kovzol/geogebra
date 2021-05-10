@@ -582,19 +582,6 @@ public interface Manager3DInterface {
 	// 3D SURFACE (2 VARS)
 
 	/**
-	 * 3D Cartesian surface command: Surface[ &lt;expression x-coord&gt;,
-	 * &lt;expression y-coord&gt;, &lt;expression z-coord&gt;, &lt;u-var&gt;,
-	 * &lt;u-from&gt;, &lt;u-to&gt;, &lt;v-var&gt;, &lt;v-from&gt;, &lt;v-to&gt;
-	 * ]
-	 * 
-	 * @return surface
-	 */
-	public GeoElement surfaceCartesian3D(String label, ExpressionNode point,
-			GeoNumberValue[] xcoord,
-			GeoNumeric uVar, GeoNumberValue uFrom, GeoNumberValue uTo,
-			GeoNumeric vVar, GeoNumberValue vFrom, GeoNumberValue vTo);
-
-	/**
 	 * surface of revolution, rotating function around x-axis, from 0 to angle
 	 * 
 	 * @param function
@@ -603,8 +590,8 @@ public interface Manager3DInterface {
 	 *            angle
 	 * @return surface of revolution
 	 */
-    public GeoElement surfaceOfRevolution(Path function,
-                                          GeoNumberValue angle, GeoLineND line);
+	public GeoElement surfaceOfRevolution(Path function,
+			GeoNumberValue angle, GeoLineND line);
 
 	// //////////////////////////////////////////////
 	// intersection algos
@@ -951,8 +938,8 @@ public interface Manager3DInterface {
 	 *            orientation
 	 * @return geo rotated
 	 */
-    public GeoElement[] rotate3D(String label, GeoElementND geoRot,
-                                 GeoNumberValue phi, GeoPointND Q, GeoDirectionND orientation);
+	public GeoElement[] rotate3D(String label, GeoElementND geoRot,
+			GeoNumberValue phi, GeoPointND Q, GeoDirectionND orientation);
 
 	/**
 	 * rotate about line
@@ -967,8 +954,8 @@ public interface Manager3DInterface {
 	 *            line
 	 * @return geo rotated
 	 */
-    public GeoElement[] rotate3D(String label, GeoElementND geoRot,
-                                 GeoNumberValue phi, GeoLineND line);
+	public GeoElement[] rotate3D(String label, GeoElementND geoRot,
+			GeoNumberValue phi, GeoLineND line);
 
 	/**
 	 * @return mirrored object

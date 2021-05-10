@@ -71,7 +71,7 @@ public class TeXLength {
 	}
 
 	public double getValue(TeXEnvironment env) {
-        return l * unit.getFactor(env);
+		return l * unit.getFactor(env);
 	}
 
 	public TeXLength scale(final double factor) {
@@ -84,7 +84,7 @@ public class TeXLength {
 
 	@Override
 	public String toString() {
-        return Double.toString(getL()) + unit.toString();
+		return Double.toString(getL()) + unit.toString();
 	}
 
 	private static int getIntPart(double x) {
@@ -115,7 +115,7 @@ public class TeXLength {
 			ra.add(Symbols.NORMALDOT);
 			TeXParser.getAtomForNumber(frac, ra, true);
 		}
-        final String u = unit.toString();
+		final String u = unit.toString();
 		if (!u.isEmpty()) {
 			ra.add(new RomanAtom(TeXParser.getAtomForLatinStr(u, false)));
 		}
