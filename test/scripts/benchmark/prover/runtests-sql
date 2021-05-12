@@ -268,10 +268,15 @@ for i in `find -name '*.ggb' | sort`; do
    echo "var html5codeBase = 'file://$ABSWEBDIR';" >> $JSFILE
    timeout $((TIMEOUT+2)) $PHANTOMJS $MYDIR/testurl.js "file:///$MYDIR/jstest.html" $TIMEOUT > $MYDIR/tmp/.test.stdout 2>$MYDIR/tmp/.test.stderr
    RETVAL=$?
+   # Old format (before May 2021):
    # 14:50:36.344 DEBUG: ?: Benchmarking: 1120 ms
    # 14:50:36.345 DEBUG: ?: OUTPUT for Prove: proof = true
    # 14:50:36.346 DEBUG: ?: all CAS up
-   cat $MYDIR/tmp/.test.stdout | grep Benchmarking > $LOGFILE
+   # New format:
+   # Benchmarking: 1120 ms
+   # cat $MYDIR/tmp/.test.stdout | grep Benchmarking > $LOGFILE
+   # We add 3 dummy columns...
+   cat $MYDIR/tmp/.test.stdout | grep Benchmarking | sed s/Benchmarking/"1 2 3 Benchmarking"/ > $LOGFILE
    grep --silent "OUTPUT for Prove:" $MYDIR/tmp/.test.stdout && \
     tac $MYDIR/tmp/.test.stdout | grep "OUTPUT for Prove:" | head -1 | sed 's/\(.*\) = \(.*\)/OUTPUT for Prove or ProveDetails == null = \2/' > $REGRESSIONFILE
    grep --silent "OUTPUT for ProveDetails:" $MYDIR/tmp/.test.stdout && \

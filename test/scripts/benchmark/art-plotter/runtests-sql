@@ -228,7 +228,10 @@ for i in `find tests -name '*.ggb' | sort`; do
    echo "var html5codeBase = 'file://$ABSWEBDIR';" >> $JSFILE
    timeout $((TIMEOUT+2)) $PHANTOMJS $MYDIR/testurl.js "file:///$MYDIR/jstest.html" $TIMEOUT > $MYDIR/tmp/.test.stdout 2>$MYDIR/tmp/.test.stderr
    RETVAL=$?
+   # Old format (before May 2021)
    # 14:50:36.344 DEBUG: ?: Benchmarking: 1120 ms
+   # New format (no timestamp):
+   # Benchmarking: 1120 ms
    cat $MYDIR/tmp/.test.stdout | grep Benchmarking | tail -1 > $LOGFILE
    TIME=`cat $LOGFILE | grep Benchmarking | tail -1 | awk '{print $5}'`
    rm -f $REGRESSIONFILE
