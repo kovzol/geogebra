@@ -233,7 +233,7 @@ for i in `find tests -name '*.ggb' | sort`; do
    # New format (no timestamp):
    # Benchmarking: 1120 ms
    cat $MYDIR/tmp/.test.stdout | grep Benchmarking | tail -1 > $LOGFILE
-   TIME=`cat $LOGFILE | grep Benchmarking | tail -1 | awk '{print $5}'`
+   TIME=`cat $LOGFILE | grep Benchmarking | tail -1 | awk '{print $2}'`
    rm -f $REGRESSIONFILE
    grep --silent " {{" $MYDIR/tmp/.test.stdout && {
     cat $MYDIR/tmp/.test.stdout | grep " {{" | tail -1 | sed s/".* {{\([0-9,\-]*\)}.*"/\\1/ > $REGRESSIONFILE
