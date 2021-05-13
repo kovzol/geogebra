@@ -61,9 +61,6 @@ public class DependentBooleanAdapter extends ProverAdapter {
 	private ArrayList<Map.Entry<GeoElement, PVariable>> varSubstListOfSegs;
 
 	// Abreviations of certain cases
-	private boolean caseAngleOpAngle(ExpressionNode root) {
-		return root.getLeft() instanceof GeoAngle && root.getRight() instanceof GeoAngle;
-	}
 	private boolean isAreaValue(ExpressionValue value) {
 		return value instanceof GeoNumeric &&
 				((GeoElement) value).getParentAlgorithm().getRelatedModeID() ==
@@ -115,43 +112,20 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			}
 		}
 
-		// Easy cases: both sides are GeoElements:
+		// Easy cases: both sides are GeoElements, but none of them are created with MODE_AREA:
 		if (root.getLeft().isGeoElement() && root.getRight().isGeoElement() &&
-				(!(isAreaValue(root.getLeft())) && !(isAreaValue(root.getRight())))
-				|| caseAngleOpAngle(root)
-		) {
+				(!(isAreaValue(root.getLeft())) && !(isAreaValue(root.getRight())))) {
 
 			GeoElement left = (GeoElement) root.getLeft();
 			GeoElement right = (GeoElement) root.getRight();
 
 			if (o == EQUAL_BOOLEAN) {
-				if ((root.getLeft() instanceof GeoNumeric
-						&& ((GeoElement) root.getLeft()).getParentAlgorithm()
-						.getRelatedModeID() == EuclidianConstants.MODE_AREA
-						&& root.getRight() instanceof GeoNumeric
-						&& ((GeoElement) root.getLeft()).getParentAlgorithm()
-						.getRelatedModeID() == EuclidianConstants.MODE_AREA)
-
-						|| caseAngleOpAngle(root)
-				) {
-
-					if (!caseAngleOpAngle(root)) {
-
-						AlgoAreEqual algo = new AlgoAreEqual(cons, left, right);
-						PPolynomial[][] ret = algo.getBotanaPolynomials();
-						cons.removeFromConstructionList(algo);
-						algo.setProtectedInput(true);
-						if (leftWasDist) {
-							left.getParentAlgorithm().setProtectedInput(true);
-							left.doRemove();
-						}
-						if (rightWasDist) {
-							right.getParentAlgorithm().setProtectedInput(true);
-							right.doRemove();
-						}
-						return ret;
-					}
+				// It is unallowed to compare angle with a non-angle:
+				if ((root.getLeft() instanceof GeoAngle && !(root.getRight() instanceof GeoAngle))
+				|| (!(root.getLeft() instanceof GeoAngle) && (root.getRight() instanceof GeoAngle))) {
+					throw new NoSymbolicParametersException(); // maybe an error message is preferred
 				}
+
 				AlgoAreCongruent algo = new AlgoAreCongruent(cons, left, right);
 				PPolynomial[][] ret = algo.getBotanaPolynomials();
 				cons.removeFromConstructionList(algo);
