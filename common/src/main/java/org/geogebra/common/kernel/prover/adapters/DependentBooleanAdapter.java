@@ -72,7 +72,8 @@ public class DependentBooleanAdapter extends ProverAdapter {
 		ExpressionNode root = bool.getDefinition();
 		Kernel kernel = cons.getKernel();
 		Operation o = root.getOperation();
-		// replace Distance[A,B] with geoSegment
+
+		// Preparation. Replace Distance[A,B] with geoSegment
 		if (!(root.getLeft().isExpressionNode())
 				&& root.getLeft() instanceof GeoNumeric) {
 			AlgoElement algo = ((GeoElement) root.getLeft())
@@ -112,10 +113,14 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			}
 		}
 
-		// Easy cases: both sides are GeoElements, but none of them are created with MODE_AREA:
+		// Easy cases: both sides are GeoElements, but none of them are created with MODE_AREA,
+		// and none of them are numeric expressions. Except if both are angles (these are numeric
+		// expressions).
 		if (root.getLeft().isGeoElement() && root.getRight().isGeoElement() &&
-				(!(isAreaValue(root.getLeft())) && !(isAreaValue(root.getRight())))) {
-
+				(!(isAreaValue(root.getLeft())) && !(isAreaValue(root.getRight()))) &&
+				(!(root.getLeft() instanceof GeoNumeric) && !(root.getRight() instanceof GeoNumeric))
+				|| (root.getLeft() instanceof GeoAngle && root.getRight() instanceof GeoAngle)
+		) {
 			GeoElement left = (GeoElement) root.getLeft();
 			GeoElement right = (GeoElement) root.getRight();
 
