@@ -1412,7 +1412,8 @@ public class ProverBotanasMethod {
 			String rgCommand = "euclideansolver";
 			StringBuilder rgParameters = new StringBuilder();
 			// Do not send = via http, it is reserved:
-			thesisIneq = thesisIneq.replace(">=", "≥").replace("<=", "≤");
+			thesisIneq = thesisIneq.replace(">=", "≥")
+					.replace("<=", "≤").replace("=", "E");
 
 			rgParameters.append("ineq=").append(thesisIneq).append("&")
 					.append("polys=");
@@ -1620,19 +1621,31 @@ public class ProverBotanasMethod {
 			}
 			String pCode = ((AlgoDependentBoolean) algo).exprGiacCode();
 
-
 			Kernel k = geoStatement.getKernel();
 			GeoGebraCAS cas = (GeoGebraCAS) k.getGeoGebraCAS();
 			CASGenericInterface c = cas.getCurrentCAS();
 
+			// In some cases we force running computations via real geometry.
+			boolean forceRG = false;
+			if (pCode.contains("sqrt")) {
+				forceRG = true;
+			}
+			if (!ineqs.isEmpty()) {
+				forceRG = true;
+			}
+
 			Operation operation = ((AlgoDependentBoolean) algo).getOperation();
-			if (operation == LESS || operation == LESS_EQUAL || operation == GREATER || operation == GREATER_EQUAL) {
+			if (forceRG || operation == LESS || operation == LESS_EQUAL ||
+					operation == GREATER || operation == GREATER_EQUAL) {
 				Log.debug("Inequality");
 				try {
 					thesisIneq = c.evaluateRaw(pCode);
 					thesisIneq = thesisIneq.substring(1, thesisIneq.length() - 1); // trim { }
 					// thesisIneq = convertDecimalsToFractions(thesisIneq);
 					thesisIneq = convertSqrtToQepcad(thesisIneq);
+					if (operation == EQUAL_BOOLEAN) {
+						thesisIneq += "=0";
+					}
 					return null;
 				} catch (Throwable e) {
 					Log.debug(
