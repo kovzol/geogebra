@@ -67,7 +67,7 @@ public abstract class AbstractProverReciosMethod {
 			// use Botana's method if there is no native support
 			p = UtilFactory.getPrototype().newProver();
 			p.setProverEngine(ProverEngine.RECIOS_PROVER);
-			as = new AlgebraicStatement(statement, null, p);
+			as = new AlgebraicStatement(statement, null, p, false);
 
 			if (as.getResult() == ProofResult.PROCESSING) {
 				// Don't do further computations until CAS is ready:

@@ -298,19 +298,20 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			traverseExpression((ExpressionNode) node.getRight(), kernel);
 		}
 
-		if (node.getLeft() != null && node.getLeft().isExpressionNode()
+		if (node.getRight() != null && node.getLeft() != null && node.getLeft().isExpressionNode()
 				&& node.getRight().isExpressionNode()) {
 			return;
 		}
 		// case number with segment, eg. 2*a^2
-		if (node.getLeft() instanceof MyDouble
+		if (node.getRight() != null && node.getLeft() != null && node.getLeft() instanceof MyDouble
 				&& node.getRight().isExpressionNode()
 				&& (node.getOperation() == DIVIDE
 						|| node.getOperation() == MULTIPLY)) {
 			return;
 		}
 		// case segment with number, eg. a^2*1,5
-		if (node.getRight() instanceof MyDouble
+		if (node.getRight() != null && node.getRight() instanceof MyDouble
+				&& node.getLeft() != null
 				&& node.getLeft().isExpressionNode()) {
 			return;
 		}
@@ -439,6 +440,19 @@ public class DependentBooleanAdapter extends ProverAdapter {
 		return strForGiac.toString();
 	}
 
+	String leftStr;
+	String rightStr;
+
+	// Important: exprCode() must be called before obtaining the data here!
+	public String exprCodeLeft() {
+		return leftStr;
+	}
+
+	// Important: exprCode() must be called before obtaining the data here!
+	public String exprCodeRight() {
+		return rightStr;
+	}
+
 	/**
 	 * Create a Giac program that expresses the statement. It assumes that the Botana
 	 * variables are already computed. Use minimalExtendedPolyGiacCode() first.
@@ -480,15 +494,28 @@ public class DependentBooleanAdapter extends ProverAdapter {
 		} else {
 			rootStr = bool.getDefinition()
 					.toString(StringTemplate.giacTemplate);
+			// For convenience, we create the lhs and rhs as well.
+			leftStr = bool.getDefinition().getLeft().toString(StringTemplate.giacTemplate);
+			rightStr = bool.getDefinition().getRight().toString(StringTemplate.giacTemplate);
 		}
+
+		// Not that this string is hardcoded. It depends on our definitions in Giac.
+		String GGB_IS_ZERO = "ggbIsZero";
+		int GGB_IS_ZERO_LENGTH = GGB_IS_ZERO.length();
+		// Maybe there may be multiple results in a list...? Unsure. TODO: check if this is required.
 		String[] splitedStr = rootStr.split(",");
-		if (splitedStr[0].contains("ggbIsZero")) {
-			/*
-			 * This 10 is hardcoded, it is the length of "[ggbIsZero" which
-			 * is the beginning of rootStr. FIXME
-			 */
-			rootStr = splitedStr[0].substring(10, splitedStr[0].length() - 1);
+		if (splitedStr[0].contains(GGB_IS_ZERO)) {
+			rootStr = splitedStr[0].substring(GGB_IS_ZERO_LENGTH + 1, splitedStr[0].length() - 1);
 		}
+		splitedStr = leftStr.split(",");
+		if (splitedStr[0].contains(GGB_IS_ZERO)) {
+			leftStr = splitedStr[0].substring(GGB_IS_ZERO_LENGTH + 1, splitedStr[0].length() - 1);
+		}
+		splitedStr = rightStr.split(",");
+		if (splitedStr[0].contains(GGB_IS_ZERO)) {
+			rightStr = splitedStr[0].substring(GGB_IS_ZERO_LENGTH + 1, splitedStr[0].length() - 1);
+		}
+
 		StringBuilder strForGiac = new StringBuilder();
 		strForGiac.append("subst([");
 		strForGiac.append(rootStr).append("],[");
@@ -496,7 +523,6 @@ public class DependentBooleanAdapter extends ProverAdapter {
 		// Also, if a formula like a=a or a>=a or a>a is given, Giac evaluates it automatically
 		// as true or false which is not really expected...
 		// FIXME. Now we acknowledge this and handle the situation in ProverBotanasMethod.
-		StringBuilder labelsStr = new StringBuilder();
 		for (int i = 0; i < labels.length; i++) {
 			if (i>0) {
 				strForGiac.append(",");
@@ -504,6 +530,33 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			strForGiac.append(labels[i] + "=" + botanaVars[i]);
 		}
 		strForGiac.append("])");
+
+		// Do the same for leftStr.
+		StringBuilder leftStrForGiac = new StringBuilder();
+		leftStrForGiac.append("subst([");
+		leftStrForGiac.append(leftStr).append("],[");
+		for (int i = 0; i < labels.length; i++) {
+			if (i>0) {
+				leftStrForGiac.append(",");
+			}
+			leftStrForGiac.append(labels[i] + "=" + botanaVars[i]);
+		}
+		leftStrForGiac.append("])");
+		leftStr = leftStrForGiac.toString();
+
+		// Do the same for leftStr.
+		StringBuilder rightStrForGiac = new StringBuilder();
+		rightStrForGiac.append("subst([");
+		rightStrForGiac.append(rightStr).append("],[");
+		for (int i = 0; i < labels.length; i++) {
+			if (i>0) {
+				rightStrForGiac.append(",");
+			}
+			rightStrForGiac.append(labels[i] + "=" + botanaVars[i]);
+		}
+		rightStrForGiac.append("])");
+		rightStr = rightStrForGiac.toString();
+
 		return strForGiac.toString();
 	}
 

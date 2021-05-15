@@ -358,7 +358,8 @@ public class ProverBotanasMethod {
 
 		private PPolynomial[] thesisFactors;
 		private TreeMap<GeoElement, PPolynomial[]> geoPolys = new TreeMap<>();
-		private Set<String> ineqs = new TreeSet<>();
+		public Set<String> ineqs = new TreeSet<>(); // TODO: Write getter/setter instead.
+		private boolean dryRun = false; // If set, do not compute any heavy detail.
 		private Set<String> posVars = new TreeSet<>();
 		private String thesisIneq = null;
 
@@ -588,7 +589,8 @@ public class ProverBotanasMethod {
 		 */
 
 		public AlgebraicStatement(GeoElement statement, GeoElement movingPoint,
-								  Prover prover) {
+								  Prover prover, boolean dry) {
+			dryRun = dry;
 			CASGenericInterface c = statement.kernel.getGeoGebraCAS().getCurrentCAS();
 			if (c.isLoaded()) {
 				Log.debug("GeoGebra thinks Giac is loaded.");
@@ -1268,6 +1270,9 @@ public class ProverBotanasMethod {
 				/* case input was an expression */
 				if (statements == null) {
 					statements = getExpressionStatements(geoStatement);
+					if (dryRun) {
+						return; // Do not compute anything. It will be done in AlgoCompare.
+					}
 					if (thesisIneq != null) {
 						Log.debug("Thesis inequality = " + thesisIneq);
 						proveInequality();
@@ -1873,7 +1878,7 @@ public class ProverBotanasMethod {
 			proverSettings.freePointsNeverCollinear = false;
 		}
 
-		AlgebraicStatement as = new AlgebraicStatement(statement, null, prover);
+		AlgebraicStatement as = new AlgebraicStatement(statement, null, prover, false);
 
 		/*
 		 * It's possible that we already know the answer without computing
@@ -2275,7 +2280,7 @@ public class ProverBotanasMethod {
 		Prover p = UtilFactory.getPrototype().newProver();
 		p.setProverEngine(implicit ? ProverEngine.LOCUS_IMPLICIT
 				: ProverEngine.LOCUS_EXPLICIT);
-		AlgebraicStatement as = new AlgebraicStatement(tracer, mover, p);
+		AlgebraicStatement as = new AlgebraicStatement(tracer, mover, p, false);
 		ProofResult proofresult = as.getResult();
 		if (proofresult == ProofResult.PROCESSING
 				|| proofresult == ProofResult.UNKNOWN) {

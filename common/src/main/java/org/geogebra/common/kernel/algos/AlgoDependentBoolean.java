@@ -13,6 +13,9 @@ the Free Software Foundation.
 package org.geogebra.common.kernel.algos;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashSet;
 
@@ -23,6 +26,7 @@ import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 import org.geogebra.common.kernel.geos.GeoBoolean;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
 import org.geogebra.common.kernel.prover.AlgoAreCongruent;
 import org.geogebra.common.kernel.prover.AlgoAreParallel;
@@ -200,6 +204,19 @@ public class AlgoDependentBoolean extends AlgoElement implements
 	public PPolynomial[][] getBotanaPolynomials()
 			throws NoSymbolicParametersException {
 		return getProverAdapter().getBotanaPolynomials(bool, cons);
+	}
+
+	public PVariable getBotanaVar(GeoElement s) {
+		ArrayList<Map.Entry<GeoElement, PVariable>> varSubstListOfSegs =
+				this.proverAdapter.getVarSubstListOfSegs();
+		Iterator<Map.Entry<GeoElement, PVariable>> it = varSubstListOfSegs.iterator();
+		while (it.hasNext()) {
+			Map.Entry<GeoElement, PVariable> entry = it.next();
+			if (entry.getKey().equals(s)) {
+				return entry.getValue();
+			}
+		}
+		return null; // not found
 	}
 
 	/**

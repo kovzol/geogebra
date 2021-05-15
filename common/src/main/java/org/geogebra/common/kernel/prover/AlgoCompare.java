@@ -18,10 +18,13 @@ import org.geogebra.common.cas.realgeom.RealGeomWebService;
 import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.StringTemplate;
+import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
 import org.geogebra.common.kernel.algos.AlgoDependentNumber;
 import org.geogebra.common.kernel.algos.AlgoDistancePoints;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
+import org.geogebra.common.kernel.arithmetic.ExpressionNode;
+import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoBoolean;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -33,6 +36,7 @@ import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.RealGeomWSSettings;
+import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.debug.Log;
 
@@ -65,7 +69,7 @@ public class AlgoCompare extends AlgoElement {
      * @param inputElement2 the second object
      */
     public AlgoCompare(Construction cons, GeoElement inputElement1,
-                       GeoElement inputElement2, boolean htmlMode) {
+            GeoElement inputElement2, boolean htmlMode) {
         super(cons);
         this.inpElem[0] = inputElement1;
         this.inpElem[1] = inputElement2;
@@ -87,7 +91,7 @@ public class AlgoCompare extends AlgoElement {
      * @param inputElement2 the second object
      */
     public AlgoCompare(Construction cons, String label,
-                       GeoElement inputElement1, GeoElement inputElement2, boolean htmlMode) {
+            GeoElement inputElement1, GeoElement inputElement2, boolean htmlMode) {
         this(cons, inputElement1, inputElement2, htmlMode);
         outputText.setLabel(label);
     }
@@ -119,8 +123,6 @@ public class AlgoCompare extends AlgoElement {
     }
 
     AlgebraicStatement as;
-    SortedMap<GeoSegment, PVariable> rewrites;
-    SortedMap<GeoSegment, PVariable> rewritesSorted;
     class Distance {
         public GeoPoint startPoint, endPoint;
         public boolean extra = false;
@@ -234,9 +236,7 @@ public class AlgoCompare extends AlgoElement {
         GeoElement inputElement = inpElem[i];
         String var = lr_var[i];
         String inp;
-        String rewritten = rewrite((GeoNumeric) inputElement);
-        lr_expr[i] = rewritten;
-        extraPolys.add("-" + var + "+(" + rewritten + ")^EXPONENT" + i);
+        extraPolys.add("-" + var + "+(" + lr_expr[i] + ")^EXPONENT" + i);
         extraVars.add(var);
         if (htmlMode) {
             if (inputElement.getLabelSimple() != null) {
@@ -259,6 +259,8 @@ public class AlgoCompare extends AlgoElement {
     ArrayList<String> extraVars = new ArrayList<>();
     private String or;
 
+    GeoGebraCAS cas;
+
     @Override
     public final void compute() {
 
@@ -277,19 +279,49 @@ public class AlgoCompare extends AlgoElement {
         cons.addToConstructionList(this, true);
         // TODO: consider moving setInputOutput() out from compute()
 
-        rewrites = new TreeMap<>(Collections.reverseOrder());
-        rewritesSorted = new TreeMap<>(lengthComparator);
-
         RealGeomWebService realgeomWS = cons.getApplication().getRealGeomWS();
 
-        AlgoAreCongruent aae = new AlgoAreCongruent(cons, inpElem[0], inpElem[1]);
+        // Let us construct the command Prove(inpElem[0]==inpElem[1]) to translate the
+        // underlying construction easily.
+        ExpressionValue[] ve = new ExpressionValue[2];
+        ExpressionNode[] en = new ExpressionNode[2];
+        for (int i = 0; i < 2; ++i) {
+            if (inpElem[i] instanceof GeoSegment) {
+                ve[i] = inpElem[i].toValidExpression();
+                en[i] = new ExpressionNode(kernel, ve[i]);
+            }
+
+            if (inpElem[i] instanceof GeoNumeric) {
+                en[i] = inpElem[i].getDefinition();
+            }
+        }
+        ExpressionNode root = new ExpressionNode(kernel, en[0], Operation.EQUAL_BOOLEAN, en[1]);
+
+        AlgoDependentBoolean adb = new AlgoDependentBoolean(cons, root);
         GeoBoolean gb = new GeoBoolean(cons);
-        gb.setParentAlgorithm(aae);
+        gb.setParentAlgorithm(adb);
         Prover p = UtilFactory.getPrototype().newProver();
         p.setProverEngine(Prover.ProverEngine.BOTANAS_PROVER);
-        as = new AlgebraicStatement(gb, null, p);
+        as = new AlgebraicStatement(gb, null, p, true);
         as.removeThesis();
-        aae.remove();
+
+        String mepCode = null;
+        try {
+            mepCode = adb.minimalExtendedPolyGiacCode();
+        } catch (NoSymbolicParametersException e) {
+            Log.debug("Error during creating MEP code");
+            return;
+        }
+        String pCode = adb.exprGiacCode();
+        cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
+        try {
+            String dummyThesisEq = cas.evaluateRaw(pCode);
+            lr_expr[0] = trimBraces(cas.evaluate(adb.getProverAdapter().exprCodeLeft()));
+            lr_expr[1] = trimBraces(cas.evaluate(adb.getProverAdapter().exprCodeRight()));
+        } catch (Throwable t) {
+            Log.debug("Error on computing dummy thesis eq");
+            return;
+        }
         gb.remove();
 
         inp[0] = "";
@@ -315,7 +347,7 @@ public class AlgoCompare extends AlgoElement {
         try {
             for (int i = 0; i < 2; i++) {
                 if (inpElem[i] instanceof GeoSegment) {
-                    lr_var[i] = (processSegment((GeoSegment) inpElem[i])).getName();
+                    lr_var[i] = adb.getBotanaVar(inpElem[i]).toString();
                     inp[i] = computeSegmentLabel(inpElem[i]);
                     deg[i] = 1;
                 }
@@ -323,10 +355,6 @@ public class AlgoCompare extends AlgoElement {
 
             for (int i = 0; i < 2; i++) {
                 if (inpElem[i] instanceof GeoNumeric) {
-                    if (!processExpr((GeoNumeric) inpElem[i])) {
-                        outputText.setTextString("");
-                        return;
-                    }
                     lr_var[i] = "w" + (i+1);
                     inp[i] = computeNumericLabel(i);
                     deg[i] = getDegree(lr_expr[i]);
@@ -387,6 +415,11 @@ public class AlgoCompare extends AlgoElement {
         }
         for (PPolynomial ndp : nonDegPolys) {
             as.addPolynomial(ndp);
+        }
+
+        /* Add equalities that describe the quantities in the dummy thesis. */
+        for (PPolynomial qe : adb.getProverAdapter().getExtraPolys()) {
+            as.addPolynomial(qe);
         }
 
         as.computeStrings();
@@ -450,7 +483,6 @@ public class AlgoCompare extends AlgoElement {
         // Add non-degeneracy nonce variable:
         gc.append(",n");
         gc.append("])[0],m)][1]");
-        GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
         boolean useGiac = RealGeomWSSettings.isUseGiacElimination();
         boolean useRealGeom = false;
         outputText.setTextString(retval); // retval == "" here
@@ -493,15 +525,35 @@ public class AlgoCompare extends AlgoElement {
         }
 
         rgParameters.append("&vars=").append(vars);
+
         rgParameters.append("&posvariables=");
-        Iterator it = rewrites.entrySet().iterator();
+        StringBuilder posvariables = new StringBuilder();
+        ArrayList<Map.Entry<GeoElement, PVariable>> varSubstListOfSegs =
+                adb.getProverAdapter().getVarSubstListOfSegs();
+        Iterator<Map.Entry<GeoElement, PVariable>> it = varSubstListOfSegs.iterator();
         while (it.hasNext()) {
-            Map.Entry me = (Map.Entry) it.next();
-            GeoSegment s = (GeoSegment) me.getKey();
-            PVariable v = (PVariable) me.getValue();
-            rgParameters.append(v.getName()).append(",");
+            Map.Entry<GeoElement, PVariable> entry = it.next();
+            String v = entry.getValue().toString();
+            posvariables.append(v).append(",");
+            }
+        if (!varSubstListOfSegs.isEmpty()) {
+            posvariables.deleteCharAt(posvariables.length() - 1); // remove last ,
         }
-        rgParameters.deleteCharAt(rgParameters.length() - 1);
+        rgParameters.append(posvariables);
+
+        // Inequalities
+        StringBuilder ies = new StringBuilder();
+        Set<String> ineqs = as.ineqs;
+        for (String ie : ineqs) {
+            ie = ie.replace("=", "E");
+            ies.append(ie).append(",");
+        }
+        if (!ineqs.isEmpty()) {
+            rgParameters.append("&ineqs=");
+            ies.deleteCharAt(ies.length() - 1); // remove last ,
+            rgParameters.append(ies);
+        }
+
         rgParameters.append("&mode=explore");
         String rgwsCas = realgeomWS.getCAS();
         rgParameters.append("&cas=" + rgwsCas);
@@ -639,8 +691,8 @@ public class AlgoCompare extends AlgoElement {
         for (String result : cases) {
 
             if (result.indexOf("m") == -1) {
-               result = "m=" + result;
-               }
+                result = "m=" + result;
+            }
 
             if ("m>0".equals(result)) {
                 continue;
@@ -713,39 +765,6 @@ public class AlgoCompare extends AlgoElement {
         return retval;
     }
 
-    private PVariable processSegment(GeoSegment s) {
-        if (rewrites.containsKey(s)) {
-            return rewrites.get(s);
-        }
-
-        PVariable var = new PVariable(kernel);
-        // Creating the describing polynomial:
-        PPolynomial poly = new PPolynomial();
-        try {
-
-            PVariable[] v = new PVariable[4];
-            PPolynomial p = new PPolynomial();
-
-            v = (s.getBotanaVars(s)); // AB
-
-            PPolynomial a1 = new PPolynomial(v[0]);
-            PPolynomial a2 = new PPolynomial(v[1]);
-            PPolynomial b1 = new PPolynomial(v[2]);
-            PPolynomial b2 = new PPolynomial(v[3]);
-            p = ((PPolynomial.sqr(a1.subtract(b1))
-                    .add(PPolynomial.sqr(a2.subtract(b2)))).subtract(new PPolynomial(var)
-                    .multiply(new PPolynomial(var))));
-
-            poly = p.substitute(as.substitutions);
-            as.addPolynomial(poly);
-
-        } catch (NoSymbolicParametersException e) {
-            return null;
-        }
-        rewrites.put(s, var);
-        rewritesSorted.put(s, var);
-        return var;
-    }
 
     private GeoSegment getGeoSegment(GeoNumeric n) {
         AlgoElement ae = n.getParentAlgorithm();
@@ -774,24 +793,6 @@ public class AlgoCompare extends AlgoElement {
         return null;
     }
 
-    private boolean processExpr(GeoNumeric n) {
-        AlgoElement ae = n.getParentAlgorithm();
-        if (ae instanceof AlgoDependentNumber) {
-            for (GeoElement ge : ae.getInput()) {
-                if (!(ge instanceof GeoSegment)) {
-                    // this is an expression that contains a non-segment object, unimplemented
-                    return false;
-                }
-                PVariable v = processSegment((GeoSegment) ge);
-            }
-            return true;
-        }
-        if (ae instanceof AlgoDistancePoints) {
-            PVariable v = processSegment(getGeoSegment(n));
-            return true;
-        }
-        return false;
-    }
 
     /* To handle substring replacements correctly we need to use our own comparator
      * that puts longer labels on the substitution list first.
@@ -812,25 +813,6 @@ public class AlgoCompare extends AlgoElement {
         }
     };
 
-    private String rewrite(GeoNumeric n) {
-        AlgoElement ae = n.getParentAlgorithm();
-        String exp;
-        if (ae instanceof AlgoDistancePoints) {
-            exp = getGeoSegment(n).getLabel(portableFormat);
-        } else {
-            exp = n.getDefinition(portableFormat);
-        }
-        // https://stackoverflow.com/questions/1326682/java-replacing-multiple-different-substring-in-a-string-at-once-or-in-the-most
-        Iterator it = rewritesSorted.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry me = (Map.Entry) it.next();
-            GeoSegment s = (GeoSegment) me.getKey();
-            PVariable v = (PVariable) me.getValue();
-            exp = exp.replace(s.getLabel(portableFormat), v.getName());
-        }
-        exp = exp.replace(" ", "");
-        return exp;
-    }
 
     /**
      * Get the degree of a polynomial, unless it is non-homogeneous. In this latter case return -1.
@@ -847,9 +829,16 @@ public class AlgoCompare extends AlgoElement {
         String list_t = "";
         String code_a = "a(";
         String code_at = "a(";
-        Iterator it = rewritesSorted.values().iterator();
-        while (it.hasNext()) {
-            PVariable v = (PVariable) it.next();
+
+        String varlist;
+        try {
+            varlist = trimBraces(cas.evaluateRaw("lvar(" + expr + ")"));
+        } catch (Throwable t) {
+            return -1; // in fact this is an error
+        }
+        String[] vars = varlist.split(",");
+
+        for (String v : vars) {
             list += v + ",";
             list_t += "t*" + v + ",";
         }
@@ -862,7 +851,6 @@ public class AlgoCompare extends AlgoElement {
         code += "d():=begin return total_degree(" + code_a + ",[" + list + "]) end,";
         code += "[simplify(" + code_at + "-t^d()*(" + code_a + "))==0,d()]][2]";
 
-        GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
         String hominfo = "";
         try {
             hominfo = cas.getCurrentCAS().evaluateRaw(code); // expected e.g.: {true,1} or {false,1}
@@ -888,5 +876,12 @@ public class AlgoCompare extends AlgoElement {
             return "(" + inp[i] + ")<sup>" + exponent[i] + "</sup>";
         }
         return "(" + inp[i] + ")^" + exponent[i];
+    }
+
+    String trimBraces(String s) {
+        if (s.startsWith("{") && s.endsWith("}")) {
+            s = s.substring(1, s.length() - 1);
+        }
+        return s;
     }
 }
