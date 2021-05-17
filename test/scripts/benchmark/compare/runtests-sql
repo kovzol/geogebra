@@ -209,7 +209,8 @@ for i in `find -name '*.ggb' | sort`; do
    echo "var html5codeBase = 'file://$ABSWEBDIR';" >> $JSFILE
    timeout $((TIMEOUT)) $PHANTOMJS $MYDIR/testurl.js "file:///$MYDIR/jstest.html" $TIMEOUT > $MYDIR/tmp/.test.stdout 2>$MYDIR/tmp/.test.stderr
    RETVAL=$?
-   cat $MYDIR/tmp/.test.stdout | grep Benchmarking > $LOGFILE
+   # We add 3 dummy columns...
+   cat $MYDIR/tmp/.test.stdout | grep Benchmarking | sed s/Benchmarking/"1 2 3 Benchmarking"/ > $LOGFILE
    grep --silent "COMPARISON RESULT IS " $MYDIR/tmp/.test.stdout && \
     tac $MYDIR/tmp/.test.stdout | grep "COMPARISON RESULT IS " | head -1 > $REGRESSIONFILE
    RESULT=`cat $REGRESSIONFILE | awk '{a=index($0, "COMPARISON"); print substr($0,a+21)}'`
@@ -255,7 +256,7 @@ for i in `find -name '*.ggb' | sort`; do
      RESULT=`tac $LOGFILE | grep "COMPARISON RESULT IS " | head -1` # org.geogebra.common.kernel.prover.AlgoCompare.debugElapsedTime[126]: COMPARISON RESULT IS 
     RESULT=`echo $RESULT | awk '{a=index($0, "COMPARISON"); print substr($0,a+21)}'`
     fi
-   TIME=`cat $LOGFILE | grep Benchmarking | awk '{s=s+$2; print s}' | tail -1` # collecting all entries
+   TIME=`cat $LOGFILE | grep Benchmarking | awk '{s=s+$5; print s}' | tail -1` # collecting all entries
    if [ $CINFO = 1 ]; then
     LABEL=`cat $LOGFILE | grep constructionLabel | head -1 | cut -d= -f2 | cut -d" " -f2-`
     DEF=`cat $LOGFILE | grep currentProblem | head -1 | cut -d= -f2 | cut -d" " -f2-`
