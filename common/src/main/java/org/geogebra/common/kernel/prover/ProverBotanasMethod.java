@@ -1632,11 +1632,14 @@ public class ProverBotanasMethod {
 
 			// In some cases we force running computations via real geometry.
 			boolean forceRG = false;
-			if (pCode.contains("sqrt")) {
-				forceRG = true;
-			}
-			if (!ineqs.isEmpty()) {
-				forceRG = true;
+			RealGeomWebService realgeomWS = geoStatement.getConstruction().getApplication().getRealGeomWS();
+			if (realgeomWS == null || (!realgeomWS.isAvailable())) {
+				if (pCode.contains("sqrt")) {
+					forceRG = true;
+				}
+				if (!ineqs.isEmpty()) {
+					forceRG = true;
+				}
 			}
 
 			Operation operation = ((AlgoDependentBoolean) algo).getOperation();
