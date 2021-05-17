@@ -469,6 +469,8 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			index++;
 		}
 		String rootStr;
+		leftStr = "";
+		rightStr = "";
 		// make sure we use substituted expression
 		// if substitution was made in root
 		if (substNeeded) {
@@ -491,6 +493,8 @@ public class DependentBooleanAdapter extends ProverAdapter {
 				rootCopy.traverse(repl);
 			}
 			rootStr = rootCopy.toString(StringTemplate.giacTemplate);
+			leftStr = rootCopy.getLeft().toString(StringTemplate.giacTemplate);
+			rightStr = rootCopy.getRight().toString(StringTemplate.giacTemplate);
 		} else {
 			rootStr = bool.getDefinition()
 					.toString(StringTemplate.giacTemplate);
