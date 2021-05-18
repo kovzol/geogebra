@@ -6596,11 +6596,11 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	 * @param vars
 	 *            in LaTeX format
 	 */
-	public void setCaptionBotanaVars(String vars) {
+	public void setCaptionBotanaVars(String vars, String color) {
 		setLabelMode(LABEL_CAPTION);
 		labelVisible = true;
 
-		String labelWithVars = "{\\bf\\it " + label + vars + "}\\\\";
+		String labelWithVars = "\\colorbox{" + color + "}{" + label + vars + "}";
 
 		if (caption == null) {
 			caption = "$" + labelWithVars + "$";
@@ -6625,10 +6625,10 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 		labelVisible = true;
 
 		if (caption != null) {
-			caption = caption.substring(0, caption.length() - 1) + poly
-					+ "\\\\$";
+			caption = caption.substring(0, caption.length() - 1) + "\\\\" + poly
+					+ "$";
 		} else {
-			caption = "$" + poly + "\\\\$";
+			caption = "$" + poly + "$";
 		}
 
 	}

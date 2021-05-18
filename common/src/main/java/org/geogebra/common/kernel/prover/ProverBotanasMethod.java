@@ -898,7 +898,7 @@ public class ProverBotanasMethod {
 										.getBotanaVars(geo);
 								if (proverSettings.captionAlgebra) {
 									geo.setCaptionBotanaVars("(" + v[0].toTeX()
-											+ "," + v[1].toTeX() + ")");
+											+ "," + v[1].toTeX() + ")", "yellow");
 								}
 								if (v != null) {
 									Log.debug("// Free point "
@@ -1085,8 +1085,13 @@ public class ProverBotanasMethod {
 										+ geo.getLabelSimple() + "(" + v[0]
 										+ "," + v[1] + ")");
 								if (proverSettings.captionAlgebra) {
+									String color = "cyan";
+									if (algo instanceof AlgoPointOnPath) {
+										color = "greenyellow";
+										// Seems to be given lowercased to avoid NPE. FIXME.
+									}
 									geo.setCaptionBotanaVars("(" + v[0].toTeX()
-											+ "," + v[1].toTeX() + ")");
+											+ "," + v[1].toTeX() + ")", color);
 								}
 							}
 							boolean useThisPoly = true;

@@ -370,7 +370,7 @@ public class PPolynomial implements Comparable<PPolynomial> {
 				sb.append(c);
 			sb.append('+');
 		}
-		return sb.substring(0, sb.length() - 1); // removing closing "+"
+		return sb.substring(0, sb.length() - 1) + "=0"; // removing closing "+", adding "=0"
 	}
 
 	
