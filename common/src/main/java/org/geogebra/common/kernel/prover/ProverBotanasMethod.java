@@ -434,7 +434,11 @@ public class ProverBotanasMethod {
 		public void addGeoPolys(GeoElement geo, PPolynomial[] ps) {
 			geoPolys.put(geo, ps);
 			for (PPolynomial p : ps) {
-				addPolynomial(p);
+				if (addPolynomial(p)) {
+					if (ProverSettings.get().captionAlgebra) {
+						geo.addCaptionBotanaPolynomial(p.toTeX());
+					}
+				}
 			}
 		}
 
@@ -527,35 +531,39 @@ public class ProverBotanasMethod {
 		 * Add a polynomial to the system manually.
 		 *
 		 * @param p the polynomial to be added
+		 * @return if the polynomial was added (true) or ignored (false)
 		 */
-		public void addPolynomial(PPolynomial p) {
+		public boolean addPolynomial(PPolynomial p) {
 			if (polynomials.contains(p)) {
 				Log.debug("Ignoring existing poly " + p);
-				return;
+				return false;
 			}
 			polynomials.add(p);
 			int size = polynomials.size();
 			Log.debug("Adding poly #" + (size) + ": " + p.toTeX());
+			return true;
 		}
 
-		public void addIneq(String ie) {
+		public boolean addIneq(String ie) {
 			if (ineqs.contains(ie)) {
 				Log.debug("Ignoring existing ineq " + ie);
-				return;
+				return false;
 			}
 			ineqs.add(ie);
 			int size = ineqs.size();
 			Log.debug("Adding ineq #" + (size) + ": " + ie);
+			return true;
 		}
 
-		public void addPosVar(String v) {
+		public boolean addPosVar(String v) {
 			if (posVars.contains(v)) {
 				Log.debug("Ignoring existing var " + v);
-				return;
+				return false;
 			}
 			posVars.add(v);
 			int size = posVars.size();
 			Log.debug("Adding posVar #" + (size) + ": " + v);
+			return true;
 		}
 
 		/**
@@ -1020,7 +1028,9 @@ public class ProverBotanasMethod {
 							PPolynomial p2mb2 = new PPolynomial(geoVariables[1])
 									.subtract(new PPolynomial(geoVariablesB[1]));
 							PPolynomial lhs = a1mp1.multiply(p1mb1).add(a2mp2.multiply(p2mb2));
-							addIneq(lhs.toString() + ">=0");
+							if (addIneq(lhs.toString() + ">=0")) {
+								geo.addCaptionBotanaPolynomial(lhs.toTeX().replace("=", "\\geq"));
+							}
 						}
 
 						if (algo instanceof AlgoIncircleCenter) {
@@ -1029,12 +1039,23 @@ public class ProverBotanasMethod {
 							GeoPoint B = (GeoPoint) algo.input[1];
 							GeoPoint C = (GeoPoint) algo.input[2];
 							GeoPoint P = (GeoPoint) geo;
-							String d1 = tripletSign(P, A, B).toString();
-							String d2 = tripletSign(P, B, C).toString();
-							String d3 = tripletSign(P, C, A).toString();
+							PPolynomial p1 = tripletSign(P, A, B);
+							PPolynomial p2 = tripletSign(P, B, C);
+							PPolynomial p3 = tripletSign(P, C, A);
+							String d1 = p1.toString();
+							String d2 = p2.toString();
+							String d3 = p3.toString();
 							String all_pos = "((" + d1 + ">0)AND" + "(" + d2 + ">0)AND" + "(" + d3 + ">0))";
 							String all_neg = "((" + d1 + "<0)AND" + "(" + d2 + "<0)AND" + "(" + d3 + "<0))";
-							addIneq(all_pos + "OR" + all_neg);
+							if (addIneq(all_pos + "OR" + all_neg)) {
+								geo.addCaptionBotanaPolynomial(p1.toTeX().replace("=", ">") +
+										"\\land " + p2.toTeX().replace("=", ">") +
+										"\\land " + p3.toTeX().replace("=", ">") +
+										"\\lor " + p1.toTeX().replace("=", "<") +
+										"\\land " + p2.toTeX().replace("=", "<") +
+										"\\land " + p3.toTeX().replace("=", "<")
+								);
+							}
 						}
 
 						if (algo instanceof AlgoPointInRegion) {
@@ -1045,16 +1066,27 @@ public class ProverBotanasMethod {
 								GeoPoint B = p.getPoint(1);
 								GeoPoint C = p.getPoint(2);
 								GeoPoint P = (GeoPoint) geo;
-								String d1 = tripletSign(P, A, B).toString();
-								String d2 = tripletSign(P, B, C).toString();
-								String d3 = tripletSign(P, C, A).toString();
+								PPolynomial p1 = tripletSign(P, A, B);
+								PPolynomial p2 = tripletSign(P, B, C);
+								PPolynomial p3 = tripletSign(P, C, A);
+								String d1 = p1.toString();
+								String d2 = p2.toString();
+								String d3 = p3.toString();
 								String all_pos =
 										"((" + d1 + ">0)AND" + "(" + d2 + ">0)AND" + "(" + d3
 												+ ">0))";
 								String all_neg =
 										"((" + d1 + "<0)AND" + "(" + d2 + "<0)AND" + "(" + d3
 												+ "<0))";
-								addIneq(all_pos + "OR" + all_neg);
+								if (addIneq(all_pos + "OR" + all_neg)) {
+									geo.addCaptionBotanaPolynomial(p1.toTeX().replace("=", ">") +
+											"\\land " + p2.toTeX().replace("=", ">") +
+											"\\land " + p3.toTeX().replace("=", ">") +
+											"\\lor " + p1.toTeX().replace("=", "<") +
+											"\\land " + p2.toTeX().replace("=", "<") +
+											"\\land " + p3.toTeX().replace("=", "<")
+											);
+								}
 							}
 						}
 
@@ -1066,12 +1098,18 @@ public class ProverBotanasMethod {
 							AlgoPolygonRegular apr = (AlgoPolygonRegular) algo;
 							GeoPoint C = (GeoPoint) apr.getOutput(num + 1);
 							if (num != 4) { // unnecessary condition for n=4 (it is unambiguous)
-								String d = tripletSign(A, B, C).toString() + ">0";
-								addIneq(d);
+								PPolynomial p = tripletSign(A, B, C);
+								String d = p.toString() + ">0";
+								if (addIneq(d)) {
+									geo.addCaptionBotanaPolynomial(p.toTeX().replace("=", ">"));
+								}
 							}
 							if (num > 4) {
-								String e = tripletSignRotated(A, B, C).toString() + ">0";
-								addIneq(e);
+								PPolynomial p = tripletSignRotated(A, B, C);
+								String e = p.toString() + ">0";
+								if (addIneq(e)) {
+									geo.addCaptionBotanaPolynomial(p.toTeX().replace("=", ">"));
+								}
 							} // TODO: add better setting of the interval for num >= 9
 						}
 						/* END OF REAL GEOMETRY SUPPORT. */
@@ -1123,12 +1161,14 @@ public class ProverBotanasMethod {
 							if (useThisPoly) {
 								Log.debug("Hypotheses:");
 								addGeoPolys(geo, geoPolynomials);
+								/*
 								for (PPolynomial p : geoPolynomials) {
 									if (proverSettings.captionAlgebra) {
 										geo.addCaptionBotanaPolynomial(
 												p.toTeX());
 									}
 								}
+								*/
 							} else {
 								Log.debug(
 										"This object will be computed numerically");
@@ -1220,6 +1260,7 @@ public class ProverBotanasMethod {
 					PPolynomial[] botanaPolynomials = new PPolynomial[1];
 					botanaPolynomials[0] = botanaPolynomial;
 					addGeoPolys(movingPoint, botanaPolynomials);
+					// Maybe to be removed:
 					if (proverSettings.captionAlgebra) {
 						numerical.addCaptionBotanaPolynomial(
 								botanaPolynomial.toTeX());
@@ -1338,11 +1379,12 @@ public class ProverBotanasMethod {
 				for (PPolynomial[] statement : statements) {
 					for (int j = 0; j < statement.length - minus; ++j) {
 						/* Note: the geo is not stored */
-						addPolynomial(statement[j]);
-						Log.debug((k + 1) + ". " + statement[j]);
-						if (proverSettings.captionAlgebra) {
-							geoStatement.addCaptionBotanaPolynomial(
-									statement[j].toTeX());
+						if (addPolynomial(statement[j])) {
+							if (proverSettings.captionAlgebra) {
+								geoStatement.addCaptionBotanaPolynomial(
+										statement[j].toTeX());
+							}
+							Log.debug((k + 1) + ". " + statement[j]);
 						}
 						k++;
 					}
@@ -1392,9 +1434,10 @@ public class ProverBotanasMethod {
 				PPolynomial[] spolys = new PPolynomial[1];
 				spolys[0] = spoly;
 				addGeoPolys(geoStatement, spolys);
-				if (proverSettings.captionAlgebra) {
+				/* if (proverSettings.captionAlgebra) {
 					geoStatement.addCaptionBotanaPolynomial(spoly.toTeX());
 				}
+				 */
 
 			} catch (NoSymbolicParametersException e) {
 				Log.debug(
