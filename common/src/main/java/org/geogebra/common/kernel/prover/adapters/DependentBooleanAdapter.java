@@ -59,6 +59,7 @@ public class DependentBooleanAdapter extends ProverAdapter {
 
 	// substitution list of segments with variables
 	private ArrayList<Map.Entry<GeoElement, PVariable>> varSubstListOfSegs;
+	private ArrayList<Map.Entry<GeoSegment, PPolynomial>> segmentBotanaPolys;
 
 	// Abreviations of certain cases
 	private boolean isAreaValue(ExpressionValue value) {
@@ -346,6 +347,9 @@ public class DependentBooleanAdapter extends ProverAdapter {
 		if (varSubstListOfSegs == null) {
 			varSubstListOfSegs = new ArrayList<>();
 		}
+		if (segmentBotanaPolys == null) {
+			segmentBotanaPolys = new ArrayList<>();
+		}
 		int index = 0;
 		for (GeoSegment segment : allSegmentsFromExpression) {
 			labels[index] = segment.getLabel(StringTemplate.giacTemplate);
@@ -380,6 +384,10 @@ public class DependentBooleanAdapter extends ProverAdapter {
 							thisSegBotanaVars[1], thisSegBotanaVars[2],
 							thisSegBotanaVars[3]));
 			extraPolys.add(currPoly);
+			// Store the mapping segment -> polynomial:
+			Entry<GeoSegment, PPolynomial> entry = new AbstractMap.SimpleEntry<GeoSegment, PPolynomial>(
+					segment, currPoly);
+			segmentBotanaPolys.add(entry);
 			index++;
 		}
 		String rootStr;
@@ -578,6 +586,10 @@ public class DependentBooleanAdapter extends ProverAdapter {
 		return varSubstListOfSegs;
 	}
 
+	public ArrayList<Entry<GeoSegment, PPolynomial>> getSegmentBotanaPolys() {
+		return segmentBotanaPolys;
+	}
+
 	// get Variable with given name
 	private PVariable getVariable(String varStr) {
 		if (botanaVars != null) {
@@ -590,6 +602,7 @@ public class DependentBooleanAdapter extends ProverAdapter {
 		return null;
 	}
 
+	// TODO: Check if this is the same as getVariable().
 	private PVariable getBotanaVar(String str) {
 		for (PVariable variable : botanaVars) {
 			if (variable.getName().equals(str)) {

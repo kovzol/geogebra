@@ -35,6 +35,7 @@ import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
 import org.geogebra.common.main.Localization;
+import org.geogebra.common.main.ProverSettings;
 import org.geogebra.common.main.RealGeomWSSettings;
 import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.Prover;
@@ -422,6 +423,22 @@ public class AlgoCompare extends AlgoElement {
             as.addPolynomial(qe);
         }
 
+        /*
+        ArrayList<Map.Entry<GeoSegment, PPolynomial>> segmentBotanaPolys =
+                ((AlgoDependentBoolean) adb).getProverAdapter().getSegmentBotanaPolys();
+        Iterator<Map.Entry<GeoSegment, PPolynomial>> it = segmentBotanaPolys.iterator();
+        while (it.hasNext()) {
+            Map.Entry<GeoSegment, PPolynomial> entry = it.next();
+            GeoSegment s = entry.getKey();
+            PPolynomial poly = entry.getValue();
+            if (as.addPolynomial(poly)) {
+                if (ProverSettings.get().captionAlgebra) {
+                    s.addCaptionBotanaPolynomial(poly.toTeX());
+                }
+            }
+        }
+         */
+
         as.computeStrings();
         rgParameters.append(as.getPolys());
         for (String po : extraPolys) {
@@ -530,9 +547,9 @@ public class AlgoCompare extends AlgoElement {
         StringBuilder posvariables = new StringBuilder();
         ArrayList<Map.Entry<GeoElement, PVariable>> varSubstListOfSegs =
                 adb.getProverAdapter().getVarSubstListOfSegs();
-        Iterator<Map.Entry<GeoElement, PVariable>> it = varSubstListOfSegs.iterator();
-        while (it.hasNext()) {
-            Map.Entry<GeoElement, PVariable> entry = it.next();
+        Iterator<Map.Entry<GeoElement, PVariable>> it2 = varSubstListOfSegs.iterator();
+        while (it2.hasNext()) {
+            Map.Entry<GeoElement, PVariable> entry = it2.next();
             String v = entry.getValue().toString();
             posvariables.append(v).append(",");
             }

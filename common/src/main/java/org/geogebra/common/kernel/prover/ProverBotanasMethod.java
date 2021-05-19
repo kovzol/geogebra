@@ -1494,6 +1494,17 @@ public class ProverBotanasMethod {
 					((AlgoDependentBoolean) algo).getProverAdapter().getExtraPolys();
 			PVariable[] extraVars =
 					((AlgoDependentBoolean) algo).getProverAdapter().getBotanaVars();
+			if (ProverSettings.get().captionAlgebra) {
+				ArrayList<Map.Entry<GeoSegment, PPolynomial>> segmentBotanaPolys =
+						((AlgoDependentBoolean) algo).getProverAdapter().getSegmentBotanaPolys();
+				Iterator<Map.Entry<GeoSegment, PPolynomial>> it = segmentBotanaPolys.iterator();
+				while (it.hasNext()) {
+					Map.Entry<GeoSegment, PPolynomial> entry = it.next();
+					GeoSegment s = entry.getKey();
+					PPolynomial p = entry.getValue();
+					s.addCaptionBotanaPolynomial(p.toTeX());
+				}
+			}
 
 			for (PPolynomial p : extraPolys) {
 				rgParameters.append(",").append(p.toString());
@@ -1821,6 +1832,17 @@ public class ProverBotanasMethod {
 					for (PPolynomial p : extraPolys) {
 						statements[0][index] = p;
 						index++;
+					}
+					if (ProverSettings.get().captionAlgebra) {
+						ArrayList<Map.Entry<GeoSegment, PPolynomial>> segmentBotanaPolys =
+								((AlgoDependentBoolean) algo).getProverAdapter().getSegmentBotanaPolys();
+						Iterator<Map.Entry<GeoSegment, PPolynomial>> it = segmentBotanaPolys.iterator();
+						while (it.hasNext()) {
+							Map.Entry<GeoSegment, PPolynomial> entry = it.next();
+							GeoSegment s = entry.getKey();
+							PPolynomial p = entry.getValue();
+							s.addCaptionBotanaPolynomial(p.toTeX());
+						}
 					}
 
 					/* add input polynomial */
