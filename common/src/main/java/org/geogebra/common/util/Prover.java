@@ -15,6 +15,7 @@ import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoJoinPoints;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
+import org.geogebra.common.kernel.algos.AlgoPointInRegion;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoPolygonRegular;
 import org.geogebra.common.kernel.geos.GProperty;
@@ -785,7 +786,7 @@ public abstract class Prover {
 				definition = definition.replace("Bisector", "bisector");
 				String textLocalized = null;
 				AlgoElement ae = geo.getParentAlgorithm();
-				if (ae != null && ae instanceof AlgoPointOnPath) {
+				if (ae != null && (ae instanceof AlgoPointOnPath || ae instanceof AlgoPointInRegion)) {
 					textLocalized = loc.getPlain("LetABeAB",
 							geo.getLabelSimple(), definition);
 				} else {
