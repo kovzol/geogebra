@@ -437,7 +437,7 @@ public class AlgoAngularBisectorLines extends AlgoElement
 				// https://www.researchgate.net/publication/226017744_On_Protocols_for_the_Automated_Discovery_of_Theorems_in_Elementary_Geometry,
 				// but here we do it more generally.
 				if (botanaVars == null) {
-					botanaVars = new PVariable[6];
+					botanaVars = new PVariable[10];
 					// M, the midpoint of the rhombus
 					botanaVars[0] = new PVariable(kernel);
 					botanaVars[1] = new PVariable(kernel);
@@ -447,6 +447,11 @@ public class AlgoAngularBisectorLines extends AlgoElement
 					// S, a helper point.
 					botanaVars[4] = new PVariable(kernel);
 					botanaVars[5] = new PVariable(kernel);
+					// Save vA and vB for further use:
+					botanaVars[6] = vA[0];
+					botanaVars[7] = vA[1];
+					botanaVars[8] = vB[0];
+					botanaVars[9] = vC[1];
 				}
 
 				botanaPolynomials = new PPolynomial[polysNeeded];
