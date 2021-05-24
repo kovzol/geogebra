@@ -1571,7 +1571,7 @@ public class ProverBotanasMethod {
 					Map.Entry<GeoSegment, PPolynomial> entry = it.next();
 					GeoSegment s = entry.getKey();
 					PPolynomial p = entry.getValue();
-					s.addCaptionBotanaPolynomial(p.toTeX());
+					s.addCaptionBotanaPolynomial(s.getLabelTextOrHTML() + ":" + p.toTeX());
 				}
 			}
 
@@ -1910,7 +1910,7 @@ public class ProverBotanasMethod {
 							Map.Entry<GeoSegment, PPolynomial> entry = it.next();
 							GeoSegment s = entry.getKey();
 							PPolynomial p = entry.getValue();
-							s.addCaptionBotanaPolynomial(p.toTeX());
+							s.addCaptionBotanaPolynomial(s.getLabelTextOrHTML() + ":" + p.toTeX());
 						}
 					}
 

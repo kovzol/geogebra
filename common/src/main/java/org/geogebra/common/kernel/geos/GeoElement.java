@@ -6604,6 +6604,7 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 
 		if (caption == null) {
 			caption = "$" + labelWithVars + "$";
+			update();
 			return;
 		}
 
@@ -6612,6 +6613,8 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 		}
 
 		caption = "$" + labelWithVars + "\\\\" + caption.substring(1);
+		update();
+
 	}
 
 	/**
@@ -6621,6 +6624,12 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	 *            in LaTeX format
 	 */
 	public void addCaptionBotanaPolynomial(String poly) {
+
+		if (caption != null && caption.contains(poly)) {
+			// This is already stored, do nothing.
+			return;
+		}
+
 		setLabelMode(LABEL_CAPTION);
 		labelVisible = true;
 
@@ -6630,6 +6639,8 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 		} else {
 			caption = "$" + poly + "$";
 		}
+
+		update();
 
 	}
 

@@ -419,11 +419,12 @@ public class AlgoCompare extends AlgoElement {
         }
 
         /* Add equalities that describe the quantities in the dummy thesis. */
-        for (PPolynomial qe : adb.getProverAdapter().getExtraPolys()) {
-            as.addPolynomial(qe);
-        }
+        // for (PPolynomial qe : adb.getProverAdapter().getExtraPolys()) {
+        //     as.addPolynomial(qe);
+        // }
 
-        /*
+        // We use this piece of code instead (to be able to show
+        // the label of the segment):
         ArrayList<Map.Entry<GeoSegment, PPolynomial>> segmentBotanaPolys =
                 ((AlgoDependentBoolean) adb).getProverAdapter().getSegmentBotanaPolys();
         Iterator<Map.Entry<GeoSegment, PPolynomial>> it = segmentBotanaPolys.iterator();
@@ -433,11 +434,10 @@ public class AlgoCompare extends AlgoElement {
             PPolynomial poly = entry.getValue();
             if (as.addPolynomial(poly)) {
                 if (ProverSettings.get().captionAlgebra) {
-                    s.addCaptionBotanaPolynomial(poly.toTeX());
+                    s.addCaptionBotanaPolynomial(s.getLabelTextOrHTML() + ":" + poly.toTeX());
                 }
             }
         }
-         */
 
         as.computeStrings();
         rgParameters.append(as.getPolys());
