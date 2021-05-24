@@ -33,7 +33,7 @@ public class RealGeomWSSettings {
      */
     final public static int debugMaxProgramSize = 2000;
     private static volatile String realGeomWebServiceCAS = "mathematica";
-    // private static volatile String realGeomWebServiceCAS = "qepcad";
+    // private static volatile String realGeomWebServiceCAS = "tarski";
 
     private static volatile boolean testConnection = true;
 

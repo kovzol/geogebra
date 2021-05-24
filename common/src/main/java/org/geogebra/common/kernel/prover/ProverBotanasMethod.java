@@ -167,6 +167,9 @@ public class ProverBotanasMethod {
 		/* Creating the set of free points first: */
 		List<GeoElement> freePoints = getFreePoints(prover.getStatement());
 		int setSize = freePoints.size();
+		if (setSize < 3) {
+			return new PPolynomial[0];
+		}
 
 		/* Creating NDGs: */
 		NDGCondition ndgc = new NDGCondition();
@@ -1027,7 +1030,7 @@ public class ProverBotanasMethod {
 							maxFixcoords = 2;
 						}
 
-						/* START OF REAL GEOMETRY SUPPORT. */
+						/* START OF REAL ALGEBRAIC GEOMETRY SUPPORT. */
 
 						if (algo instanceof AlgoPointOnPath
 								&& algo.input[0] instanceof GeoSegment) {
@@ -1049,7 +1052,10 @@ public class ProverBotanasMethod {
 									.subtract(new PPolynomial(geoVariablesB[1]));
 							PPolynomial lhs = a1mp1.multiply(p1mb1).add(a2mp2.multiply(p2mb2));
 							if (addIneq(lhs.toString() + ">=0")) {
-								geo.addCaptionBotanaPolynomial(lhs.toTeX().replace("=", "\\geq"));
+								if (ProverSettings.get().captionAlgebra) {
+									geo.addCaptionBotanaPolynomial(
+											lhs.toTeX().replace("=", "\\geq"));
+								}
 							}
 						}
 
@@ -1068,13 +1074,15 @@ public class ProverBotanasMethod {
 							String all_pos = "((" + d1 + ">0)AND" + "(" + d2 + ">0)AND" + "(" + d3 + ">0))";
 							String all_neg = "((" + d1 + "<0)AND" + "(" + d2 + "<0)AND" + "(" + d3 + "<0))";
 							if (addIneq(all_pos + "OR" + all_neg)) {
-								geo.addCaptionBotanaPolynomial(p1.toTeX().replace("=", ">") +
+								if (ProverSettings.get().captionAlgebra) {
+									geo.addCaptionBotanaPolynomial(p1.toTeX().replace("=", ">") +
 										"\\land " + p2.toTeX().replace("=", ">") +
 										"\\land " + p3.toTeX().replace("=", ">") +
+										"\\\\" +
 										"\\lor " + p1.toTeX().replace("=", "<") +
 										"\\land " + p2.toTeX().replace("=", "<") +
-										"\\land " + p3.toTeX().replace("=", "<")
-								);
+										"\\land " + p3.toTeX().replace("=", "<"));
+								}
 							}
 						}
 
@@ -1099,13 +1107,16 @@ public class ProverBotanasMethod {
 										"((" + d1 + "<0)AND" + "(" + d2 + "<0)AND" + "(" + d3
 												+ "<0))";
 								if (addIneq(all_pos + "OR" + all_neg)) {
-									geo.addCaptionBotanaPolynomial(p1.toTeX().replace("=", ">") +
-											"\\land " + p2.toTeX().replace("=", ">") +
-											"\\land " + p3.toTeX().replace("=", ">") +
-											"\\lor " + p1.toTeX().replace("=", "<") +
-											"\\land " + p2.toTeX().replace("=", "<") +
-											"\\land " + p3.toTeX().replace("=", "<")
-											);
+									if (ProverSettings.get().captionAlgebra) {
+										geo.addCaptionBotanaPolynomial(
+												p1.toTeX().replace("=", ">") +
+														"\\land " + p2.toTeX().replace("=", ">") +
+														"\\land " + p3.toTeX().replace("=", ">") +
+														"\\\\" +
+														"\\lor " + p1.toTeX().replace("=", "<") +
+														"\\land " + p2.toTeX().replace("=", "<") +
+														"\\land " + p3.toTeX().replace("=", "<"));
+									}
 								}
 							}
 						}
@@ -1124,8 +1135,10 @@ public class ProverBotanasMethod {
 							PPolynomial p = p1.multiply(p2);
 							String d = p.toString() + ">0";
 							if (addIneq(d)) {
-								geo.addCaptionBotanaPolynomial(p.toTeX().replace("=", ">")
-								);
+								if (ProverSettings.get().captionAlgebra) {
+									geo.addCaptionBotanaPolynomial(p.toTeX()
+											.replace("=", ">"));
+								}
 							}
 						}
 
@@ -1154,8 +1167,10 @@ public class ProverBotanasMethod {
 							PPolynomial p = p1.multiply(p2);
 							String d = p.toString() + ">0";
 							if (addIneq(d)) {
-								geo.addCaptionBotanaPolynomial(p.toTeX().replace("=", ">")
-								);
+								if (ProverSettings.get().captionAlgebra) {
+									geo.addCaptionBotanaPolynomial(p.toTeX()
+											.replace("=", ">"));
+								}
 							}
 						}
 
@@ -1170,17 +1185,22 @@ public class ProverBotanasMethod {
 								PPolynomial p = tripletSign(A, B, C);
 								String d = p.toString() + ">0";
 								if (addIneq(d)) {
-									geo.addCaptionBotanaPolynomial(p.toTeX().replace("=", ">"));
+									if (ProverSettings.get().captionAlgebra) {
+										geo.addCaptionBotanaPolynomial(p.toTeX().replace("=", ">"));
+									}
 								}
 							}
 							if (num > 4) {
 								PPolynomial p = tripletSignRotated(A, B, C);
 								String e = p.toString() + ">0";
 								if (addIneq(e)) {
-									geo.addCaptionBotanaPolynomial(p.toTeX().replace("=", ">"));
+									if (ProverSettings.get().captionAlgebra) {
+										geo.addCaptionBotanaPolynomial(p.toTeX().replace("=", ">"));
+									}
 								}
 							} // TODO: add better setting of the interval for num >= 9
 						}
+
 						/* END OF REAL GEOMETRY SUPPORT. */
 
 						if (geoPolynomials != null) {
@@ -1571,7 +1591,9 @@ public class ProverBotanasMethod {
 					Map.Entry<GeoSegment, PPolynomial> entry = it.next();
 					GeoSegment s = entry.getKey();
 					PPolynomial p = entry.getValue();
-					s.addCaptionBotanaPolynomial(s.getLabelTextOrHTML() + ":" + p.toTeX());
+					if (ProverSettings.get().captionAlgebra) {
+						s.addCaptionBotanaPolynomial(s.getLabelTextOrHTML() + ":" + p.toTeX());
+					}
 				}
 			}
 
@@ -1761,7 +1783,7 @@ public class ProverBotanasMethod {
 			// In some cases we force running computations via real geometry.
 			boolean forceRG = false;
 			RealGeomWebService realgeomWS = geoStatement.getConstruction().getApplication().getRealGeomWS();
-			if (realgeomWS == null || (!realgeomWS.isAvailable())) {
+			if (realgeomWS != null && realgeomWS.isAvailable()) {
 				if (pCode.contains("sqrt")) {
 					forceRG = true;
 				}
@@ -1910,7 +1932,10 @@ public class ProverBotanasMethod {
 							Map.Entry<GeoSegment, PPolynomial> entry = it.next();
 							GeoSegment s = entry.getKey();
 							PPolynomial p = entry.getValue();
-							s.addCaptionBotanaPolynomial(s.getLabelTextOrHTML() + ":" + p.toTeX());
+							if (ProverSettings.get().captionAlgebra) {
+								s.addCaptionBotanaPolynomial(
+										s.getLabelTextOrHTML() + ":" + p.toTeX());
+							}
 						}
 					}
 
