@@ -1573,7 +1573,8 @@ public class ProverBotanasMethod {
 			}
 
 			computeStrings();
-			rgParameters.append(getPolys());
+			String polys = getPolys();
+			rgParameters.append(polys);
 
 			StringBuilder posvariables = new StringBuilder();
 
@@ -1597,9 +1598,16 @@ public class ProverBotanasMethod {
 				}
 			}
 
-			for (PPolynomial p : extraPolys) {
-				rgParameters.append(",").append(p.toString());
+			if (!polys.equals("") && !extraPolys.isEmpty()) {
+				rgParameters.append(",");
 			}
+			for (PPolynomial p : extraPolys) {
+				rgParameters.append(p.toString()).append(",");
+			}
+			if (!extraPolys.isEmpty()) {
+				rgParameters.deleteCharAt(rgParameters.length() - 1); // remove last ,
+			}
+
 			for (PVariable v : extraVars) {
 				posvariables.append(v.getName()).append(",");
 			}
