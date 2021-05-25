@@ -7,7 +7,7 @@
 
 set -e
 cd ../../../../web
-../gradlew -Pgdraft=true compileGwt symlinkIntoWar
+../gradlew :web:deployIntoWar -Pgdraft
 cd ../test/scripts/benchmark/art-plotter
 ./runtests-sql -r -p Web -d
 ./report-sql -c Web

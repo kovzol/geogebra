@@ -291,6 +291,7 @@ for i in `find -name '*.ggb' | sort`; do
     --prover=engine:$ENGINE,method:$METHOD,timeout:$TIMEOUT --singularws=remoteurl:${SINGULARWSREMOTEURL}${SWSOPTS} \
     --logFile=$LOGFILE \
     --regressionFile=$REGRESSIONFILE --language=en $EXTRAOPTS $MYDIR/$i \
+    --realgeomws=enable:false \
     >$MYDIR/tmp/.test.stdout 2>$MYDIR/tmp/.test.stderr
    # --regressionFile is broken since 5.0.244.0, so we don't use its output
    RETVAL=$?
