@@ -124,29 +124,6 @@ public class AlgoCompare extends AlgoElement {
     }
 
     AlgebraicStatement as;
-    class Distance {
-        public GeoPoint startPoint, endPoint;
-        public boolean extra = false;
-        Distance (GeoPoint s, GeoPoint e) {
-            startPoint = s;
-            endPoint = e;
-        }
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Distance)) return false;
-            Distance d = (Distance) o;
-            return startPoint == d.startPoint && endPoint == d.endPoint;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = startPoint.hashCode();
-            result = 1000 * result + endPoint.hashCode();
-            return result;
-        }
-    }
-    TreeMap<Distance, GeoSegment> distances = new TreeMap<>();
 
     StringTemplate portableFormat = StringTemplate.casCopyTemplate;
     StringTemplate fancyFormat = StringTemplate.algebraTemplate;
@@ -164,17 +141,6 @@ public class AlgoCompare extends AlgoElement {
          */
         Log.debug("Benchmarking: " + elapsedTime + " ms");
         Log.debug("COMPARISON RESULT IS " + retval);
-    }
-
-    void removeExtraDistances() {
-        Iterator<Distance> it = distances.keySet().iterator();
-        while (it.hasNext()) {
-            Distance d = it.next();
-            if (d.extra) {
-                GeoSegment gs = cons.getSegmentFromAlgoList(d.startPoint, d.endPoint);
-                gs.remove();
-            }
-        }
     }
 
     /*
@@ -349,6 +315,9 @@ public class AlgoCompare extends AlgoElement {
             for (int i = 0; i < 2; i++) {
                 if (inpElem[i] instanceof GeoSegment) {
                     lr_var[i] = adb.getBotanaVar(inpElem[i]).toString();
+                    if (!extraVars.contains(lr_var[i])) {
+                        extraVars.add(lr_var[i]);
+                    }
                     inp[i] = computeSegmentLabel(inpElem[i]);
                     deg[i] = 1;
                 }
@@ -362,18 +331,15 @@ public class AlgoCompare extends AlgoElement {
                     if (deg[i] == -1) {
                         // The expression is not homogeneous, no general statement exists.
                         // TODO: Maybe here "false" should be given. Discuss.
-                        removeExtraDistances();
                         outputText.setTextString(retval);
                         return;
                     }
                 }
             }
 
-            removeExtraDistances();
         } catch (Throwable t) {
             // Maybe there is something unimplemented.
             // In such cases we just acknowledge this and return with no result.
-            removeExtraDistances();
             outputText.setTextString(retval);
             return;
         }
@@ -402,61 +368,16 @@ public class AlgoCompare extends AlgoElement {
             }
         }
 
-        String rgCommand = "euclideansolver";
-        StringBuilder rgParameters = new StringBuilder();
-        rgParameters.append("lhs=" + lr_var[0] + "&" + "rhs=" + lr_var[1] + "&")
-                .append("polys=");
-
-        /* Force some non-degeneracies. */
-        PPolynomial[] nonDegPolys;
-        try {
-            nonDegPolys = ProverBotanasMethod.create3FreePointsNeverCollinearNDG(p);
-        } catch (Exception e) {
-            return;
-        }
-        for (PPolynomial ndp : nonDegPolys) {
-            as.addPolynomial(ndp);
-        }
-
-        /* Add equalities that describe the quantities in the dummy thesis. */
-        // for (PPolynomial qe : adb.getProverAdapter().getExtraPolys()) {
-        //     as.addPolynomial(qe);
-        // }
-
-        // We use this piece of code instead (to be able to show
-        // the label of the segment):
-        ArrayList<Map.Entry<GeoSegment, PPolynomial>> segmentBotanaPolys =
-                ((AlgoDependentBoolean) adb).getProverAdapter().getSegmentBotanaPolys();
-        Iterator<Map.Entry<GeoSegment, PPolynomial>> it = segmentBotanaPolys.iterator();
-        while (it.hasNext()) {
-            Map.Entry<GeoSegment, PPolynomial> entry = it.next();
-            GeoSegment s = entry.getKey();
-            PPolynomial poly = entry.getValue();
-            if (as.addPolynomial(poly)) {
-                if (ProverSettings.get().captionAlgebra) {
-                    s.addCaptionBotanaPolynomial(s.getLabelTextOrHTML() + ":" + poly.toTeX());
-                }
-            }
-        }
-
-        as.computeStrings();
-        rgParameters.append(as.getPolys());
-        for (String po : extraPolys) {
-            rgParameters.append(",").append(po);
-        }
-
-        String freeVars = as.getFreeVarsWithoutAlmostFree();
-        String elimVars = as.getElimVarsWithAlmostFree();
-        Log.debug("freevars=" + freeVars);
-        Log.debug("elimvars=" + elimVars);
-
-        String vars = freeVars;
-        if (!"".equals(elimVars)) {
-            vars += "," + elimVars;
-        }
         for (String v : extraVars) {
-            vars += "," + v;
+            as.addExtVar(v);
         }
+        for (String po : extraPolys) {
+            as.addExtPoly(po);
+        }
+        // Computation of rgParameters must be done before the first round with elimination
+        // (it implicitly computes all strings).
+        StringBuilder rgParameters = as.getRGParameters();
+        String vars = as.getRGVars();
 
         // Start of direct Giac computation.
         /* Example code:
@@ -541,72 +462,19 @@ public class AlgoCompare extends AlgoElement {
             return;
         }
 
-        rgParameters.append("&vars=").append(vars);
-
-        rgParameters.append("&posvariables=");
-        StringBuilder posvariables = new StringBuilder();
-        ArrayList<Map.Entry<GeoElement, PVariable>> varSubstListOfSegs =
-                adb.getProverAdapter().getVarSubstListOfSegs();
-        Iterator<Map.Entry<GeoElement, PVariable>> it2 = varSubstListOfSegs.iterator();
-        while (it2.hasNext()) {
-            Map.Entry<GeoElement, PVariable> entry = it2.next();
-            String v = entry.getValue().toString();
-            posvariables.append(v).append(",");
-            }
-        if (!varSubstListOfSegs.isEmpty()) {
-            posvariables.deleteCharAt(posvariables.length() - 1); // remove last ,
-        }
-        rgParameters.append(posvariables);
-
-        // Inequalities
-        StringBuilder ies = new StringBuilder();
-        Set<String> ineqs = as.ineqs;
-        for (String ie : ineqs) {
-            ie = ie.replace("=", "E");
-            ies.append(ie).append(",");
-        }
-        if (!ineqs.isEmpty()) {
-            rgParameters.append("&ineqs=");
-            ies.deleteCharAt(ies.length() - 1); // remove last ,
-            rgParameters.append(ies);
-        }
-
+        String rgCommand = "euclideansolver";
+        rgParameters.append("&lhs=" + lr_var[0] + "&" + "rhs=" + lr_var[1]);
         rgParameters.append("&mode=explore");
-        String rgwsCas = realgeomWS.getCAS();
-        rgParameters.append("&cas=" + rgwsCas);
         String label = cons.getTitle();
         label = label.trim().replaceAll("\\s+", " ");
         Log.debug("constructionLabel = " + label);
         rgParameters.append("&label=" + label);
-
         Log.debug(rgParameters);
 
         String rgResult = realgeomWS.directCommand(rgCommand, rgParameters.toString());
 
-        if ("$Aborted".equals(rgResult)) {
-            Log.debug("Timeout in RealGeom");
-            rgResult = "";
-        }
-
-        if ("$Failed".equals(rgResult)) {
-            Log.debug("Computation issue in RealGeom");
-            rgResult = "";
-        }
-
-        if ("GIAC ERROR".equals(rgResult)) {
-            Log.debug("Giac error in RealGeom");
-            rgResult = "";
-        }
-
-        if ("QEPCAD ERROR".equals(rgResult)) {
-            Log.debug("Qepcad error in RealGeom");
-            rgResult = "";
-        }
-
-        if ("TARSKI ERROR".equals(rgResult)) {
-            Log.debug("Tarski error in RealGeom");
-            rgResult = "";
-        }
+        rgResult = as.rewriteResult(rgResult);
+        String rgwsCas = realgeomWS.getCAS();
 
         if (rgwsCas.equals("mathematica") && rgResult != null && !rgResult.equals("")) {
             // If there was some useful result in RealGeom, then use it and forget the previous results from Giac.
@@ -783,53 +651,6 @@ public class AlgoCompare extends AlgoElement {
     }
 
 
-    private GeoSegment getGeoSegment(GeoNumeric n) {
-        AlgoElement ae = n.getParentAlgorithm();
-        if (ae instanceof AlgoDistancePoints) {
-            GeoPoint startPoint = (GeoPoint) ae.getInput(0);
-            GeoPoint endPoint = (GeoPoint) ae.getInput(1);
-            if (startPoint.getLabelSimple().compareTo(endPoint.getLabelSimple()) > 0) {
-                GeoPoint swap = startPoint;
-                startPoint = endPoint;
-                endPoint = swap;
-            }
-            Distance d = new Distance(startPoint, endPoint);
-            if (distances.containsKey(d)) {
-                return distances.get(d);
-            }
-            GeoSegment gs = cons.getSegmentFromAlgoList(startPoint, endPoint);
-            if (gs == null) {
-                AlgoJoinPointsSegment ajps =
-                        new AlgoJoinPointsSegment(cons, null, startPoint, endPoint);
-                gs = ajps.getSegment();
-                d.extra = true;
-            }
-            distances.put(d, gs);
-            return gs;
-        }
-        return null;
-    }
-
-
-    /* To handle substring replacements correctly we need to use our own comparator
-     * that puts longer labels on the substitution list first.
-     */
-    Comparator<GeoSegment> lengthComparator = new Comparator<GeoSegment>() {
-        @Override public int compare(GeoSegment gs1, GeoSegment gs2) {
-            if (gs1.getLabelSimple() == null) {
-                return 1;
-            }
-            if (gs2.getLabelSimple() == null) {
-                return -1;
-            }
-
-            if (gs1.getLabelSimple().length() > gs2.getLabelSimple().length()) {
-                return -1;
-            }
-            return gs1.getLabelSimple().compareTo(gs2.getLabelSimple());
-        }
-    };
-
 
     /**
      * Get the degree of a polynomial, unless it is non-homogeneous. In this latter case return -1.
@@ -854,8 +675,12 @@ public class AlgoCompare extends AlgoElement {
             return -1; // in fact this is an error
         }
         String[] vars = varlist.split(",");
+        // Add these to the extraVars!
 
         for (String v : vars) {
+            if (!extraVars.contains(v)) {
+                extraVars.add(v);
+            }
             list += v + ",";
             list_t += "t*" + v + ",";
         }

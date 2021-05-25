@@ -359,12 +359,17 @@ public class ProverBotanasMethod {
 		private boolean disallowFixSecondPoint = false;
 
 		private String polys, elimVars, freeVars, freeVarsWithoutAlmostFree, elimVarsWithAlmostFree;
-
+		private String rgVars; // all variables that are required for real geometry
 		private PPolynomial[] thesisFactors;
 		private TreeMap<GeoElement, PPolynomial[]> geoPolys = new TreeMap<>();
+		// ineqs cannot be eliminated:
 		public Set<String> ineqs = new TreeSet<>(); // TODO: Write getter/setter instead.
 		private boolean dryRun = false; // If set, do not compute any heavy detail.
-		private Set<String> posVars = new TreeSet<>();
+		private Set<String> extVars = new TreeSet<>(); // external variables (may be substitued)
+		private Set<String> extPolys = new TreeSet<>(); // external polynomials (may be eliminated)
+		private Set<String> posVars = new TreeSet<>(); // positive variables (RG)
+		// Positive variables should not be eliminated via GB, so we maintain a list of them.
+		// Such variables are: sqrt2, a, b, c (lengths of sides).
 		private String thesisIneq = null;
 
 		/**
@@ -420,9 +425,9 @@ public class ProverBotanasMethod {
 		}
 
 		/**
-		 * Retrieve free variables.
+		 * Retrieve "almost" free variables.
 		 *
-		 * @return the set of free variables
+		 * @return the set of "almost" free variables
 		 */
 		public Set<PVariable> getAlmostFreeVariables() {
 			return almostFreeVariables;
@@ -509,6 +514,16 @@ public class ProverBotanasMethod {
 		}
 
 		/**
+		 * Return all variables for the RG subsystem. Use
+		 * computeStrings() before using this method.
+		 *
+		 * @return free variables in String format
+		 */
+		public String getRGVars() {
+			return rgVars;
+		}
+
+		/**
 		 * @return the polynomials
 		 */
 		public Set<PPolynomial> getPolynomials() {
@@ -561,12 +576,34 @@ public class ProverBotanasMethod {
 
 		public boolean addPosVar(String v) {
 			if (posVars.contains(v)) {
-				Log.debug("Ignoring existing var " + v);
+				Log.debug("Ignoring existing posVar " + v);
 				return false;
 			}
 			posVars.add(v);
 			int size = posVars.size();
 			Log.debug("Adding posVar #" + (size) + ": " + v);
+			return true;
+		}
+
+		public boolean addExtVar(String v) {
+			if (extVars.contains(v)) {
+				Log.debug("Ignoring existing extVar " + v);
+				return false;
+			}
+			extVars.add(v);
+			int size = extVars.size();
+			Log.debug("Adding extVar #" + (size) + ": " + v);
+			return true;
+		}
+
+		public boolean addExtPoly(String p) {
+			if (extPolys.contains(p)) {
+				Log.debug("Ignoring existing external poly " + p);
+				return false;
+			}
+			extPolys.add(p);
+			int size = extPolys.size();
+			Log.debug("Adding external poly #" + (size) + ": " + p);
 			return true;
 		}
 
@@ -669,8 +706,19 @@ public class ProverBotanasMethod {
 			this.freeVarsWithoutAlmostFree = PPolynomial.getVarsAsCommaSeparatedString(
 					eqSystemSubstituted, null, false, dependentVariablesWithAlmostFree);
 
-			Log.trace("gbt polys = " + polys);
-			Log.trace("gbt vars = " + elimVars + "," + freeVars);
+			/* Construct the needed variables for the real algebraic geometry subsystem. */
+			this.rgVars = freeVarsWithoutAlmostFree;
+			if (!this.rgVars.equals("")) {
+				if (!elimVars.equals("")) {
+					this.rgVars += "," + elimVarsWithAlmostFree;
+				}
+				if (!this.extVars.isEmpty()) {
+					for (String v : extVars) {
+						this.rgVars += "," + v;
+					}
+				}
+			}
+
 		}
 
 		/*
@@ -1536,51 +1584,35 @@ public class ProverBotanasMethod {
 
 		}
 
-		private void proveInequality() {
-			/* Handle some special cases. It is possible that DependentBooleanAdapter.exprCode
-			 * already computed this accidentally, if the input was some simple algebraic
-			 * formula. We acknowledge this and simply return that value.
-			 * FIXME in DependentBooleanAdapter.exprCode.
-			 */
-			if (thesisIneq.equals("true")) {
-				result = ProofResult.TRUE;
-				return;
-			}
-			if (thesisIneq.equals("false")) {
-				result = ProofResult.FALSE;
-				return;
-			}
+		private StringBuilder removeLastChar(StringBuilder sb) {
+			sb.deleteCharAt(sb.length() - 1);
+			return sb;
+		}
 
-			String rgCommand = "euclideansolver";
-			StringBuilder rgParameters = new StringBuilder();
-			// Do not send = via http, it is reserved:
-			thesisIneq = thesisIneq.replace(">=", "≥")
-					.replace("<=", "≤").replace("=", "E");
+		public StringBuilder getRGParameters() {
+			RealGeomWebService realgeomWS = geoStatement.getConstruction().getApplication().getRealGeomWS();
 
-			rgParameters.append("ineq=").append(thesisIneq).append("&")
-					.append("polys=");
+			if (realgeomWS == null || (!realgeomWS.isAvailable())) {
+				Log.debug("RealGeomWS is not available");
+				return null;
+			}
 
 			/* Force some non-degeneracies. */
 			PPolynomial[] nonDegPolys;
 			try {
 				nonDegPolys = create3FreePointsNeverCollinearNDG(geoProver);
 			} catch (Exception e) {
-				result = ProofResult.UNKNOWN;
-				return;
+				return null;
 			}
 			for (PPolynomial ndp : nonDegPolys) {
 				addPolynomial(ndp);
 			}
 
-			computeStrings();
-			String polys = getPolys();
-			rgParameters.append(polys);
-
-			StringBuilder posvariables = new StringBuilder();
+			StringBuilder rgParameters = new StringBuilder();
 
 			/* get distance polynomials */
 			AlgoElement algo = geoStatement.getParentAlgorithm();
-			ArrayList<PPolynomial> extraPolys =
+			ArrayList<PPolynomial> segPolys =
 					((AlgoDependentBoolean) algo).getProverAdapter().getExtraPolys();
 			PVariable[] extraVars =
 					((AlgoDependentBoolean) algo).getProverAdapter().getBotanaVars();
@@ -1597,17 +1629,19 @@ public class ProverBotanasMethod {
 					}
 				}
 			}
-
-			if (!polys.equals("") && !extraPolys.isEmpty()) {
-				rgParameters.append(",");
-			}
-			for (PPolynomial p : extraPolys) {
-				rgParameters.append(p.toString()).append(",");
-			}
-			if (!extraPolys.isEmpty()) {
-				rgParameters.deleteCharAt(rgParameters.length() - 1); // remove last ,
+			for (PPolynomial sp : segPolys) {
+				addExtPoly(sp.toString()); // add segment polynomials as external polynomials
 			}
 
+			computeStrings();
+
+			// The first ones of these variables will be most certainly substituted later.
+			// So their order is important. We should not add here any variables that are
+			// not to be eliminated.
+			String vars = getRGVars();
+			rgParameters.append("vars=").append(vars);
+
+			StringBuilder posvariables = new StringBuilder();
 			for (PVariable v : extraVars) {
 				posvariables.append(v.getName()).append(",");
 			}
@@ -1615,25 +1649,23 @@ public class ProverBotanasMethod {
 				posvariables.append(v).append(",");
 			}
 			if (!posVars.isEmpty()) {
-				posvariables.deleteCharAt(posvariables.length() - 1); // remove last ,
+				removeLastChar(posvariables); // remove last ,
 			}
+			rgParameters.append("&posvariables=").append(posvariables);
 
-			String freeVars = getFreeVarsWithoutAlmostFree();
-			String elimVars = getElimVarsWithAlmostFree();
-			Log.debug("freevars=" + freeVars);
-			Log.debug("elimvars=" + elimVars);
-
-			String vars = freeVars;
-			if (!"".equals(elimVars)) {
-				vars += "," + elimVars;
+			// This should be the last one, because some additional polys may be added.
+			rgParameters.append("&polys=");
+			String polys = getPolys();
+			rgParameters.append(polys);
+			// Add all external polynomials
+			if (!polys.equals("") && !extPolys.isEmpty()) {
+				rgParameters.append(",");
 			}
-
-			RealGeomWebService realgeomWS = geoStatement.getConstruction().getApplication().getRealGeomWS();
-
-			if (realgeomWS == null || (!realgeomWS.isAvailable())) {
-				Log.debug("RealGeomWS is not available");
-				result = ProofResult.UNKNOWN;
-				return;
+			for (String p : extPolys) {
+				rgParameters.append(p).append(",");
+			}
+			if (!extPolys.isEmpty()) {
+				removeLastChar(rgParameters); // remove last ,
 			}
 
 			// Inequalities
@@ -1644,47 +1676,78 @@ public class ProverBotanasMethod {
 			}
 			if (!ineqs.isEmpty()) {
 				rgParameters.append("&ineqs=");
-				ies.deleteCharAt(ies.length() - 1); // remove last ,
+				removeLastChar(ies); // remove last ,
 				rgParameters.append(ies);
 			}
 
-
-			rgParameters.append("&vars=").append(vars);
-			rgParameters.append("&posvariables=").append(posvariables);
-			rgParameters.append("&mode=prove");
 			String rgwsCas = realgeomWS.getCAS();
 			rgParameters.append("&cas=" + rgwsCas);
 			// This should be set but QEPCAD has problems with this:
 			// rgParameters.append("&maxfixcoords=" + maxFixcoords);
 
 			Log.debug(rgParameters);
+			return rgParameters;
+		}
 
-			String rgResult = realgeomWS.directCommand(rgCommand, rgParameters.toString());
-
+		public String rewriteResult(String rgResult) {
 			if ("$Aborted".equals(rgResult)) {
 				Log.debug("Timeout in RealGeom");
 				rgResult = "";
 			}
-
 			if ("$Failed".equals(rgResult)) {
 				Log.debug("Computation issue in RealGeom");
 				rgResult = "";
 			}
-
 			if ("GIAC ERROR".equals(rgResult)) {
 				Log.debug("Giac error in RealGeom");
 				rgResult = "";
 			}
-
 			if ("QEPCAD ERROR".equals(rgResult)) {
 				Log.debug("Qepcad error in RealGeom");
 				rgResult = "";
 			}
-
 			if ("TARSKI ERROR".equals(rgResult)) {
 				Log.debug("Tarski error in RealGeom");
 				rgResult = "";
 			}
+			return rgResult;
+		}
+
+		private void proveInequality() {
+			/* Handle some special cases. It is possible that DependentBooleanAdapter.exprCode
+			 * already computed this accidentally, if the input was some simple algebraic
+			 * formula. We acknowledge this and simply return that value.
+			 * FIXME in DependentBooleanAdapter.exprCode.
+			 */
+			if (thesisIneq.equals("true")) {
+				result = ProofResult.TRUE;
+				return;
+			}
+			if (thesisIneq.equals("false")) {
+				result = ProofResult.FALSE;
+				return;
+			}
+
+			String rgCommand = "euclideansolver";
+			StringBuilder rgParameters = getRGParameters();
+			if (rgParameters == null) {
+				result = ProofResult.UNKNOWN;
+				return;
+			}
+			// Do not send = via http, it is reserved:
+			thesisIneq = thesisIneq.replace(">=", "≥")
+					.replace("<=", "≤").replace("=", "E");
+
+			rgParameters.append("&ineq=").append(thesisIneq);
+
+			RealGeomWebService realgeomWS = geoStatement.getConstruction().getApplication().getRealGeomWS();
+
+			rgParameters.append("&mode=prove");
+			Log.debug(rgParameters);
+
+			String rgResult = realgeomWS.directCommand(rgCommand, rgParameters.toString());
+
+			rgResult = rewriteResult(rgResult);
 
 			if (rgResult == null) {
 				result = ProofResult.UNKNOWN;
@@ -1706,45 +1769,6 @@ public class ProverBotanasMethod {
 			result = ProofResult.UNKNOWN;
 		}
 
-		/*
-		private String convertDecimalsToFractions(String text) {
-			Pattern pattern = Pattern.compile("\\d*\\.\\d+|\\d+\\.\\d*");
-			Matcher matcher = pattern.matcher(text);
-			StringBuffer buffer = new StringBuffer();
-
-			while (matcher.find()) {
-				String decimal = matcher.group();
-				double d = Double.parseDouble(decimal);
-				double[] f = AlgoFractionText.decimalToFraction(d, 0);
-				int numer = (int)f[0];
-				int denom = (int)f[1];
-				String fraction = "(" + numer + "/" + denom + ")";
-				matcher.appendReplacement(buffer, "");
-				buffer.append(fraction);
-			}
-			matcher.appendTail(buffer);
-			return buffer.toString();
-		}
-
-		private String convertSqrtToQepcad(String text) {
-			char s = Unicode.SQUARE_ROOT;
-			Pattern pattern = Pattern.compile(s + "\\d+");
-
-			Matcher matcher = pattern.matcher(text);
-			StringBuffer buffer = new StringBuffer();
-
-			while (matcher.find()) {
-				String number = matcher.group().substring(1); // remove leading SQUARE_ROOT
-				String qexpr = "(sqrt" + number + ")";
-				matcher.appendReplacement(buffer, "");
-				buffer.append(qexpr);
-				addIneq("sqrt" + number + "^2=" + number);
-				addPosVar("sqrt" + number);
-			}
-			matcher.appendTail(buffer);
-			return buffer.toString();
-		}
-		 */
 
 		private String convertSqrtToQepcad(String text) {
 			char s = Unicode.SQUARE_ROOT;
