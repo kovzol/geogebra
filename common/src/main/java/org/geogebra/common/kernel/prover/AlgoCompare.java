@@ -388,6 +388,8 @@ public class AlgoCompare extends AlgoElement {
         StringBuilder gc = new StringBuilder();
         gc.append("[assume(m>0),solve(eliminate(subst([");
         gc.append(as.getPolys());
+        extraPolys = as.getExtPolys(); // Update the polys with the segments,
+        // they have been generated in the RG part.
         for (String po : extraPolys) {
             gc.append(",").append(po);
         }

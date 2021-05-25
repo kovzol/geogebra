@@ -415,6 +415,14 @@ public class ProverBotanasMethod {
 			return geoPolys.get(geo);
 		}
 
+		public ArrayList<String> getExtPolys() {
+			ArrayList<String> al = new ArrayList<>();
+			for (String p : extPolys) {
+				al.add(p);
+			}
+			return al;
+		}
+
 		/**
 		 * Retrieve free variables.
 		 *
@@ -1592,11 +1600,6 @@ public class ProverBotanasMethod {
 		public StringBuilder getRGParameters() {
 			RealGeomWebService realgeomWS = geoStatement.getConstruction().getApplication().getRealGeomWS();
 
-			if (realgeomWS == null || (!realgeomWS.isAvailable())) {
-				Log.debug("RealGeomWS is not available");
-				return null;
-			}
-
 			/* Force some non-degeneracies. */
 			PPolynomial[] nonDegPolys;
 			try {
@@ -1680,8 +1683,10 @@ public class ProverBotanasMethod {
 				rgParameters.append(ies);
 			}
 
-			String rgwsCas = realgeomWS.getCAS();
-			rgParameters.append("&cas=" + rgwsCas);
+			if (realgeomWS != null && realgeomWS.isAvailable()) {
+				String rgwsCas = realgeomWS.getCAS();
+				rgParameters.append("&cas=" + rgwsCas);
+			}
 			// This should be set but QEPCAD has problems with this:
 			// rgParameters.append("&maxfixcoords=" + maxFixcoords);
 
