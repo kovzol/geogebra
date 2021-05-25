@@ -1461,6 +1461,9 @@ public class ProverBotanasMethod {
 				/* case input was an expression */
 				if (statements == null) {
 					statements = getExpressionStatements(geoStatement);
+					if (result != null) {
+						return;
+					}
 					if (dryRun) {
 						return; // Do not compute anything. It will be done in AlgoCompare.
 					}
@@ -1836,8 +1839,17 @@ public class ProverBotanasMethod {
 				try {
 					thesisIneq = c.evaluateRaw(pCode);
 					thesisIneq = thesisIneq.substring(1, thesisIneq.length() - 1); // trim { }
-					// thesisIneq = convertDecimalsToFractions(thesisIneq);
 					thesisIneq = convertSqrtToQepcad(thesisIneq);
+
+					// get degree
+					String degExp = thesisIneq.replace(">=", "-")
+							.replace("<=", "-").replace(">", "-").replace("<", "-");
+					int deg = getDegree(degExp);
+					if (deg == -1) {
+						result = ProofResult.FALSE;
+						return null;
+					}
+
 					if (operation == EQUAL_BOOLEAN) {
 						thesisIneq += "=0";
 					}
@@ -1992,6 +2004,66 @@ public class ProverBotanasMethod {
 			}
 
 			return statements;
+		}
+
+		/**
+		 * Get the degree of a polynomial, unless it is non-homogeneous. In this latter case return -1.
+		 * We assume that all variables are linear quantities, that is, segments/distances.
+		 * @param expr
+		 * @return the degree of the polynomial (or -1 in the non-homogeneous case)
+		 */
+		int getDegree(String expr) {
+			// See TP-39 for an explanation:
+			// a(x,y,z):=x^2+x*y+2z^2; d:=degree(a(x,y,z)); expand(a(t*x,t*y,t*z))==expand(t^d*a(x,y,z))
+			// For some strange reason Giac needs to handle this in the following way:
+			// [a(v9,v10):=begin return v9+2+v10; end, d():=begin return total_degree(a(v9,v10),[v9,v10]) end,expand(a(t*v9,t*v10))==expand(t^d()*a(v9,v10)),d()]][2]
+			String list = "";
+			String list_t = "";
+			String code_a = "a(";
+			String code_at = "a(";
+
+			String varlist;
+			Kernel kernel = geoStatement.getKernel();
+			GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
+			try {
+				varlist = AlgoCompare.trimBraces(cas.evaluateRaw("lvar(" + expr + ")"));
+			} catch (Throwable t) {
+				return -1; // in fact this is an error
+			}
+			String[] vars = varlist.split(",");
+			// Add these to the extraVars!
+
+			for (String v : vars) {
+				if (!extVars.contains(v)) {
+					extVars.add(v);
+				}
+				list += v + ",";
+				list_t += "t*" + v + ",";
+			}
+			list = list.substring(0, list.length()-1); // remove last ","
+			list_t = list_t.substring(0, list_t.length()-1); // remove last ","
+			code_a += list + ")"; // add closing ")"
+			code_at += list_t + ")"; // add closing ")"
+
+			String code = "[" + code_a + ":=begin return " + expr + "; end, ";
+			code += "d():=begin return total_degree(" + code_a + ",[" + list + "]) end,";
+			code += "[simplify(" + code_at + "-t^d()*(" + code_a + "))==0,d()]][2]";
+
+			String hominfo = "";
+			try {
+				hominfo = cas.getCurrentCAS().evaluateRaw(code); // expected e.g.: {true,1} or {false,1}
+			} catch (Throwable t) {
+				return -1;
+			}
+			if (hominfo.indexOf("false") > 0) {
+				// Not homogeneous.
+				return -1;
+			}
+			int commapos = hominfo.indexOf(',');
+			String deg = hominfo.substring(commapos + 1);
+			deg = deg.substring(0, deg.length() - 1); // trim "}"
+			int degree = Integer.parseInt(deg);
+			return degree;
 		}
 
 		private void algebraicTranslation(GeoElement statement,
