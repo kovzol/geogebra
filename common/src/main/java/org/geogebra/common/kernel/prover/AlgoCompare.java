@@ -5,7 +5,6 @@ import static org.geogebra.common.kernel.prover.ProverBotanasMethod.AlgebraicSta
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -283,8 +282,8 @@ public class AlgoCompare extends AlgoElement {
         cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
         try {
             String dummyThesisEq = cas.evaluateRaw(pCode);
-            lr_expr[0] = trimBraces(cas.evaluate(adb.getProverAdapter().exprCodeLeft()));
-            lr_expr[1] = trimBraces(cas.evaluate(adb.getProverAdapter().exprCodeRight()));
+            lr_expr[0] = as.trimBraces(cas.evaluate(adb.getProverAdapter().exprCodeLeft()));
+            lr_expr[1] = as.trimBraces(cas.evaluate(adb.getProverAdapter().exprCodeRight()));
         } catch (Throwable t) {
             Log.debug("Error on computing dummy thesis eq");
             return;
@@ -662,10 +661,4 @@ public class AlgoCompare extends AlgoElement {
         return "(" + inp[i] + ")^" + exponent[i];
     }
 
-    public static String trimBraces(String s) {
-        if (s.startsWith("{") && s.endsWith("}")) {
-            s = s.substring(1, s.length() - 1);
-        }
-        return s;
-    }
 }

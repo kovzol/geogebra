@@ -12,7 +12,6 @@ the Free Software Foundation.
 
 package org.geogebra.common.kernel.prover;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -189,7 +188,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 			answer.setValue(result.boolVal());
 			list.add(answer);
 			if (result.boolVal()) {
-				HashSet<NDGCondition> ndgresult = p.getNDGConditions();
+				TreeSet<NDGCondition> ndgresult = p.getNDGConditions();
 				GeoList ndgConditionsList = new GeoList(cons);
 				ndgConditionsList.clear();
 				ndgConditionsList.setDrawAsComboBox(true);
@@ -239,39 +238,9 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 							}
 						}
 						if (s == null || !relTool) {
-							GeoElement[] geos = ndgc.getGeos();
-							if (geos == null) { // formula with quantities
-								s = sb(ndgc.getCondition());
-							} else {
-								s = sb(getLoc()
-										.getCommand(ndgc.getCondition()));
-								s.append("[");
-								for (int i = 0; i < ndgc
-										.getGeos().length; ++i) {
-									if (i > 0) {
-										s.append(',');
-									}
-									/*
-									 * There can be a case when the underlying
-									 * prover sends such objects which cannot be
-									 * understood by GeoGebra. In this case we
-									 * use the "Objects" word. In this case we
-									 * normally return ProveResult.UNKNOWN to
-									 * not confuse the student, but for sure, we
-									 * still do the check here as well.
-									 */
-									GeoElement geo = ndgc.getGeos()[i];
-									if (geo != null) {
-										s.append(ndgc.getGeos()[i]
-												.getLabelSimple());
-									} else {
-										s.append(Unicode.ELLIPSIS);
-									}
-								}
-								s.append("]");
-								if (relTool) {
-									s.insert(0, getLoc().getMenu("not") + " ");
-								}
+							s = sb(ndgc.toString(getLoc()));
+							if (relTool) {
+								s.insert(0, getLoc().getMenu("not") + " ");
 							}
 						}
 

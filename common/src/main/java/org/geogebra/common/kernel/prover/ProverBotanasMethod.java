@@ -1600,6 +1600,13 @@ public class ProverBotanasMethod {
 			return sb;
 		}
 
+		public static String trimBraces(String s) {
+			if (s.startsWith("{") && s.endsWith("}")) {
+				s = s.substring(1, s.length() - 1);
+			}
+			return s;
+		}
+
 		public StringBuilder getRGParameters() {
 			RealGeomWebService realgeomWS = geoStatement.getConstruction().getApplication().getRealGeomWS();
 
@@ -2026,7 +2033,7 @@ public class ProverBotanasMethod {
 			Kernel kernel = geoStatement.getKernel();
 			GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
 			try {
-				varlist = AlgoCompare.trimBraces(cas.evaluateRaw("lvar(" + expr + ")"));
+				varlist = trimBraces(cas.evaluateRaw("lvar(" + expr + ")"));
 			} catch (Throwable t) {
 				return -1; // in fact this is an error
 			}

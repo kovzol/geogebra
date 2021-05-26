@@ -3,7 +3,6 @@ package org.geogebra.common.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -30,6 +29,8 @@ import org.geogebra.common.kernel.prover.ProverPureSymbolicMethod;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.util.debug.Log;
+
+import com.himamis.retex.editor.share.util.Unicode;
 
 /**
  * Prover package for GeoGebra. Allows using multiple backends for theorem
@@ -137,8 +138,6 @@ public abstract class Prover {
 	 */
 	protected AbstractProverReciosMethod reciosProver;
 
-	/* output */
-	private HashSet<NDGCondition> ndgConditions = new HashSet<>();
 	/**
 	 * The result of the proof
 	 */
@@ -158,7 +157,7 @@ public abstract class Prover {
 	 *
 	 * @author Zoltan Kovacs
 	 */
-	public static class NDGCondition {
+	public static class NDGCondition implements Comparable {
 		/**
 		 * The condition String
 		 */
@@ -236,34 +235,6 @@ public abstract class Prover {
 		 * Should this condition be used in the Discover command?
 		 */
 		static boolean discovery = false;
-
-		@Override
-		public int hashCode() {
-			int result = condition.hashCode();
-			if (geos != null) {
-				for (GeoElement geo : geos) {
-					if (geo != null) {
-						result += geo.hashCode();
-					}
-				}
-			}
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == null) {
-				return false;
-			}
-			if (obj == this) {
-				return true;
-			}
-			if (obj.getClass() != getClass()) {
-				return false;
-			}
-
-			return this.hashCode() == obj.hashCode();
-		}
 
 		private static GeoLine line(GeoPoint P1, GeoPoint P2,
 				Construction cons) {
@@ -416,7 +387,73 @@ public abstract class Prover {
 				}
 			}
 		}
+
+		private static StringBuilder sb(String content) {
+			return content == null ? null : new StringBuilder(content);
+		}
+
+		public String toString(Localization loc) {
+			StringBuilder s;
+			if (geos == null) { // formula with quantities
+				s = sb(condition);
+			} else {
+				if (loc == null) {
+					s = sb(condition);
+				} else {
+					s = sb(loc.getCommand(condition));
+				}
+				s.append("[");
+				for (int i = 0; i < geos.length; ++i) {
+					if (i > 0) {
+						s.append(',');
+					}
+					/*
+					 * There can be a case when the underlying
+					 * prover sends such objects which cannot be
+					 * understood by GeoGebra. In this case we
+					 * use the "Objects" word. In this case we
+					 * normally return ProveResult.UNKNOWN to
+					 * not confuse the student, but for sure, we
+					 * still do the check here as well.
+					 */
+					GeoElement geo = geos[i];
+					if (geo != null) {
+						s.append(geos[i]
+								.getLabelSimple());
+					} else {
+						s.append(Unicode.ELLIPSIS);
+					}
+				}
+				s.append("]");
+			}
+			return s.toString();
+		}
+
+		@Override
+		public String toString() {
+			return toString(null);
+		}
+
+		@Override
+		public int compareTo(Object o) {
+			double r = this.readability - ((NDGCondition) o).readability;
+			if (r != 0) {
+				return (int) Math.signum(r);
+			}
+			int c = this.condition.compareTo(((NDGCondition) o).condition);
+			if (c != 0) {
+				return c;
+			}
+			int s = this.toString().compareTo(((NDGCondition) o).toString());
+			if (s != 0) {
+				return s;
+			}
+			return 0; // they should be equal...
+		}
 	}
+
+	/* output */
+	private TreeSet<NDGCondition> ndgConditions = new TreeSet<>();
 
 	/**
 	 * Constructor for the package.
@@ -520,34 +557,6 @@ public abstract class Prover {
 	}
 
 	/**
-	 * Adds a non-degeneracy condition to the prover object
-	 *
-	 * @param ndgc
-	 *            the condition itself
-	 */
-	public void addNDGcondition(NDGCondition ndgc) {
-		// Add only a new condition, not an existing one:
-		for (NDGCondition n : ndgConditions) {
-			if (n.condition.equals(ndgc.condition)) {
-				if (n.geos.length == ndgc.geos.length) {
-					int i = 0;
-					boolean possibleMatch = true;
-					while (i < n.geos.length && possibleMatch) {
-						if (!n.geos[i].equals(ndgc.geos[i])) {
-							possibleMatch = false;
-						}
-						i++;
-					}
-					if (possibleMatch) {
-						return;
-					}
-				}
-			}
-		}
-		ndgConditions.add(ndgc);
-	}
-
-	/**
 	 * The real computation of decision of a statement. The statement is
 	 * forwarded to an engine (or more engines).
 	 */
@@ -635,7 +644,7 @@ public abstract class Prover {
 
 	private void callEngine(ProverEngine currentEngine) {
 		Log.debug("Using " + currentEngine);
-		ndgConditions = new HashSet<>(); // reset
+		ndgConditions = new TreeSet<>(); // reset
 		if (currentEngine == ProverEngine.BOTANAS_PROVER) {
 			ProverBotanasMethod pbm = new ProverBotanasMethod();
 			result = override(pbm.prove(this));
@@ -659,7 +668,7 @@ public abstract class Prover {
 	 *
 	 * @return The XML output string of the NDG condition
 	 */
-	public HashSet<NDGCondition> getNDGConditions() {
+	public TreeSet<NDGCondition> getNDGConditions() {
 		return ndgConditions;
 	}
 
@@ -865,5 +874,17 @@ public abstract class Prover {
 	public Construction getConstruction() {
 		return construction;
 	}
+
+	/* Adds a non-degeneracy condition to the prover object
+	 *
+	 * @param ndgc
+	 *            the condition itself
+	 */
+	public void addNDGcondition(NDGCondition ndgc) {
+		// Add only a new condition, not an existing one.
+		// Since ndgConditions is a TreeSet with ordering, this should be automatically working.
+		ndgConditions.add(ndgc);
+	}
+
 
 }
