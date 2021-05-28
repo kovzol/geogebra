@@ -18,7 +18,7 @@ ABSWEBDIR=`readlink -f $WEBCODEBASEDIR`
 
 PHANTOMJS=`which phantomjs || echo unset`
 
-# Create database if it does not exit
+# Create database if it does not exist
 test -r sqlite3db || ./createdb || exit $?
 
 sql_provers() {
