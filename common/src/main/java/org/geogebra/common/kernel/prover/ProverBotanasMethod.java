@@ -2044,8 +2044,10 @@ public class ProverBotanasMethod {
 				if (!extVars.contains(v)) {
 					extVars.add(v);
 				}
-				list += v + ",";
-				list_t += "t*" + v + ",";
+				if (!v.startsWith("sqrt")) {
+					list += v + ",";
+					list_t += "t*" + v + ",";
+				}
 			}
 			list = list.substring(0, list.length()-1); // remove last ","
 			list_t = list_t.substring(0, list_t.length()-1); // remove last ","
