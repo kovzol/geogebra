@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# First a realgeom server must be started on localhost:8765.
+
+set -e
+./runtests-sql -p "Classic5_m Classic5_t" -d -R http\\://localhost\\:8765
+./report-sql -c "Classic5_m Classic5_t" -e
