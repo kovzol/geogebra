@@ -787,40 +787,51 @@ public abstract class Prover {
 			GeoElement geo = it.next();
 			if (geo.isGeoPoint() && geo.getParentAlgorithm() == null) {
 				freePoints.add(geo.getLabelSimple());
-			} else if (!(geo instanceof GeoNumeric) && !ael.contains(geo.getParentAlgorithm())) {
-				String definition = geo.getDefinitionDescription(StringTemplate.defaultTemplate);
-				// Make the first letter lowercase. TODO: Check if this is OK for all locales.
-				definition = (definition.substring(0,1)).toLowerCase(Locale.ROOT)
-						+ definition.substring(1);
-				definition = definition.replace("Bisector", "bisector");
-				String textLocalized = null;
-				AlgoElement ae = geo.getParentAlgorithm();
-				if (ae != null && (ae instanceof AlgoPointOnPath || ae instanceof AlgoPointInRegion)) {
-					textLocalized = loc.getPlain("LetABeAB",
-							geo.getLabelSimple(), definition);
-				} else {
-					if (ae != null && ae instanceof AlgoPolygonRegular && !ael.contains(ae))
-					{
-						ael.add(ae);
-						StringBuilder points = new StringBuilder();
-						points.append(ae.getInput(0).getLabelSimple()).append(", ");
-						points.append(ae.getInput(1).getLabelSimple()).append(", ");
-						int n = ae.getOutputLength();
-						for (int i = n / 2 + 2; i < n; ++i) {
-							points.append(ae.getOutput(i).getLabelSimple());
-							points.append(", ");
-						}
-						int l = points.length();
-						points.deleteCharAt(l - 1);
-						points.deleteCharAt(l - 2);
-						textLocalized = loc.getPlain("LetABeTheRegularBGonVerticesC",
-								geo.getLabelSimple(), ae.getInput(2).toString(), points.toString());
-					} else {
-						textLocalized = loc.getPlain("LetABeTheB",
+			} else if (!(geo instanceof GeoNumeric)) {
+				if (!ael.contains(geo.getParentAlgorithm())) {
+					String definition =
+							geo.getDefinitionDescription(StringTemplate.defaultTemplate);
+					// Make the first letter lowercase. TODO: Check if this is OK for all locales.
+					definition = (definition.substring(0, 1)).toLowerCase(Locale.ROOT)
+							+ definition.substring(1);
+					definition = definition.replace("Bisector", "bisector");
+					String textLocalized = null;
+					AlgoElement ae = geo.getParentAlgorithm();
+					if (ae != null && (ae instanceof AlgoPointOnPath
+							|| ae instanceof AlgoPointInRegion)) {
+						textLocalized = loc.getPlain("LetABeAB",
 								geo.getLabelSimple(), definition);
+					} else {
+						if (ae != null && ae instanceof AlgoPolygonRegular && !ael.contains(ae)) {
+							ael.add(ae);
+							StringBuilder points = new StringBuilder();
+							points.append(ae.getInput(0).getLabelSimple()).append(", ");
+							points.append(ae.getInput(1).getLabelSimple()).append(", ");
+							int n = ae.getOutputLength();
+							for (int i = n / 2 + 2; i < n; ++i) {
+								points.append(ae.getOutput(i).getLabelSimple());
+								points.append(", ");
+							}
+							int l = points.length();
+							points.deleteCharAt(l - 1);
+							points.deleteCharAt(l - 2);
+							textLocalized = loc.getPlain("LetABeTheRegularBGonVerticesC",
+									geo.getLabelSimple(), ae.getInput(2).toString(),
+									points.toString());
+						} else {
+							textLocalized = loc.getPlain("LetABeAB",
+									geo.getLabelSimple(), definition);
+						}
+					}
+					if (textLocalized != null) {
+						hypotheses.append(textLocalized).append(" ");
 					}
 				}
-
+			} else { // geo is a GeoNumeric
+				String definition =
+						geo.getDefinitionDescription(StringTemplate.defaultTemplate);
+				String textLocalized = loc.getPlain("DenoteTheExpressionAByB",
+						definition, geo.getLabelSimple());
 				if (textLocalized != null) {
 					hypotheses.append(textLocalized).append(" ");
 				}
