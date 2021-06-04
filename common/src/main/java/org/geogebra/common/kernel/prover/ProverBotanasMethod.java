@@ -1847,6 +1847,10 @@ public class ProverBotanasMethod {
 					thesisIneq = c.evaluateRaw(pCode);
 					thesisIneq = thesisIneq.substring(1, thesisIneq.length() - 1); // trim { }
 					thesisIneq = convertSqrtToQepcad(thesisIneq);
+					// Simplify (to avoid division by expressions, if possible):
+					String giacCode = "simplify(" + thesisIneq + ")";
+					// If division cannot be avoided, we use multiplications instead...
+					thesisIneq = cas.evaluateRaw(giacCode).replace("/", "*");
 
 					// get degree
 					String degExp = thesisIneq.replace(">=", "-")
