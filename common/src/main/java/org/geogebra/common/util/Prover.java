@@ -819,7 +819,7 @@ public abstract class Prover {
 									geo.getLabelSimple(), ae.getInput(2).toString(),
 									points.toString());
 						} else {
-							textLocalized = loc.getPlain("LetABeAB",
+							textLocalized = loc.getPlain("LetABeTheB",
 									geo.getLabelSimple(), definition);
 						}
 					}
@@ -828,12 +828,14 @@ public abstract class Prover {
 					}
 				}
 			} else { // geo is a GeoNumeric
-				String definition =
-						geo.getDefinitionDescription(StringTemplate.defaultTemplate);
-				String textLocalized = loc.getPlain("DenoteTheExpressionAByB",
-						definition, geo.getLabelSimple());
-				if (textLocalized != null) {
-					hypotheses.append(textLocalized).append(" ");
+				if (geo.isLabelSet()) {
+					String definition =
+							geo.getDefinitionDescription(StringTemplate.defaultTemplate);
+					String textLocalized = loc.getPlain("DenoteTheExpressionAByB",
+							definition, geo.getLabelSimple());
+					if (textLocalized != null) {
+						hypotheses.append(textLocalized).append(" ");
+					}
 				}
 			}
 		}
