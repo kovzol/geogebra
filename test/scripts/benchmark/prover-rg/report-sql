@@ -12,10 +12,8 @@ CSV=none
 # Don't use this, it is just an example:
 # MYCOLUMNS="Recio PureSymbolic Botana,D BotanaGiac,D,p2 OpenGeoProver_Wu,p2 OpenGeoProver_Area Auto Web"
 MYCOLUMNS="Classic5_m Classic5_t"
-TESTGGBURLBASE_GGBDIR=http://dev.geogebra.org/trac/browser/trunk/geogebra/test/scripts/benchmark/prover
-GEOGEBRAWEB_URL1=https://www.geogebra.org/classic/?filename=https://dev.geogebra.org/trac/export
-GEOGEBRAWEB_URL2=trunk/geogebra/test/scripts/benchmark/prover
-SINGULARWSREMOTEURL=http://singularws.idm.jku.at/
+TESTGGBURLBASE_GGBDIR=https://autgeo.online/geogebra-discovery/test/scripts/benchmark/prover-rg
+GEOGEBRAWEB_URL=https://autgeo.online/geogebra-discovery/?filename=/geogebra-discovery/test/scripts/benchmark/prover-rg
 USEENGINES=0
 DOTS=20
 NICEHTML=1
@@ -48,7 +46,6 @@ usage() {
  echo "   -T <file>    set name for output .tex file ($TEX)"
  echo "   -c <list>    space separated list of prover engines to show as columns ($MYCOLUMNS)"
  echo "   -g <url>     use 'url' for putting links on test cases ($TESTGGBURLBASE_GGBDIR)"
- echo "   -s <url>     use 'url' to use non-default SingularWS ($SINGULARWSREMOTEURL)"
  echo "   -e           add introduction and use engine numbers in table headers"
  echo "   -d <length>  use dots in test names in LaTeX output if the name is longer than length ($DOTS)"
  echo "   -N           do not use nice HTML output (similarly to LaTeX)"
@@ -264,7 +261,7 @@ for t in `sqlite3 sqlite3db "select distinct testcase from tests where build_num
  unzip $i geogebra_thumbnail.png >/dev/null 2>&1
  mv geogebra_thumbnail.png html/$TEST.png
  # TODO: change "latest" to current revision:
- echo "<tr><td class=\"ex\"><a href=\"$TESTGGBURLBASE_GGBDIR/$i\">$TEST</a></td><td class=\"eximg\"><a href=\"${GEOGEBRAWEB_URL1}/latest/${GEOGEBRAWEB_URL2}/$i#\"><img src=\"$TEST.png\" height=${IMGHEIGHT}></a></td>" >> $MYDIR/$HTML
+ echo "<tr><td class=\"ex\"><a href=\"$TESTGGBURLBASE_GGBDIR/$i\">$TEST</a></td><td class=\"eximg\"><a href=\"${GEOGEBRAWEB_URL}/$i#\"><img src=\"$TEST.png\" height=${IMGHEIGHT}></a></td>" >> $MYDIR/$HTML
  TEST=`echo $TEST | sed s/".ggb"//`
 
  if [ "$CSV" != none ]; then
