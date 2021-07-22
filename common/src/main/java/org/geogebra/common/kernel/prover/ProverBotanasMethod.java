@@ -1467,12 +1467,14 @@ public class ProverBotanasMethod {
 					if (dryRun) {
 						return; // Do not compute anything. It will be done in AlgoCompare.
 					}
-					if (thesisIneq != null) {
+					if (thesisIneq != null && geoProver.getProverEngine() == ProverEngine.BOTANAS_PROVER) {
 						Log.debug("Thesis inequality = " + thesisIneq);
 						proveInequality();
 						return;
 					}
 					if (statements == null) {
+						// TODO: If this is a locus computation and the thesisIneq is not empty,
+						// try to use some workaround...
 						return; // no success
 					}
 				}
