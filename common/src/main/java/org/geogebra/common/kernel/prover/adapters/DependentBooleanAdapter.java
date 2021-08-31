@@ -684,16 +684,18 @@ public class DependentBooleanAdapter extends ProverAdapter {
 				}
 				if (expNode.getLeft() instanceof MySpecialDouble) {
 					Double d = expNode.getLeft().evaluateDouble();
-					int i;
+					// FIXME: This needs to be computed even more cleverly.
+					// If long is exhausted, this may result in wrong locus equations.
+					long i;
 					// if in the expression exists rational number with n
 					// decimals
 					// (if there's more than one rational number, then n is the
 					// max of decimal numbers)
 					// than multiply the coefficient with 10^n
 					if (nrOfMaxDecimals != 0) {
-						i = (int) (d * Math.pow(10, nrOfMaxDecimals));
+						i = (long) (d * Math.pow(10, nrOfMaxDecimals));
 					} else {
-						i = d.intValue();
+						i = d.longValue();
 					}
 					polyNode.getLeft().setPoly(new PPolynomial(i));
 				}
