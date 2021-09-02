@@ -731,7 +731,7 @@ public class PPolynomial implements Comparable<PPolynomial> {
 				} else {
 					result.put(t, sum);
 				}
-			} else if (product.intValue() != 0){
+			} else if (!product.equals(BigInteger.ZERO)){
 //				if (product.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > -1) {
 //					throw new ArithmeticException(
 //							"Integer Overflow in polynomial class");

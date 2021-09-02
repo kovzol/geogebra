@@ -686,18 +686,18 @@ public class DependentBooleanAdapter extends ProverAdapter {
 					Double d = expNode.getLeft().evaluateDouble();
 					// FIXME: This needs to be computed even more cleverly.
 					// If long is exhausted, this may result in wrong locus equations.
-					long i;
 					// if in the expression exists rational number with n
 					// decimals
 					// (if there's more than one rational number, then n is the
 					// max of decimal numbers)
 					// than multiply the coefficient with 10^n
 					if (nrOfMaxDecimals != 0) {
-						i = (long) (d * Math.pow(10, nrOfMaxDecimals));
+						long i = (long) (d * Math.pow(10, nrOfMaxDecimals));
+						polyNode.getLeft().setPoly(new PPolynomial(i));
 					} else {
-						i = d.longValue();
+						BigInteger i = BigDecimal.valueOf(d).toBigInteger();
+						polyNode.getLeft().setPoly(new PPolynomial(i));
 					}
-					polyNode.getLeft().setPoly(new PPolynomial(i));
 				}
 			}
 
@@ -748,10 +748,11 @@ public class DependentBooleanAdapter extends ProverAdapter {
 							&& expNode.getOperation() != POWER) {
 						i = new BigInteger(Long.toString(
 								((long) (d * Math.pow(10, nrOfMaxDecimals)))));
+						polyNode.getRight().setPoly(new PPolynomial(i));
 					} else {
-						i = new BigInteger(Long.toString(((long) d)));
+						BigInteger j = BigDecimal.valueOf(d).toBigInteger();
+						polyNode.getRight().setPoly(new PPolynomial(j));
 					}
-					polyNode.getRight().setPoly(new PPolynomial(i));
 				}
 			}
 		}
