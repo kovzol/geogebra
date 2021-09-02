@@ -17,8 +17,8 @@ public class RealGeomWSSettings {
     /**
      * The remote machine to be used for outsourced computations.
      */
-    private static volatile String realGeomWebServiceRemoteURL = "http://roadrunner.risc.jku.at:8765";
-    // private static volatile String realGeomWebServiceRemoteURL = "http://localhost:8765";
+    // private static volatile String realGeomWebServiceRemoteURL = "http://roadrunner.risc.jku.at:8765";
+    private static volatile String realGeomWebServiceRemoteURL = "http://localhost:8765";
 
     private static Object lock = new Object();
     /**
@@ -32,8 +32,8 @@ public class RealGeomWSSettings {
      * too noisy debug.
      */
     final public static int debugMaxProgramSize = 2000;
-    private static volatile String realGeomWebServiceCAS = "mathematica";
-    // private static volatile String realGeomWebServiceCAS = "tarski";
+    // private static volatile String realGeomWebServiceCAS = "mathematica";
+    private static volatile String realGeomWebServiceCAS = "tarski";
 
     private static volatile boolean testConnection = true;
 
