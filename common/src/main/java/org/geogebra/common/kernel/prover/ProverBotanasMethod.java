@@ -1833,7 +1833,7 @@ public class ProverBotanasMethod {
 			boolean forceRG = false;
 			RealGeomWebService realgeomWS = geoStatement.getConstruction().getApplication().getRealGeomWS();
 			if (realgeomWS != null && realgeomWS.isAvailable()) {
-				if (pCode.contains("sqrt")) {
+				if (pCode.contains("sqrt") && geoProver.getProverEngine() != ProverEngine.LOCUS_IMPLICIT ) {
 					forceRG = true;
 				}
 				if (!ineqs.isEmpty()) {
