@@ -1467,7 +1467,7 @@ public class ProverBotanasMethod {
 					if (dryRun) {
 						return; // Do not compute anything. It will be done in AlgoCompare.
 					}
-					if (thesisIneq != null && geoProver.getProverEngine() == ProverEngine.BOTANAS_PROVER) {
+					if (thesisIneq != null) {
 						Log.debug("Thesis inequality = " + thesisIneq);
 						proveInequality();
 						return;
