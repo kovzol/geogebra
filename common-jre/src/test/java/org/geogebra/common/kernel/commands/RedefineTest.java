@@ -398,10 +398,10 @@ public class RedefineTest extends BaseUnitTest {
 		add("SetValue(b,?)");
 		add("c=a(3)");
 		add("d=b(3)");
-		assertEquals(lookup("d").toValueString(StringTemplate.defaultTemplate), "false");
-		assertEquals(lookup("c").toValueString(StringTemplate.defaultTemplate), "false");
+		assertThat(lookup("d"), hasValue("false"));
+		assertThat(lookup("c"), hasValue("false"));
 		app.setXML(app.getXML(), true);
-		assertEquals(lookup("c").toValueString(StringTemplate.defaultTemplate), "false");
+		assertThat(lookup("c"), hasValue("false"));
 	}
 
 	@Test
