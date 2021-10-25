@@ -6,11 +6,13 @@ import org.geogebra.common.util.GTimerListener;
 import org.geogebra.common.util.HttpRequest;
 import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.Reflection;
+import org.geogebra.common.util.Tarski;
 import org.geogebra.common.util.URLEncoder;
 import org.geogebra.web.html5.euclidian.profiler.FpsProfilerW;
 import org.geogebra.web.html5.sound.GTimerW;
 import org.geogebra.web.html5.util.HttpRequestW;
 import org.geogebra.web.html5.util.ProverW;
+import org.geogebra.web.html5.util.TarskiW;
 import org.geogebra.web.html5.util.URLEncoderW;
 
 /**
@@ -33,6 +35,11 @@ public class UtilFactoryW extends UtilFactory {
 	@Override
 	public Prover newProver() {
 		return new ProverW();
+	}
+
+	@Override
+	public Tarski newTarski() {
+		return new TarskiW();
 	}
 
 	@Override

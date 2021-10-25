@@ -5,10 +5,12 @@ import org.geogebra.common.util.GTimer;
 import org.geogebra.common.util.GTimerListener;
 import org.geogebra.common.util.HttpRequest;
 import org.geogebra.common.util.Prover;
+import org.geogebra.common.util.Tarski;
 import org.geogebra.common.util.URLEncoder;
 import org.geogebra.desktop.util.GTimerD;
 import org.geogebra.desktop.util.HttpRequestD;
 import org.geogebra.desktop.util.ProverD;
+import org.geogebra.desktop.util.TarskiD;
 import org.geogebra.desktop.util.URLEncoderD;
 
 /**
@@ -30,6 +32,11 @@ public class UtilFactoryD extends UtilFactoryJre {
 	@Override
 	public Prover newProver() {
 		return new ProverD();
+	}
+
+	@Override
+	public Tarski newTarski() {
+		return new TarskiD();
 	}
 
 	@Override

@@ -1635,6 +1635,8 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 			Log.error("Cannot initialize CAS.");
 		}
 
+		initializeTarski();
+
 	}
 
 	/**

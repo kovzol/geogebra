@@ -41,6 +41,7 @@ import org.geogebra.common.euclidian3D.EuclidianView3DInterface;
 import org.geogebra.common.euclidian3D.Input3DConstants;
 import org.geogebra.common.export.pstricks.GeoGebraExport;
 import org.geogebra.common.factories.AwtFactory;
+import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.geogebra3D.euclidian3D.printer3D.Format;
 import org.geogebra.common.gui.AccessibilityManagerInterface;
 import org.geogebra.common.gui.AccessibilityManagerNoGui;
@@ -130,6 +131,7 @@ import org.geogebra.common.util.LowerCaseDictionary;
 import org.geogebra.common.util.MD5EncrypterGWTImpl;
 import org.geogebra.common.util.NormalizerMinimal;
 import org.geogebra.common.util.StringUtil;
+import org.geogebra.common.util.Tarski;
 import org.geogebra.common.util.ToStringConverter;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.common.util.profiler.FpsProfiler;
@@ -561,6 +563,17 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
     public RealGeomWebService getRealGeomWS() {
         return realGeomWS;
     }
+
+	Tarski tarski;
+
+	public void initializeTarski() {
+		Log.debug("Initializing Tarski...");
+		Tarski tarski = UtilFactory.getPrototype().newTarski();
+		tarski.init(50000000, 5);
+		String input = "[ex x[x>0]]";
+		Log.debug(input + " -> " + tarski.eval(input));
+		Log.debug("End of initialization.");
+	}
 
 	/* selection handling */
 

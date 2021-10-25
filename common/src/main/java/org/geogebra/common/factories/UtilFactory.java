@@ -5,6 +5,7 @@ import org.geogebra.common.util.GTimerListener;
 import org.geogebra.common.util.HttpRequest;
 import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.Reflection;
+import org.geogebra.common.util.Tarski;
 import org.geogebra.common.util.URLEncoder;
 
 /**
@@ -51,6 +52,11 @@ public abstract class UtilFactory {
 	 * @return Prover Creates a Prover object
 	 */
 	public abstract Prover newProver();
+
+	/**
+	 * @return Tarski Creates a Tarski object
+	 */
+	public abstract Tarski newTarski();
 
 	/**
 	 * 

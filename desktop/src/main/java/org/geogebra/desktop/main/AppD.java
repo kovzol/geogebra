@@ -115,7 +115,6 @@ import org.geogebra.common.GeoGebraConstants.Platform;
 import org.geogebra.common.awt.GDimension;
 import org.geogebra.common.awt.GFont;
 import org.geogebra.common.awt.MyImage;
-import org.geogebra.common.cas.tarski.Tarski;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianCursor;
@@ -139,7 +138,6 @@ import org.geogebra.common.javax.swing.GImageIcon;
 import org.geogebra.common.jre.factory.FormatFactoryJre;
 import org.geogebra.common.jre.gui.MyImageJre;
 import org.geogebra.common.jre.headless.AppDI;
-import org.geogebra.common.jre.headless.LocalizationCommon;
 import org.geogebra.common.jre.kernel.commands.CommandDispatcher3DJre;
 import org.geogebra.common.jre.kernel.commands.CommandDispatcherJre;
 import org.geogebra.common.jre.main.TemplateHelper;
@@ -177,6 +175,7 @@ import org.geogebra.common.util.GTimerListener;
 import org.geogebra.common.util.LowerCaseDictionary;
 import org.geogebra.common.util.NormalizerMinimal;
 import org.geogebra.common.util.StringUtil;
+import org.geogebra.common.util.Tarski;
 import org.geogebra.common.util.Util;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.common.util.debug.Log.LogDestination;
@@ -531,9 +530,8 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		initializeSingularWSD();
         // initialize RealGeomWS
         initializeRealGeomWSD();
-		// Initialize Tarski:
-		Tarski.init(50000000,5);
-		Log.debug(Tarski.eval("[ex x[x>0]]"));
+		// initialize Tarski
+		initializeTarski();
 
 		boolean fileLoaded = handleFileArg(args);
 
