@@ -33,6 +33,7 @@ import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.ProverSettings;
 import org.geogebra.common.main.RealGeomWSSettings;
@@ -233,6 +234,9 @@ public class AlgoCompare extends AlgoElement {
         if (inpElem[0].getKernel().isSilentMode()) {
             return;
         }
+
+        /// This is how Tarski could be called...
+        Log.debug(App.tarski.eval("[ex x[x>0]]"));
 
         // setInputOutput();
         do {

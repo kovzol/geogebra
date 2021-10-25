@@ -1,6 +1,14 @@
 package org.geogebra.web.html5.util;
 
 import org.geogebra.common.util.Tarski;
+import org.geogebra.common.util.debug.Log;
+import org.geogebra.web.html5.util.debug.LoggerW;
+import org.geogebra.web.resources.JavaScriptInjector;
+import org.geogebra.web.html5.css.TarskiResources;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.dom.client.Element;
 
 /**
  * @author Zoltan Kovacs
@@ -12,15 +20,33 @@ public class TarskiW extends Tarski {
 	@Override
 	public String eval(String command) {
 		String response = "";
-		// response = tarski.TARSKIEVAL(command);
+		response = tarskiEval(command);
 		return response;
 	}
 
+	public static native String tarskiEval(String command) /*-{
+	    var output = $wnd.TARSKIEVAL(command);
+	    return output;
+	}-*/;
+
 	@Override
 	public boolean init(int numcells, int timeout) {
-		// System.loadLibrary("tarski");
-		// tarski.TARSKIINIT(numcells, timeout);
-		return false;
+		// TODO: Use these parameters (now they are hardwired in tarski-loader.js)
+		GWT.runAsync(new RunAsyncCallback() {
+			@Override
+			public void onSuccess() {
+				JavaScriptInjector.inject(TarskiResources.INSTANCE.tarskiJs());
+				JavaScriptInjector.inject(TarskiResources.INSTANCE.tarskiLoaderJs());
+				LoggerW.loaded("Tarski webAssembly injected");
+			}
+
+			@Override
+			public void onFailure(Throwable reason) {
+				Log.debug("Loading failure");
+			}
+		});
+
+		return true;
 	}
 
 

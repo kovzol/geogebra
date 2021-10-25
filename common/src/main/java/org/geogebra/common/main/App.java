@@ -564,14 +564,12 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
         return realGeomWS;
     }
 
-	Tarski tarski;
+	public static Tarski tarski;
 
 	public void initializeTarski() {
 		Log.debug("Initializing Tarski...");
-		Tarski tarski = UtilFactory.getPrototype().newTarski();
+		tarski = UtilFactory.getPrototype().newTarski();
 		tarski.init(50000000, 5);
-		String input = "[ex x[x>0]]";
-		Log.debug(input + " -> " + tarski.eval(input));
 		Log.debug("End of initialization.");
 	}
 

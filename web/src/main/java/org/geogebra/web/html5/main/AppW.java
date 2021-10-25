@@ -1625,6 +1625,8 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 
 		getAppletFrame().setApplication(this);
 
+		initializeTarski();
+
 		// Force loading CAS.
 		// Without this, we cannot ensure that the heavy computations are ready to go.
 		// This code is not present in official GeoGebra to avoid loading CAS if unnecessary.
@@ -1634,8 +1636,6 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 		} catch (Throwable t) {
 			Log.error("Cannot initialize CAS.");
 		}
-
-		initializeTarski();
 
 	}
 
