@@ -141,6 +141,8 @@ run {
         ant.copy(file:"$jogl_native_path", todir:"$jogl_dir")
     }
 
+    // This should be done in a different way:
+    systemProperty "java.library.path", "${project.projectDir}/lib"
 }
 test {
     systemProperty "ggb.prerelease", project.findProperty("prerelease") ?: "true";

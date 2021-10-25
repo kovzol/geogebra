@@ -115,6 +115,7 @@ import org.geogebra.common.GeoGebraConstants.Platform;
 import org.geogebra.common.awt.GDimension;
 import org.geogebra.common.awt.GFont;
 import org.geogebra.common.awt.MyImage;
+import org.geogebra.common.cas.tarski.Tarski;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianCursor;
@@ -530,6 +531,9 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		initializeSingularWSD();
         // initialize RealGeomWS
         initializeRealGeomWSD();
+		// Initialize Tarski:
+		Tarski.init(50000000,5);
+		Log.debug(Tarski.eval("[ex x[x>0]]"));
 
 		boolean fileLoaded = handleFileArg(args);
 
