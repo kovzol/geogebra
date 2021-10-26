@@ -2,6 +2,7 @@ package org.geogebra.common.kernel.prover;
 
 import static org.apache.commons.math3.util.ArithmeticUtils.lcm;
 import static org.geogebra.common.kernel.prover.ProverBotanasMethod.AlgebraicStatement;
+import org.geogebra.common.cas.realgeom.Compute;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -235,9 +236,6 @@ public class AlgoCompare extends AlgoElement {
             return;
         }
 
-        /// This is how Tarski could be called...
-        Log.debug(App.tarski.eval("[ex x[x>0]]"));
-
         // setInputOutput();
         do {
             cons.removeFromAlgorithmList(this);
@@ -460,13 +458,6 @@ public class AlgoCompare extends AlgoElement {
         }
         // End of direct Giac computation.
 
-        if (realgeomWS == null || (!realgeomWS.isAvailable())) {
-            // outputText.setTextString("RealGeomWS is not available");
-            Log.debug("RealGeomWS is not available");
-            debugElapsedTime();
-            return;
-        }
-
         String rgCommand = "euclideansolver";
         rgParameters.append("&lhs=" + lr_var[0] + "&" + "rhs=" + lr_var[1]);
         rgParameters.append("&mode=explore");
@@ -476,17 +467,29 @@ public class AlgoCompare extends AlgoElement {
         rgParameters.append("&label=" + label);
         Log.debug(rgParameters);
 
-        String rgResult = realgeomWS.directCommand(rgCommand, rgParameters.toString());
+        String rgResult;
+        if (realgeomWS != null && realgeomWS.isAvailable()) {
+            rgResult = realgeomWS.directCommand(rgCommand, rgParameters.toString());
+        } else { // compute locally
+            String[] rgs = rgParameters.toString().split("&");
+            rgResult =
+                    Compute.euclideanSolverExplore(kernel, lr_var[0], lr_var[1], paramLookup(rgs, "ineqs"),
+                            paramLookup(rgs, "polys"), paramLookup(rgs, "triangles"),
+                            paramLookup(rgs, "vars"), paramLookup(rgs, "posvariables"));
+        }
 
         rgResult = as.rewriteResult(rgResult);
-        String rgwsCas = realgeomWS.getCAS();
+        String rgwsCas = "";
+        if (realgeomWS != null) {
+            rgwsCas = realgeomWS.getCAS();
+        }
 
         if (rgwsCas.equals("mathematica") && rgResult != null && !rgResult.equals("")) {
             // If there was some useful result in RealGeom, then use it and forget the previous results from Giac.
             retval = rgMathematica2ggb(rgResult);
         }
 
-        if ((rgwsCas.equals("qepcad") || (rgwsCas.equals("tarski")))
+        if ((rgwsCas.equals("") || rgwsCas.equals("qepcad") || (rgwsCas.equals("tarski")))
                 && rgResult != null && !rgResult.equals("[]") && !rgResult.equals("")) {
             // If there was some useful result in RealGeom, then use it and forget the previous results from Giac.
             retval = rgQepcad2ggb(rgResult);
@@ -494,6 +497,15 @@ public class AlgoCompare extends AlgoElement {
 
         debugElapsedTime();
         outputText.setTextString(retval);
+    }
+
+    private String paramLookup(String[] haystack, String needle) {
+        for (String h : haystack) {
+            if (h.startsWith(needle + "=")) {
+                return h.substring(needle.length() + 1);
+            }
+        }
+        return "";
     }
 
     private String rgMathematica2ggb(String rgResult) {
