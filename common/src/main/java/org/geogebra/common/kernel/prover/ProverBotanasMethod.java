@@ -2975,7 +2975,11 @@ public class ProverBotanasMethod {
 	public static String paramLookup(String[] haystack, String needle) {
 		for (String h : haystack) {
 			if (h.startsWith(needle + "=")) {
-				return h.substring(needle.length() + 1);
+				String s = h.substring(needle.length() + 1);
+				// Convert the data back.
+				s = s.replace("≥", ">=").replace("≤", "<=")
+						.replace("E", "=");
+				return s;
 			}
 		}
 		return "";
