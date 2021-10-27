@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.geogebra.common.cas.GeoGebraCAS;
+import org.geogebra.common.cas.realgeom.Compute;
 import org.geogebra.common.cas.realgeom.RealGeomWebService;
 import org.geogebra.common.cas.singularws.SingularWebService;
 import org.geogebra.common.factories.UtilFactory;
@@ -1761,8 +1762,19 @@ public class ProverBotanasMethod {
 
 			rgParameters.append("&mode=prove");
 			Log.debug(rgParameters);
+			String rgResult = "";
 
-			String rgResult = realgeomWS.directCommand(rgCommand, rgParameters.toString());
+			if (realgeomWS != null && realgeomWS.isAvailable()) {
+				rgResult = realgeomWS.directCommand(rgCommand, rgParameters.toString());
+			} else {
+				String[] rgs = rgParameters.toString().split("&");
+				// FIXME: Set 4 to the correct value.
+				rgResult = Compute.euclideanSolverProve(geoStatement.kernel, 4, paramLookup(rgs, "ineq"),
+								paramLookup(rgs, "ineqs"), paramLookup(rgs, "polys"),
+								paramLookup(rgs, "triangles"), paramLookup(rgs, "vars"),
+						paramLookup(rgs, "posvariables"));
+
+			}
 
 			rgResult = rewriteResult(rgResult);
 
@@ -1831,14 +1843,11 @@ public class ProverBotanasMethod {
 
 			// In some cases we force running computations via real geometry.
 			boolean forceRG = false;
-			RealGeomWebService realgeomWS = geoStatement.getConstruction().getApplication().getRealGeomWS();
-			if (realgeomWS != null && realgeomWS.isAvailable()) {
-				if (pCode.contains("sqrt") && geoProver.getProverEngine() != ProverEngine.LOCUS_IMPLICIT ) {
-					forceRG = true;
-				}
-				if (!ineqs.isEmpty()) {
-					forceRG = true;
-				}
+			if (pCode.contains("sqrt") && geoProver.getProverEngine() != ProverEngine.LOCUS_IMPLICIT ) {
+				forceRG = true;
+			}
+			if (!ineqs.isEmpty()) {
+				forceRG = true;
 			}
 
 			Operation operation = ((AlgoDependentBoolean) algo).getOperation();
@@ -2961,6 +2970,15 @@ public class ProverBotanasMethod {
 		}
 		as.computeStrings();
 		return as;
+	}
+
+	public static String paramLookup(String[] haystack, String needle) {
+		for (String h : haystack) {
+			if (h.startsWith(needle + "=")) {
+				return h.substring(needle.length() + 1);
+			}
+		}
+		return "";
 	}
 
 }

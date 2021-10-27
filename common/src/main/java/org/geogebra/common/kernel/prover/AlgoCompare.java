@@ -2,6 +2,8 @@ package org.geogebra.common.kernel.prover;
 
 import static org.apache.commons.math3.util.ArithmeticUtils.lcm;
 import static org.geogebra.common.kernel.prover.ProverBotanasMethod.AlgebraicStatement;
+import static org.geogebra.common.kernel.prover.ProverBotanasMethod.paramLookup;
+
 import org.geogebra.common.cas.realgeom.Compute;
 
 import java.util.ArrayList;
@@ -497,15 +499,6 @@ public class AlgoCompare extends AlgoElement {
 
         debugElapsedTime();
         outputText.setTextString(retval);
-    }
-
-    private String paramLookup(String[] haystack, String needle) {
-        for (String h : haystack) {
-            if (h.startsWith(needle + "=")) {
-                return h.substring(needle.length() + 1);
-            }
-        }
-        return "";
     }
 
     private String rgMathematica2ggb(String rgResult) {

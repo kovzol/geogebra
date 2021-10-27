@@ -501,6 +501,189 @@ public class Compute {
 		return real;
 	}
 
+	/* Prove an inequality with coordinates. */
+	// Consider unifying this with euclideanSoverExplore.
+	public static String euclideanSolverProve(Kernel kernel, int maxfixcoords, String ineq, String ineqs, String polys,
+			String triangles, String vars, String posvariables) {
+
+		k = kernel;
+		String code;
+		formulas = "";
+		response = "";
+
+		if (!"".equals(triangles)) {
+			String[] trianglesArray = triangles.split(";");
+			for (String s : trianglesArray) {
+				String[] variables = s.split(",");
+				appendIneqs(triangleInequality(variables[0], variables[1], variables[2]));
+				appendIneqs(triangleInequality(variables[1], variables[2], variables[0]));
+				appendIneqs(triangleInequality(variables[2], variables[0], variables[1]));
+			}
+		}
+
+		String[] varsArray = vars.split(",");
+		StringBuilder varsubst = new StringBuilder();
+		appendResponse("LOG: maxfixcoords=" + maxfixcoords);
+		for (int i = 0; i < Math.min(varsArray.length, maxfixcoords); ++i) {
+			int value = 0;
+			if (i == 2)
+				value = 1;
+			// 0,0,1,0 according to (0,0) and (1,0)
+			if (i > 0)
+				varsubst.append(",");
+			varsubst.append(varsArray[i]).append("=").append(value);
+		} // in varsubst we have something like a1=0, a2=0, b1=1, b2=0
+		appendResponse("LOG: before substitution, polys=" + polys + ", ineqs=" + ineqs + ", ineq=" + ineq);
+		String polys2 = executeGiac("subst([" + polys + "],[" + varsubst + "])");
+		polys2 = removeHeadTail(polys2, 1); // removing [ and ]
+
+		String ineqs2 = "";
+		if (!ineqs.equals("")) {
+			ineqs2 = executeGiac("subst([" + ineqs + "],[" + varsubst + "])");
+			ineqs2 = removeHeadTail(ineqs2, 1);
+		}
+
+		String ineq2 = executeGiac("subst([" + ineq + "],[" + varsubst + "])");
+		ineq2 = removeHeadTail(ineq2, 1);
+
+		appendResponse("LOG: after substitution, polys=" + polys2+ ", ineqs=" + ineqs2 + ", ineq=" + ineq2);
+		boolean keep = false;
+
+		String linCode = "[[" + ggInit + "],[" + ilsDef() + "],[" + ilDef() + "],[" + dlDef(keep) + "],[" + rdDef() + "],";
+
+		// Collect variables from inequalities.
+
+		String ineqRewriteEq = ineq2.replace(">", "=").replace("<", "=")
+				.replace("==", "=");
+		String ineqVarsCode = "lvar(lhs(" + ineqRewriteEq + "),rhs(" + ineqRewriteEq + "))";
+		String ineqVars = executeGiac(ineqVarsCode);
+		ineqVars = removeHeadTail(ineqVars, 1);
+
+		String[] ineqs2Array = ineqs2.split(",");
+		if (!ineqs2.equals("")) {
+			for (String ie : ineqs2Array) {
+				String[] disjunctionsArray = ie.split(" or ");
+				for (String d : disjunctionsArray) {
+					String[] conjunctionsArray = d.split(" and ");
+					for (String c : conjunctionsArray) {
+						// This is very hacky, and in some cases, maybe incorrect...
+						String ieRewriteEq = c.replace(">", "=").replace("<", "=")
+								.replace("==", "=").replace("(", ""). replace(")", "");
+						String ieVarsCode = "lvar(lhs(" + ieRewriteEq + "),rhs(" + ieRewriteEq + "))";
+						String ieVars = executeGiac(ieVarsCode);
+						ieVars = removeHeadTail(ieVars, 1);
+						ineqVars += "," + ieVars;
+					}
+				}
+			}
+		}
+
+		// End collecting variables.
+
+		// linCode += "removeDivisions(delinearize([" + polys2 + "],[" + posvariables + "]))][5]";
+		// linCode += "removeDivisions(delinearize([" + polys2 + "],[" + posvariables + ineqVars + "])[0])][5]";
+		linCode += "[dl:=delinearize([" + polys2 + "],[" + posvariables + ineqVars + "])],removeDivisions(dl[0]),dl[1]][6..7]";
+
+		// linCode += "removeDivisions([" + polys2 + "],[" + posvariables + "])][5]";
+		appendResponse("LOG: delinearization code=" + linCode);
+		String polys_substs = executeGiac(linCode);
+		if (polys_substs.equals("0")) {
+			appendResponse("ERROR: Giac returned 0");
+			appendResponse("GIAC ERROR");
+			return "GIAC ERROR";
+		}
+		appendResponse("LOG: after delinearization, {polys,substs}=" + polys_substs);
+		appendResponse("LOG: before removing unnecessary poly variables, vars=" + vars);
+		// {{-v11^2+2*v11*v9-v9^2+v15^2-1,v16^2-1,-v5+1,-v6+1,v7,v8-1,-v12+1,v10},"v5=1,v6=1,v7=0,v8=1,v12=1,v10=0,"}
+		polys_substs = removeHeadTail(polys_substs, 1); // removing { and } in Mathematica (or [ and ] in Giac)
+		// {-v11^2+2*v11*v9-v9^2+v15^2-1,v16^2-1,-v5+1,-v6+1,v7,v8-1,-v12+1,v10},"v5=1,v6=1,v7=0,v8=1,v12=1,v10=0,"
+		int split = polys_substs.indexOf("}");
+		polys2 = polys_substs.substring(1, split);
+		appendResponse("LOG: polys after split=" + polys2);
+		String substs = polys_substs.substring(split + 3, polys_substs.length() - 1);
+		if (!substs.equals("")) {
+			substs = substs.substring(0, substs.length() - 1); // remove last , if exists
+		}
+		appendResponse("LOG: substs after split=" + substs);
+		String minimVarsCode = "lvar([" + polys2 + "])"; // remove unnecessary variables
+		vars = executeGiac(minimVarsCode);
+		appendResponse("LOG: after removing unnecessary poly variables, vars=" + vars);
+		vars = removeHeadTail(vars, 1); // removing { and } in Mathematica (or [ and ] in Giac)
+		varsArray = vars.split(",");
+
+		String[] posvariablesArray = posvariables.split(",");
+		for (String item : posvariablesArray) {
+			// FIXME: Make a distinction between variables like sqrt2 and the other ones that can be eliminated.
+			// if (Arrays.asList(varsArray).contains(item))
+			appendIneqs(item + ">0");
+			if (!Arrays.asList(varsArray).contains(item)) {
+				vars += "," + item;
+			}
+		}
+		vars += "," + ineqVars;
+
+		String[] polys2Array = polys2.split(",");
+
+		if (!substs.equals("")) {
+			String[] substsArray = substs.split(",");
+			for (String s : substsArray) {
+				appendIneqs(s);
+				String[] substitution = s.split("=");
+				vars += "," + substitution[0];
+			}
+		}
+
+		if (!ineqs2.equals("")) {
+			for (String s : ineqs2Array) {
+				if (!substs.equals("")) {
+					s = executeGiac("subst([" + s + "],[" + substs + "])");
+					s = removeHeadTail(s, 1);
+				}
+				appendIneqs(s);
+			}
+		}
+		if (!substs.equals("")) {
+			ineq = executeGiac("subst([" + ineq + "],[" + substs + "])");
+			ineq = removeHeadTail(ineq, 1);
+		}
+		appendIneqs("~(" + ineq + ")");
+
+		// Remove duplicated vars.
+		// Even this can be improved by rechecking all polys/ineqs/ineq:
+		TreeSet<String> varsSet = new TreeSet<>();
+		varsArray = vars.split(",");
+		for (String v : varsArray) {
+			varsSet.add(v);
+		}
+		vars = "";
+		for (String v : varsSet) {
+			vars += v + ",";
+		}
+		if (!vars.equals("")) {
+			vars = vars.substring(0, vars.length() - 1); // remove last , if exists
+		}
+
+		for (String s : polys2Array) appendIneqs(s + "=0");
+		String result;
+
+		code = epcDef() + " (epc [ex " + vars + " [" + formulas + "]])";
+		int expectedLines = 4;
+
+		appendResponse("LOG: code=" + code);
+		result = k.getApplication().tarski.eval(code);
+
+		if (result.contains("\n")) {
+			String [] resultlines = result.split("\n");
+			result = resultlines[resultlines.length - 1]; // IMPORTANT: THIS IS " - 2 " IN REALGEOM!
+			// IMPORTANT: THIS IS NOT REQUIRED IN REALGEOM
+			result = getTarskiOutput(result);
+		}
+		appendResponse("LOG: result=" + result);
+		appendResponse(result);
+
+		return result;
+	}
+
 	static String removeHeadTail(String input, int length) {
 		if (input.length() > 2 * length) {
 			return input.substring(length, input.length() - length);
