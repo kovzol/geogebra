@@ -125,6 +125,9 @@ public class Compute {
 			giacOutput = removeHeadTail(giacOutput, 1);
 		}
 		giacOutput = giacOutput.replaceAll(" && ", " and ");
+		if (giacOutput.contains(" and ")) {
+			giacOutput = "(" + giacOutput + ")";
+		}
 
 		giacOutput = giacOutput.replaceAll("√", "sqrt");
 		return giacOutput;
