@@ -1,5 +1,7 @@
 package org.geogebra.common.cas;
 
+import static org.geogebra.common.cas.realgeom.Compute.getTarskiOutput;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -527,6 +529,19 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 					.singularWSgetTranslatedCASCommand(sbCASCommand.toString());
 			if (translation != null) {
 				outsourced = true;
+			}
+		}
+		// check Tarski as second candidate
+		if (!outsourced && allowOutsourcing) {
+			if (name.equals("RealQuantifierElimination")) {
+				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.tarskiTemplate);
+				Log.debug(p);
+				String command = "(qepcad-api-call [" + p + "])";
+				String result = App.tarski.eval(command);
+				String [] resultlines = result.split("\n");
+				result = resultlines[resultlines.length - 1];
+				result = getTarskiOutput(result);
+				return result;
 			}
 		}
 

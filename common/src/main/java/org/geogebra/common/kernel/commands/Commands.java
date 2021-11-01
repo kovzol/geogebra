@@ -1160,6 +1160,8 @@ public enum Commands implements CommandsConstants,
 
 	GroebnerLexDeg(TABLE_CAS),
 
+	RealQuantifierElimination(TABLE_CAS),
+
 	NIntegral(TABLE_FUNCTION),
 
 	NInvert(TABLE_FUNCTION),

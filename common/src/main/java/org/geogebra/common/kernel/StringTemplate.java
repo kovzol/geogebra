@@ -271,6 +271,21 @@ public class StringTemplate implements ExpressionNodeConstants {
 				.getNumberFormat(15);
 	}
 
+
+	/**
+	 * Tarski template
+	 */
+	public static final StringTemplate tarskiTemplate = new StringTemplate(
+			"tarskiTemplate");
+
+	static {
+		tarskiTemplate.internationalizeDigits = false;
+		tarskiTemplate.numeric = false;
+		tarskiTemplate.usePrefix = false;
+		tarskiTemplate.localizeCmds = false;
+		tarskiTemplate.setType(StringType.TARSKI);
+	}
+
 	/**
 	 * XML string type, do not internationalize digits
 	 */
@@ -2292,6 +2307,11 @@ public class StringTemplate implements ExpressionNodeConstants {
 				appendWithBrackets(sb, leftStr);
 				return sb.toString();
 
+			case TARSKI:
+				sb.append("~");
+				appendWithBrackets(sb, leftStr);
+				return sb.toString();
+
 			default:
 				sb.append(strNOT);
 			}
@@ -2358,6 +2378,10 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 			case GIAC:
 				sb.append("||");
+				break;
+
+			case TARSKI:
+				sb.append(" \\/ ");
 				break;
 
 			default:

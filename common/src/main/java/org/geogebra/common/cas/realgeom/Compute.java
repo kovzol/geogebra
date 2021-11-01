@@ -696,7 +696,6 @@ public class Compute {
 
 	private static String epcDef() {
 		String qc;
-		qc = "qepcad-qe";
 		qc = "qepcad-api-call";
 		return // "; (process F) - assumes F is prenex conjunction, variable m is free, all others existentially quantified\n" +
 				// "; returns quantifier-free equivalent to F\n" +
@@ -724,7 +723,7 @@ public class Compute {
 	}
 
 	// Taken from RealGeom's ExternalCAS:
-	static String getTarskiOutput(String line) {
+	public static String getTarskiOutput(String line) {
 		if (line.endsWith(":err")) {
 			return "";
 		}

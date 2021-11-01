@@ -690,6 +690,7 @@ public abstract class CommandDispatcher {
 			case GroebnerLex:
 			case GroebnerDegRevLex:
 			case GroebnerLexDeg:
+			case RealQuantifierElimination:
 			case Numeric:
 			case MixedNumber:
 			case Rationalize:

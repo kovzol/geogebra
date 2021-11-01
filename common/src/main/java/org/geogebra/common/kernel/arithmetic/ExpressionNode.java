@@ -51,6 +51,7 @@ import org.geogebra.common.util.MyMath;
 import org.geogebra.common.util.debug.Log;
 
 import com.google.j2objc.annotations.Weak;
+import com.himamis.retex.editor.share.util.Unicode;
 
 /**
  * Tree node for expressions like "3*a - b/5"
@@ -1470,8 +1471,27 @@ public class ExpressionNode extends ValidExpression
 				rightStr = ((GeoElement) right).getDefinition(tpl);
 			}
 		}
-		return ExpressionSerializer.operationToString(left, right, operation,
+		String output = ExpressionSerializer.operationToString(left, right, operation,
 				leftStr, rightStr, false, tpl, kernel);
+
+		if (quantifier != null && quantifier.equals("ex")) {
+			switch (tpl.getStringType()) {
+				case TARSKI:
+					return "ex " + quantifierVariable + "[" + output + "]";
+				default:
+					return Unicode.EXISTS + quantifierVariable + " " + output;
+				}
+			}
+		if (quantifier != null && quantifier.equals("all")) {
+			switch (tpl.getStringType()) {
+				case TARSKI:
+					return "all " + quantifierVariable + "[" + output + "]";
+				default:
+					return Unicode.FORALL + quantifierVariable + " " + output;
+				}
+			}
+
+		return output;
 	}
 
 	/**
@@ -3729,6 +3749,8 @@ public class ExpressionNode extends ValidExpression
 		newNode.brackets = brackets;
 		newNode.secretMaskingAlgo = secretMaskingAlgo;
 		newNode.holdsLaTeXtext = holdsLaTeXtext;
+		newNode.quantifier = quantifier;
+		newNode.quantifierVariable = quantifierVariable;
 	}
 
 	@Override

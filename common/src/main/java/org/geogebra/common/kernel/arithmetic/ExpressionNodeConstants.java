@@ -28,7 +28,11 @@ public interface ExpressionNodeConstants {
 		/** OGP */
 		OGP,
 		/** GGB-2454 for screen reader */
-		SCREEN_READER;
+		SCREEN_READER,
+		/**
+		 * Tarski
+ 		 */
+		TARSKI;
 
 		/**
 		 * @return whether this is giac type
