@@ -2413,7 +2413,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 				if (isInsertLineBreaks()) {
 					sb.append("\\-");
 				}
-				sb.append("\\forall");
+				sb.append("\\forall ");
 				break;
 			case LIBRE_OFFICE:
 				sb.append("forall ");
