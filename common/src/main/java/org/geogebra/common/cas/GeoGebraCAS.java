@@ -535,12 +535,13 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 		if (!outsourced && allowOutsourcing) {
 			if (name.equals("RealQuantifierElimination")) {
 				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.tarskiTemplate);
-				Log.debug(p);
 				String command = "(qepcad-api-call [" + p + "])";
+				Log.debug(command);
 				String result = App.tarski.eval(command);
 				String [] resultlines = result.split("\n");
 				result = resultlines[resultlines.length - 1];
 				result = getTarskiOutput(result);
+				Log.debug(result);
 				return result;
 			}
 		}

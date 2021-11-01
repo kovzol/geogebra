@@ -208,7 +208,7 @@ public class Parser implements ParserInterface {
     public ExpressionNode parseCmdExpression(String parseString)
     throws ParseException {
         myReInit(parseString );
-        ExpressionNode ret = expressionOrEquation().wrap();
+        ExpressionNode ret = expressionOrEquationQ().wrap();
         processUndecided();
         return ret;
     }
@@ -494,7 +494,7 @@ ValidExpression buildValidExpression() :
         // CAS assignment "a := 5" should be supported too
         // inequalities "a: 3x + 4y < 7" and intervalls "b: 3 < x < 7" can be named too
       LOOKAHEAD(2147483647)
-      l = label() (":" | <ASSIGNMENT> )  ve = expressionOrEquation()
+      l = label() (":" | <ASSIGNMENT> )  ve = expressionOrEquationQ()
       {
             if (GParser.shouldSplitLabel(l.image)) {
                 ve = new Equation(kernel, new Variable(kernel, l.image), ve).equationOrAssignment();
@@ -503,7 +503,7 @@ ValidExpression buildValidExpression() :
    |
         LOOKAHEAD(2147483647)
         (
-          (ve = expressionOrEquation())
+          (ve = expressionOrEquationQ())
         {
           if (ve instanceof Equation)
           {
@@ -556,11 +556,11 @@ ValidExpression buildCASExpression(GeoSymbolicI cell) :
          // assignment
         // b := 27 + c, also allow x := 5, see TRAC-864
         LOOKAHEAD(2147483647)
-    l = casVar() (assign= ":" |assign = <ASSIGNMENT> | assign = <DELAYED_ASSIGNMENT > ) ve = expressionOrEquation()
+    l = casVar() (assign= ":" |assign = <ASSIGNMENT> | assign = <DELAYED_ASSIGNMENT > ) ve = expressionOrEquationQ()
    |
          // equation, e.g. 3x + y = 7
          LOOKAHEAD(2147483647)
-         ve = expressionOrEquation()
+         ve = expressionOrEquationQ()
   )
     ( <POLAR_SEPARATOR> | <EOF> )
     {
@@ -647,8 +647,8 @@ ValidExpression command():
        (t = <FUNCTION_LABEL>) // includes (
       { cmdName = t.image.substring(0,t.image.length()-1);
         c = new Command(kernel, cmdName, true, !externalCASParsing );    }
-      (   ( en = expressionOrEquation()  { c.addArgument( en.wrap() ); } )?
-          ( <COMMA> en = expressionOrEquation() { c.addArgument( en.wrap() ); } )*
+      (   ( en = expressionOrEquationQ()  { c.addArgument( en.wrap() ); } )?
+          ( <COMMA> en = expressionOrEquationQ() { c.addArgument( en.wrap() ); } )*
       (")"|"]") )
       { if (giacParsing)
       {
@@ -897,7 +897,7 @@ ExpressionNode expressionnode():
  */
 ValidExpression expressionOrEquation():
 {
-      ExpressionNode en;
+    ExpressionNode en;
     ExpressionNode rhs = null;
     ExpressionNode rrhs = null;
 }
@@ -917,6 +917,28 @@ ValidExpression expressionOrEquation():
     return  rhs == null ? en : new Equation(kernel, en, rhs);
   }
 }
+
+ValidExpression expressionOrEquationQ():
+{
+    ValidExpression ret;
+	String quantifier = "";
+	Token l = new Token();
+	ExpressionNode en;
+}
+{
+    (
+              (<EXISTS> {quantifier = "ex";} | <FORALL> {quantifier = "all";} )
+              l = label() // consider using something else here, because x and y are currently not allowed
+    )?
+
+    ret = expressionOrEquation()
+    { if (quantifier.equals("")) { return ret; }
+      en = new ExpressionNode(kernel, ret, Operation.NO_OPERATION, null);
+      en.setQuantifier(quantifier);
+      en.setQuantifierVariable(l.image);
+      return en; }
+}
+
 
 /**
  * ANDterm =   COMPAREterm <AND> COMPAREterm
@@ -958,24 +980,15 @@ ExpressionValue XORterm():
 ExpressionValue ORterm():
 {
     ExpressionValue ret, f;
-	String quantifier = "";
-	Token l = new Token();
 }
 {
-    (
-     (<EXISTS> {quantifier = "ex";} | <FORALL> {quantifier = "all";} )
-     // LOOKAHEAD(2147483647)
-          l = label() // consider using something else here, because x and y are currently not allowed
-    )*
     ret = XORterm()
     ( <OR>  f = XORterm()
         {
           ret = new ExpressionNode(kernel, ret, Operation.OR, f);
         }
     )*
-    { ret.wrap().setQuantifier(quantifier);
-      ret.wrap().setQuantifierVariable(l.image);
-      return ret; }
+    { return ret; }
 }
 
 /**
@@ -1488,12 +1501,12 @@ ExpressionValue list():
     |
    (
     // list
-      ev = expressionOrEquation()
+      ev = expressionOrEquationQ()
        {
             myList = new MyList(kernel);
             myList.addListElement(ev);
         }
-       ( <COMMA> ev = expressionOrEquation()
+       ( <COMMA> ev = expressionOrEquationQ()
           {
            myList.addListElement(ev);
           }
@@ -1762,7 +1775,7 @@ ExpressionNode numberFunction():
     Token c;
 }
 {
-    c = <X_FUNC> en = expressionOrEquation() (")"|"]")
+    c = <X_FUNC> en = expressionOrEquationQ() (")"|"]")
     {
         if (geoGebraCASParsing) {
             return Command.xyzCAS(en, 0,!externalCASParsing, undecided, kernel);
@@ -1772,7 +1785,7 @@ ExpressionNode numberFunction():
         }
     }
 |
-     c = <Y_FUNC> en = expressionOrEquation() (")"|"]")
+     c = <Y_FUNC> en = expressionOrEquationQ() (")"|"]")
     {
         if (geoGebraCASParsing) {
             // GeoGebra CAS view: y(...) is interpreted as a function
@@ -1783,7 +1796,7 @@ ExpressionNode numberFunction():
         }
     }
 |
-     c = <Z_FUNC> en = expressionOrEquation() (")"|"]")
+     c = <Z_FUNC> en = expressionOrEquationQ() (")"|"]")
     {
         if (geoGebraCASParsing) {
             return Command.xyzCAS(en, 2, !externalCASParsing, undecided, kernel);
@@ -1800,7 +1813,7 @@ ExpressionNode numberFunction():
         }
     }
 |
-      ( c = <FUNCTION_POWER_LABEL> ) en = expressionOrEquation() (")"|"]")
+      ( c = <FUNCTION_POWER_LABEL> ) en = expressionOrEquationQ() (")"|"]")
     {
         ExpressionNode ret = functionParser.handleTrigPower(c.image, en);
         if (ret.getOperation() == Operation.MULTIPLY_OR_FUNCTION) {
@@ -1818,12 +1831,12 @@ ExpressionNode numberFunction():
     }
 |
   (
-    c = <FUNCTION_LABEL> en = expressionOrEquation()
+    c = <FUNCTION_LABEL> en = expressionOrEquationQ()
     {
         myList = new MyList(kernel, true);
         myList.addListElement(en);
     }
-       ( <COMMA> en = expressionOrEquation()
+       ( <COMMA> en = expressionOrEquationQ()
         {
             myList.addListElement(en);
         }
@@ -1853,10 +1866,10 @@ ExpressionValue tuple():
 {
     // cartesian coordinates
 
-    "(" x = expressionOrEquation() (
-           (   sep = <COMMA> y = expressionOrEquation() (<COMMA> z = expressionnode())?   )
-        |   (  sep = <VERTICAL_BAR> y = expressionOrEquation() (<VERTICAL_BAR> z = expressionnode())? )
-        |  (  sep = <POLAR_SEPARATOR> y = expressionOrEquation() (<POLAR_SEPARATOR> z = expressionnode())?  )
+    "(" x = expressionOrEquationQ() (
+           (   sep = <COMMA> y = expressionOrEquationQ() (<COMMA> z = expressionnode())?   )
+        |   (  sep = <VERTICAL_BAR> y = expressionOrEquationQ() (<VERTICAL_BAR> z = expressionnode())? )
+        |  (  sep = <POLAR_SEPARATOR> y = expressionOrEquationQ() (<POLAR_SEPARATOR> z = expressionnode())?  )
         )? ")"
     {
 

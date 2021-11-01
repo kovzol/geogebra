@@ -2458,6 +2458,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 			return "\\geq";
 		case LIBRE_OFFICE:
 		case GIAC:
+		case TARSKI:
 			return ">=";
 		default:
 			return strGREATER_EQUAL;
@@ -2476,6 +2477,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 			return "\\leq";
 		case LIBRE_OFFICE:
 		case GIAC:
+		case TARSKI:
 			return "<=";
 		default:
 			return strLESS_EQUAL;
@@ -2550,6 +2552,8 @@ public class StringTemplate implements ExpressionNodeConstants {
 			return "<>";
 		case GIAC:
 			return "!=";
+		case TARSKI:
+			return "/=";
 
 		default:
 			return strNOT_EQUAL;
@@ -2571,6 +2575,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 		case LIBRE_OFFICE:
 		case GIAC:
+		case TARSKI:
 			return "=";
 		default:
 			return strEQUAL_BOOLEAN;
@@ -2755,6 +2760,10 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 			case GIAC:
 				sb.append("&&");
+				break;
+
+			case TARSKI:
+				sb.append(" /\\ ");
 				break;
 
 			default:
@@ -3427,6 +3436,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 			return "^{2}";
 
 		case GIAC:
+		case TARSKI:
 			return "^2";
 
 		default:

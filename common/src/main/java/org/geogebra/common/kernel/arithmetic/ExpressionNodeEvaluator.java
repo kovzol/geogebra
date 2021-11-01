@@ -89,6 +89,8 @@ public class ExpressionNodeEvaluator implements ExpressionNodeConstants {
 		Operation operation = expressionNode.getOperation();
 
 		boolean holdsLaTeXtext = expressionNode.holdsLaTeXtext;
+		String quantifier = expressionNode.quantifier;
+		String quantifierVariable = expressionNode.quantifierVariable;
 
 		ExpressionValue lt, rt;
 

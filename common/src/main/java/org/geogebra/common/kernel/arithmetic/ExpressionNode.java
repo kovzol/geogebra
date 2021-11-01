@@ -85,8 +85,8 @@ public class ExpressionNode extends ValidExpression
 	// (answer not displayed in Algebra View)
 	private AlgoElement secretMaskingAlgo;
 
-	private String quantifier;
-	private String quantifierVariable = "";
+	public String quantifier;
+	public String quantifierVariable = "";
 
 	/**
 	 * Creates dummy expression node
@@ -1448,7 +1448,7 @@ public class ExpressionNode extends ValidExpression
 		}
 
 		if (leaf) { // leaf is GeoElement or not
-			return getLabelOrDefinition(left, tpl);
+			return getQuantified(getLabelOrDefinition(left, tpl), tpl);
 		}
 
 		// expression node
@@ -1473,24 +1473,27 @@ public class ExpressionNode extends ValidExpression
 		}
 		String output = ExpressionSerializer.operationToString(left, right, operation,
 				leftStr, rightStr, false, tpl, kernel);
+		output = getQuantified(output, tpl);
+		return output;
+	}
 
+	private String getQuantified(String output, StringTemplate tpl) {
 		if (quantifier != null && quantifier.equals("ex")) {
 			switch (tpl.getStringType()) {
-				case TARSKI:
-					return "ex " + quantifierVariable + "[" + output + "]";
-				default:
-					return Unicode.EXISTS + quantifierVariable + " " + output;
-				}
+			case TARSKI:
+				return "ex " + quantifierVariable + "[" + output + "]";
+			default:
+				return Unicode.EXISTS + quantifierVariable + " " + output;
 			}
+		}
 		if (quantifier != null && quantifier.equals("all")) {
 			switch (tpl.getStringType()) {
-				case TARSKI:
-					return "all " + quantifierVariable + "[" + output + "]";
-				default:
-					return Unicode.FORALL + quantifierVariable + " " + output;
-				}
+			case TARSKI:
+				return "all " + quantifierVariable + "[" + output + "]";
+			default:
+				return Unicode.FORALL + quantifierVariable + " " + output;
 			}
-
+		}
 		return output;
 	}
 
