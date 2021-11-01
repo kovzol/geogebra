@@ -541,6 +541,9 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 				String [] resultlines = result.split("\n");
 				result = resultlines[resultlines.length - 1];
 				result = getTarskiOutput(result);
+				result = result.replace("\\/", " or ").
+						replace("/\\", " and ").
+						replace("/=", "!=");
 				Log.debug(result);
 				return result;
 			}

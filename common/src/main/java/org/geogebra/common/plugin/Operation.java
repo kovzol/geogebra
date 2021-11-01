@@ -1885,6 +1885,24 @@ public enum Operation {
 			return new MyVecNode(ev.getKernel(), MyList.getCell(list, 0, 0),
 					MyList.getCell(list, 0, 1));
 		}
+	},
+	EXISTS {
+		@Override
+		public ExpressionValue handle(ExpressionNodeEvaluator ev,
+				ExpressionValue lt, ExpressionValue rt, ExpressionValue left,
+				ExpressionValue right, StringTemplate tpl, boolean holdsLaTeX) {
+			return ExpressionNodeEvaluator.evalExists(ev.getKernel(), lt,
+					rt);
+		}
+	},
+	FORALL {
+		@Override
+		public ExpressionValue handle(ExpressionNodeEvaluator ev,
+				ExpressionValue lt, ExpressionValue rt, ExpressionValue left,
+				ExpressionValue right, StringTemplate tpl, boolean holdsLaTeX) {
+			return ExpressionNodeEvaluator.evalForall(ev.getKernel(), lt,
+					rt);
+		}
 	};
 
 	protected ExpressionValue[] expandPlusMinus(ExpressionNode exp, Kernel kernel) {

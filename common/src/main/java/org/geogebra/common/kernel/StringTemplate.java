@@ -2353,6 +2353,110 @@ public class StringTemplate implements ExpressionNodeConstants {
 	 *            left string
 	 * @param rightStr
 	 *            right string
+	 * @return exists leftStr such that rightStr for this string type
+	 */
+	public String existsString(ExpressionValue left, ExpressionValue right,
+			String leftStr, String rightStr) {
+		StringBuilder sb = new StringBuilder();
+
+		if (stringType.equals(StringType.CONTENT_MATHML)) {
+			MathmlTemplate.mathml(sb, "<exists/>", leftStr, rightStr);
+		} else {
+			switch (stringType) {
+			case LATEX:
+				if (isInsertLineBreaks()) {
+					sb.append("\\-");
+				}
+				sb.append("\\exists ");
+				break;
+			case LIBRE_OFFICE:
+				sb.append("exists ");
+				break;
+
+			case TARSKI:
+				sb.append("ex ");
+				break;
+
+			default:
+				sb.append(Unicode.EXISTS);
+			}
+
+			append(sb, leftStr, left, Operation.EXISTS);
+
+			switch (stringType) {
+			case TARSKI:
+				sb.append("[");
+				break;
+			}
+
+			append(sb, rightStr, right, Operation.EXISTS);
+
+			switch (stringType) {
+			case TARSKI:
+				sb.append("]");
+				break;
+			}
+
+		}
+		return sb.toString();
+	}
+
+	public String forallString(ExpressionValue left, ExpressionValue right,
+			String leftStr, String rightStr) {
+		StringBuilder sb = new StringBuilder();
+
+		if (stringType.equals(StringType.CONTENT_MATHML)) {
+			MathmlTemplate.mathml(sb, "<forall/>", leftStr, rightStr);
+		} else {
+			switch (stringType) {
+			case LATEX:
+				if (isInsertLineBreaks()) {
+					sb.append("\\-");
+				}
+				sb.append("\\forall");
+				break;
+			case LIBRE_OFFICE:
+				sb.append("forall ");
+				break;
+
+			case TARSKI:
+				sb.append("all ");
+				break;
+
+			default:
+				sb.append(Unicode.FORALL);
+			}
+
+			append(sb, leftStr, left, Operation.FORALL);
+
+			switch (stringType) {
+			case TARSKI:
+				sb.append("[");
+				break;
+			}
+
+			sb.append(' ');
+			append(sb, rightStr, right, Operation.FORALL);
+
+			switch (stringType) {
+			case TARSKI:
+				sb.append("]");
+				break;
+			}
+
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * @param left
+	 *            left expression
+	 * @param right
+	 *            right expression
+	 * @param leftStr
+	 *            left string
+	 * @param rightStr
+	 *            right string
 	 * @return leftStr || rightStr for this string type
 	 */
 	public String orString(ExpressionValue left, ExpressionValue right,
@@ -2952,6 +3056,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 			case PSTRICKS:
 			case PGF:
 			case GEOGEBRA_XML:
+			case TARSKI:
 				sb.append('^');
 				appendWithBrackets(sb, rightStr);
 				break;

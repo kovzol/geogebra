@@ -89,8 +89,6 @@ public class ExpressionNodeEvaluator implements ExpressionNodeConstants {
 		Operation operation = expressionNode.getOperation();
 
 		boolean holdsLaTeXtext = expressionNode.holdsLaTeXtext;
-		String quantifier = expressionNode.quantifier;
-		String quantifierVariable = expressionNode.quantifierVariable;
 
 		ExpressionValue lt, rt;
 
@@ -401,6 +399,45 @@ public class ExpressionNodeEvaluator implements ExpressionNodeConstants {
 
 		return new MyBoolean(kernel, false);
 	}
+
+
+	/**
+	 * Checks the truth of expression "exists lt such that rt"
+	 *
+	 * @param kernel
+	 *            kernel
+	 * @param lt
+	 *            variable
+	 * @param rt
+	 *            expression
+	 * @return false if not defined
+	 */
+	public static MyBoolean evalExists(Kernel kernel, ExpressionValue lt,
+			ExpressionValue rt) {
+		StringTemplate tpl = StringTemplate.defaultTemplate;
+		// TODO: Evaluate...
+		return new MyBoolean(kernel, false);
+	}
+
+
+	/** Checks the truth of expression "for all lt such that rt"
+	 *
+	 * @param kernel
+	 *            kernel
+	 * @param lt
+	 *            variable
+	 * @param rt
+	 *            expression
+	 * @return false if not defined
+	 */
+	public static MyBoolean evalForall(Kernel kernel, ExpressionValue lt,
+			ExpressionValue rt) {
+		StringTemplate tpl = StringTemplate.defaultTemplate;
+		// TODO: Evaluate...
+		return new MyBoolean(kernel, false);
+	}
+
+
 
 	/**
 	 * @param arg

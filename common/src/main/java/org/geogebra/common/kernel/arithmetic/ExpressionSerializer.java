@@ -2005,6 +2005,11 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 			}
 
 			break;
+		case EXISTS:
+			return tpl.existsString(left, right, leftStr, rightStr);
+		case FORALL:
+			return tpl.forallString(left, right, leftStr, rightStr);
+
 		default:
 			sb.append("unhandled operation ");
 			sb.append(operation);

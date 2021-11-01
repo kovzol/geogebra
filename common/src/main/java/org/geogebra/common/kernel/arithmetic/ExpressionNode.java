@@ -85,9 +85,6 @@ public class ExpressionNode extends ValidExpression
 	// (answer not displayed in Algebra View)
 	private AlgoElement secretMaskingAlgo;
 
-	public String quantifier;
-	public String quantifierVariable = "";
-
 	/**
 	 * Creates dummy expression node
 	 */
@@ -1448,7 +1445,7 @@ public class ExpressionNode extends ValidExpression
 		}
 
 		if (leaf) { // leaf is GeoElement or not
-			return getQuantified(getLabelOrDefinition(left, tpl), tpl);
+			return getLabelOrDefinition(left, tpl);
 		}
 
 		// expression node
@@ -1471,30 +1468,8 @@ public class ExpressionNode extends ValidExpression
 				rightStr = ((GeoElement) right).getDefinition(tpl);
 			}
 		}
-		String output = ExpressionSerializer.operationToString(left, right, operation,
+		return ExpressionSerializer.operationToString(left, right, operation,
 				leftStr, rightStr, false, tpl, kernel);
-		output = getQuantified(output, tpl);
-		return output;
-	}
-
-	private String getQuantified(String output, StringTemplate tpl) {
-		if (quantifier != null && quantifier.equals("ex")) {
-			switch (tpl.getStringType()) {
-			case TARSKI:
-				return "ex " + quantifierVariable + "[" + output + "]";
-			default:
-				return Unicode.EXISTS + quantifierVariable + " " + output;
-			}
-		}
-		if (quantifier != null && quantifier.equals("all")) {
-			switch (tpl.getStringType()) {
-			case TARSKI:
-				return "all " + quantifierVariable + "[" + output + "]";
-			default:
-				return Unicode.FORALL + quantifierVariable + " " + output;
-			}
-		}
-		return output;
 	}
 
 	/**
@@ -3752,20 +3727,11 @@ public class ExpressionNode extends ValidExpression
 		newNode.brackets = brackets;
 		newNode.secretMaskingAlgo = secretMaskingAlgo;
 		newNode.holdsLaTeXtext = holdsLaTeXtext;
-		newNode.quantifier = quantifier;
-		newNode.quantifierVariable = quantifierVariable;
 	}
 
 	@Override
 	public boolean isOperation(Operation operation) {
 		return operation == this.operation;
-	}
-
-	public void setQuantifier(String q) {
-		quantifier = q;
-	}
-	public void setQuantifierVariable(String v) {
-		quantifierVariable = v;
 	}
 
 }

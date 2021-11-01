@@ -923,7 +923,7 @@ ValidExpression expressionOrEquationQ():
     ValidExpression ret;
 	String quantifier = "";
 	Token l = new Token();
-	ExpressionNode en;
+	ExpressionNode en = null;
 }
 {
     (
@@ -933,10 +933,16 @@ ValidExpression expressionOrEquationQ():
 
     ret = expressionOrEquation()
     { if (quantifier.equals("")) { return ret; }
-      en = new ExpressionNode(kernel, ret, Operation.NO_OPERATION, null);
-      en.setQuantifier(quantifier);
-      en.setQuantifierVariable(l.image);
-      return en; }
+      ExpressionNode v = new ExpressionNode(kernel, new Variable(kernel, l.image));
+      if (quantifier.equals("ex")) {
+      	  en = new ExpressionNode(kernel, v, Operation.EXISTS, ret);
+		  return en;
+		  }
+	  if (quantifier.equals("all")) {
+		  en = new ExpressionNode(kernel, v, Operation.FORALL, ret);
+		  return en;
+		  }
+      return ret; }
 }
 
 
