@@ -124,6 +124,9 @@ public class Unicode {
 	public static final char AND = '\u2227';
 	public static final char OR = '\u2228';
 
+	public static final char EXISTS = '\u2203';
+	public static final char FORALL = '\u2200';
+
 	/** circled plus, could also use \u22bb */
 	public static final char XOR = '\u2295';
 

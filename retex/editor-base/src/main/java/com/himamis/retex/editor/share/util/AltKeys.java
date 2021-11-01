@@ -46,6 +46,9 @@ public class AltKeys {
 		lookupLower.put('W', Unicode.omega + "");
 		lookupUpper.put('W', Unicode.Omega + "");
 
+		lookupLower.put('V', Unicode.FORALL + "");
+		lookupLower.put('X', Unicode.EXISTS + "");
+
 		lookupLower.put('0', Unicode.SUPERSCRIPT_0 + "");
 		lookupLower.put('1', Unicode.SUPERSCRIPT_1 + "");
 		lookupLower.put('2', Unicode.SUPERSCRIPT_2 + "");

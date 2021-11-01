@@ -369,6 +369,8 @@ TOKEN :  {
   | < FALSE:    ( "false" | "False" ) >
   | < DECIMAL_POINT:    ( "." | "\u066b" ) > // Arabic decimal point
   | < COMMA:    ( "," | "\u060c" ) > // Arabic comma
+  | < EXISTS: ( "\u2203" ) >
+  | < FORALL: ( "\u2200" ) >
 }
 
 TOKEN : {
@@ -956,15 +958,24 @@ ExpressionValue XORterm():
 ExpressionValue ORterm():
 {
     ExpressionValue ret, f;
+	String quantifier = "";
+	Token l = new Token();
 }
 {
+    (
+     (<EXISTS> {quantifier = "ex";} | <FORALL> {quantifier = "all";} )
+     // LOOKAHEAD(2147483647)
+          l = label() // consider using something else here, because x and y are currently not allowed
+    )*
     ret = XORterm()
     ( <OR>  f = XORterm()
         {
           ret = new ExpressionNode(kernel, ret, Operation.OR, f);
         }
     )*
-    { return ret; }
+    { ret.wrap().setQuantifier(quantifier);
+      ret.wrap().setQuantifierVariable(l.image);
+      return ret; }
 }
 
 /**

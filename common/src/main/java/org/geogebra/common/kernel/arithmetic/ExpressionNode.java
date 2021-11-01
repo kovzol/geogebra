@@ -84,6 +84,9 @@ public class ExpressionNode extends ValidExpression
 	// (answer not displayed in Algebra View)
 	private AlgoElement secretMaskingAlgo;
 
+	private String quantifier;
+	private String quantifierVariable = "";
+
 	/**
 	 * Creates dummy expression node
 	 */
@@ -3732,4 +3735,12 @@ public class ExpressionNode extends ValidExpression
 	public boolean isOperation(Operation operation) {
 		return operation == this.operation;
 	}
+
+	public void setQuantifier(String q) {
+		quantifier = q;
+	}
+	public void setQuantifierVariable(String v) {
+		quantifierVariable = v;
+	}
+
 }
