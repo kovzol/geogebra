@@ -98,6 +98,10 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 											// 5/28/2012
 					break;
 
+				case TARSKI:
+					sb.append("impl");
+					break;
+
 				default:
 					sb.append(strIMPLIES);
 				}
