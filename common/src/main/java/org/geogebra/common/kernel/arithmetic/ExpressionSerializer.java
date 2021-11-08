@@ -256,7 +256,16 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				MathmlTemplate.mathml(sb, "<lt/>", leftStr, rightStr);
 			} else {
 
-				tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.lessSign());
+				// convert abs(x)<y to "x<y and x>-(y)"
+				// TODO: do the same for LESS_THAN_EQUAL
+				if (stringType.equals(StringType.TARSKI) && left.isOperation(Operation.ABS)) {
+					leftEval = ((ExpressionNode) left).getLeft(); // x
+					String l = leftEval.toString(StringTemplate.tarskiTemplate);
+					String lstr = "((" + l + "<" + rightStr + ") /\\ (" + l + "> -(" + rightStr + ")))";
+					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
+				} else {
+					tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.lessSign());
+				}
 			}
 			break;
 
@@ -264,7 +273,16 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<gt/>", leftStr, rightStr);
 			} else {
-				tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.greaterSign());
+				// convert y>abs(x) to "y>x and -(y)<x"
+				// TODO: do the same for GREATER_THAN_EQUAL and EQUAL
+				if (stringType.equals(StringType.TARSKI) && right.isOperation(Operation.ABS)) {
+					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // x
+					String r = rightEval.toString(StringTemplate.tarskiTemplate);
+					String rstr = "((" + leftStr + ">" + r + ") /\\ -(" + leftStr + ")<" + r + ")";
+					tpl.infixBinary(sb, left, right, operation,"", rstr, "");
+				} else {
+					tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.greaterSign());
+				}
 			}
 			break;
 
