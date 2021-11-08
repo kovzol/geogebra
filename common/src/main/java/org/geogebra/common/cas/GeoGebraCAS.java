@@ -47,6 +47,7 @@ import org.geogebra.common.util.MaxSizeHashMap;
 import org.geogebra.common.util.debug.Log;
 
 import com.google.j2objc.annotations.Weak;
+import com.himamis.retex.editor.share.util.Unicode;
 
 /**
  * This class provides an interface for GeoGebra to use an underlying computer
@@ -535,9 +536,11 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 		if (!outsourced && allowOutsourcing) {
 			if (name.equals("RealQuantifierElimination")) {
 				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.tarskiTemplate);
+				p = GreekToTarski(p);
 				String command = "(qepcad-api-call [" + p + "])";
 				Log.debug(command);
 				String result = App.tarski.eval(command);
+				result = TarskiToGreek(result);
 				String [] resultlines = result.split("\n");
 				result = resultlines[resultlines.length - 1];
 				result = getTarskiOutput(result);
@@ -1244,4 +1247,65 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 			cas.clearResult();
 		}
 	}
+
+	String GreekToTarski (String in) {
+		// See https://stackoverflow.com/questions/5470630/what-is-an-efficient-way-to-replace-many-characters-in-a-string
+		// for a better implementation. TODO.
+		in = in.replace(Unicode.alpha + "", "GreekCharacterAlpha");
+		in = in.replace(Unicode.beta + "", "GreekCharacterBeta");
+		in = in.replace(Unicode.gamma + "", "GreekCharacterGamma");
+		in = in.replace(Unicode.delta + "", "GreekCharacterDelta");
+		in = in.replace(Unicode.epsilon + "", "GreekCharacterEpsilon");
+		in = in.replace(Unicode.zeta + "", "GreekCharacterZeta");
+		in = in.replace(Unicode.eta + "", "GreekCharacterEta");
+		in = in.replace(Unicode.phi + "", "GreekCharacterPhi");
+		in = in.replace(Unicode.theta + "", "GreekCharacterTheta");
+		in = in.replace(Unicode.iota + "", "GreekCharacterIota");
+		in = in.replace(Unicode.kappa + "", "GreekCharacterKappa");
+		in = in.replace(Unicode.lambda + "", "GreekCharacterLambda");
+		in = in.replace(Unicode.mu + "", "GreekCharacterMu");
+		in = in.replace(Unicode.nu + "", "GreekCharacterNu");
+		in = in.replace(Unicode.xi + "", "GreekCharacterXi");
+		in = in.replace(Unicode.omicron + "", "GreekCharacterOmicron");
+		in = in.replace(Unicode.pi + "", "GreekCharacterPi");
+		in = in.replace(Unicode.rho + "", "GreekCharacterRho");
+		in = in.replace(Unicode.sigma + "", "GreekCharacterSigma");
+		in = in.replace(Unicode.tau + "", "GreekCharacterTau");
+		in = in.replace(Unicode.upsilon + "", "GreekCharacterUpsilon");
+		in = in.replace(Unicode.chi + "", "GreekCharacterChi");
+		in = in.replace(Unicode.psi + "", "GreekCharacterPsi");
+		in = in.replace(Unicode.omega + "", "GreekCharacterOmega");
+		return in;
+	}
+
+	String TarskiToGreek (String in) {
+		// See https://stackoverflow.com/questions/5470630/what-is-an-efficient-way-to-replace-many-characters-in-a-string
+		// for a better implementation. TODO.
+		in = in.replace("GreekCharacterAlpha", Unicode.alpha + "");
+		in = in.replace("GreekCharacterBeta", Unicode.beta + "");
+		in = in.replace("GreekCharacterGamma", Unicode.gamma + "");
+		in = in.replace("GreekCharacterDelta", Unicode.delta + "");
+		in = in.replace("GreekCharacterEpsilon", Unicode.epsilon + "");
+		in = in.replace("GreekCharacterZeta", Unicode.zeta + "");
+		in = in.replace("GreekCharacterEta", Unicode.eta + "");
+		in = in.replace("GreekCharacterPhi", Unicode.phi + "");
+		in = in.replace("GreekCharacterTheta", Unicode.theta + "");
+		in = in.replace("GreekCharacterIota", Unicode.iota + "");
+		in = in.replace("GreekCharacterKappa", Unicode.kappa + "");
+		in = in.replace("GreekCharacterLambda", Unicode.lambda + "");
+		in = in.replace("GreekCharacterMu", Unicode.mu + "");
+		in = in.replace("GreekCharacterNu", Unicode.nu + "");
+		in = in.replace("GreekCharacterXi", Unicode.xi + "");
+		in = in.replace("GreekCharacterOmicron", Unicode.omicron + "");
+		in = in.replace("GreekCharacterPi", Unicode.pi + "");
+		in = in.replace("GreekCharacterRho", Unicode.rho + "");
+		in = in.replace("GreekCharacterSigma", Unicode.sigma + "");
+		in = in.replace("GreekCharacterTau", Unicode.tau + "");
+		in = in.replace("GreekCharacterUpsilon", Unicode.upsilon + "");
+		in = in.replace("GreekCharacterChi", Unicode.chi + "");
+		in = in.replace("GreekCharacterPsi", Unicode.psi + "");
+		in = in.replace("GreekCharacterOmega", Unicode.omega + "");
+		return in;
+	}
+
 }
