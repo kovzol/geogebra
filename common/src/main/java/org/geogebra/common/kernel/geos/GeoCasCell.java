@@ -2197,6 +2197,11 @@ public class GeoCasCell extends GeoElement
 			useGeoGebraFallback = true;
 		}
 
+		// This is a just hack to handle x and y, FIXME.
+		if (input.contains("RealQuantifierElimination")) {
+			useGeoGebraFallback = false;
+		}
+
 		String result = null;
 		boolean success = false;
 		CASException ce = null;

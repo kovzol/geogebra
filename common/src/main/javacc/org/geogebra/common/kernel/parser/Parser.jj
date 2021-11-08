@@ -514,7 +514,7 @@ ValidExpression buildValidExpression() :
         {
             ve = new ExpressionNode(kernel, conditions, Operation.IF_SHORT, ve);
         })?
-        
+
 
      |
         LOOKAHEAD(2147483647)
@@ -928,7 +928,7 @@ ValidExpression expressionOrEquationQ():
 {
     (
               (<EXISTS> {quantifier = "ex";} | <FORALL> {quantifier = "all";} )
-              l = label() // consider using something else here, because x and y are currently not allowed
+              l = casVar() // consider using something else here, because x and y are currently not allowed
     )?
 
     ret = expressionOrEquation()
@@ -1660,11 +1660,11 @@ ExpressionValue myDouble():
         boolean hasDegrees = false, hasMinutes = false, hasSeconds = false;
         double vd = 0, vm = 0, vs = 0;
         if (degree != null) {
-                // if e.g. 3° (no minute no second) we need to do 3*° for CAS 
+                // if e.g. 3° (no minute no second) we need to do 3*° for CAS
             if (c2 == null) {
                 d = newSpecialDegree();
                 return new ExpressionNode(kernel, parseDouble(image, false), Operation.MULTIPLY, d);
-            } 
+            }
              // at least 3°5' or 3°5'' (or 3°5'7'')
             isAngle = true;
             vd = MyDouble.parseDouble(loc, image);
@@ -1701,8 +1701,8 @@ ExpressionValue myDouble():
             return new MyDoubleDegreesMinutesSeconds(kernel, vd, hasDegrees, vm, hasMinutes, vs, hasSeconds);
         }
         return parseDouble(image, percent != null);
-    }  
-|     
+    }
+|
     (c = <FLOAT> | c = <EFLOAT>)
     {
     String image = c.image.replaceFirst("e", "E");
@@ -1745,7 +1745,7 @@ ExpressionValue myDouble():
     }
 |
     <EULER_GAMMA>
-    {    
+    {
          return new MySpecialDouble(kernel, MyDouble.EULER_GAMMA, Unicode.EULER_GAMMA_STRING);
     }
 |
