@@ -536,11 +536,11 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 		if (!outsourced && allowOutsourcing) {
 			if (name.equals("RealQuantifierElimination")) {
 				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.tarskiTemplate);
-				p = GreekToTarski(p);
+				p = GGBToTarski(p);
 				String command = "(qepcad-api-call [" + p + "])";
 				Log.debug(command);
 				String result = App.tarski.eval(command);
-				result = TarskiToGreek(result);
+				result = TarskiToGGB(result);
 				String [] resultlines = result.split("\n");
 				result = resultlines[resultlines.length - 1];
 				result = getTarskiOutput(result);
@@ -1248,9 +1248,10 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 		}
 	}
 
-	String GreekToTarski (String in) {
+	String GGBToTarski(String in) {
 		// See https://stackoverflow.com/questions/5470630/what-is-an-efficient-way-to-replace-many-characters-in-a-string
 		// for a better implementation. TODO.
+		// Greek characters
 		in = in.replace(Unicode.alpha + "", "GreekCharacterAlpha");
 		in = in.replace(Unicode.beta + "", "GreekCharacterBeta");
 		in = in.replace(Unicode.gamma + "", "GreekCharacterGamma");
@@ -1275,12 +1276,17 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 		in = in.replace(Unicode.chi + "", "GreekCharacterChi");
 		in = in.replace(Unicode.psi + "", "GreekCharacterPsi");
 		in = in.replace(Unicode.omega + "", "GreekCharacterOmega");
+		// other special characters
+		in = in.replace("_", "underscore");
+		in = in.replace("{", "leftbrace");
+		in = in.replace("}", "rightbrace");
 		return in;
 	}
 
-	String TarskiToGreek (String in) {
+	String TarskiToGGB(String in) {
 		// See https://stackoverflow.com/questions/5470630/what-is-an-efficient-way-to-replace-many-characters-in-a-string
 		// for a better implementation. TODO.
+		// Greek characters
 		in = in.replace("GreekCharacterAlpha", Unicode.alpha + "");
 		in = in.replace("GreekCharacterBeta", Unicode.beta + "");
 		in = in.replace("GreekCharacterGamma", Unicode.gamma + "");
@@ -1305,6 +1311,10 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 		in = in.replace("GreekCharacterChi", Unicode.chi + "");
 		in = in.replace("GreekCharacterPsi", Unicode.psi + "");
 		in = in.replace("GreekCharacterOmega", Unicode.omega + "");
+		// other special characters
+		in = in.replace("underscore", "_");
+		in = in.replace("leftbrace", "{");
+		in = in.replace("rightbrace", "}");
 		return in;
 	}
 
