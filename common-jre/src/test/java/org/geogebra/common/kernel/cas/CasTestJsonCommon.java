@@ -128,6 +128,7 @@ public abstract class CasTestJsonCommon {
 					&& !"GroebnerLex.2".equals(key)
 					&& !"GroebnerLexDeg.1".equals(key)
 					&& !"GroebnerLexDeg.2".equals(key)
+					&& !"RealQuantifierElimination.1".equals(key)
 					&& !"InverseBinomial.3".equals(key)
 					&& !"Radius.1".equals(key) && !"Random.2".equals(key)
 					&& !"Regroup.1".equals(key)

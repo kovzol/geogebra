@@ -955,6 +955,7 @@ public class Ggb2giac {
 						+ "&& (ggbplarg)[0][1]==i),ggbplarg,"
 						+ "flatten1(coordinates(map(ggbplarg,t->when(t[0]=='=',point(re(t[2]),im(t[2])),t))))))]][-1][0]";
 		p("PointList.1", pointList);
+		p("RealQuantifierElimination.1", "");
 		p("RootList.1", "apply(x->convert([x,0],25),%0)");
 		p("Invert.1",
 				"[[ggbinvans:=0/0],[ggbinvarg:=%0],[ggbinvans:=when(type(ggbinvarg)!=DOM_LIST,"
