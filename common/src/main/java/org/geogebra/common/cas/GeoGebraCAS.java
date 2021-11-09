@@ -544,6 +544,16 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 				String [] resultlines = result.split("\n");
 				result = resultlines[resultlines.length - 1];
 				result = getTarskiOutput(result);
+
+				// some heuristics to convert e.g.
+				// 4 a c - b^2 <= 0  and  [b != 0  or  c = 0  or  4 a c - b^2 < 0]
+				// to
+				// 4 a * c - b^2 <= 0  and  (b != 0  or  c = 0  or  4 a c - b^2 < 0)
+				result = result.replace("[", "(");
+				result = result.replace("]", ")");
+				result = result.replaceAll("([_a-zA-Z][_a-zA-Z0-9]*) ([_a-zA-Z][_a-zA-Z0-9]*)", "$1*$2");
+
+				// change logical operators
 				result = result.replace("\\/", " or ").
 						replace("/\\", " and ").
 						replace("/=", "!=");
