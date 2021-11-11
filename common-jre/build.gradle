@@ -22,6 +22,7 @@ compileTestJava {
 dependencies {
     compile project(':common')
     compile project(':giac-jni')
+    compile project(':tarski-jni')
     compile project(':renderer-base')
     compile project(':editor-base')
     testCompile project(':ggbjdk')

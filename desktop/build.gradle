@@ -92,6 +92,7 @@ dependencies {
     compile project(':jogl2')
     compile project(':input3D:impl')
     compile project(':giac-jni')
+    compile project(':tarski-jni')
     compile ext, files(jfxrtLocation)
 
     runtime "com.jogamp:jogl-all:$joglVersion:natives-linux-amd64",

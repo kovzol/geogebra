@@ -1,6 +1,6 @@
 package org.geogebra.desktop.util;
 
-import org.geogebra.common.cas.tarski.tarski;
+import tarski.*;
 import org.geogebra.common.util.Tarski;
 
 /**

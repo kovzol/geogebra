@@ -6,6 +6,7 @@ include 'xr-base'
 include 'desktop'
 include 'jogl2'
 include 'giac-jni'
+include 'tarski-jni'
 
 include 'input3D:stub'
 include 'input3D:impl'
