@@ -56,6 +56,8 @@ public class MowSpecialSymbolsKeyboardFactory implements KeyboardModelFactory {
 		addInputButton(row, buttonFactory, LOGICAL_OR);
 		addInputButton(row, buttonFactory, RIGHTWARDS_ARROW);
 		addInputButton(row, buttonFactory, NOT_SIGN);
+		addInputButton(row, buttonFactory, FOR_ALL);
+		addInputButton(row, buttonFactory, THERE_EXISTS);
 		addInputButton(row, buttonFactory, PARALLEL_TO);
 		addInputButton(row, buttonFactory, PERPENDICULAR);
 		addInputButton(row, buttonFactory, CIRCLED_TIMES);

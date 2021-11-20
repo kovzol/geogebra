@@ -498,8 +498,9 @@ public class TableSymbols {
 				{ " " + Unicode.IMAGINARY + " ", Unicode.IMAGINARY + "" }, // sqrt(-1)
 				{ " " + Unicode.PI_STRING + " ", Unicode.PI_STRING }, // pi
 				{ " " + Unicode.EULER_STRING + " ", Unicode.EULER_STRING }, // e
-				{ Unicode.NBSP + "", app.getMenu("Symbol.NBSP") }, // non-breaking
-																	// space
+				{ Unicode.NBSP + "", app.getMenu("Symbol.NBSP") }, // non-breaking space
+				{ Unicode.EXISTS + "", Unicode.EXISTS + "" },
+				{ Unicode.FORALL + "", Unicode.FORALL + "" }
 		};
 	}
 

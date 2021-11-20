@@ -8,6 +8,7 @@ import static org.geogebra.keyboard.base.model.impl.factory.Characters.CIRCLED_T
 import static org.geogebra.keyboard.base.model.impl.factory.Characters.COLON;
 import static org.geogebra.keyboard.base.model.impl.factory.Characters.COMMA;
 import static org.geogebra.keyboard.base.model.impl.factory.Characters.ELEMENT_OF;
+import static org.geogebra.keyboard.base.model.impl.factory.Characters.FOR_ALL;
 import static org.geogebra.keyboard.base.model.impl.factory.Characters.HASHTAG;
 import static org.geogebra.keyboard.base.model.impl.factory.Characters.INFINITY;
 import static org.geogebra.keyboard.base.model.impl.factory.Characters.LEFT_CEILING;
@@ -27,6 +28,7 @@ import static org.geogebra.keyboard.base.model.impl.factory.Characters.RIGHT_SQU
 import static org.geogebra.keyboard.base.model.impl.factory.Characters.SECONDS;
 import static org.geogebra.keyboard.base.model.impl.factory.Characters.SUBSET_OF;
 import static org.geogebra.keyboard.base.model.impl.factory.Characters.SUBSET_OF_OR_EQUAL_TO;
+import static org.geogebra.keyboard.base.model.impl.factory.Characters.THERE_EXISTS;
 import static org.geogebra.keyboard.base.model.impl.factory.Util.addConstantCustomButton;
 import static org.geogebra.keyboard.base.model.impl.factory.Util.addConstantInputCommandButton;
 import static org.geogebra.keyboard.base.model.impl.factory.Util.addInputButton;
@@ -53,6 +55,8 @@ public class SpecialSymbolsKeyboardFactory implements KeyboardModelFactory {
 		addInputButton(row, buttonFactory, LOGICAL_OR);
 		addInputButton(row, buttonFactory, RIGHTWARDS_ARROW);
 		addInputButton(row, buttonFactory, NOT_SIGN);
+		addInputButton(row, buttonFactory, FOR_ALL);
+		addInputButton(row, buttonFactory, THERE_EXISTS);
 		addInputButton(row, buttonFactory, CIRCLED_TIMES);
 
 		row = mathKeyboard.nextRow(8.0f);
