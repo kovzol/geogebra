@@ -558,7 +558,7 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 						replace("/\\", " and ").
 						replace("/=", "!=");
 				Log.debug(result);
-				return result;
+				return "quote(" + result + ")";
 			}
 		}
 
