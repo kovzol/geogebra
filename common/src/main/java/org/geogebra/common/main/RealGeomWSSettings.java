@@ -8,7 +8,7 @@ public class RealGeomWSSettings {
     /**
      * Do we want to use RealGeomWS for specific computations?
      */
-    private static volatile boolean useRealGeomWebService = true;
+    private static volatile boolean useRealGeomWebService = false;
     /**
      * Do we want to use Giac and elimination first and then RealGeom?
      */
