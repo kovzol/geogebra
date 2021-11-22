@@ -48,6 +48,11 @@ public class AltKeys {
 
 		lookupLower.put('V', Unicode.FORALL + "");
 		lookupLower.put('X', Unicode.EXISTS + "");
+		lookupLower.put('J', Unicode.OR + "");
+		lookupLower.put('K', Unicode.AND + "");
+		lookupLower.put('Z', Unicode.NOT + "");
+		lookupLower.put('Y', Unicode.IMPLIES + "");
+		lookupLower.put('H', Unicode.NOTEQUAL + "");
 
 		lookupLower.put('0', Unicode.SUPERSCRIPT_0 + "");
 		lookupLower.put('1', Unicode.SUPERSCRIPT_1 + "");
