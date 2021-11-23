@@ -537,7 +537,7 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 			if (name.equals("RealQuantifierElimination")) {
 				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.tarskiTemplate);
 				p = GGBToTarski(p);
-				String command = "(qepcad-api-call [" + p + "])";
+				String command = "(qepcad-api-call [" + p + "] 'T)";
 				Log.debug(command);
 				String result = App.tarski.eval(command);
 				result = TarskiToGGB(result);
