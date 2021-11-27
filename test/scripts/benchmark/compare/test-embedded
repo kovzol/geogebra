@@ -4,4 +4,4 @@
 
 set -e
 ./runtests-sql -p "Classic5" -d
-./report-sql -c "Classic5"
+./report-sql -c "Classic5" -d 100

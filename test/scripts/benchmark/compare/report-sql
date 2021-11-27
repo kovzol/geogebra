@@ -3,7 +3,7 @@
 # @author Zoltan Kovacs <zoltan@geogebra.org>
 
 # Setting defaults.
-MY_VERSION=2.2
+MY_VERSION=2.3
 
 IMGHEIGHT=25
 HTML=html/all.html
@@ -142,8 +142,8 @@ TIMEOUT=`sqlite3 sqlite3db "select distinct timeout_setting from tests where bui
 echo "<p>Timeout was set to $TIMEOUT seconds.</p>" >> $MYDIR/$HTML
 
 echo "<table><tr><th rowspan=\"2\" colspan=\"3\">Test file</th>" >> $MYDIR/$HTML
-RESULTCOLUMN="m{1cm}"
-echo "\begin{longtable}{|l|*{$MYCOLUMNSNO}{${RESULTCOLUMN}r|}}
+RESULTCOLUMN="m{5cm}"
+echo "\begin{longtable}{|m{5cm}|*{$MYCOLUMNSNO}{${RESULTCOLUMN}r|}}
 \hline
 {\multirow{2}{*}{\bf Test}}" >> $MYDIR/$TEX
 
@@ -178,7 +178,7 @@ echo "library(sm); data = NULL; group = NULL;" > $R_PROG
 for c in $MYCOLUMNS; do
  rm -f tmp/rinput-$c
  echo "<th>Result</th><th>Speed</th>" >> $MYDIR/$HTML
- echo "&R.&S." >> $MYDIR/$TEX
+ echo "&Result&Speed" >> $MYDIR/$TEX
  cn=$((cn+1))
  j=`echo $c | cut -f1 -d,`
  r=`echo $c | cut -s -f2- -d,`
@@ -404,8 +404,9 @@ for t in `sqlite3 sqlite3db "select distinct testcase from tests where build_num
    fi
 
   RESULT=`echo $RESULT | sed s/'\_'/'\\\\_'/g` # handle underscore characters
-  RESULT=`echo $RESULT | sed s/'√'/'$\\\\sqrt{\\\\,}$'/g` # handle square roots
+  RESULT=`echo $RESULT | sed s/'√'/'$\\\\surd$'/g` # handle square roots
   RESULT=`echo $RESULT | sed s/'≥'/'$\\\\geq$'/g` # greater than or equal
+  RESULT=`echo $RESULT | sed s/'≤'/'$\\\\leq$'/g` # greater than or equal
   RESULT=`echo $RESULT | sed s/'²'/'${}^2$'/g` # square
   echo "& \cellcolor{$CELLCOLOR}$RESULT & \cellcolor{$CELLCOLOR}{$SUMCLASSTEX $TIME} " >> $MYDIR/$TEX
   done
