@@ -4,7 +4,7 @@
 # @author Zoltan Kovacs <zoltan@geogebra.org>
 
 # Setting defaults.
-MY_VERSION=2.2
+MY_VERSION=2.3
 
 DEBUG=0 # In tmp/ there can be some log, if you set this to 1.
 DBDEBUG=0
@@ -100,6 +100,8 @@ shift $((OPTIND-1))
 
 RUNDIR=$GEOGEBRADIR/desktop/build/install/desktop/bin # run the "installDist" task in Gradle first
 BINBASE=./desktop
+ABSGEOGEBRADIR=`readlink -f $GEOGEBRADIR`
+export JAVA_OPTS="-Djava.library.path=$ABSGEOGEBRADIR/desktop/build"
 
 PROVERSNO=`echo $PROVERS | wc -w`
 THISDIR=`dirname $0`
@@ -215,7 +217,8 @@ for i in `find -name '*.ggb' | sort`; do
     tac $MYDIR/tmp/.test.stdout | grep "COMPARISON RESULT IS " | head -1 > $REGRESSIONFILE
    RESULT=`cat $REGRESSIONFILE | awk '{a=index($0, "COMPARISON"); print substr($0,a+21)}'`
   else
-   if [ "$ENGINE" = "Classic5-rg-m" -o "$ENGINE" = "Classic5-rg-q" -o "$ENGINE" = "Classic5-rg-t" ]; then
+   ENABLE=true
+   if [ "$ENGINE" = "Classic5-rg-m" -o "$ENGINE" = "Classic5-rg-q" -o "$ENGINE" = "Classic5-rg-t" -o "$ENGINE" = "Classic5" ]; then
     ELIM=false
    else
     ELIM=true
@@ -226,11 +229,16 @@ for i in `find -name '*.ggb' | sort`; do
     if [ "$ENGINE" = "Classic5-t" -o "$ENGINE" = "Classic5-rg-t" ]; then
      CAS=tarski
     else
-     CAS=mathematica
+     if [ "$ENGINE" = "Classic5" ]; then
+      CAS=""
+      ENABLE=false
+     else
+      CAS=mathematica
+      fi
      fi
     fi
    timeout $((TIMEOUT+10)) $BINBASE \
-    --prover=engine:$ENGINE,method:$METHOD,timeout:$TIMEOUT --realgeomws=remoteurl:${REALGEOMWSREMOTEURL},timeout:$TIMEOUT,elimination:$ELIM,cas:$CAS,test:false \
+    --prover=engine:$ENGINE,method:$METHOD,timeout:$TIMEOUT --realgeomws=enable:$ENABLE,remoteurl:${REALGEOMWSREMOTEURL},timeout:$TIMEOUT,elimination:$ELIM,cas:$CAS,test:false \
     --logFile=$LOGFILE \
     --language=en $EXTRAOPTS $MYDIR/$i \
     --regressionFile=$REGRESSIONFILE >$MYDIR/tmp/.test.stdout 2>$MYDIR/tmp/.test.stderr

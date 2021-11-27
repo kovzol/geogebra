@@ -4,7 +4,7 @@
 # @author Zoltan Kovacs <zoltan@geogebra.org>
 
 # Setting defaults.
-MY_VERSION=2.2
+MY_VERSION=2.3
 
 DEBUG=0 # In tmp/ there can be some log, if you set this to 1.
 DBDEBUG=0
@@ -89,6 +89,9 @@ done
 
 RUNDIR=$GEOGEBRADIR/desktop/build/install/desktop/bin # run the "installDist" task in Gradle first
 BINBASE=./desktop
+ABSGEOGEBRADIR=`readlink -f $GEOGEBRADIR`
+export JAVA_OPTS="-Djava.library.path=$ABSGEOGEBRADIR/desktop/build"
+
 
 # Put name of the filters into $@
 shift $((OPTIND-1))
@@ -180,7 +183,10 @@ for i in `find -name '*.ggb' | sort`; do
  for j in $PROVERS; do
   cd $MYDIR; cd $RUNDIR
   ENGINE=`echo $j | cut -f1 -d_`
-  METHOD=`echo $j | cut -f2 -d_`
+  unset METHOD
+  if [[ $j == *"_"* ]]; then
+   METHOD=`echo $j | cut -f2 -d_`
+   fi
   unset RWSOPTS
 
   # Testing:
@@ -219,13 +225,19 @@ for i in `find -name '*.ggb' | sort`; do
    # List k = ProveDetails[j] == null = true "AreCollinear[D,E,A]", "AreEqual[f,k_1]", "AreEqual[f,l]", "AreParallel[d,e]", "AreParallel[f,g]", "AreParallel[h,i]"
    RESULT=`cat $REGRESSIONFILE | grep Prove | sed s/" null ="//g | sed s/'"'//g | sed 's/\(.*\) == \(.*\)/\2/' | sed s/*/·/g`
   else
+   ENABLE=true
    if [ "$METHOD" = "t" ]; then
     CAS=tarski
+   else
+    if [ "$METHOD" = "" ]; then
+     CAS=""
+     ENABLE=false
     else
-    CAS=mathematica
+     CAS=mathematica
+     fi
     fi
    timeout $TIMEOUT $BINBASE \
-    --prover=timeout:$TIMEOUT --realgeomws=remoteurl:${REALGEOMWSREMOTEURL},timeout:$TIMEOUT,cas:$CAS,test:false \
+    --prover=timeout:$TIMEOUT --realgeomws=enable:$ENABLE,remoteurl:${REALGEOMWSREMOTEURL},timeout:$TIMEOUT,cas:$CAS,test:false \
     --logFile=$LOGFILE \
     --regressionFile=$REGRESSIONFILE --language=en $EXTRAOPTS $MYDIR/$i \
     >$MYDIR/tmp/.test.stdout 2>$MYDIR/tmp/.test.stderr

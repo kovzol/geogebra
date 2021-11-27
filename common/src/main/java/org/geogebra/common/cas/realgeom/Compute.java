@@ -40,6 +40,7 @@ public class Compute {
 
 		// Rewrites first:
 		ineq = ineq.replaceAll("\\*", " ").replace("and", "/\\").replace("or", "\\/");
+		ineq = ineq.replace("&&", "/\\").replace("||", "\\/");
 
 		if (!"".equals(formulas)) {
 			formulas += " /\\ ";
@@ -375,9 +376,9 @@ public class Compute {
 		String[] ineqs2Array = ineqs2.split(",");
 		if (!ineqs2.equals("")) {
 			for (String ie : ineqs2Array) {
-				String[] disjunctionsArray = ie.split(" or ");
+				String[] disjunctionsArray = ie.split(" \\|\\| ");
 				for (String d : disjunctionsArray) {
-					String[] conjunctionsArray = d.split(" and ");
+					String[] conjunctionsArray = d.split(" \\&\\& ");
 					for (String c : conjunctionsArray) {
 						// This is very hacky, and in some cases, maybe incorrect...
 						String ieRewriteEq = c.replace(">", "=").replace("<", "=")
@@ -688,7 +689,7 @@ public class Compute {
 	}
 
 	static String removeHeadTail(String input, int length) {
-		if (input.length() > 2 * length) {
+		if (input.length() >= 2 * length) {
 			return input.substring(length, input.length() - length);
 		}
 		return input;

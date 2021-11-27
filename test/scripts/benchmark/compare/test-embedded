@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Test the Classic5 version with the embedded Tarski system.
+
+set -e
+./runtests-sql -p "Classic5" -d
+./report-sql -c "Classic5"
