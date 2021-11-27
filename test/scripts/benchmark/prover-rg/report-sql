@@ -449,11 +449,11 @@ for t in `sqlite3 sqlite3db "select distinct testcase from tests where build_num
   SUMCLASSTEX=""
   if [ "$WORSTPROVER" = "$c" ]; then
    SUMCLASS="worst"
-   SUMCLASSTEX="\sl"
+   # SUMCLASSTEX="\sl"
    fi
   if [ "$BESTPROVER" = "$c" ]; then
    SUMCLASS="best"
-   SUMCLASSTEX="\bf"
+   # SUMCLASSTEX="\bf"
    fi
   HTMLRESULT="$RESULT"
   if [ "$NICEHTML" = 1 ]; then
