@@ -1,0 +1,47 @@
+#!/bin/bash
+# This program creates a set of .spec.js files in $COMPAREDIR, based on the .ggb test files in the tests/ folder.
+
+UITESTDIR=../../../../uitest
+COMPAREDIR=$UITESTDIR/cypress/integration/Compare
+mkdir -p $COMPAREDIR
+
+test -x ggb-manipulator || {
+ echo "Get ggb-manipulator from https://github.com/kovzol/ggb-manipulator first."
+ exit 1
+ }
+
+cd ggb-manipulator
+for i in `ls -1 ../tests/*.ggb`; do
+ TEST=`basename $i .ggb`
+ BASE64IN=`cat ../tests/$i | base64 -w0`
+ BASE64OUT=`echo $BASE64IN | ./filter cypressize`
+ COMPARE=`./selector get-compare ../tests/$i`
+ echo "describe('$TEST', () => {
+    beforeEach(() => {
+        cy.visit('index.html');
+        cy.get('body.application').click(10,10);
+        cy.window().then((win) => {
+            win.ggbApplet.setAxesVisible(false, false);
+            win.ggbApplet.setGridVisible(false);
+            var result = win.ggbApplet.evalCommandCAS('1+1');
+            });
+        cy.wait(2000);
+    });
+
+    afterEach(cy.setSaved);
+
+    it('Test', () => {
+        cy.window().then((win) => {
+            var ggbFile = '$BASE64OUT';
+            win.ggbApplet.setBase64(ggbFile);
+            });
+        cy.wait(200);
+        cy.window().then((win) => {
+            win.ggbApplet.evalCommand('result=Compare($COMPARE)');
+            var result = win.ggbApplet.getValueString('result');
+            cy.task('log', 'COMPARISONRESULT ' + result);
+            });
+    });
+}); " > ../$COMPAREDIR/$TEST.spec.js
+ echo "$i done"
+ done

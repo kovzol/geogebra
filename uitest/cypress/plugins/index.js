@@ -17,4 +17,14 @@ const {
 
 module.exports = (on, config) => {
     addMatchImageSnapshotPlugin(on, config);
+
+    on('task', {
+       log (message) {
+           console.log(message)
+           return null
+       }
+    })
+
 };
+
+
