@@ -45,7 +45,7 @@ public class Compute {
 		if (!"".equals(formulas)) {
 			formulas += " /\\ ";
 		}
-		formulas += ineq;
+		formulas += "(" + ineq + ")";
 
 	}
 
@@ -566,9 +566,9 @@ public class Compute {
 		String[] ineqs2Array = ineqs2.split(",");
 		if (!ineqs2.equals("")) {
 			for (String ie : ineqs2Array) {
-				String[] disjunctionsArray = ie.split(" or ");
+				String[] disjunctionsArray = ie.split(" \\|\\| ");
 				for (String d : disjunctionsArray) {
-					String[] conjunctionsArray = d.split(" and ");
+					String[] conjunctionsArray = d.split(" \\&\\& ");
 					for (String c : conjunctionsArray) {
 						// This is very hacky, and in some cases, maybe incorrect...
 						String ieRewriteEq = c.replace(">", "=").replace("<", "=")
