@@ -173,7 +173,7 @@ for j in $PROVERS; do
 
 # Content
 TESTS=0
-for i in `find -name '*.ggb' | sort`; do
+for i in `find -name '*.ggb' | grep -v ggb-manipulator | sort`; do
  TESTS=$((TESTS+1))
  # Creating thumbnail:
  cd $MYDIR
