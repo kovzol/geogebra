@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,7 +51,7 @@ import org.geogebra.common.util.debug.Log;
 public class DependentBooleanAdapter extends ProverAdapter {
 	private boolean leftWasDist = false, rightWasDist = false;
 	private boolean substNeeded = false;
-	private Set<GeoSegment> allSegmentsFromExpression = new HashSet<>();
+	private Set<GeoSegment> allSegmentsFromExpression = new TreeSet<>();
 	private ArrayList<PPolynomial> extraPolys = new ArrayList<>();
 	private int nrOfMaxDecimals;
 	private ArrayList<String> ineqs = new ArrayList<>();
