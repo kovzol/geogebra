@@ -213,3 +213,4 @@ task unzip(type: Copy) {
 }
 
 tasks.run.dependsOn("unzip")
+tasks.installDist.dependsOn("unzip")
