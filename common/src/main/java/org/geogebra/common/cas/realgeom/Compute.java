@@ -650,6 +650,12 @@ public class Compute {
 			ineq = executeGiac("subst([" + ineq + "],[" + substs + "])");
 			ineq = removeHeadTail(ineq, 1);
 		}
+		// If ineq contains "true", an internal issue in Tarski's code prevents getting
+		// the required answer. Here we use a workaround, and it actually speeds up
+		// computation for such a case.
+		if ("true".equals(ineq)) {
+			return "false"; // negation required
+		}
 		appendIneqs("~(" + ineq + ")");
 
 		// Remove duplicated vars.

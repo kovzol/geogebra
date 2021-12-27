@@ -417,11 +417,11 @@ public class DependentBooleanAdapter extends ProverAdapter {
 					.toString(StringTemplate.giacTemplate);
 		}
 		String[] splitedStr = rootStr.split(",");
-		/*
-		 * This 10 is hardcoded, it is the length of "[ggbIsZero" which
-		 * is the beginning of rootStr. FIXME
-		 */
-		rootStr = splitedStr[0].substring(10, splitedStr[0].length() - 1);
+		String txtGgbIsZero = "[ggbIsZero";
+		rootStr = splitedStr[0];
+		if (rootStr.startsWith(txtGgbIsZero)) {
+			rootStr.substring(txtGgbIsZero.length(), rootStr.length() - 1);
+		}
 		StringBuilder strForGiac = new StringBuilder();
 		strForGiac.append("eliminate([");
 		strForGiac.append(rootStr);
