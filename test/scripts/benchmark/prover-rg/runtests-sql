@@ -161,7 +161,7 @@ for j in $PROVERS; do
 
 # Content
 TESTS=0
-for i in `find -name '*.ggb' | sort`; do
+for i in `find -name '*.ggb' | grep -v ggb-manipulator | sort`; do
  TESTS=$((TESTS+1))
  # Creating thumbnail:
  cd $MYDIR
@@ -192,38 +192,69 @@ for i in `find -name '*.ggb' | sort`; do
   # Testing:
   start_unixtime=`date +%s`
   if [ "$ENGINE" = "Classic6" ]; then # currently not implemented
-   which $PHANTOMJS >/dev/null || {
-    echo "FATAL: PhantomJS is not found in $PHANTOMJS (>= 2.0.0 needed)"
-    exit 1
-    }
    test -d $ABSWEBDIR || {
     echo; echo "FATAL: folder $ABSWEBDIR does not exist. You have to compile web platform first."
     exit 1
     }
-   echo -n "var ggbBase64File = \"" > $JSFILE
-   cat $MYDIR/$i | base64 -w0 >> $JSFILE
-   echo "\";" >> $JSFILE
-   echo "var html5codeBase = 'file://$ABSWEBDIR';" >> $JSFILE
-   timeout $((TIMEOUT+2)) $PHANTOMJS $MYDIR/testurl.js "file:///$MYDIR/jstest.html" $TIMEOUT > $MYDIR/tmp/.test.stdout 2>$MYDIR/tmp/.test.stderr
+
+   # 1. Preparation of test folder in Cypress
+   cd $MYDIR
+   UITESTDIR=../../../../uitest
+   PROVEDIR=$UITESTDIR/cypress/integration/Prove
+   rm -fr $PROVEDIR
+   mkdir -p $PROVEDIR
+
+   # 2. Checking if ggb-manipulator is present
+   test -x ggb-manipulator || {
+    echo "Get ggb-manipulator from https://github.com/kovzol/ggb-manipulator first."
+    exit 1
+    }
+
+   # 3. Creating a test file for Cypress
+   cd ggb-manipulator
+   BASE64IN=`cat ../$i | base64 -w0`
+   BASE64OUT=`echo $BASE64IN | ./filter cypressize`
+   PROVE=`./selector get-prove ../$i`
+   echo "describe('$TEST', () => {
+    beforeEach(() => {
+        cy.visit('index.html');
+        cy.get('body.application').click(10,10);
+        cy.window().then((win) => {
+            win.ggbApplet.setAxesVisible(false, false);
+            win.ggbApplet.setGridVisible(false);
+            var result = win.ggbApplet.evalCommandCAS('1+1');
+            });
+        cy.wait(5000);
+    });
+
+    afterEach(cy.setSaved);
+
+    it('Test', () => {
+        cy.window().then((win) => {
+            var ggbFile = '$BASE64OUT';
+            win.ggbApplet.setBase64(ggbFile);
+            });
+        cy.wait(5000);
+        cy.window().then((win) => {
+            win.ggbApplet.evalCommand('result=Prove($PROVE)');
+            var result = win.ggbApplet.getValueString('result');
+            cy.task('log', 'OUTPUT for Prove: ' + result);
+            });
+    });
+}); " > ../$PROVEDIR/$TEST.spec.js
+   cd ..
+   # 4. Starting Cypress
+   timeout $((TIMEOUT)) ./run-cypress-suite-headless >tmp/.test.stdout 2>tmp/.test.stderr
+
    RETVAL=$?
-   # Old format (before May 2021):
-   # 14:50:36.344 DEBUG: ?: Benchmarking: 1120 ms
-   # 14:50:36.345 DEBUG: ?: OUTPUT for Prove: proof = true
-   # 14:50:36.346 DEBUG: ?: all CAS up
-   # New format:
-   # Benchmarking: 1120 ms
-   # cat $MYDIR/tmp/.test.stdout | grep Benchmarking > $LOGFILE
-   # We add 3 dummy columns...
-   cat $MYDIR/tmp/.test.stdout | grep Benchmarking | sed s/Benchmarking/"1 2 3 Benchmarking"/ > $LOGFILE
+   # We add 2 dummy columns...
+   cat $MYDIR/tmp/.test.stdout | grep Duration | sed s/Duration/"1 2 Benchmarking"/ > $LOGFILE
+
    grep --silent "OUTPUT for Prove:" $MYDIR/tmp/.test.stdout && \
     tac $MYDIR/tmp/.test.stdout | grep "OUTPUT for Prove:" | head -1 | sed 's/\(.*\) = \(.*\)/OUTPUT for Prove or ProveDetails == null = \2/' > $REGRESSIONFILE
-   grep --silent "OUTPUT for ProveDetails:" $MYDIR/tmp/.test.stdout && \
-    tac $MYDIR/tmp/.test.stdout | grep "OUTPUT for ProveDetails:" | head -1 | perl -pe 's/(.*?) = (.*)/\2/' |\
-    sed s/{//g | sed s/}//g | awk '{printf "ProveDetails == null = %s", $0}' > $REGRESSIONFILE
-   grep --silent "STATEMENT IS UNKNOWN" $MYDIR/tmp/.test.stdout && echo "Prove or ProveDetails == null = undefined" > $REGRESSIONFILE
-   grep --silent ^SEVERE: $MYDIR/tmp/.test.stdout && echo "Prove or ProveDetails == null = undefined" > $REGRESSIONFILE
    # List k = ProveDetails[j] == null = true "AreCollinear[D,E,A]", "AreEqual[f,k_1]", "AreEqual[f,l]", "AreParallel[d,e]", "AreParallel[f,g]", "AreParallel[h,i]"
    RESULT=`cat $REGRESSIONFILE | grep Prove | sed s/" null ="//g | sed s/'"'//g | sed 's/\(.*\) == \(.*\)/\2/' | sed s/*/·/g`
+
   else
    ENABLE=true
    if [ "$METHOD" = "t" ]; then
