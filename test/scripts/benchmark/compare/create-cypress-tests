@@ -25,7 +25,7 @@ for i in `ls -1 ../tests/*.ggb`; do
             win.ggbApplet.setGridVisible(false);
             var result = win.ggbApplet.evalCommandCAS('1+1');
             });
-        cy.wait(2000);
+        cy.wait(5000);
     });
 
     afterEach(cy.setSaved);
@@ -35,7 +35,7 @@ for i in `ls -1 ../tests/*.ggb`; do
             var ggbFile = '$BASE64OUT';
             win.ggbApplet.setBase64(ggbFile);
             });
-        cy.wait(200);
+        cy.wait(5000);
         cy.window().then((win) => {
             win.ggbApplet.evalCommand('result=Compare($COMPARE)');
             var result = win.ggbApplet.getValueString('result');
