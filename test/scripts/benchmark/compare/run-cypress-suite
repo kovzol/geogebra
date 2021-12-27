@@ -6,7 +6,7 @@ rm -fr content
 mkdir content
 cp ../web/war/classic.html content/index.html
 cp -a ../web/war/web3d content/web3d
-npm install
+npm install --legacy-peer-deps # this should work for each Cypress version between 6.8 and 9.2
 # npx http-server -p 8888 content &
 echo "module.exports = {
   mime: {'application/wasm': [ 'wasm' ] },
