@@ -1,0 +1,20 @@
+#!/bin/sh
+# We assume that web3d has already been compiled.
+set -e
+cd ../../../../uitest
+rm -fr content
+mkdir content
+cp ../web/war/classic.html content/index.html
+cp -a ../web/war/web3d content/web3d
+npm install
+# npx http-server -p 8888 content &
+echo "module.exports = {
+  mime: {'application/wasm': [ 'wasm' ] },
+  port: 8888,
+  directory: 'content'
+}" > ws.config.js
+npx local-web-server --config-file ws.config.js &
+export HTTP_SERVER_PID=$!
+while ! nc -z localhost 8888 && kill -0 $HTTP_SERVER_PID ; do sleep 1; echo -n "."; done
+npx cypress run $* --spec 'cypress/integration/Prove/*.spec.js'
+kill $HTTP_SERVER_PID

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+./runtests-sql -p "Classic6" -d -t 60
+./report-sql -c "Classic6" -e -d 100
