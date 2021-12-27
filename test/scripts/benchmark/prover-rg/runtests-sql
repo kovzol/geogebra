@@ -238,6 +238,7 @@ for i in `find -name '*.ggb' | grep -v ggb-manipulator | sort`; do
         cy.window().then((win) => {
             win.ggbApplet.evalCommand('result=Prove($PROVE)');
             var result = win.ggbApplet.getValueString('result');
+            if (result == '') result = 'null = –';
             cy.task('log', 'OUTPUT for Prove: ' + result);
             });
     });
