@@ -2044,6 +2044,9 @@ public class ProverBotanasMethod {
 			// a(x,y,z):=x^2+x*y+2z^2; d:=degree(a(x,y,z)); expand(a(t*x,t*y,t*z))==expand(t^d*a(x,y,z))
 			// For some strange reason Giac needs to handle this in the following way:
 			// [a(v9,v10):=begin return v9+2+v10; end, d():=begin return total_degree(a(v9,v10),[v9,v10]) end,expand(a(t*v9,t*v10))==expand(t^d()*a(v9,v10)),d()]][2]
+			if ("true".equals(expr)) {
+				return 0; // handle this special case differently
+			}
 			String list = "";
 			String list_t = "";
 			String code_a = "a(";
