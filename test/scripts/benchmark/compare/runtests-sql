@@ -197,25 +197,67 @@ for i in `find -name '*.ggb' | grep -v ggb-manipulator | sort`; do
   # Testing:
   start_unixtime=`date +%s`
   if [ "$ENGINE" = "Classic6" ]; then
-   which $PHANTOMJS >/dev/null || {
-    echo "FATAL: PhantomJS is not found in $PHANTOMJS (>= 2.0.0 needed)"
-    exit 1
-    }
    test -d $ABSWEBDIR || {
     echo; echo "FATAL: folder $ABSWEBDIR does not exist. You have to compile web platform first."
     exit 1
     }
-   echo -n "var ggbBase64File = \"" > $JSFILE
-   cat $MYDIR/$i | base64 -w0 >> $JSFILE
-   echo "\";" >> $JSFILE
-   echo "var html5codeBase = 'file://$ABSWEBDIR';" >> $JSFILE
-   timeout $((TIMEOUT)) $PHANTOMJS $MYDIR/testurl.js "file:///$MYDIR/jstest.html" $TIMEOUT > $MYDIR/tmp/.test.stdout 2>$MYDIR/tmp/.test.stderr
+
+   # 1. Preparation of test folder in Cypress
+   cd $MYDIR
+   UITESTDIR=../../../../uitest
+   COMPAREDIR=$UITESTDIR/cypress/integration/Compare
+   rm -fr $COMPAREDIR
+   mkdir -p $COMPAREDIR
+
+   # 2. Checking if ggb-manipulator is present
+   test -x ggb-manipulator || {
+    echo "Get ggb-manipulator from https://github.com/kovzol/ggb-manipulator first."
+    exit 1
+    }
+
+   # 3. Creating a test file for Cypress
+   cd ggb-manipulator
+   BASE64IN=`cat ../$i | base64 -w0`
+   BASE64OUT=`echo $BASE64IN | ./filter cypressize`
+   COMPARE=`./selector get-compare ../$i`
+   echo "describe('$TEST', () => {
+    beforeEach(() => {
+        cy.visit('index.html');
+        cy.get('body.application').click(10,10);
+        cy.window().then((win) => {
+            win.ggbApplet.setAxesVisible(false, false);
+            win.ggbApplet.setGridVisible(false);
+            var result = win.ggbApplet.evalCommandCAS('1+1');
+            });
+        cy.wait(5000);
+    });
+
+    afterEach(cy.setSaved);
+
+    it('Test', () => {
+        cy.window().then((win) => {
+            var ggbFile = '$BASE64OUT';
+            win.ggbApplet.setBase64(ggbFile);
+            });
+        cy.wait(5000);
+        cy.window().then((win) => {
+            win.ggbApplet.evalCommand('result=Compare($COMPARE)');
+            var result = win.ggbApplet.getValueString('result');
+            cy.task('log', 'COMPARISON RESULT IS ' + result);
+            });
+    });
+}); " > ../$COMPAREDIR/$TEST.spec.js
+   cd ..
+   # 4. Starting Cypress
+   timeout $((TIMEOUT)) ./run-cypress-suite-headless >tmp/.test.stdout 2>tmp/.test.stderr
+
    RETVAL=$?
-   # We add 3 dummy columns...
-   cat $MYDIR/tmp/.test.stdout | grep Benchmarking | sed s/Benchmarking/"1 2 3 Benchmarking"/ > $LOGFILE
+   # We add 2 dummy columns...
+   cat $MYDIR/tmp/.test.stdout | grep Duration | sed s/Duration/"1 2 Benchmarking"/ > $LOGFILE
    grep --silent "COMPARISON RESULT IS " $MYDIR/tmp/.test.stdout && \
     tac $MYDIR/tmp/.test.stdout | grep "COMPARISON RESULT IS " | head -1 > $REGRESSIONFILE
-   RESULT=`cat $REGRESSIONFILE | awk '{a=index($0, "COMPARISON"); print substr($0,a+21)}'`
+   RESULT=`cat $REGRESSIONFILE | awk '{a=index($0, "COMPARISON RESULT IS "); print substr($0,a+21)}'`
+
   else
    ENABLE=true
    if [ "$ENGINE" = "Classic5-rg-m" -o "$ENGINE" = "Classic5-rg-q" -o "$ENGINE" = "Classic5-rg-t" -o "$ENGINE" = "Classic5" ]; then
