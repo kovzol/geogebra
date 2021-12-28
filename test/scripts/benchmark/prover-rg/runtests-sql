@@ -45,7 +45,7 @@ version() {
  exit 0
  }
 
-while getopts "t:p:P:R:dbhvV" OPT; do
+while getopts "t:p:R:dbhvV" OPT; do
  case $OPT in
   t)
    TIMEOUT="$OPTARG"
