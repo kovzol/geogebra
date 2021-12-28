@@ -35,7 +35,6 @@ usage() {
  echo "   -t <number>  timeout: exit from a single test after the given number of seconds ($TIMEOUT)"
  echo "   -p <list>    space separated list of prover engines to test ($PROVERS)"
  echo "   -R <url>     use 'url' to use non-default RealGeomWS ($REALGEOMWSREMOTEURL)"
- echo "   -P <path>    use path to run PhantomJS ($PHANTOMJS)"
  echo "   -i           get construction info only"
  echo "   -h           show this help, then exit"
  echo "   -v           print script version, then exit"
@@ -48,20 +47,13 @@ version() {
  exit 0
  }
 
-while getopts "t:p:R:P:dbihvV" OPT; do
+while getopts "t:p:R:dbihvV" OPT; do
  case $OPT in
   t)
    TIMEOUT="$OPTARG"
    ;;
   i)
    CINFO=1
-   ;;
-  P)
-   PHANTOMJS="$OPTARG"
-   which $PHANTOMJS >/dev/null || {
-    echo "FATAL: PhantomJS is not found in $PHANTOMJS (>= 2.0.0 needed)"
-    exit 1
-    }
    ;;
   d)
    DEBUG=1
