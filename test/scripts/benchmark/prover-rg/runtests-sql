@@ -4,7 +4,7 @@
 # @author Zoltan Kovacs <zoltan@geogebra.org>
 
 # Setting defaults.
-MY_VERSION=2.3
+MY_VERSION=2.4
 
 DEBUG=0 # In tmp/ there can be some log, if you set this to 1.
 DBDEBUG=0
@@ -15,8 +15,6 @@ REALGEOMWSREMOTEURL="http\\://localhost\\:8765"
 GEOGEBRADIR=../../../../
 WEBCODEBASEDIR=$GEOGEBRADIR/web/war/web3d
 ABSWEBDIR=`readlink -f $WEBCODEBASEDIR`
-
-PHANTOMJS=`which phantomjs || echo unset`
 
 # Create database if it does not exist
 test -r sqlite3db || ./createdb || exit $?
@@ -36,7 +34,6 @@ usage() {
  echo "   -t <number>  timeout: exit from a single test after the given number of seconds ($TIMEOUT)"
  echo "   -p <list>    space separated list of prover engines to test ($PROVERS)"
  echo "   -R <url>     use 'url' to use non-default RealGeomWS ($REALGEOMWSREMOTEURL)"
- echo "   -P <path>    use path to run PhantomJS ($PHANTOMJS)"
  echo "   -h           show this help, then exit"
  echo "   -v           print script version, then exit"
  echo "   -V           print available provers from the database, then exit"
@@ -52,13 +49,6 @@ while getopts "t:p:P:R:dbhvV" OPT; do
  case $OPT in
   t)
    TIMEOUT="$OPTARG"
-   ;;
-  P)
-   PHANTOMJS="$OPTARG"
-   which $PHANTOMJS >/dev/null || {
-    echo "FATAL: PhantomJS is not found in $PHANTOMJS (>= 2.0.0 needed)"
-    exit 1
-    }
    ;;
   d)
    DEBUG=1
