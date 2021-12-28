@@ -7,6 +7,7 @@ mkdir content
 cp ../web/war/classic.html content/index.html
 cp -a ../web/war/web3d content/web3d
 npm install --legacy-peer-deps # this should work for each Cypress version between 6.8 and 9.2
+npm install cypress-log-to-output
 # npx http-server -p 8888 content &
 echo "module.exports = {
   mime: {'application/wasm': [ 'wasm' ] },
@@ -16,5 +17,5 @@ echo "module.exports = {
 npx local-web-server --config-file ws.config.js &
 export HTTP_SERVER_PID=$!
 while ! nc -z localhost 8888 && kill -0 $HTTP_SERVER_PID ; do sleep 1; echo -n "."; done
-npx cypress run $* --spec 'cypress/integration/Compare/*.spec.js'
+npx cypress run $* --spec 'cypress/integration/Compare/*.spec.js' --browser=chrome
 kill $HTTP_SERVER_PID

@@ -17,8 +17,6 @@ GEOGEBRADIR=../../../../
 WEBCODEBASEDIR=$GEOGEBRADIR/web/war/web3d
 ABSWEBDIR=`readlink -f $WEBCODEBASEDIR`
 
-PHANTOMJS=`which phantomjs || echo unset`
-
 # Create database if it does not exist
 test -r sqlite3db || ./createdb || exit $?
 
@@ -109,7 +107,6 @@ MYDIR=`cd $THISDIR; pwd`
 mkdir -p $MYDIR/tmp
 LOGFILE=$MYDIR/tmp/.test.log
 REGRESSIONFILE=$MYDIR/tmp/.regression.out
-JSFILE=$MYDIR/tmp/settings.js # this is hardcoded in jstest.html
 
 # Testing prerequisites:
 prereq () {
@@ -242,8 +239,6 @@ for i in `find -name '*.ggb' | grep -v ggb-manipulator | sort`; do
         cy.wait(5000);
         cy.window().then((win) => {
             win.ggbApplet.evalCommand('result=Compare($COMPARE)');
-            var result = win.ggbApplet.getValueString('result');
-            cy.task('log', 'COMPARISON RESULT IS ' + result);
             });
     });
 }); " > ../$COMPAREDIR/$TEST.spec.js
@@ -253,9 +248,11 @@ for i in `find -name '*.ggb' | grep -v ggb-manipulator | sort`; do
 
    RETVAL=$?
    # We add 2 dummy columns...
-   cat $MYDIR/tmp/.test.stdout | grep Duration | sed s/Duration/"1 2 Benchmarking"/ > $LOGFILE
+   # "value": "Benchmarking: 423 ms"
+   cat $MYDIR/tmp/.test.stdout | grep Benchmarking | sed s/Benchmarking/"1 2 Benchmarking"/ > $LOGFILE
+   # Get the last line from the COMPARISON RESULT IS... lines (because results computed later are more accurate):
    grep --silent "COMPARISON RESULT IS " $MYDIR/tmp/.test.stdout && \
-    tac $MYDIR/tmp/.test.stdout | grep "COMPARISON RESULT IS " | head -1 > $REGRESSIONFILE
+    tac $MYDIR/tmp/.test.stdout | grep "COMPARISON RESULT IS " | head -1 | sed s/'"'//g > $REGRESSIONFILE
    RESULT=`cat $REGRESSIONFILE | awk '{a=index($0, "COMPARISON RESULT IS "); print substr($0,a+21)}'`
 
   else
