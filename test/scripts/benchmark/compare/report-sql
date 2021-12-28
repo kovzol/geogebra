@@ -177,8 +177,8 @@ echo "library(sm); data = NULL; group = NULL;" > $R_PROG
 # Creating column header related data
 for c in $MYCOLUMNS; do
  rm -f tmp/rinput-$c
- echo "<th>Result</th><th>Speed</th>" >> $MYDIR/$HTML
- echo "&Result&Speed" >> $MYDIR/$TEX
+ echo "<th>Result</th><th>Time (ms)</th>" >> $MYDIR/$HTML
+ echo "&Result&Time (ms)" >> $MYDIR/$TEX
  cn=$((cn+1))
  j=`echo $c | cut -f1 -d,`
  r=`echo $c | cut -s -f2- -d,`
