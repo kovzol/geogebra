@@ -196,27 +196,20 @@ tasks.withType(CreateStartScripts).each { task ->
 }
 
 
-import org.gradle.internal.os.OperatingSystem
+import org.apache.tools.ant.taskdefs.condition.Os
 
 task unzip(type: Copy) {
 
   def zipPath = project.configurations.runtime.find {it.name.contains("$tarskiVersion") }
   def zipFile = file(zipPath)
   def outputDir = file("${buildDir}")
-  def archdir = ""
-  if (OperatingSystem.current() == OperatingSystem.WINDOWS) {
-    def arch = OperatingSystem.current().getArch()
-    if ("x86".equals(arch)) archdir = "windows32/"
-    else archdir = "windows64/" // "amd64"
-    }
-  // println ("OS=" + OperatingSystem.current())
 
-  from zipTree(zipFile).files
-  include "libtarski.so"
-  include "libtarski.jnilib"
-  include "${archdir}tarski.dll"
-  include "*.dll"
-  exclude "msys-*.dll"
+  from zipTree(zipFile)
+  include "**/libtarski.so"
+  include "**/libtarski.jnilib"
+  include "**/windows${tarskiArch}/tarski.dll"
+  include "**/clang${tarskiArch}/*.dll"
+  // exclude "msys-*.dll"
   eachFile { path = name }
   into outputDir
 
