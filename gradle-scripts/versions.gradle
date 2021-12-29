@@ -32,5 +32,5 @@ if (Os.isFamily(Os.FAMILY_WINDOWS)) {
     ext.tarskiArch = "64"
     }
   }
-
+else ext.tarskiArch = ""
 
