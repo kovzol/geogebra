@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+./runtests-sql -p "Classic5 Classic6" -d -t 60
+./report-sql -c "Classic5 Classic6" -e -d 100
+sensible-browser html/all.html &
