@@ -532,6 +532,15 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
         // initialize RealGeomWS
         initializeRealGeomWSD();
 
+		// applet/command line options
+		handleOptionArgs(args);
+		// This used to be performed just later,
+		// I hope this is OK. We need this
+		// so early to get the timeout option for Tarski.
+
+		// initialize Tarski
+		initializeTarski();
+
 		boolean fileLoaded = handleFileArg(args);
 
 		// initialize GUI
@@ -585,11 +594,11 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		setUndoActive(undoActive);
 
 		// applet/command line options
-		handleOptionArgs(args);
+		// handleOptionArgs(args);
 
-		// initialize Tarski (after we learn the timeout setting from the XML preferences
+		// reinitialize Tarski (after we learn the timeout setting from the XML preferences
 		// and eventually the command line options too)
-		initializeTarski();
+		// initializeTarski();
 
 		initing = false;
 

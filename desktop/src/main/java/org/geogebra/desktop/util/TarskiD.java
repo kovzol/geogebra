@@ -25,4 +25,11 @@ public class TarskiD extends Tarski {
 		return true;
 	}
 
+	@Override
+	public boolean reinit(int timeout) {
+		tarski.TARSKIEND();
+		tarski.TARSKIINIT(50000000, timeout);
+		return true;
+	}
+
 }

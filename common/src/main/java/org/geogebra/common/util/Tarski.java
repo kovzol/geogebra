@@ -19,4 +19,9 @@ public abstract class Tarski {
 		return "?";
 	}
 
+	public boolean reinit(int timeout) {
+		// Will be overridden by web and desktop
+		return false;
+	}
+
 }

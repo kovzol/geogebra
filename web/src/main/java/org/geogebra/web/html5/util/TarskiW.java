@@ -58,5 +58,27 @@ public class TarskiW extends Tarski {
 		return true;
 	}
 
+	@Override
+	public boolean reinit(int timeout) {
+		GWT.runAsync(new RunAsyncCallback() {
+			@Override
+			public void onSuccess() {
+				String tarskiLoader = "var numcells = 50000000;\n"
+						+ "var timeout = " + timeout + "\n"
+						+ "TARSKIEND();\n"
+						+ "TARSKIINIT(numcells, timeout);\n";
+				JavaScriptInjector.inject("tarski-reloader", tarskiLoader);
+
+				LoggerW.loaded("Tarski restarted");
+			}
+
+			@Override
+			public void onFailure(Throwable reason) {
+				Log.debug("Restarting failure");
+			}
+		});
+
+		return true;
+	}
 
 }
