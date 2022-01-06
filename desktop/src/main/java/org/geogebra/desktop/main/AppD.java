@@ -159,6 +159,7 @@ import org.geogebra.common.main.SingularWSSettings;
 import org.geogebra.common.main.SpreadsheetTableModel;
 import org.geogebra.common.main.error.ErrorHandler;
 import org.geogebra.common.main.settings.AbstractSettings;
+import org.geogebra.common.main.settings.CASSettings;
 import org.geogebra.common.main.settings.DefaultSettings;
 import org.geogebra.common.main.settings.SettingsBuilder;
 import org.geogebra.common.main.settings.updater.SettingsUpdaterBuilder;
@@ -530,8 +531,6 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		initializeSingularWSD();
         // initialize RealGeomWS
         initializeRealGeomWSD();
-		// initialize Tarski
-		initializeTarski();
 
 		boolean fileLoaded = handleFileArg(args);
 
@@ -587,6 +586,10 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 		// applet/command line options
 		handleOptionArgs(args);
+
+		// initialize Tarski (after we learn the timeout setting from the XML preferences
+		// and eventually the command line options too)
+		initializeTarski();
 
 		initing = false;
 

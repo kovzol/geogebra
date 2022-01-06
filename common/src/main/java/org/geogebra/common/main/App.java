@@ -569,7 +569,12 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	public void initializeTarski() {
 		Log.debug("Initializing Tarski...");
 		tarski = UtilFactory.getPrototype().newTarski();
-		tarski.init(50000000, 5);
+		int timeout = (int) (kernel.getApplication().getSettings().getCasSettings()
+						.getTimeoutMilliseconds() / 1000);
+		if (timeout == 0) { // maybe the CAS is not yet set up
+			timeout = 5; // force initial value, FIXME
+		}
+		tarski.init(timeout);
 		Log.debug("End of initialization.");
 	}
 

@@ -27,6 +27,14 @@ public class JavaScriptInjector {
 		}
 	}
 
+	public static void inject(String name, String code) {
+		if (DOM.getElementById(name) == null) {
+			ScriptElement element = createScriptElement(name);
+			element.setText(code);
+			getHead().appendChild(element);
+		}
+	}
+
 	private static ScriptElement createScriptElement(String id) {
 		ScriptElement script = Document.get().createScriptElement();
 		script.setAttribute("language", "javascript");

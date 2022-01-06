@@ -9,7 +9,7 @@ public abstract class Tarski {
 	public Tarski() {
 	}
 
-	public boolean init(int numcells, int timeout) {
+	public boolean init(int timeout) {
 		// Will be overridden by web and desktop
 		return false;
 	}

@@ -15,13 +15,8 @@ public interface TarskiResources extends ClientBundle {
 	TarskiResources INSTANCE = GWT.create(TarskiResources.class);
 
 	/*
-	 * Tarski must be compiled as WebAssembly to get tarski.js,
-	 * by changing the target from tarski.html to tarski.js
-	 * and adding the following settings to LDFLAGS:
-	 * -s SINGLE_FILE=1 -s MODULARIZE=1 -s EXPORT_NAME=Tarski
+	 * Tarski must be compiled as WebAssembly to get tarski.js.
 	 */
 	@Source("org/geogebra/web/resources/js/tarski/tarski.js")
 	TextResource tarskiJs();
-	@Source("org/geogebra/web/resources/js/tarski/tarski-loader.js")
-	TextResource tarskiLoaderJs();
 }

@@ -19,9 +19,9 @@ public class TarskiD extends Tarski {
 	}
 
 	@Override
-	public boolean init(int numcells, int timeout) {
+	public boolean init(int timeout) {
 		System.loadLibrary("tarski");
-		tarski.TARSKIINIT(numcells, timeout);
+		tarski.TARSKIINIT(50000000, timeout);
 		return true;
 	}
 

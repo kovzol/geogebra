@@ -30,13 +30,22 @@ public class TarskiW extends Tarski {
 	}-*/;
 
 	@Override
-	public boolean init(int numcells, int timeout) {
-		// TODO: Use these parameters (now they are hardwired in tarski-loader.js)
+	public boolean init(int timeout) {
 		GWT.runAsync(new RunAsyncCallback() {
 			@Override
 			public void onSuccess() {
 				JavaScriptInjector.inject(TarskiResources.INSTANCE.tarskiJs());
-				JavaScriptInjector.inject(TarskiResources.INSTANCE.tarskiLoaderJs());
+
+				String tarskiLoader = "Tarski().then(function(Module) {\n"
+						+ "var numcells = 50000000;\n"
+						+ "var timeout = " + timeout + "\n"
+						+ "TARSKIINIT = Module.cwrap(\"TARSKIINIT\", 'void', ['number', 'number']);\n"
+						+ "TARSKIEVAL = Module.cwrap(\"TARSKIEVAL\", \"string\", [\"string\"]);\n"
+						+ "TARSKIEND = Module.cwrap(\"TARSKIEND\", \"void\", []);\n"
+						+ "TARSKIINIT(numcells, timeout);\n"
+						+ "});";
+				JavaScriptInjector.inject("tarski-loader", tarskiLoader);
+
 				LoggerW.loaded("Tarski webAssembly injected");
 			}
 
