@@ -225,6 +225,10 @@ public class CASparser implements CASParserInterface {
 	 *             if parsing goes wrong
 	 */
 	public ValidExpression parseGiac(String exp) throws CASException {
+		exp = exp.replace("=>", "->"); // implication fix
+		exp = exp.replace(" and ", " && "); // and fix (for quantified expressions)
+		exp = exp.replace(" or ", " || "); // or fix (for quantified expressions)
+
 		try {
 			return parser.parseGiac(exp);
 		} catch (Throwable t) {

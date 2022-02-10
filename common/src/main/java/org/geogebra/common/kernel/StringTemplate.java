@@ -2389,12 +2389,19 @@ public class StringTemplate implements ExpressionNodeConstants {
 				break;
 			}
 
+			sb.append(' ');
+			if (stringType == StringType.GEOGEBRA) {
+				sb.append("(");
+			}
 			append(sb, rightStr, right, Operation.EXISTS);
 
 			switch (stringType) {
 			case TARSKI:
 				sb.append("]");
 				break;
+			}
+			if (stringType == StringType.GEOGEBRA) {
+				sb.append(")");
 			}
 
 		}
@@ -2436,6 +2443,9 @@ public class StringTemplate implements ExpressionNodeConstants {
 			}
 
 			sb.append(' ');
+			if (stringType == StringType.GEOGEBRA) {
+				sb.append("(");
+			}
 			append(sb, rightStr, right, Operation.FORALL);
 
 			switch (stringType) {
@@ -2443,6 +2453,11 @@ public class StringTemplate implements ExpressionNodeConstants {
 				sb.append("]");
 				break;
 			}
+
+			if (stringType == StringType.GEOGEBRA) {
+				sb.append(")");
+			}
+
 
 		}
 		return sb.toString();
