@@ -544,6 +544,9 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 				String [] resultlines = result.split("\n");
 				result = resultlines[resultlines.length - 1];
 				result = getTarskiOutput(result);
+				if (result == "") {
+					return null; // it's an error
+				}
 
 				// some heuristics to convert e.g.
 				// 4 a c - b^2 <= 0  and  [b != 0  or  c = 0  or  4 a c - b^2 < 0]
