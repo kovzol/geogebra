@@ -5,6 +5,7 @@ import static org.geogebra.common.cas.realgeom.Compute.getTarskiOutput;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -43,6 +44,7 @@ import org.geogebra.common.kernel.kernelND.GeoQuadricND;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.error.ErrorHelper;
+import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.MaxSizeHashMap;
 import org.geogebra.common.util.debug.Log;
 
@@ -538,30 +540,34 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.tarskiTemplate);
 				p = GGBToTarski(p);
 				String command = "(qepcad-api-call [" + p + "] 'T)";
-				Log.debug(command);
-				String result = App.tarski.eval(command);
-				result = TarskiToGGB(result);
-				String [] resultlines = result.split("\n");
-				result = resultlines[resultlines.length - 1];
-				result = getTarskiOutput(result);
+				String result = getTarskiGGBOutput(command);
 				if (result == "") {
 					return null; // it's an error
 				}
-
-				// some heuristics to convert e.g.
-				// 4 a c - b^2 <= 0  and  [b != 0  or  c = 0  or  4 a c - b^2 < 0]
-				// to
-				// 4 a * c - b^2 <= 0  and  (b != 0  or  c = 0  or  4 a c - b^2 < 0)
-				result = result.replace("[", "(");
-				result = result.replace("]", ")");
-				result = result.replaceAll("([_a-zA-Z][_a-zA-Z0-9]*) ([_a-zA-Z][_a-zA-Z0-9]*)", "$1*$2");
-
-				// change logical operators
-				result = result.replace("\\/", " or ").
-						replace("/\\", " and ").
-						replace("/=", "!=");
-				Log.debug(result);
 				return "quote(" + result + ")";
+			}
+			if (args.size() == 1 && (args.get(0).getOperation() == Operation.FORALL ||
+					args.get(0).getOperation() == Operation.EXISTS)) {
+				// do nothing, just refrain
+				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.casPrintTemplate);
+				return "\"" + p + "\""; // maybe this is the same as quote(...), TODO: check
+			}
+
+			if (args.size() == 1 && (args.get(0).getOperation() == Operation.NOT)) {
+				// do nothing, just refrain
+				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.casPrintTemplate);
+				if (p.contains(Unicode.EXISTS + "") || p.contains(Unicode.FORALL + "")) {
+					p = ((ExpressionNode) (args.get(0).getLeft())).toString(StringTemplate.tarskiTemplate);
+					p = GGBToTarski(p);
+					String command = "(t-neg [" + p + "])";
+					Log.debug(command);
+					String result = getTarskiGGBOutput(command);
+					if (result == "") {
+						return null; // it's an error
+					}
+					result = result.replace("(", " (");
+					return "\"" + result + "\"";
+				}
 			}
 		}
 
@@ -1329,6 +1335,35 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 		in = in.replace("leftbrace", "{");
 		in = in.replace("rightbrace", "}");
 		return in;
+	}
+
+	String getTarskiGGBOutput(String command) {
+		Log.debug(command);
+		String result = App.tarski.eval(command);
+		result = TarskiToGGB(result);
+		String [] resultlines = result.split("\n");
+		result = resultlines[resultlines.length - 1];
+		result = getTarskiOutput(result);
+
+		// change ex -> Unicode.EXISTS, all -> Unicode.FORALL
+		result = result.replace("ex ", Unicode.EXISTS + "");
+		result = result.replace("all ", Unicode.FORALL + "");
+
+		// some heuristics to convert e.g.
+		// 4 a c - b^2 <= 0  and  [b != 0  or  c = 0  or  4 a c - b^2 < 0]
+		// to
+		// 4 a * c - b^2 <= 0  and  (b != 0  or  c = 0  or  4 a c - b^2 < 0)
+		result = result.replace("[", "(");
+		result = result.replace("]", ")");
+		result = result.replaceAll("([_a-zA-Z][_a-zA-Z0-9]*) ([_a-zA-Z][_a-zA-Z0-9]*)", "$1*$2");
+
+		// change logical operators
+		result = result.replace("\\/", " or ").
+				replace("/\\", " and ").
+				replace("/=", "!=");
+
+		Log.debug(result);
+		return result;
 	}
 
 }
