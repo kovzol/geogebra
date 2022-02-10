@@ -534,6 +534,8 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 				outsourced = true;
 			}
 		}
+
+		/* START OF COMPUTATIONS VIA TARSKI */
 		// check Tarski as second candidate
 		if (!outsourced && allowOutsourcing) {
 			if (name.equals("RealQuantifierElimination")) {
@@ -554,13 +556,45 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 			}
 
 			if (args.size() == 1 && (args.get(0).getOperation() == Operation.NOT)) {
-				// do nothing, just refrain
 				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.casPrintTemplate);
 				if (p.contains(Unicode.EXISTS + "") || p.contains(Unicode.FORALL + "")) {
 					p = ((ExpressionNode) (args.get(0).getLeft())).toString(StringTemplate.tarskiTemplate);
 					p = GGBToTarski(p);
 					String command = "(t-neg [" + p + "])";
-					Log.debug(command);
+					String result = getTarskiGGBOutput(command);
+					if (result == "") {
+						return null; // it's an error
+					}
+					result = result.replace("(", " (");
+					return "\"" + result + "\"";
+				}
+			}
+
+			if (args.size() == 1 && (args.get(0).getOperation() == Operation.AND)) {
+				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.casPrintTemplate);
+				if (p.contains(Unicode.EXISTS + "") || p.contains(Unicode.FORALL + "")) {
+					String p1 = ((ExpressionNode) (args.get(0).getLeft())).toString(StringTemplate.tarskiTemplate);
+					p1 = GGBToTarski(p1);
+					String p2 = ((ExpressionNode) (args.get(0).getRight())).toString(StringTemplate.tarskiTemplate);
+					p2 = GGBToTarski(p2);
+					String command = "(make-prenex (t-and [" + p1 + "] [" + p2 + "]))";
+					String result = getTarskiGGBOutput(command);
+					if (result == "") {
+						return null; // it's an error
+					}
+					result = result.replace("(", " (");
+					return "\"" + result + "\"";
+				}
+			}
+
+			if (args.size() == 1 && (args.get(0).getOperation() == Operation.OR)) {
+				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.casPrintTemplate);
+				if (p.contains(Unicode.EXISTS + "") || p.contains(Unicode.FORALL + "")) {
+					String p1 = ((ExpressionNode) (args.get(0).getLeft())).toString(StringTemplate.tarskiTemplate);
+					p1 = GGBToTarski(p1);
+					String p2 = ((ExpressionNode) (args.get(0).getRight())).toString(StringTemplate.tarskiTemplate);
+					p2 = GGBToTarski(p2);
+					String command = "(make-prenex (t-or [" + p1 + "] [" + p2 + "]))";
 					String result = getTarskiGGBOutput(command);
 					if (result == "") {
 						return null; // it's an error
@@ -570,6 +604,7 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 				}
 			}
 		}
+		/* END OF COMPUTATIONS VIA TARSKI */
 
 		// get translation ggb -> Giac
 		if (!outsourced) {
