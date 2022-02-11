@@ -20,7 +20,7 @@ ext.hamcrestVersion = '2.2'
 // This is automatically updated when there is a new version of Giac out:
 ext.javaGiacVersion = '69820'
 // Please don't change this line since the automatism looks for exact match.
-ext.tarskiVersion = '2022Jan05'
+ext.tarskiVersion = '2022Feb11'
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
