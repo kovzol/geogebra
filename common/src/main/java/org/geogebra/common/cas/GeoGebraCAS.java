@@ -535,8 +535,23 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 			}
 		}
 
-		/* START OF COMPUTATIONS VIA TARSKI */
-		// check Tarski as second candidate
+		/* START OF COMPUTATIONS VIA TARSKI.
+		 * GeoGebra Discovery can parse first-order formulas (fof) with quantifiers.
+		 * They are like fof := "EXISTS|FORALL variable (fof)" | "semi-algebraic formula"
+		 * where a semi-algebraic formula is either a real equation or an inequality.
+		 * 1) The command RealQuantifierElimination(fof) tries to eliminate the quantifier
+		 *    via Tarski's qepcad-api-call command.
+		 * 2) If a fof is the input, then it is refrained (no manipulation is done).
+		 *    This is performed via sending the raw data through Giac as a string,
+		 *    and some minor hacks are added (the fof's are handled not well in Giac,
+		 *    that's why we need to do some replacing for the conjunction, disjunction or
+		 *    implication -- see CASparser.parseGiac).
+		 * 3) If a conjunction, disjunction or implication is the input, then Tarski's
+		 *    t-and and t-or commands will be used, but finally a make-prenex command
+		 *    ensures that a fof will be returned. Also, Tarski's geogebra syntax helps
+		 *    avoiding to get a list of quantifiers: instead, each quantifier will be
+		 *    given separately.
+		 *   */
 		if (!outsourced && allowOutsourcing) {
 			if (name.equals("RealQuantifierElimination")) {
 				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.tarskiTemplate);
@@ -551,6 +566,7 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 			if (args.size() == 1 && (args.get(0).getOperation() == Operation.FORALL ||
 					args.get(0).getOperation() == Operation.EXISTS)) {
 				// do nothing, just refrain
+				// TODO: consider using normalize
 				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.casPrintTemplate);
 				return "\"" + p + "\""; // maybe this is the same as quote(...), TODO: check
 			}
@@ -560,7 +576,7 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 				if (p.contains(Unicode.EXISTS + "") || p.contains(Unicode.FORALL + "")) {
 					p = ((ExpressionNode) (args.get(0).getLeft())).toString(StringTemplate.tarskiTemplate);
 					p = GGBToTarski(p);
-					String command = "(t-neg [" + p + "])";
+					String command = "(syntax 'geogebra (t-neg [" + p + "]))";
 					String result = getTarskiGGBOutput(command);
 					if (result == "") {
 						return null; // it's an error
@@ -577,7 +593,7 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 					p1 = GGBToTarski(p1);
 					String p2 = ((ExpressionNode) (args.get(0).getRight())).toString(StringTemplate.tarskiTemplate);
 					p2 = GGBToTarski(p2);
-					String command = "(make-prenex (t-and [" + p1 + "] [" + p2 + "]))";
+					String command = "(syntax 'geogebra (make-prenex (t-and [" + p1 + "] [" + p2 + "])))";
 					String result = getTarskiGGBOutput(command);
 					if (result == "") {
 						return null; // it's an error
@@ -594,7 +610,24 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 					p1 = GGBToTarski(p1);
 					String p2 = ((ExpressionNode) (args.get(0).getRight())).toString(StringTemplate.tarskiTemplate);
 					p2 = GGBToTarski(p2);
-					String command = "(make-prenex (t-or [" + p1 + "] [" + p2 + "]))";
+					String command = "(syntax 'geogebra (make-prenex (t-or [" + p1 + "] [" + p2 + "])))";
+					String result = getTarskiGGBOutput(command);
+					if (result == "") {
+						return null; // it's an error
+					}
+					result = result.replace("(", " (");
+					return "\"" + result + "\"";
+				}
+			}
+
+			if (args.size() == 1 && (args.get(0).getOperation() == Operation.IMPLICATION)) {
+				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.casPrintTemplate);
+				if (p.contains(Unicode.EXISTS + "") || p.contains(Unicode.FORALL + "")) {
+					String p1 = ((ExpressionNode) (args.get(0).getLeft())).toString(StringTemplate.tarskiTemplate);
+					p1 = GGBToTarski(p1);
+					String p2 = ((ExpressionNode) (args.get(0).getRight())).toString(StringTemplate.tarskiTemplate);
+					p2 = GGBToTarski(p2);
+					String command = "(syntax 'geogebra (make-prenex (t-or [~(" + p1 + ")] [" + p2 + "])))";
 					String result = getTarskiGGBOutput(command);
 					if (result == "") {
 						return null; // it's an error

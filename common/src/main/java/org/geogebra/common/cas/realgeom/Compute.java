@@ -737,8 +737,8 @@ public class Compute {
 		int semicolon = line.indexOf(":");
 		if (semicolon > -1) {
 			String content = line.substring(0, semicolon);
-			if (content.startsWith("[")) {
-				content = content.substring(1, content.length() - 1); // trim [ and ]
+			if (content.startsWith("[") || content.startsWith("\"")) {
+				content = content.substring(1, content.length() - 1); // trim [ and ], and "s
 			}
 			return content;
 		}
