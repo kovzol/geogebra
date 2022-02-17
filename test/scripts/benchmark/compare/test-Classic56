@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Test the web version. This script is useful when
-# slight modifications are done in the web version
+# Test the embedded versions. This script is useful when
+# slight modifications are done
 # and an immediate check is needed if there is any
 # regression introduced.
 
