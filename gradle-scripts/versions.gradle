@@ -21,6 +21,7 @@ ext.hamcrestVersion = '2.2'
 ext.javaGiacVersion = '69820'
 // Please don't change this line since the automatism looks for exact match.
 ext.tarskiVersion = '2022Feb17'
+ext.javaTarskiVersion = '2022Feb17'
 
 import org.apache.tools.ant.taskdefs.condition.Os
 

@@ -113,6 +113,10 @@ dependencies {
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-arm",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-windows-i586",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-macosx-universal"
+    runtime "tk.tarski:javatarski:$javaTarskiVersion:natives-linux-amd64",
+            "tk.tarski:javatarski:$javaTarskiVersion:natives-windows-amd64",
+            "tk.tarski:javatarski:$javaTarskiVersion:natives-windows-i586",
+            "tk.tarski:javatarski:$javaTarskiVersion:natives-macosx-universal"
 
     runtime "kovzol:tarski:$tarskiVersion:@zip"
 
@@ -205,9 +209,9 @@ task unzip(type: Copy) {
   def outputDir = file("${buildDir}")
 
   from zipTree(zipFile)
-  include "**/libtarski.so"
-  include "**/libtarski.jnilib"
-  include "**/windows${tarskiArch}/tarski.dll"
+  // include "**/libtarski.so"
+  // include "**/libtarski.jnilib"
+  // include "**/windows${tarskiArch}/tarski.dll"
   include "**/clang${tarskiArch}/*.dll"
   // exclude "msys-*.dll"
   eachFile { path = name }
