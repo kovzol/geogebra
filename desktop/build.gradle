@@ -118,8 +118,6 @@ dependencies {
             "tk.tarski:javatarski:$javaTarskiVersion:natives-windows-i586",
             "tk.tarski:javatarski:$javaTarskiVersion:natives-macosx-universal"
 
-    runtime "kovzol:tarski:$tarskiVersion:@zip"
-
     testCompile project(':keyboard-base')
     testCompile "junit:junit:$junitVersion"
     testCompile "org.mockito:mockito-core:$mockitoVersion"
@@ -198,26 +196,3 @@ tasks.withType(CreateStartScripts).each { task ->
         task.unixScript.write task.unixScript.text.replaceFirst(/(CLASSPATH=.APP_HOME\/lib\/).*/, { "${it[1]}*" })
     }
 }
-
-
-import org.apache.tools.ant.taskdefs.condition.Os
-
-task unzip(type: Copy) {
-
-  def zipPath = project.configurations.runtime.find {it.name.contains("$tarskiVersion") }
-  def zipFile = file(zipPath)
-  def outputDir = file("${buildDir}")
-
-  from zipTree(zipFile)
-  // include "**/libtarski.so"
-  // include "**/libtarski.jnilib"
-  // include "**/windows${tarskiArch}/tarski.dll"
-  include "**/clang${tarskiArch}/*.dll"
-  // exclude "msys-*.dll"
-  eachFile { path = name }
-  into outputDir
-
-}
-
-tasks.run.dependsOn("unzip")
-tasks.installDist.dependsOn("unzip")
