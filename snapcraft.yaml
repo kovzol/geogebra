@@ -15,7 +15,7 @@ grade: stable
 confinement: strict
 
 apps:
-  geogebra:
+  geogebra-discovery:
     extensions:
       - gnome-3-28
     command: bin/bash $SNAP/bin/desktop
@@ -32,7 +32,7 @@ apps:
       - cups-control
 
 parts:
-  geogebra:
+  geogebra-discovery:
     source: https://github.com/kovzol/geogebra.git
     plugin: gradle
     source-type: git
