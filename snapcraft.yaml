@@ -1,0 +1,64 @@
+name: geogebra-discovery
+architectures:
+  - build-on: amd64
+base: core18
+version: '5.0.641.0'
+summary: An experimental version of GeoGebra
+description: |
+  GeoGebra Discovery is an experimental version of GeoGebra.
+  It contains some bleeding edge features of GeoGebra that are
+  under heavy development and therefore not intended for every day use yet,
+  so they are not included in the official GeoGebra version.
+
+grade: stable
+
+confinement: strict
+
+apps:
+  geogebra:
+    extensions:
+      - gnome-3-28
+    command: bin/bash $SNAP/bin/desktop
+    environment:
+      JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-amd64
+      PATH: $JAVA_HOME/jre/bin:$PATH
+      JAVA_OPTS: -Djava.util.prefs.userRoot="$SNAP_USER_DATA"
+      LIBGL_DRIVERS_PATH: $SNAP/usr/lib/x86_64-linux-gnu/dri
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    plugs:
+      - home
+      - network
+      - cups-control
+
+parts:
+  geogebra:
+    source: https://github.com/kovzol/geogebra.git
+    plugin: gradle
+    source-type: git
+    gradle-options: [':desktop:installDist']
+    gradle-output-dir: desktop/build/libs
+    override-build: |
+      snapcraftctl build
+      rm desktop/build/install/desktop/bin/desktop.bat
+      rm desktop/build/install/desktop/lib/*windows*.jar
+      rm desktop/build/install/desktop/lib/*macosx*.jar
+      rm desktop/build/install/desktop/lib/*i586*.jar
+      rm desktop/build/install/desktop/lib/*pxcclr*.jar
+      rm desktop/build/install/desktop/lib/*zspace*.jar
+      rm desktop/build/install/desktop/lib/*arm*.jar
+      cp -a desktop/build/install/desktop/* $SNAPCRAFT_PART_INSTALL
+    stage-packages:
+      - bash
+      - libfreetype6
+      - libpng16-16
+      - libpango-1.0-0
+      - libxext6
+      - libxrender1
+      - libgtk-3-0
+      - libxtst6
+      - libgl1
+      - libgl1-mesa-dri
+      - libgtk2.0-0
+      - libasound2
+      - openjdk-11-jre
