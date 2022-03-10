@@ -65,4 +65,4 @@ parts:
     override-prime: |
       snapcraftctl prime
       rm -f usr/lib/jvm/java-11-openjdk-*/lib/security/blacklisted.certs
-      rm -f jar
+      rm -fr jar
