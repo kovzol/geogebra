@@ -109,6 +109,10 @@ while getopts "t:H:o:P:T:c:d:b:S:NeDGhv" OPT; do
      MYCOLUMNS="Botana BotanaGiac OpenGeoProver_Wu Auto"
      PROVEDETAILS=1
      ;;
+    2022)
+     MYCOLUMNS="Auto Web"
+     PROVEDETAILS=1
+     ;;
    esac # -S
    ;;
   e)
