@@ -416,12 +416,20 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			rootStr = bool.getDefinition()
 					.toString(StringTemplate.giacTemplate);
 		}
+
+		// We remove "ggbIsZero". This is quite ugly, TODO: do it more elegantly.
 		String[] splitedStr = rootStr.split(",");
 		String txtGgbIsZero = "[ggbIsZero";
 		rootStr = splitedStr[0];
 		if (rootStr.startsWith(txtGgbIsZero)) {
-			rootStr.substring(txtGgbIsZero.length(), rootStr.length() - 1);
+			rootStr = rootStr.substring(txtGgbIsZero.length(), rootStr.length() - 1);
+		} else {
+			txtGgbIsZero = "ggbIsZero";
+			if (rootStr.startsWith(txtGgbIsZero)) {
+				rootStr = rootStr.substring(txtGgbIsZero.length(), rootStr.length()); // simply remove
+			}
 		}
+
 		StringBuilder strForGiac = new StringBuilder();
 		strForGiac.append("eliminate([");
 		strForGiac.append(rootStr);
