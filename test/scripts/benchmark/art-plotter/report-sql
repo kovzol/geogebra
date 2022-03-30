@@ -11,7 +11,7 @@ TEX=html/all.tex
 CSV=none
 # Don't use this, it is just an example:
 #MYCOLUMNS="DesktopInternal DesktopGrobcov Web Node Wasm"
-MYCOLUMNS="DesktopInternal DesktopGrobcov Web"
+MYCOLUMNS="DesktopInternal Web"
 TESTGGBURLBASE_GGBDIR=https://autgeo.online/geogebra-discovery/test/scripts/benchmark/art-plotter
 GEOGEBRAWEB_URL=https://autgeo.online/geogebra-discovery/?filename=/geogebra-discovery/test/scripts/benchmark/art-plotter
 SINGULARWSREMOTEURL=http://singularws.idm.jku.at/

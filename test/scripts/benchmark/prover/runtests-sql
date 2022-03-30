@@ -9,7 +9,8 @@ MY_VERSION=2.2
 DEBUG=0 # In tmp/ there can be some log, if you set this to 1.
 DBDEBUG=0
 TIMEOUT=20
-PROVERS="Recio PureSymbolic Botana BotanaGiac OpenGeoProver_Wu OpenGeoProver_Area Auto Web"
+# PROVERS="Recio PureSymbolic Botana BotanaGiac OpenGeoProver_Wu OpenGeoProver_Area Auto Web"
+PROVERS="Auto Web"
 SINGULARWSREMOTEURL=http://singularws.idm.jku.at/
 PROVEDETAILS=0 # Rewrite Prove[] to ProveDetails if set to 1
 

@@ -11,7 +11,8 @@ TEX=html/all.tex
 CSV=none
 # Don't use this, it is just an example:
 # MYCOLUMNS="Recio PureSymbolic Botana,D BotanaGiac,D,p2 OpenGeoProver_Wu,p2 OpenGeoProver_Area Auto Web"
-MYCOLUMNS="Recio Botana Botana,D BotanaGiac BotanaGiac,D OpenGeoProver_Wu OpenGeoProver_Wu,D OpenGeoProver_Area Auto Auto,D Web Web,D"
+# MYCOLUMNS="Recio Botana Botana,D BotanaGiac BotanaGiac,D OpenGeoProver_Wu OpenGeoProver_Wu,D OpenGeoProver_Area Auto Auto,D Web Web,D"
+MYCOLUMNS="Auto,D Web,D"
 TESTGGBURLBASE_GGBDIR=https://autgeo.online/geogebra-discovery/test/scripts/benchmark/prover
 GEOGEBRAWEB_URL=https://autgeo.online/geogebra-discovery/?filename=/geogebra-discovery/test/scripts/benchmark/prover
 SINGULARWSREMOTEURL=http://singularws.idm.jku.at/
