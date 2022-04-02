@@ -116,6 +116,8 @@ public class EuclidianSettings extends AbstractSettings {
 
 	private boolean showGrid;
 
+	private boolean stepwiseDiscovery;
+
 	protected boolean gridIsBold;
 
 	private boolean rulerBold = false;
@@ -1016,6 +1018,28 @@ public class EuclidianSettings extends AbstractSettings {
 
 	public boolean getShowGrid() {
 		return showGrid;
+	}
+
+	/**
+	 * @param set
+	 *            whether to set stepwise discovery
+	 * @return whether settings changed
+	 */
+	public boolean stepwiseDiscovery(boolean set) {
+		if (set == stepwiseDiscovery) {
+			return false;
+		}
+		setStepwiseDiscoverySetting(set);
+		settingChanged();
+		return true;
+	}
+
+	public void setStepwiseDiscoverySetting(boolean set) {
+		stepwiseDiscovery = set;
+	}
+
+	public boolean getStepwiseDiscovery() {
+		return stepwiseDiscovery;
 	}
 
 	public boolean getGridIsBold() {

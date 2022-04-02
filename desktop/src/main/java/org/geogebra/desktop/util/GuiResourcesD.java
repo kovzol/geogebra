@@ -338,6 +338,9 @@ public enum GuiResourcesD implements ImageResourceD {
 	STYLINGBAR_GRAPHICS_SHOW_AXES(
 			"/gui/images/64px/stylingbar_graphicsview_show_or_hide_the_axes.png"),
 
+	STYLINGBAR_GRAPHICS_STEPWISE_DISCOVERY(
+			"/gui/images/64px/stylingbar_graphicsview_stepwise_discovery.png"),
+
 	STYLINGBAR_DELETE_SMALL("/gui/images/64px/stylingbar_delete_small.png"),
 
 	STYLINGBAR_DELETE_MEDIUM("/gui/images/64px/stylingbar_delete_medium.png"),

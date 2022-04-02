@@ -1769,6 +1769,11 @@ public abstract class EuclidianView3D extends EuclidianView
 	}
 
 	@Override
+	public boolean stepwiseDiscovery(boolean flag) {
+		return false;
+	}
+
+	@Override
 	public int getViewHeight() {
 		return getHeight();
 	}

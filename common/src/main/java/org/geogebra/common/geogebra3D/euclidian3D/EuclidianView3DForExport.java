@@ -304,8 +304,18 @@ public class EuclidianView3DForExport extends EuclidianView3D {
 	}
 
 	@Override
+	public boolean getStepwiseDiscovery() {
+		return false;
+	}
+
+	@Override
 	public void setToolTipText(String plainTooltip) {
 		// no need
+	}
+
+	@Override
+	public boolean stepwiseDiscovery(boolean set) {
+		return false;
 	}
 
 	@Override

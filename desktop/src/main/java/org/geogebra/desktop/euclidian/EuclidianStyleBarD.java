@@ -116,6 +116,8 @@ public class EuclidianStyleBarD extends JToolBar
 
 	protected MyToggleButtonD btnShowGrid;
 
+	protected MyToggleButtonD btnToggleDiscover;
+
 	protected MyToggleButtonD btnStandardView;
 
 	protected MyToggleButtonD btnShowAxes;
@@ -399,6 +401,7 @@ public class EuclidianStyleBarD extends JToolBar
 	protected void setActionCommands() {
 		btnShowAxes.setActionCommand("showAxes");
 		btnShowGrid.setActionCommand("showGrid");
+		btnToggleDiscover.setActionCommand("toggleDiscover");
 		btnStandardView.setActionCommand("standardView");
 		btnPointCapture.setActionCommand("pointCapture");
 	}
@@ -468,6 +471,7 @@ public class EuclidianStyleBarD extends JToolBar
 	protected void addGraphicsDecorationsButtons() {
 		add(btnShowAxes);
 		add(btnShowGrid);
+		add(btnToggleDiscover);
 		addBtnShowPlane();
 		add(btnStandardView);
 	}
@@ -487,7 +491,7 @@ public class EuclidianStyleBarD extends JToolBar
 	}
 
 	protected MyToggleButtonD[] newToggleBtnList() {
-		return new MyToggleButtonD[] { btnShowGrid, btnShowAxes, btnStandardView,
+		return new MyToggleButtonD[] { btnShowGrid, btnShowAxes, btnToggleDiscover, btnStandardView,
 				btnBold, btnItalic, btnTableTextLinesV, btnTableTextLinesH,
 				btnFixPosition, btnFixObject, this.btnDeleteSize[0],
 				this.btnDeleteSize[1], this.btnDeleteSize[2] };
@@ -509,6 +513,9 @@ public class EuclidianStyleBarD extends JToolBar
 
 		ImageIcon axesIcon = app
 				.getScaledIcon(GuiResourcesD.STYLINGBAR_GRAPHICS_SHOW_AXES);
+		ImageIcon discoverIcon = app
+				.getScaledIcon(GuiResourcesD.STYLINGBAR_GRAPHICS_STEPWISE_DISCOVERY);
+
 		iconHeight = axesIcon.getIconHeight();
 		updatePreferredSize();
 		// ========================================
@@ -540,6 +547,12 @@ public class EuclidianStyleBarD extends JToolBar
 		btnShowAxes = new MyToggleButtonDforEV(axesIcon, iconHeight);
 		// btnShowAxes.setPreferredSize(new Dimension(16,16));
 		btnShowAxes.addActionListener(this);
+
+		// ========================================
+		// show discover button
+		btnToggleDiscover = new MyToggleButtonDforEV(discoverIcon, iconHeight);
+		// btnToggleDiscover.setPreferredSize(new Dimension(16,16));
+		btnToggleDiscover.addActionListener(this);
 
 		// ========================================
 		// show grid button
@@ -1436,6 +1449,10 @@ public class EuclidianStyleBarD extends JToolBar
 		btnShowAxes.setSelected(ev.getShowXaxis());
 		btnShowAxes.addActionListener(this);
 
+		btnToggleDiscover.removeActionListener(this);
+		btnToggleDiscover.setSelected(ev.getStepwiseDiscovery());
+		btnToggleDiscover.addActionListener(this);
+
 		btnShowGrid.removeActionListener(this);
 		btnShowGrid.setSelected(ev.getShowGrid());
 		btnShowGrid.addActionListener(this);
@@ -1599,6 +1616,7 @@ public class EuclidianStyleBarD extends JToolBar
 
 		btnShowGrid.setToolTipText(loc.getPlainTooltip("stylebar.Grid"));
 		btnShowAxes.setToolTipText(loc.getPlainTooltip("stylebar.Axes"));
+		btnToggleDiscover.setToolTipText(loc.getPlainTooltip("stylebar.Discover"));
 		btnStandardView
 				.setToolTipText(loc.getPlainTooltip("stylebar.ViewDefault"));
 		btnPointCapture.setToolTipText(loc.getPlainTooltip("stylebar.Capture"));

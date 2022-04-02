@@ -345,6 +345,11 @@ public interface EuclidianViewInterfaceCommon
 	public boolean getShowGrid();
 
 	/**
+	 * @return true if stepwise discovery is set
+	 */
+	public boolean getStepwiseDiscovery();
+
+	/**
 	 * @return true if mouse coords are shown
 	 */
 	public boolean getShowMouseCoords();
@@ -820,6 +825,8 @@ public interface EuclidianViewInterfaceCommon
 	 */
 	public boolean setShowAxes(boolean flag, boolean update);
 
+	public boolean setStepwiseDiscovery(boolean flag, boolean update);
+
 	/**
 	 * create a previewable for polygon construction
 	 * 
@@ -873,6 +880,14 @@ public interface EuclidianViewInterfaceCommon
 	 * @return whether setting changed
 	 */
 	public boolean showGrid(boolean show);
+
+	/**
+	 * @param set
+	 *            true to set stepwise discovery
+	 * @return whether setting changed
+	 */
+	public boolean stepwiseDiscovery(boolean set);
+
 
 	/**
 	 * @param bold
@@ -1005,6 +1020,8 @@ public interface EuclidianViewInterfaceCommon
 	 * @return whether this is a view for plane
 	 */
 	public boolean isViewForPlane();
+
+	boolean setStepwiseDiscovery(boolean set);
 
 	/**
 	 * @param axis

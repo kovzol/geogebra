@@ -645,6 +645,17 @@ public class EuclidianStyleBarStatic {
 			ev.repaint();
 		}
 
+		else if ("toggleDiscover".equals(actionCommand)) {
+			EuclidianSettings evs = app.getSettings().getEuclidianForView(ev,
+					app);
+			if (evs != null) {
+				changed = evs.stepwiseDiscovery(!evs.getStepwiseDiscovery());
+			} else {
+				changed = ev.stepwiseDiscovery(!ev.getStepwiseDiscovery());
+			}
+			ev.repaint();
+		}
+
 		else if ("standardView".equals(actionCommand)) {
 
 			// no parameters, always do this

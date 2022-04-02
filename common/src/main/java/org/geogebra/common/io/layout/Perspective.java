@@ -49,6 +49,11 @@ public class Perspective {
 	private boolean showGrid;
 
 	/**
+	 * If the grid should be displayed.
+	 */
+	private boolean stepwiseDiscovery;
+
+	/**
 	 * If the axes should be displayed.
 	 */
 	private boolean showAxes;
@@ -209,7 +214,8 @@ public class Perspective {
 	 */
 	public Perspective(String id, DockSplitPaneData[] splitPaneInfo,
 			DockPanelData[] dockPanelInfo, String toolbarDefinition,
-			boolean showToolBar, boolean showGrid, boolean showAxes,
+			boolean showToolBar, boolean showGrid, boolean stepwiseDiscovery,
+					   boolean showAxes,
 			boolean showInputPanel, boolean showInputPanelCommands,
 			InputPosition inputPosition, int toolBarPosition,
 			boolean showToolBarHelp, boolean showDockBar,
@@ -313,6 +319,21 @@ public class Perspective {
 	 */
 	public void setShowGrid(boolean showGrid) {
 		this.showGrid = showGrid;
+	}
+
+	/**
+	 * @return If the grid should be displayed.
+	 */
+	public boolean getStepwiseDiscovery() {
+		return stepwiseDiscovery;
+	}
+
+	/**
+	 * @param showGrid
+	 *            If the grid should be displayed in this perspective.
+	 */
+	public void setStepwiseDiscovery(boolean set) {
+		this.stepwiseDiscovery = set;
 	}
 
 	/**

@@ -396,6 +396,9 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	/** true if grid is displayed */
 	protected boolean showGrid = false;
 
+	/** true if stepwise discovery is set */
+	protected boolean stepwiseDiscovery = false;
+
 	/** whether mouse coords are shown see also allowShowMouseCoords */
 	protected boolean showMouseCoords = false;
 
@@ -3210,6 +3213,11 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	}
 
 	@Override
+	public boolean getStepwiseDiscovery() {
+		return stepwiseDiscovery;
+	}
+
+	@Override
 	public boolean isGridOrAxesShown() {
 		return showAxes[0] || showAxes[1] || showGrid;
 	}
@@ -4486,6 +4494,21 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	public boolean setShowAxes(boolean flag, boolean update) {
 		boolean changedX = setShowAxis(AXIS_X, flag, false);
 		return setShowAxis(AXIS_Y, flag, true) || changedX;
+	}
+
+	@Override
+	public boolean setStepwiseDiscovery(boolean flag, boolean update) {
+ 		return true;
+	}
+
+	@Override
+	public boolean setStepwiseDiscovery(boolean set) {
+		return true;
+	}
+
+	@Override
+	public boolean stepwiseDiscovery(boolean set) {
+		return true;
 	}
 
 	/*

@@ -103,7 +103,7 @@ public class Discover {
 	 * Build the whole database of properties,
 	 * including all points in the construction list.
 	 */
-	private boolean detectProperties(GeoPoint p) {
+	public boolean detectProperties(GeoPoint p) {
 		percent = 0.0;
 		updatePercentInfo();
 		cons.getApplication().setWaitCursor();
@@ -890,6 +890,10 @@ public class Discover {
 		}
 	}
 
+	public void initDiscoveryPool() {
+		discoveryPool = cons.getDiscoveryPool();
+	}
+
 	public void showDialog() {
 		// TODO: Control this before calling this method.
 		if (kernel.isSilentMode()) {
@@ -899,7 +903,8 @@ public class Discover {
 		if (!(this.input instanceof GeoPoint)) {
 			return; // not yet implemented
 		}
-		discoveryPool = cons.getDiscoveryPool();
+
+		initDiscoveryPool();
 
 		Log.debug("The discovery pool contains " +
 				discoveryPool.points.size() + " points, " +

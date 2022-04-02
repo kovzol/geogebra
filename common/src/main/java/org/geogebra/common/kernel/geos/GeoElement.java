@@ -43,16 +43,7 @@ import org.geogebra.common.factories.LaTeXFactory;
 import org.geogebra.common.gui.dialog.options.model.AxisModel.IAxisModelListener;
 import org.geogebra.common.gui.view.algebra.AlgebraView.SortMode;
 import org.geogebra.common.gui.view.algebra.fiter.AlgebraOutputFilter;
-import org.geogebra.common.kernel.AnimationManager;
-import org.geogebra.common.kernel.AutoColor;
-import org.geogebra.common.kernel.CircularDefinitionException;
-import org.geogebra.common.kernel.Construction;
-import org.geogebra.common.kernel.ConstructionDefaults;
-import org.geogebra.common.kernel.GTemplate;
-import org.geogebra.common.kernel.GraphAlgo;
-import org.geogebra.common.kernel.Kernel;
-import org.geogebra.common.kernel.Locateable;
-import org.geogebra.common.kernel.StringTemplate;
+import org.geogebra.common.kernel.*;
 import org.geogebra.common.kernel.algos.AlgoAttachCopyToView;
 import org.geogebra.common.kernel.algos.AlgoCirclePointRadiusInterface;
 import org.geogebra.common.kernel.algos.AlgoDependentText;
@@ -2411,6 +2402,18 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 				doRenameLabel(newLabel);
 			}
 		}
+
+		// We have a label. Let's try stepwise discovery then!
+		// boolean discovery = this.getApplication().getSettings().getEuclidian(1).getStepwiseDiscovery();
+		if (this instanceof GeoPoint) {
+			boolean discovery = this.getApp().getSettings().getEuclidian(1).getStepwiseDiscovery();
+			if (discovery && !kernel.isSilentMode()) {
+				Discover d = new Discover(this.getApp(), this);
+				d.initDiscoveryPool();
+				d.detectProperties((GeoPoint) this);
+			}
+		}
+
 	}
 
 	@Override
