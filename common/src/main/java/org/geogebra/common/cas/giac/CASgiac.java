@@ -316,7 +316,10 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * of discrete points, then convert the linear polynomials to a product
 		 * of circle definitions with zero radius.
 		 */
-		GEOM_ELIM("geomElim", "geomElim(polys,elimvars,precision):=begin local ee, ll, ff, gg, ii; print(polys); print(elimvars); ee:=eliminate(polys,revlist(elimvars)); print(ee); ll:=lvar(ee); print(ll); if (size(ee)>1) begin /*print(fsolve(ee,ll));*/ ff:=round(fsolve(ee,ll)*precision)/precision; /*print(ff);*/ gg:=1; for ii from 0 to size(ff)-1 do gg:=gg*(((ll[0]-ff[ii,0])^2+(ll[1]-ff[ii,1])^2)); print(gg); od; ee:=[expand(lcm(denom(coeff(gg)))*gg)]; end; if (size(ee)==0) return 0; else return primpoly(ee)[0]; end;"),
+		GEOM_ELIM("geomElim", "geomElim(polys,elimvars,precision):=" +
+				"begin local ee, ll, ff, gg, ii; print(polys); print(elimvars); ee:=eliminate(polys,revlist(elimvars)); " +
+				"print(ee); ll:=lvar(ee); print(ll); if (size(ee)>1) begin /*print(fsolve(ee,ll));*/ ff:=round(fsolve(ee,ll)*precision)/precision; print(ff); gg:=1; " +
+				"for ii from 0 to size(ff)-1 do if (size(lvar(ff[ii]))==0) begin gg:=gg*(((ll[0]-ff[ii,0])^2+(ll[1]-ff[ii,1])^2)); print(gg); end; od; ee:=[expand(lcm(denom(coeff(gg)))*gg)]; end; print(ee); if (size(ee)==0) return 0; else return primpoly(ee)[0]; end;"),
 		/**
 		 * Decide if a polynomial, which is a sum internally in Giac, is linear or not.
 		 */
