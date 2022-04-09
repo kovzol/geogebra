@@ -107,12 +107,19 @@ dependencies {
         "com.jogamp:gluegen-rt:$joglVersion:natives-windows-amd64", 
         "com.jogamp:gluegen-rt:$joglVersion:natives-macosx-universal",
         "com.jogamp:gluegen-rt:$joglVersion:natives-linux-i586"
+    /*
     runtime "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-amd64",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-i586",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-windows-amd64",
         // "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-arm",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-windows-i586",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-macosx-universal"
+    */
+
+    runtime "com.github:javagiac-linux64:20220409snapshot24:natives-linux-amd64",
+            "com.github:javagiac-mac:20220409snapshot24:natives-macosx-universal" //,
+            // "com.github:javagiac-win32:20220409snapshot24:natives-windows-i586"
+
     runtime "tk.tarski:javatarski:$javaTarskiVersion:natives-linux-amd64",
             "tk.tarski:javatarski:$javaTarskiVersion:natives-windows-amd64",
             "tk.tarski:javatarski:$javaTarskiVersion:natives-windows-i586",

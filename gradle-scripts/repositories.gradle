@@ -31,6 +31,15 @@ allprojects {
         jcenter()
         google()
         maven { url 'http://repo.vertispan.com/gwt-snapshot' }
+
+        maven {
+            url "https://maven.pkg.github.com/kovzol/giac-1"
+            credentials {
+                username "kovzol"
+                password "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" // read-only access
+            }
+        }
+
         def github = ivy { url 'https://github.com/'
               patternLayout {
                 artifact '/[organisation]/[module]/releases/download/[revision]/[module]-[revision].[ext]'
