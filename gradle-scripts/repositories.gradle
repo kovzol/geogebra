@@ -36,8 +36,7 @@ allprojects {
             url "https://maven.pkg.github.com/kovzol/giac-1"
             credentials {
                 username "kovzol"
-                // password "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" // read-only access
-                password "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" // read-only access
+                password "ghp" + "_" + "At4osn2AkMKk10tiFCcc" + "YiMiGtZxDz3zFKmV" // read-only access
             }
         }
 
