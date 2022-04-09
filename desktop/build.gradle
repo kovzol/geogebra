@@ -116,9 +116,9 @@ dependencies {
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-macosx-universal"
     */
 
-    runtime "com.github:javagiac-linux64:20220409snapshot24:natives-linux-amd64",
-            "com.github:javagiac-mac:20220409snapshot24:natives-macosx-universal" //,
-            // "com.github:javagiac-win32:20220409snapshot24:natives-windows-i586"
+    runtime "com.github:javagiac-linux64:20220409snapshot25:natives-linux-amd64",
+            "com.github:javagiac-mac:20220409snapshot25:natives-macosx-universal",
+            "com.github:javagiac-win32:20220409snapshot25:natives-windows-i586"
 
     runtime "tk.tarski:javatarski:$javaTarskiVersion:natives-linux-amd64",
             "tk.tarski:javatarski:$javaTarskiVersion:natives-windows-amd64",
