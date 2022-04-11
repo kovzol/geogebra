@@ -505,6 +505,7 @@ public class GeoGebraFrame extends JFrame
 			l.newInstance(wnd);
 		}
 
+		wnd.setVisible(true); // if this is not set, the application window will be hidden
 		return wnd;
 	}
 
