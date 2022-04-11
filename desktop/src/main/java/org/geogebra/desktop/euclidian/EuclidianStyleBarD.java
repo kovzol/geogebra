@@ -1,5 +1,6 @@
 package org.geogebra.desktop.euclidian;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -13,6 +14,8 @@ import java.util.List;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
 import org.geogebra.common.awt.GColor;
@@ -1476,6 +1479,21 @@ public class EuclidianStyleBarD extends JToolBar
 			app.storeUndoInfo();
 			needUndo = false;
 		}
+
+		if (e.getActionCommand().equals("toggleDiscover") ) {
+			/* For stepwise discovery two icons should be used.
+			 * Now there is only one. We inform the user if the mode is enabled or disabled.
+			 */
+			JPanel panel = new JPanel(new BorderLayout(5, 5));
+			if (app.getSettings().getEuclidian(1).getStepwiseDiscovery()) {
+				JOptionPane.showMessageDialog(panel, "The stepwise discovery mode is enabled. Expect bugs.",
+						"Warning", JOptionPane.WARNING_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(panel, "The stepwise discovery mode is disabled.",
+						"Information", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+
 	}
 
 	/**
