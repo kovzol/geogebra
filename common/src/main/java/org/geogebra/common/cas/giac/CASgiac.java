@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.TreeMap;
 
 import org.geogebra.common.cas.CASparser;
+import org.geogebra.common.cas.realgeom.Compute;
 import org.geogebra.common.kernel.AsynchronousCommand;
 import org.geogebra.common.kernel.CASException;
 import org.geogebra.common.kernel.CASGenericInterface;
@@ -310,24 +311,66 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * Compute squarefree factorization of the input poly p. Strange why
 		 * sommet(-x)!='-' (so we do an ugly hack here, FIXME)
 		 */
-		FACTOR_SQR_FREE("factorsqrfree", "factorsqrfree(p):=begin local pf,r,ii; pf:=factor(p); if (sommet(pf)!='*') begin if (sommet(pf)=='^') return op(pf)[0]; else begin if (sommet(pf)!=sommet(-x)) return pf; else return factorsqrfree(-pf); end; end; opf:=op(pf); r:=1; for ii from 0 to size(opf)-1 do r:=r*factorsqrfree(opf[ii]); od return r end"),
+		FACTOR_SQR_FREE("factorsqrfree", Compute.ggbGiac("factorsqrfree(p) -> " +
+		"{ local pf,r,ii;" +
+			"pf:=factor(p);" +
+			"if ((sommet(pf))<>'*') if (((sommet(pf))=='^')) return((op(pf))[0]); else if ((sommet(pf))<>(sommet(-x))) return(pf); else return(factorsqrfree(-pf)); ; ; ;" +
+			"opf:=op(pf);" +
+			"r:=1;" +
+			"for (ii:=0;ii<=(size(opf)-1);ii:=ii+1) r:=r*factorsqrfree(opf[ii]); ;" +
+			"return(r);" +
+		"}")),
+
+
 		/**
 		 * Eliminate variables from a polynomial ideal. If the result is a set
 		 * of discrete points, then convert the linear polynomials to a product
 		 * of circle definitions with zero radius.
 		 */
-		GEOM_ELIM("geomElim", "geomElim(polys,elimvars,precision):=" +
-				"begin local ee, ll, ff, gg, ii; print(polys); print(elimvars); ee:=eliminate(polys,revlist(elimvars)); " +
-				"print(ee); ll:=lvar(ee); print(ll); if (size(ee)>1) begin /*print(fsolve(ee,ll));*/ ff:=round(fsolve(ee,ll)*precision)/precision; print(ff); gg:=1; " +
-				"for ii from 0 to size(ff)-1 do if (size(lvar(ff[ii]))==0) begin gg:=gg*(((ll[0]-ff[ii,0])^2+(ll[1]-ff[ii,1])^2)); print(gg); end; od; ee:=[expand(lcm(denom(coeff(gg)))*gg)]; end; print(ee); if (size(ee)==0) return 0; else return primpoly(ee)[0]; end;"),
+		GEOM_ELIM("geomElim", Compute.ggbGiac("geomElim (polys,elimvars,precision)-> \n"
+				+ "{ local ee,ll,ff,gg,ii;"
+				+ "  print(polys);"
+				+ "  print(elimvars);"
+				+ "  ee:=eliminate(polys,revlist(elimvars));"
+				+ "  print(ee);"
+				+ "  ll:=lvar(ee);"
+				+ "  print(ll);"
+				+ "  if ((size(ee))>1) {"
+				+ "      ff:=round(fsolve(ee,ll)*precision)/precision;"
+				+ "      print(ff);"
+				+ "      gg:=1;"
+				+ "      for (ii:=0;ii<=(size(ff)-1);ii:=ii+1) if (((size(lvar(ff[ii])))==0)) {"
+				+ "            gg:=gg*((ll[0]-(ff[ii,0]))^2+(ll[1]-(ff[ii,1]))^2);"
+				+ "            print(gg);"
+				+ "          };"
+				+ "      ee:=copy([expand(lcm(denom(coeff(gg)))*gg)]);"
+				+ "    };"
+				+ "  print(ee);"
+				+ "  if (((size(ee))==0)) return(0); else return((primpoly(ee))[0]); ;"
+				+ "}")),
 		/**
 		 * Decide if a polynomial, which is a sum internally in Giac, is linear or not.
 		 */
-		IS_LINEAR_SUM("isLinearSum", "isLinearSum(poly):=begin local degs, vars, ii, ss; vars:=lvar(poly); ii:=1; ss:=size(poly); while (ii<ss) do degs:=degree(poly[ii], vars); if (sum(degs)>1) begin return false; end; ii:=ii+1; od; return true; end"),
+		IS_LINEAR_SUM("isLinearSum", Compute.ggbGiac("isLinearSum(poly)->"
+				+ "{ local degs,vars,ii,ss;"
+				+ "  vars:=lvar(poly);"
+				+ "  ii:=1;"
+				+ "  ss:=size(poly);"
+				+ "  while(ii<ss){"
+				+ "      degs:=degree(poly[ii],vars);"
+				+ "      if ((sum(degs))>1) return(false); ;"
+				+ "      ii:=ii+1;"
+				+ "    };; ;"
+				+ "  return(true);"
+				+ "}")),
 		/**
 		 * Decide if a polynomial is linear or not. The way it is done is hacky and incomplete. FIXME.
 		 */
-		IS_LINEAR("isLinear", "isLinear(poly):=begin if (sommet(poly)==\"+\") begin return isLinearSum(poly); end; return isLinearSum(poly+1234567); end"),
+		IS_LINEAR("isLinear", Compute.ggbGiac("isLinear(poly)->{"
+				// + "  print(\"isLinear? \" + poly);"
+				+ "  if (((sommet(poly))==\"+\")) return(isLinearSum(poly)); ;"
+				+ "  return(isLinearSum(poly+1234567));  \n"
+				+ "}")),
 		/**
 		 * Help simplifying the input when computing the Jacobian matrix in the
 		 * Envelope command. Input: a list of polynomials and a list of
@@ -345,25 +388,86 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * 
 		 * Used internally.
 		 */
-		JACOBI_PREPARE("jacobiPrepare", "jacobiPrepare(polys,excludevars):=begin local ii, degs, pos, vars, linvar, p, keep, c;" +
-				"keep:=[]; vars:=lvar(polys); print(\"input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\"); c:=1; " +
-				"while (c<size(lvar(polys))) do ii:=0; while (ii<size(polys)-1) do degs:=degree(polys[ii],vars); if ((sum(degs)=c) and (isLinear(polys[ii]))) begin " +
-				"pos:=find(1,degs); if (size(pos)=c) begin p:=0; linvar:=vars[pos[p]]; while(is_element(linvar,excludevars) and c>1 and p<size(pos)-1) begin p:=p+1; linvar:=vars[pos[p]]; end;" +
-				" if (!is_element(linvar,excludevars) or c<2) begin if (is_element(linvar,excludevars)) begin keep:=append(keep,polys[ii]); end;" +
-				" substval:=op(solve(polys[ii]=0,linvar)[0])[1]; polys:=remove(0,expand(subs(polys,[linvar],[substval]))); vars:=lvar(polys); ii:=-1; end; end; end;" +
-				" ii:=ii+1; od; c:=c+1; od; polys:=flatten(append(polys,keep)); vars:=lvar(polys); print(\"output: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");  return polys; end"),
+		JACOBI_PREPARE("jacobiPrepare", Compute.ggbGiac("jacobiPrepare (polys,excludevars)->"
+				+ "{ local ii,degs,pos,vars,linvar,p,keep,c,sumdegs,degs;"
+				+ "  keep:=copy(NULL);"
+				+ "  vars:=lvar(polys);"
+				+ "  print(\"input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");"
+				+ "  c:=1;"
+				+ "  while(c<(size(lvar(polys)))){"
+				+ "      ii:=0;"
+				+ "      while(ii<(size(polys)-1)){"
+				+ "          degs:=degree(polys[ii],vars);"
+				// + "          print(c);"
+				// + "          print(ii);"
+				// + "          print(polys[ii]);"
+				// + "          print(degs);"
+				+ "          if(type(degs)==DOM_LIST) sumdegs:=sum(degs); else sumdegs:=degs;"
+				+ "          if ((sumdegs==c) && (isLinear(polys[ii]))) {"
+				+ "              pos:=find(1,degs);"
+				// + "              print(pos);"
+				+ "              if (((size(pos))==c)) {"
+				+ "                  p:=0;"
+				+ "                  linvar:=vars[pos[p]];"
+				+ "                  while(((is_element(linvar,excludevars)) && (c>1)) && (p<(size(pos)-1))){"
+				+ "                      p:=p+1;"
+				+ "                      linvar:=vars[pos[p]];"
+				+ "                    };; ;"
+				// + "                  print(linvar);"
+				+ "                  if ((not(is_element(linvar,excludevars))) || (c<2)) {"
+				+ "                      if (is_element(linvar,excludevars)) keep:=append(keep,polys[ii]); ;"
+				// + "                      print(keep);"
+				// + "                      sol:=solve(polys[ii]=0,linvar);"
+				// + "                      print(sol);"
+				// + "                      ooo:=op(sol[0]);"
+				// + "                      print(ooo);"
+				// + "                      oo1:=ooo[1];"
+				// + "                      print(oo1);"
+				+ "                      substval:=(op((solve(polys[ii]=0,linvar))[0]))[1];"
+				// + "                      print(substval);"
+				+ "                      polys:=remove(0,expand(subs(polys,[linvar],[substval])));"
+				+ "                      vars:=lvar(polys);"
+				+ "                      ii:=-1;"
+				+ "                    };"
+				+ "                };"
+				+ "            };"
+				+ "          ii:=ii+1;"
+				+ "        };; ;"
+				+ "      c:=c+1;"
+				+ "    };; ;"
+				+ "  polys:=flatten(append(polys,keep));"
+				+ "  vars:=lvar(polys);"
+				+ "  print(\"output: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");"
+				+ "  return(polys);"
+				+ "}")),
 		/**
 		 * Compute the Jacobian determinant of the polys with respect to
 		 * excludevars. Used internally.
 		 */
-		JACOBI_DET("jacobiDet", "jacobiDet(polys,excludevars):=begin local J, ii, vars, s, j, k, dm; vars:=lvar(polys); for ii from 0 to size(excludevars)-1 do vars:=remove(excludevars[ii], vars); od; s:=size(vars); J:=matrix(s,s,(j,k)->diff(polys[j],vars[k])); dm:=det_minor(J); print(\"det size=\"+size(dm)); return dm; end"),
+		JACOBI_DET("jacobiDet", Compute.ggbGiac("jacobiDet(polys,excludevars)->"
+				+ "{ local J,ii,vars,s,j,k,dm;"
+				+ "  vars:=lvar(polys);"
+				+ "  for (ii:=0;ii<=(size(excludevars)-1);ii:=ii+1) vars:=remove(excludevars[ii],vars); ;"
+				+ "  s:=size(vars);"
+				+ "  J:=matrix(s,s, (j,k)=>diff(polys[j],vars[k]));"
+				+ "  dm:=det_minor(J);"
+				+ "  print(\"det size=\"+size(dm));"
+				+ "  return(dm);"
+				+ "}")),
 		/**
 		 * Compute the coefficients of the envelope equation for the input
 		 * polys, elimvars with given precision for the curve variables x and y.
 		 * Used publicly.
 		 */
-		ENVELOPE_EQU("envelopeEqu",
-				"envelopeEqu(polys,elimvars,precision,curvevarx,curvevary):=begin local polys2, D; polys2:=jacobiPrepare(polys,[curvervarx,curvevary]); D:=jacobiDet(polys2,[curvevarx,curvevary]); polys2:=append(polys2,D); return locusEqu(polys2,elimvars,precision,curvevarx,curvevary); end"),
+		ENVELOPE_EQU("envelopeEqu", Compute.ggbGiac("envelopeEqu(polys,elimvars,precision,curvevarx,curvevary)->"
+				+ "{ local polys2,D;"
+				+ "  polys2:=jacobiPrepare(polys,[curvervarx,curvevary]);"
+				// + "  print(polys2);"
+				+ "  D:=jacobiDet(polys2,[curvevarx,curvevary]);"
+				+ "  polys2:=append(polys2,D);"
+				// + "  print(D);"
+				+ "  return(locusEqu(polys2,elimvars,precision,curvevarx,curvevary));"
+				+ "}")),
 		/**
 		 * Compute the coefficients of the locus equation for the input polys,
 		 * elimvars with given precision for the curve variables x and y. Used
@@ -376,23 +480,61 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * row, starting with the sizes of the matrix: height and width. Used
 		 * internally.
 		 */
-		COEFF_MATRIX("coeffMatrix", "coeffMatrix(aa):=begin local bb, sx, sy, ii, jj, ee, cc, kk; bb:=coeffs(aa,x); sx:=size(bb); sy:=size(coeffs(aa,y)); cc:=[sx,sy]; for ii from sx-1 to 0 by -1 do dd:=coeff(bb[ii],y); sd:=size(dd); for jj from sd-1 to 0 by -1 do ee:=dd[jj]; cc:=append(cc,ee); od; for kk from sd to sy-1 do ee:=0; cc:=append(cc,ee); od; od; return cc; end"),
 		/**
 		 * Compute the coefficient matrices for the factors of the input
 		 * polynomial. The first number in the flattened output is the number of
 		 * the coefficient matrices, then each coefficient matrix is added. Used
 		 * internally.
 		 */
-		COEFF_MATRICES("coeffMatrices", "coeffMatrices(aa):=begin local ff, bb, ccf, ll, aaf; ff:=factors(aa); ccf:=[size(ff)/2]; for ll from 0 to size(ff)-1 by 2 do aaf:=ff[ll]; bb:=coeffMatrix(aaf); ccf:=append(ccf,bb); od; return flatten(ccf); end"),
+		COEFF_MATRIX("coeffMatrix", Compute.ggbGiac("coeffMatrix(aa)->" +
+		"{ local bb,sx,sy,ii,jj,ee,cc,kk;" +
+		"   bb:=coeffs(aa,x);" +
+		"   sx:=size(bb);" +
+		"   sy:=size(coeffs(aa,y));" +
+		"   cc:=copy([sx,sy]);" +
+		"   for (ii:=sx-1;ii>=0;ii:=ii-1) {" +
+		"       dd:=coeff(bb[ii],y);" +
+		"       sd:=size(dd);" +
+		"       for (jj:=sd-1;jj>=0;jj:=jj-1) {" +
+		"           ee:=dd[jj];" +
+		"           cc:=append(cc,ee);" +
+		"       };" +
+		"       for (kk:=sd;kk<=(sy-1);kk:=kk+1) {" +
+		"           ee:=0;" +
+		"           cc:=append(cc,ee);" +
+		"       };" +
+		"   };" +
+		"   return(cc);" +
+		"}")),
+
 		/**
 		 * Compute the flattened coefficient matrix as it is directly used when
 		 * the algebraic curve is plotted as an implicit poly. Used publicly.
 		 */
-		IMPLICIT_CURVE_COEFFS("implicitCurveCoeffs", "implicitCurveCoeffs(aa):=begin local bb; bb:=factorsqrfree(aa); return [coeffMatrix(bb),coeffMatrices(bb)]; end"),
+		COEFF_MATRICES("coeffMatrices", Compute.ggbGiac("coeffMatrices(aa)->"
+				+ "{ local ff,bb,ccf,ll,aaf;"
+				+ "  ff:=factors(aa);"
+				+ "  ccf:=copy([(size(ff))/2]);"
+				+ "  for (ll:=0;ll<=(size(ff)-1);ll:=ll+2) {"
+				+ "      aaf:=ff[ll];"
+				+ "      bb:=coeffMatrix(aaf);"
+				+ "      ccf:=append(ccf,bb);"
+				+ "    };"
+				+ "  return(flatten(ccf));"
+				+ "}")),
+		IMPLICIT_CURVE_COEFFS("implicitCurveCoeffs", Compute.ggbGiac("implicitCurveCoeffs(aa)->"
+				+ "{ local bb;"
+				+ "  bb:=factorsqrfree(aa);"
+				+ "  return([coeffMatrix(bb),coeffMatrices(bb)]);"
+				+ "}")),
 		/**
 		 * Decide if a poly is irreducible.
 		 */
-		IRRED("irred", "irred(p,x):=begin local f; f:=factors(primpart(p,x)); return (size(f)==2 && f[1]==1); end"),
+		IRRED("irred", Compute.ggbGiac("irred(p,x)->"
+				+ "{ local f;"
+				+ "  f:=factors(primpart(p,x));"
+				+ "  return((((size(f))==2)) && (((f[1])==1)));"
+				+ "}")),
 		/**
 		 * Absolute factorization of a poly in 2 vars: create the algebraic
 		 * number to extend Q. We assume that the poly is irreducible over Q.
