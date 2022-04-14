@@ -134,11 +134,13 @@ public class Compute {
 		return giacOutput;
 	}
 
-	static String ggbGiac(String in) {
+	// TODO: Remove this...
+	public static String ggbGiacOld(String in) {
 		String[] ins = in.split("\n");
 		StringBuilder out = new StringBuilder();
 		for (String s : ins) {
 			s = s.replace("->", ":=")
+					.replace("=>", "->")
 					.replace("}", " end ")
 					.replace("&&", " and ")
 					.replace("||", " or ")
@@ -152,6 +154,18 @@ public class Compute {
 			out.append(s);
 		}
 		return out.toString();
+	}
+
+	public static String ggbGiac(String in) {
+		String out = in.replace("->", ":=")
+					.replace("=>", "->")
+					.replace("{", " begin ")
+					.replace("}", " end ")
+					.replace("&&", " and ")
+					.replace("||", " or ")
+					.replaceAll("\\s+"," ");
+		System.err.println(out);
+		return out;
 	}
 
 	static String ggInit = "caseval(\"init geogebra\")";
