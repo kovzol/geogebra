@@ -313,7 +313,7 @@ public class Compute {
 				"                         polys:=suppress(polys,ii); \n" +
 				"                         ii:=ii-1; \n" +
 				"                         vars:=[]; \n" +
-				"                       } \n" +
+				"                       }; \n" +
 				"                     if (vars intersect [w2] != set[] && vars intersect [m] == set[]) {\n" +
 				"                         w2e:=rhs((solve(polys[ii]=0,w2))[0]);\n" +
 				"                         print(\"Remove \" + polys[ii]); \n" +
@@ -334,7 +334,7 @@ public class Compute {
 				"                         vars:=[]; \n" +
 				"                       } \n" +
 				"                     ii:=ii+1;\n" +
-				"                   } \n" +
+				"                   }; \n" +
 				"                 if (neweq != 0) {\n" +
 				"                     print(\"Add \" + neweq); \n" +
 				"                     polys:=flatten(append(polys,neweq)); \n" +
