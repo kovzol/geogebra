@@ -311,15 +311,32 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * Compute squarefree factorization of the input poly p. Strange why
 		 * sommet(-x)!='-' (so we do an ugly hack here, FIXME)
 		 */
-		FACTOR_SQR_FREE("factorsqrfree", Compute.ggbGiac("factorsqrfree(p) -> " +
+		FACTOR_SQR_FREE("factorsqrfree", ggbGiac("factorsqrfree(p) -> " +
 		"{ local pf,r,ii;" +
+			"print(p);" +
 			"pf:=factor(p);" +
-			"if ((sommet(pf))<>'*') if (((sommet(pf))=='^')) return((op(pf))[0]); else if ((sommet(pf))<>(sommet(-x))) return(pf); else return(factorsqrfree(-pf)); ; ; ;" +
+			"if (sommet(pf)<>'*') {" +
+			"  if (sommet(pf)=='^') return((op(pf))[0]);" +
+			"  else {" +
+			"    if (sommet(pf)<>sommet(-x)) return(pf);" +
+			"    else return(factorsqrfree(-pf)); " +
+			"    }" +
+			"  }" +
 			"opf:=op(pf);" +
 			"r:=1;" +
-			"for (ii:=0;ii<=(size(opf)-1);ii:=ii+1) r:=r*factorsqrfree(opf[ii]); ;" +
+			"for (ii:=0;ii<=(size(opf)-1);ii:=ii+1) r:=r*factorsqrfree(opf[ii]);" +
 			"return(r);" +
 		"}")),
+
+		FACTOR_SQR_FREE2("factorsqrfree", ggbGiac("factorsqrfree(p) -> " +
+		"{ local pf,r,ii;" +
+				"pf:=factor(p);" +
+				"if ((sommet(pf))<>'*') if (((sommet(pf))=='^')) return((op(pf))[0]); else if ((sommet(pf))<>(sommet(-x))) return(pf); else return(factorsqrfree(-pf)); ; ; ;" +
+				"opf:=op(pf);" +
+				"r:=1;" +
+				"for (ii:=0;ii<=(size(opf)-1);ii:=ii+1) r:=r*factorsqrfree(opf[ii]); ;" +
+				"return(r);" +
+				"}")),
 
 
 		/**
@@ -327,7 +344,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * of discrete points, then convert the linear polynomials to a product
 		 * of circle definitions with zero radius.
 		 */
-		GEOM_ELIM("geomElim", Compute.ggbGiac("geomElim (polys,elimvars,precision)-> \n"
+		GEOM_ELIM("geomElim", ggbGiac("geomElim (polys,elimvars,precision)->"
 				+ "{ local ee,ll,ff,gg,ii;"
 				+ "  print(polys);"
 				+ "  print(elimvars);"
@@ -351,7 +368,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		/**
 		 * Decide if a polynomial, which is a sum internally in Giac, is linear or not.
 		 */
-		IS_LINEAR_SUM("isLinearSum", Compute.ggbGiac("isLinearSum(poly)->"
+		IS_LINEAR_SUM("isLinearSum", ggbGiac("isLinearSum(poly)->"
 				+ "{ local degs,vars,ii,ss;"
 				+ "  vars:=lvar(poly);"
 				+ "  ii:=1;"
@@ -366,10 +383,10 @@ public abstract class CASgiac implements CASGenericInterface {
 		/**
 		 * Decide if a polynomial is linear or not. The way it is done is hacky and incomplete. FIXME.
 		 */
-		IS_LINEAR("isLinear", Compute.ggbGiac("isLinear(poly)->{"
+		IS_LINEAR("isLinear", ggbGiac("isLinear(poly)->{"
 				// + "  print(\"isLinear? \" + poly);"
 				+ "  if (((sommet(poly))==\"+\")) return(isLinearSum(poly)); ;"
-				+ "  return(isLinearSum(poly+1234567));  \n"
+				+ "  return(isLinearSum(poly+1234567));"
 				+ "}")),
 		/**
 		 * Help simplifying the input when computing the Jacobian matrix in the
@@ -388,7 +405,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * 
 		 * Used internally.
 		 */
-		JACOBI_PREPARE("jacobiPrepare", Compute.ggbGiac("jacobiPrepare (polys,excludevars)->"
+		JACOBI_PREPARE("jacobiPrepare", ggbGiac("jacobiPrepare (polys,excludevars)->"
 				+ "{ local ii,degs,pos,vars,linvar,p,keep,c,sumdegs,degs;"
 				+ "  keep:=copy(NULL);"
 				+ "  vars:=lvar(polys);"
@@ -444,7 +461,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * Compute the Jacobian determinant of the polys with respect to
 		 * excludevars. Used internally.
 		 */
-		JACOBI_DET("jacobiDet", Compute.ggbGiac("jacobiDet(polys,excludevars)->"
+		JACOBI_DET("jacobiDet", ggbGiac("jacobiDet(polys,excludevars)->"
 				+ "{ local J,ii,vars,s,j,k,dm;"
 				+ "  vars:=lvar(polys);"
 				+ "  for (ii:=0;ii<=(size(excludevars)-1);ii:=ii+1) vars:=remove(excludevars[ii],vars); ;"
@@ -459,7 +476,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * polys, elimvars with given precision for the curve variables x and y.
 		 * Used publicly.
 		 */
-		ENVELOPE_EQU("envelopeEqu", Compute.ggbGiac("envelopeEqu(polys,elimvars,precision,curvevarx,curvevary)->"
+		ENVELOPE_EQU("envelopeEqu", ggbGiac("envelopeEqu(polys,elimvars,precision,curvevarx,curvevary)->"
 				+ "{ local polys2,D;"
 				+ "  polys2:=jacobiPrepare(polys,[curvervarx,curvevary]);"
 				// + "  print(polys2);"
@@ -486,7 +503,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * the coefficient matrices, then each coefficient matrix is added. Used
 		 * internally.
 		 */
-		COEFF_MATRIX("coeffMatrix", Compute.ggbGiac("coeffMatrix(aa)->" +
+		COEFF_MATRIX("coeffMatrix", ggbGiac("coeffMatrix(aa)->" +
 		"{ local bb,sx,sy,ii,jj,ee,cc,kk;" +
 		"   bb:=coeffs(aa,x);" +
 		"   sx:=size(bb);" +
@@ -511,7 +528,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * Compute the flattened coefficient matrix as it is directly used when
 		 * the algebraic curve is plotted as an implicit poly. Used publicly.
 		 */
-		COEFF_MATRICES("coeffMatrices", Compute.ggbGiac("coeffMatrices(aa)->"
+		COEFF_MATRICES("coeffMatrices",	ggbGiac("coeffMatrices(aa)->"
 				+ "{ local ff,bb,ccf,ll,aaf;"
 				+ "  ff:=factors(aa);"
 				+ "  ccf:=copy([(size(ff))/2]);"
@@ -522,7 +539,7 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "    };"
 				+ "  return(flatten(ccf));"
 				+ "}")),
-		IMPLICIT_CURVE_COEFFS("implicitCurveCoeffs", Compute.ggbGiac("implicitCurveCoeffs(aa)->"
+		IMPLICIT_CURVE_COEFFS("implicitCurveCoeffs", ggbGiac("implicitCurveCoeffs(aa)->"
 				+ "{ local bb;"
 				+ "  bb:=factorsqrfree(aa);"
 				+ "  return([coeffMatrix(bb),coeffMatrices(bb)]);"
@@ -530,7 +547,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		/**
 		 * Decide if a poly is irreducible.
 		 */
-		IRRED("irred", Compute.ggbGiac("irred(p,x)->"
+		IRRED("irred", ggbGiac("irred(p,x)->"
 				+ "{ local f;"
 				+ "  f:=factors(primpart(p,x));"
 				+ "  return((((size(f))==2)) && (((f[1])==1)));"
@@ -1657,6 +1674,21 @@ public abstract class CASgiac implements CASGenericInterface {
 	@Override
 	public boolean isLoaded() {
 		return true;
+	}
+
+	/**
+	 * Convert a normal mode Giac program to GeoGebra mode.
+	 */
+	public static String ggbGiac(String in) {
+		String out = in.replace("->", ":=")
+				.replace("=>", "->")
+				.replace("{", " begin ")
+				.replace("}", " end ")
+				.replace("&&", " and ")
+				.replace("||", " or ")
+				.replaceAll("\\s+"," ");
+		System.err.println(out);
+		return out;
 	}
 
 }

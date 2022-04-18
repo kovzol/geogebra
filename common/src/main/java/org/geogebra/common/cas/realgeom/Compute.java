@@ -5,6 +5,8 @@ package org.geogebra.common.cas.realgeom;
  * Most of this piece of code is taken from the RealGeom system.
  */
 
+import static org.geogebra.common.cas.giac.CASgiac.ggbGiac;
+
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.TreeSet;
@@ -134,212 +136,178 @@ public class Compute {
 		return giacOutput;
 	}
 
-	// TODO: Remove this...
-	public static String ggbGiacOld(String in) {
-		String[] ins = in.split("\n");
-		StringBuilder out = new StringBuilder();
-		for (String s : ins) {
-			s = s.replace("->", ":=")
-					.replace("=>", "->")
-					.replace("}", " end ")
-					.replace("&&", " and ")
-					.replace("||", " or ")
-					.replaceAll("\\s+"," ");
-			if (s.startsWith("while") || s.startsWith("{")) {
-				s = s.replace("{", " begin ");
-			} else if (s.startsWith("if")) {
-				s = s.replace("{", " do ");
-			}
-			s = s.replace("{", " begin ");
-			out.append(s);
-		}
-		return out.toString();
-	}
-
-	public static String ggbGiac(String in) {
-		String out = in.replace("->", ":=")
-					.replace("=>", "->")
-					.replace("{", " begin ")
-					.replace("}", " end ")
-					.replace("&&", " and ")
-					.replace("||", " or ")
-					.replaceAll("\\s+"," ");
-		System.err.println(out);
-		return out;
-	}
-
 	static String ggInit = "caseval(\"init geogebra\")";
 
 	static String ilsDef() {
-		return ggbGiac("isLinearSum\n" +
-				" (poly)-> \n" +
-				"{ local degs,vars,ii,ss; \n" +
-				"  vars:=lvar(poly);  \n" +
-				"  ii:=1;  \n" +
-				"  ss:=size(poly);  \n" +
-				"  while(ii<ss){ \n" +
-				"      degs:=degree(poly[ii],vars);  \n" +
-				"      if ((sum(degs))>1) {\n" +
-				"          return(false); " +
-				"        };\n" +
-				"      ii:=ii+1;  \n" +
-				"    };\n" +
-				"  return(true);  \n" +
+		return ggbGiac("isLinearSum" +
+				" (poly)->" +
+				"{ local degs,vars,ii,ss;" +
+				"  vars:=lvar(poly);" +
+				"  ii:=1;" +
+				"  ss:=size(poly);" +
+				"  while(ii<ss){" +
+				"      degs:=degree(poly[ii],vars);" +
+				"      if ((sum(degs))>1) {" +
+				"          return(false);" +
+				"        };" +
+				"      ii:=ii+1;" +
+				"    };" +
+				"  return(true);" +
 				"}");
 	}
 
 	static String dlDef(boolean keep) {
 		return ggbGiac(
-				"delinearize\n" +
-						" (polys,excludevars)-> \n" +
-						"{ local ii,degs,pos,vars,linvar,p,qvar,pos2,keep,cc,substval,substs; \n" +
-						"  keep:=[];\n" +
-						"  substs:=\"\";\n" +
-						"  vars:=lvar(polys);\n" +
-						"  print(\"Input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");  \n" +
-						"  cc:=1;\n" +
-						"  while(cc<(size(lvar(polys)))){ \n" +
-						"      ii:=0;  \n" +
-						"      while(ii<(size(polys)-1)){ \n" +
-						"          degs:=degree(polys[ii],vars);  \n" +
-						"          if ((sum(degs)=cc) && (isLinear(polys[ii]))) { \n" +
-						"              pos:=find(1,degs);  \n" +
-						"              if (((size(pos))=cc)) { \n" +
-						"                  p:=0;  \n" +
-						"                  linvar:=vars[pos[p]];  \n" +
-						"                  while(((is_element(linvar,excludevars)) && (cc>1)) && (p<(size(pos)-1))){ \n" +
-						"                      p:=p+1;  \n" +
-						"                      linvar:=vars[pos[p]];  \n" +
-						"                    }; \n" +
-						"                  if ((not(is_element(linvar,excludevars))) || (cc<2)) { \n" +
-						// "                      if (is_element(linvar,excludevars) && (cc>1)) { \n" +
-						"                      if (is_element(linvar,excludevars)) { \n" +
+				"delinearize" +
+						" (polys,excludevars)->" +
+						"{ local ii,degs,pos,vars,linvar,p,qvar,pos2,keep,cc,substval,substs;" +
+						"  keep:=[];" +
+						"  substs:=\"\";" +
+						"  vars:=lvar(polys);" +
+						"  print(\"Input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");" +
+						"  cc:=1;" +
+						"  while(cc<(size(lvar(polys)))){" +
+						"      ii:=0;" +
+						"      while(ii<(size(polys)-1)){" +
+						"          degs:=degree(polys[ii],vars);" +
+						"          if ((sum(degs)=cc) && (isLinear(polys[ii]))) {" +
+						"              pos:=find(1,degs);" +
+						"              if (((size(pos))=cc)) {" +
+						"                  p:=0;" +
+						"                  linvar:=vars[pos[p]];" +
+						"                  while(((is_element(linvar,excludevars)) && (cc>1)) && (p<(size(pos)-1))){" +
+						"                      p:=p+1;" +
+						"                      linvar:=vars[pos[p]];" +
+						"                    };" +
+						"                  if ((not(is_element(linvar,excludevars))) || (cc<2)) {" +
+						// "                      if (is_element(linvar,excludevars) && (cc>1)) {" +
+						"                      if (is_element(linvar,excludevars)) {" +
 
 						(keep ?
-								"                      keep:=append(keep,polys[ii]);  \n" +
-										"                      print(\"Keeping \" + polys[ii]); \n"
+								"                      keep:=append(keep,polys[ii]);" +
+										"                      print(\"Keeping \" + polys[ii]); "
 								:
-								"                  print(\"Keeping disabled\"); \n "
+								"                  print(\"Keeping disabled\");  "
 						)
 						+
-						"                         };  \n" +
-						"                      substval:=(op((solve(polys[ii]=0,linvar))[0]))[1];  \n" +
-						"                      print(\"Removing \" + polys[ii] + \", substituting \" + linvar + \" by \" + substval); \n" +
-						"                      substs:=substs + linvar + \"=\" + substval + \",\"; \n" +
-						"                      polys:=simplify(remove(0,expand(expand(subs(polys,[linvar],[substval])))));  \n" +
-						"                      print(\"New set: \" + polys); \n" +
-						"                      vars:=lvar(polys);  \n" +
-						"                      ii:=-1;  \n" +
-						"                    };  \n" +
-						"                };  \n" +
-						"            }  \n" +
+						"                         };" +
+						"                      substval:=(op((solve(polys[ii]=0,linvar))[0]))[1];" +
+						"                      print(\"Removing \" + polys[ii] + \", substituting \" + linvar + \" by \" + substval);" +
+						"                      substs:=substs + linvar + \"=\" + substval + \",\";" +
+						"                      polys:=simplify(remove(0,expand(expand(subs(polys,[linvar],[substval])))));" +
+						"                      print(\"New set: \" + polys);" +
+						"                      vars:=lvar(polys);" +
+						"                      ii:=-1;" +
+						"                    };" +
+						"                };" +
+						"            }" +
 						// Quadratic check (FIXME: do that only for rational roots):
-						"          else { \n" +
-						//"              print(\"ii=\"+ii + \" size=\" + size(polys));  \n" +
-						"              if ((sum(degs)=2) && (not(isLinear(polys[ii])))) { \n" +
-						"                  pos2:=find(2,degs);  \n" +
-						"                  if (size(pos2)>0) { \n" +
-						"                      qvar:=vars[pos2[0]];  \n" +
-						"                      if (is_element(qvar,excludevars)) { \n" +
-						"                          print(\"Considering positive roots of \"+(polys[ii]=0)+\" in variable \"+qvar);  \n" +
-						"                          print(solve(polys[ii]=0,qvar));  \n" +
-						"                          substval:=rhs((op(solve(polys[ii]=0,qvar)))[1]);  \n" +
-						"                          print(\"Positive root is \"+substval);  \n" +
-						"                          if (type(substval)==integer || type(substval)==rational) { \n" +
-						"                              polys:=simplify(remove(0,expand(subs(polys,[qvar],[substval]))));  \n" +
-						"                              print(\"New set: \" + polys); \n" +
+						"          else {" +
+						//"              print(\"ii=\"+ii + \" size=\" + size(polys));" +
+						"              if ((sum(degs)=2) && (not(isLinear(polys[ii])))) {" +
+						"                  pos2:=find(2,degs);" +
+						"                  if (size(pos2)>0) {" +
+						"                      qvar:=vars[pos2[0]];" +
+						"                      if (is_element(qvar,excludevars)) {" +
+						"                          print(\"Considering positive roots of \"+(polys[ii]=0)+\" in variable \"+qvar);" +
+						"                          print(solve(polys[ii]=0,qvar));" +
+						"                          substval:=rhs((op(solve(polys[ii]=0,qvar)))[1]);" +
+						"                          print(\"Positive root is \"+substval);" +
+						"                          if (type(substval)==integer || type(substval)==rational) {" +
+						"                              polys:=simplify(remove(0,expand(subs(polys,[qvar],[substval]))));" +
+						"                              print(\"New set: \" + polys);" +
 						(keep ?
-								"                      keep:=append(keep,substval-qvar);  \n" +
-										"                      print(\"Keeping \" + (substval-qvar)); \n"
+								"                      keep:=append(keep,substval-qvar);" +
+										"                      print(\"Keeping \" + (substval-qvar)); "
 								:
-								"                  print(\"Keeping disabled\"); \n "
+								"                  print(\"Keeping disabled\");  "
 						)
 						+
-						"                              substs:=substs + qvar + \"=\" + substval + \",\"; \n" +
-						"                              vars:=lvar(polys);  \n" +
-						"                              ii:=-1;  \n" +
-						"                            };  \n" +
-						"                        };  \n" +
-						"                    };  \n" +
-						//"                  print(ii);  \n" +
-						"                };  \n" +
-						"            };  \n" +
+						"                              substs:=substs + qvar + \"=\" + substval + \",\";" +
+						"                              vars:=lvar(polys);" +
+						"                              ii:=-1;" +
+						"                            };" +
+						"                        };" +
+						"                    };" +
+						//"                  print(ii);" +
+						"                };" +
+						"            };" +
 						// End of quadratic check.
-						"          ii:=ii+1;  \n" +
-						"        }; \n" +
-						"      cc:=cc+1;  \n" +
-						//"      print(cc);  \n" +
-						"    };  \n" +
-						"  polys:=flatten(append(polys,keep));  \n" +
-						"  print(\"Set after delinearization: \" + polys); \n" +
-						"  vars:=lvar(polys);  \n" +
-						"  print(\"Delinearization output: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");  \n" +
-						"  return([polys,substs]);  \n" +
+						"          ii:=ii+1;" +
+						"        };" +
+						"      cc:=cc+1;" +
+						//"      print(cc);" +
+						"    };" +
+						"  polys:=flatten(append(polys,keep));" +
+						"  print(\"Set after delinearization: \" + polys);" +
+						"  vars:=lvar(polys);" +
+						"  print(\"Delinearization output: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");" +
+						"  return([polys,substs]);" +
 						"}");
 	}
 
 	static String rdDef() {
-		return ggbGiac("removeDivisions\n" +
-				" (polys)->{ local ii; \n" +
-				"             ii:=0; \n" +
-				"             while(ii<(size(polys))) { \n" +
-				//"                 polys[ii]:=expand(lcm(denom(coeff(polys[ii])))*(polys[ii])); \n" +
-				"                 polys[ii]:=numer(simplify(polys[ii])); \n" +
-				"                 ii:=ii+1;\n" +
-				"                 };\n" +
-				"             return(polys); \n" +
+		return ggbGiac("removeDivisions" +
+				" (polys)->{ local ii;" +
+				"             ii:=0;" +
+				"             while(ii<(size(polys))) {" +
+				//"                 polys[ii]:=expand(lcm(denom(coeff(polys[ii])))*(polys[ii]));" +
+				"                 polys[ii]:=numer(simplify(polys[ii]));" +
+				"                 ii:=ii+1;" +
+				"                 };" +
+				"             return(polys);" +
 				"        }");
 	}
 
 	static String ilDef() {
-		return ggbGiac("isLinear\n" +
-				" (poly)->{if (((sommet(poly))=\"+\")) { \n" +
-				"              return(isLinearSum(poly));\n" +
-				"            };\n" +
-				"          return(isLinearSum(poly+1234567));\n" + // FIXME, this is a dirty hack
+		return ggbGiac("isLinear" +
+				" (poly)->{if (((sommet(poly))=\"+\")) {" +
+				"              return(isLinearSum(poly));" +
+				"            };" +
+				"          return(isLinearSum(poly+1234567));" + // FIXME, this is a dirty hack
 				"        }");
 	}
 
 	static String rmwDef() {
-		return ggbGiac("removeW12\n" +
-				" (polys, m, w1, w2)->{ local ii, vars, w1e, w2e, neweq; \n" +
-				"                 ii:=0; \n" +
-				"                 neweq:=0; \n" +
-				"                 while(ii<(size(polys))) { \n" +
-				"                     vars:=lvar(polys[ii]); \n" +
-				"                     if (vars intersect [w1] != set[] && vars intersect [m] == set[]) {\n" +
-				"                         w1e:=rhs((solve(polys[ii]=0,w1))[0]);\n" +
-				"                         print(\"Remove \" + polys[ii]); \n" +
-				"                         polys:=suppress(polys,ii); \n" +
-				"                         ii:=ii-1; \n" +
-				"                         vars:=[]; \n" +
-				"                       }; \n" +
-				"                     if (vars intersect [w2] != set[] && vars intersect [m] == set[]) {\n" +
-				"                         w2e:=rhs((solve(polys[ii]=0,w2))[0]);\n" +
-				"                         print(\"Remove \" + polys[ii]); \n" +
-				"                         polys:=suppress(polys,ii); \n" +
-				"                         ii:=ii-1; \n" +
-				"                         vars:=[]; \n" +
-				"                       } \n" +
-				"                     ii:=ii+1;\n" +
-				"                   } \n" +
-				"                 ii:=0; \n" +
-				"                 while(ii<(size(polys))) { \n" +
-				"                     vars:=lvar(polys[ii]); \n" +
-				"                     if (vars intersect [m] == set[m]) {\n" +
-				"                         print(\"Remove \" + polys[ii]); \n" +
-				"                         polys:=suppress(polys,ii); \n" +
-				"                         neweq:=(w1e)-m*(w2e); \n" +
-				"                         ii:=ii-1; \n" +
-				"                         vars:=[]; \n" +
-				"                       } \n" +
-				"                     ii:=ii+1;\n" +
-				"                   }; \n" +
-				"                 if (neweq != 0) {\n" +
-				"                     print(\"Add \" + neweq); \n" +
-				"                     polys:=flatten(append(polys,neweq)); \n" +
-				"                   } \n" +
-				"                 return(polys);\n" +
+		return ggbGiac("removeW12" +
+				" (polys, m, w1, w2)->{ local ii, vars, w1e, w2e, neweq;" +
+				"                 ii:=0;" +
+				"                 neweq:=0;" +
+				"                 while(ii<(size(polys))) {" +
+				"                     vars:=lvar(polys[ii]);" +
+				"                     if (vars intersect [w1] != set[] && vars intersect [m] == set[]) {" +
+				"                         w1e:=rhs((solve(polys[ii]=0,w1))[0]);" +
+				"                         print(\"Remove \" + polys[ii]);" +
+				"                         polys:=suppress(polys,ii);" +
+				"                         ii:=ii-1;" +
+				"                         vars:=[];" +
+				"                       };" +
+				"                     if (vars intersect [w2] != set[] && vars intersect [m] == set[]) {" +
+				"                         w2e:=rhs((solve(polys[ii]=0,w2))[0]);" +
+				"                         print(\"Remove \" + polys[ii]);" +
+				"                         polys:=suppress(polys,ii);" +
+				"                         ii:=ii-1;" +
+				"                         vars:=[];" +
+				"                       }" +
+				"                     ii:=ii+1;" +
+				"                   }" +
+				"                 ii:=0;" +
+				"                 while(ii<(size(polys))) {" +
+				"                     vars:=lvar(polys[ii]);" +
+				"                     if (vars intersect [m] == set[m]) {" +
+				"                         print(\"Remove \" + polys[ii]);" +
+				"                         polys:=suppress(polys,ii);" +
+				"                         neweq:=(w1e)-m*(w2e);" +
+				"                         ii:=ii-1;" +
+				"                         vars:=[];" +
+				"                       }" +
+				"                     ii:=ii+1;" +
+				"                   };" +
+				"                 if (neweq != 0) {" +
+				"                     print(\"Add \" + neweq);" +
+				"                     polys:=flatten(append(polys,neweq));" +
+				"                   }" +
+				"                 return(polys);" +
 				"               }");
 	}
 
