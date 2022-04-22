@@ -815,11 +815,11 @@ public class DefaultExportedApi implements ExportedApi {
 		return ggbAPI.translate(arg1 + "", callback);
 	}
 
-	public String exportConstruction(String[] flags) {
+	public String exportConstruction(boolean html, String[] flags) {
 		if (Js.isTruthy(flags)) {
-			return ggbAPI.exportConstruction(flags);
+			return ggbAPI.exportConstruction(html, flags);
 		} else {
-			return ggbAPI.exportConstruction("color", "name", "definition", "value");
+			return ggbAPI.exportConstruction(html, "color", "name", "definition", "value");
 		}
 	}
 

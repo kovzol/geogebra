@@ -47,7 +47,7 @@ public class ConstructionProtocolStyleBar extends JToolBar
 	PopupMenuButtonD btnColumns;
 	/** Options button */
 	PopupMenuButtonD btnOptions;
-	private JButton btnExport, btnPrint, btnHelp;
+	private JButton btnExport, btnExportLatex, btnPrint, btnHelp;
 	/** Item for Show only breakpoints option */
 	JCheckBoxMenuItem miShowOnlyBreakpoints;
 	/** Item for Colorful protocol option */
@@ -162,12 +162,17 @@ public class ConstructionProtocolStyleBar extends JToolBar
 
 		addSeparator();
 
-		// export button
+		// export buttons
 
 		btnExport = new JButton(app.getScaledIcon(GuiResourcesD.TEXT_HTML));
 		btnExport.setToolTipText(loc.getPlainTooltip("ExportAsWebpage"));
 		btnExport.addActionListener(this);
 		add(btnExport);
+
+		btnExportLatex = new JButton(app.getScaledIcon(GuiResourcesD.TEXT_X_GENERIC)); // TODO: find a better icon
+		btnExportLatex.setToolTipText(loc.getPlainTooltip("ExportAsLatex"));
+		btnExportLatex.addActionListener(this);
+		add(btnExportLatex);
 
 		addSeparator();
 
@@ -208,6 +213,7 @@ public class ConstructionProtocolStyleBar extends JToolBar
 		btnColumns.setToolTipText(loc.getMenuTooltip("Columns"));
 		btnOptions.setToolTipText(loc.getMenuTooltip("Options"));
 		btnExport.setToolTipText(loc.getPlainTooltip("ExportAsWebpage"));
+		btnExportLatex.setToolTipText(loc.getPlainTooltip("ExportAsLatex"));
 		btnPrint.setToolTipText(loc.getMenuTooltip("Print"));
 		btnHelp.setToolTipText(loc.getMenuTooltip("FastHelp"));
 		miShowOnlyBreakpoints.setText(loc.getMenu("ShowOnlyBreakpoints"));
@@ -246,6 +252,9 @@ public class ConstructionProtocolStyleBar extends JToolBar
 
 		if (e.getSource() == btnExport) {
 			cpView.getExportHtmlAction().actionPerformed(e);
+		}
+		if (e.getSource() == btnExportLatex) {
+			cpView.getExportLatexAction().actionPerformed(e);
 		}
 		if (e.getSource() == btnPrint) {
 			cpView.getPrintPreviewAction().actionPerformed(e);

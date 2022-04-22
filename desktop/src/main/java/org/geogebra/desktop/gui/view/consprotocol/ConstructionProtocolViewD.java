@@ -111,7 +111,7 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 	private ConstructionProtocolViewD view = this;
 	public JScrollPane scrollPane;
 	private ConstructionProtocolStyleBar helperBar;
-	private AbstractAction exportHtmlAction, printPreviewAction;
+	private AbstractAction exportHtmlAction, exportLatexAction, printPreviewAction;
 	private LocalizationD loc;
 
 	public ConstructionProtocolViewD(final AppD app) {
@@ -331,6 +331,10 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 		return exportHtmlAction;
 	}
 
+	public AbstractAction getExportLatexAction() {
+		return exportLatexAction;
+	}
+
 	public AbstractAction getPrintPreviewAction() {
 		return printPreviewAction;
 	}
@@ -366,7 +370,7 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 				Thread runner = new Thread() {
 					@Override
 					public void run() {
-						JDialog d = new ConstructionProtocolExportDialogD(view);
+						JDialog d = new ConstructionProtocolExportDialogD(true, view);
 						d.setVisible(true);
 					}
 				};
@@ -375,6 +379,28 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 				app.setDefaultCursor();
 			}
 		};
+
+		exportLatexAction = new AbstractAction(loc.getMenu("ExportAsLatex")
+				+ " (" + FileExtensions.TEX + ") ...") {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				app.setWaitCursor();
+
+				Thread runner = new Thread() {
+					@Override
+					public void run() {
+						JDialog d = new ConstructionProtocolExportDialogD(false, view);
+						d.setVisible(true);
+					}
+				};
+				runner.start();
+
+				app.setDefaultCursor();
+			}
+		};
+
 
 		printPreviewAction = new AbstractAction(
 				loc.getMenu("Print") + Unicode.ELLIPSIS, ((AppD) app)

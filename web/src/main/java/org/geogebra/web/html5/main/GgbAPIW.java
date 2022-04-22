@@ -1055,7 +1055,7 @@ public class GgbAPIW extends GgbAPI {
 		for (int i = 0; i < columnNames.length; i++) {
 			columnNames[i] = columnNamesJS.get(i);
 		}
-		return this.exportConstruction(columnNames);
+		return this.exportConstruction(true, columnNames);
 	}
 
 	/**

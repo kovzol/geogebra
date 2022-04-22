@@ -62,20 +62,26 @@ public class ConstructionProtocolExportDialogD extends Dialog
 	private ConstructionProtocolViewD prot;
 	private AppD app;
 
-	public ConstructionProtocolExportDialogD(ConstructionProtocolViewD prot) {
+	public ConstructionProtocolExportDialogD(boolean html, ConstructionProtocolViewD prot) {
 		super(prot.getApplication().getFrame(), true);
 		this.prot = prot;
 		app = prot.getApplication();
 
-		initGUI();
+		initGUI(html);
 	}
 
-	private void initGUI() {
+	private void initGUI(boolean html) {
 		setResizable(true);
 		final Localization loc = app.getLocalization();
+		FileExtensions ext;
+		if (html) {
+			ext = FileExtensions.HTML;
+		} else {
+			ext = FileExtensions.TEX;
+		}
 		setTitle(loc.getMenu("Export") + ": "
 				+ loc.getMenu("ConstructionProtocol") + " ("
-				+ FileExtensions.HTML + ")");
+				+ ext + ")");
 
 		JPanel cp = new JPanel(new BorderLayout(5, 5));
 		cp.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -113,7 +119,9 @@ public class ConstructionProtocolExportDialogD extends Dialog
 		sizePanel = new GraphicSizePanel(app, ev.getWidth(), ev.getHeight());
 		picPanel.add(sizePanel, BorderLayout.CENTER);
 		picPanel.setBorder(BorderFactory.createEtchedBorder());
-		cp.add(picPanel, BorderLayout.CENTER);
+		if (html) {
+			cp.add(picPanel, BorderLayout.CENTER);
+		}
 
 		cbColor = new JCheckBox(loc.getMenu("ColorfulConstructionProtocol"));
 		cbColor.setSelected(false);
@@ -166,8 +174,8 @@ public class ConstructionProtocolExportDialogD extends Dialog
 							app.storeUndoInfo();
 						}
 						exportHTML(cbDrawingPadPicture.isSelected(),
-								cbScreenshotPicture.isSelected(),
-								cbColor.isSelected(), true);
+									cbScreenshotPicture.isSelected(),
+									cbColor.isSelected(), true);
 					}
 				};
 				runner.start();
@@ -190,11 +198,18 @@ public class ConstructionProtocolExportDialogD extends Dialog
 							Clipboard clipboard = toolkit.getSystemClipboard();
 							
 
-							StringSelection stringSelection = new StringSelection(
-									ConstructionProtocolView.getHTML(null,
-											app.getLocalization(),
-											app.getKernel(), prot.getColumns(),
-											prot.getUseColors()));
+							String export;
+							if (html) {
+								export = ConstructionProtocolView.getHTML(null,
+										app.getLocalization(),
+										app.getKernel(), prot.getColumns(),
+										prot.getUseColors());
+							} else {
+								export = ConstructionProtocolView.getLatex(app.getLocalization(),
+										app.getKernel(), prot.getColumns(),
+										prot.getUseColors());
+							}
+							StringSelection stringSelection = new StringSelection(export);
 							clipboard.setContents(stringSelection, null);
 						} catch (Exception ex) {
 							ex.printStackTrace();
@@ -208,7 +223,9 @@ public class ConstructionProtocolExportDialogD extends Dialog
 		});
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		buttonPanel.add(exportButton);
+		if (html) {
+			buttonPanel.add(exportButton);
+		}
 		buttonPanel.add(clipboardButton);
 		buttonPanel.add(cancelButton);
 

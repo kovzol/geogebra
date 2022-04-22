@@ -131,6 +131,7 @@ public class ConstructionProtocolContextMenu extends JPopupMenu {
 
 		// Export and Print menu
 		add(constprotView.getExportHtmlAction());
+		add(constprotView.getExportLatexAction());
 		add(constprotView.getPrintPreviewAction());
 
 		// Help menu

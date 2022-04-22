@@ -2237,7 +2237,7 @@ public abstract class GgbAPI implements JavaScriptAPI {
 	 *            column names
 	 * @return html of construction protocol
 	 */
-	public String exportConstruction(String... columnNames) {
+	public String exportConstruction(boolean html, String... columnNames) {
 		ArrayList<Columns> columns = new ArrayList<>();
 		boolean useColors = false;
 		for (String s : columnNames) {
@@ -2269,8 +2269,13 @@ public abstract class GgbAPI implements JavaScriptAPI {
 				Log.warn("Unknown column" + s);
 			}
 		}
-		return ConstructionProtocolView.getHTML(null, app.getLocalization(),
-				kernel, columns, useColors);
+		if (html) {
+			return ConstructionProtocolView.getHTML(null, app.getLocalization(),
+					kernel, columns, useColors);
+		} else {
+			return ConstructionProtocolView.getLatex(app.getLocalization(),
+					kernel, columns, useColors);
+		}
 	}
 
 	/**
