@@ -2381,7 +2381,8 @@ public class StringTemplate implements ExpressionNodeConstants {
 				sb.append(Unicode.EXISTS);
 			}
 
-			append(sb, leftStr, left, Operation.EXISTS);
+			sb.append(leftStr);
+			// append(sb, leftStr, left, Operation.EXISTS);
 
 			switch (stringType) {
 			case TARSKI:
@@ -2393,7 +2394,11 @@ public class StringTemplate implements ExpressionNodeConstants {
 			if (stringType == StringType.GEOGEBRA) {
 				sb.append("(");
 			}
-			append(sb, rightStr, right, Operation.EXISTS);
+			if (stringType == StringType.LATEX) {
+				sb.append("\\ \\left(");
+			}
+			// append(sb, rightStr, right, Operation.EXISTS);
+			sb.append(rightStr);
 
 			switch (stringType) {
 			case TARSKI:
@@ -2402,6 +2407,9 @@ public class StringTemplate implements ExpressionNodeConstants {
 			}
 			if (stringType == StringType.GEOGEBRA) {
 				sb.append(")");
+			}
+			if (stringType == StringType.LATEX) {
+				sb.append("\\right)");
 			}
 
 		}
@@ -2434,7 +2442,8 @@ public class StringTemplate implements ExpressionNodeConstants {
 				sb.append(Unicode.FORALL);
 			}
 
-			append(sb, leftStr, left, Operation.FORALL);
+			sb.append(leftStr);
+			// append(sb, leftStr, left, Operation.FORALL);
 
 			switch (stringType) {
 			case TARSKI:
@@ -2446,7 +2455,13 @@ public class StringTemplate implements ExpressionNodeConstants {
 			if (stringType == StringType.GEOGEBRA) {
 				sb.append("(");
 			}
-			append(sb, rightStr, right, Operation.FORALL);
+
+			if (stringType == StringType.LATEX) {
+				sb.append("\\ \\left(");
+			}
+
+			// append(sb, rightStr, right, Operation.FORALL);
+			sb.append(rightStr);
 
 			switch (stringType) {
 			case TARSKI:
@@ -2458,6 +2473,9 @@ public class StringTemplate implements ExpressionNodeConstants {
 				sb.append(")");
 			}
 
+			if (stringType == StringType.LATEX) {
+				sb.append("\\right)");
+			}
 
 		}
 		return sb.toString();

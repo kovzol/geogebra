@@ -69,7 +69,7 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 		case AND:
 			return tpl.andString(left, right, leftStr, rightStr);
 
-		case IMPLICATION:
+		case IMPLICATION: // implication is not associative, so parentheses may be required
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<implies/>", leftStr, rightStr);
 			} else if (stringType.equals(StringType.GIAC)) {
@@ -79,35 +79,40 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				sb.append("))||(");
 				sb.append(rightStr);
 				sb.append("))");
-
-			} else {
-
-				tpl.append(sb, leftStr, left, operation);
-
-				sb.append(' ');
-				switch (stringType) {
-				case LATEX:
-					if (tpl.isInsertLineBreaks()) {
-						sb.append("\\-");
-					}
-					sb.append("\\to");
-					break;
-
-				case LIBRE_OFFICE:
-					sb.append("toward"); // don't know if it is correct TAM
-											// 5/28/2012
-					break;
-
-				case TARSKI:
-					sb.append("impl");
-					break;
-
-				default:
-					sb.append(strIMPLIES);
+			} else if (stringType.equals(StringType.TARSKI)) {
+			sb.append("(");
+			sb.append(leftStr);
+			sb.append(" impl ");
+			sb.append(rightStr);
+			sb.append(")");
+			} else if (stringType.equals(StringType.LATEX)) {
+				sb.append("(");
+				sb.append(leftStr);
+				sb.append(")");
+				if (tpl.isInsertLineBreaks()) {
+					sb.append("\\-");
 				}
-				sb.append(' ');
-
-				tpl.append(sb, rightStr, right, operation);
+				sb.append("\\to ");
+				sb.append("(");
+				sb.append(rightStr);
+				sb.append(")");
+			} else if (stringType.equals(StringType.LIBRE_OFFICE)) {
+				sb.append("(");
+				sb.append(leftStr);
+				sb.append(")");
+				sb.append(" toward "); // don't know if it is correct, TAM 5/28/2012
+					// yes, but drarrow would also be fine, Zoltan 5/3/2022
+				sb.append("(");
+				sb.append(rightStr);
+				sb.append(")");
+			} else {
+				sb.append("((");
+				sb.append(leftStr);
+				sb.append(")");
+				sb.append(strIMPLIES);
+				sb.append("(");
+				sb.append(rightStr);
+				sb.append("))");
 			}
 			break;
 
