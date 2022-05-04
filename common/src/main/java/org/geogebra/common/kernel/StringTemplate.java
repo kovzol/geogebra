@@ -2391,7 +2391,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 			}
 
 			sb.append(' ');
-			if (stringType == StringType.GEOGEBRA) {
+			if (stringType == StringType.GEOGEBRA || stringType == StringType.GEOGEBRA_XML) {
 				sb.append("(");
 			}
 			if (stringType == StringType.LATEX) {
@@ -2405,7 +2405,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 				sb.append("]");
 				break;
 			}
-			if (stringType == StringType.GEOGEBRA) {
+			if (stringType == StringType.GEOGEBRA || stringType == StringType.GEOGEBRA_XML) {
 				sb.append(")");
 			}
 			if (stringType == StringType.LATEX) {
@@ -2452,7 +2452,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 			}
 
 			sb.append(' ');
-			if (stringType == StringType.GEOGEBRA) {
+			if (stringType == StringType.GEOGEBRA || stringType == StringType.GEOGEBRA_XML) {
 				sb.append("(");
 			}
 
@@ -2469,7 +2469,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 				break;
 			}
 
-			if (stringType == StringType.GEOGEBRA) {
+			if (stringType == StringType.GEOGEBRA || stringType == StringType.GEOGEBRA_XML) {
 				sb.append(")");
 			}
 
