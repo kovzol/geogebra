@@ -576,7 +576,7 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 				if (p.contains(Unicode.EXISTS + "") || p.contains(Unicode.FORALL + "")) {
 					p = ((ExpressionNode) (args.get(0).getLeft())).toString(StringTemplate.tarskiTemplate);
 					p = GGBToTarski(p);
-					String command = "(syntax 'geogebra (t-neg [" + p + "]))";
+					String command = "(syntax 'geogebra (make-prenex (t-neg [" + p + "])))";
 					String result = getTarskiGGBOutput(command);
 					if (result == "") {
 						return null; // it's an error
