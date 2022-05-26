@@ -259,35 +259,51 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 		case LESS:
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<lt/>", leftStr, rightStr);
-			} else {
-
-				// convert abs(x)<y to "x<y and x>-(y)"
-				// TODO: do the same for LESS_THAN_EQUAL
-				if (stringType.equals(StringType.TARSKI) && left.isOperation(Operation.ABS)) {
+			} else if (stringType.equals(StringType.TARSKI)) {
+				if (left.isOperation(Operation.ABS)) {
+					// convert abs(x)<y to "x<y and x>-(y)"
 					leftEval = ((ExpressionNode) left).getLeft(); // x
 					String l = leftEval.toString(StringTemplate.tarskiTemplate);
 					String lstr = "((" + l + "<" + rightStr + ") /\\ (" + l + "> -(" + rightStr + ")))";
 					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
-				} else {
-					tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.lessSign());
+					break;
 				}
-			}
+				if (right.isOperation(Operation.ABS)) {
+					// convert x<abs(y) to "x<y or x<-(y)"
+					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // y
+					String r = rightEval.toString(StringTemplate.tarskiTemplate);
+					String rstr = "((" + leftStr + "<" + r + ") \\/ (" + leftStr + "< -(" + r + ")))";
+					tpl.infixBinary(sb, left, right, operation, "", rstr, "");
+					break;
+					}
+				}
+			tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.lessSign());
 			break;
 
 		case GREATER:
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<gt/>", leftStr, rightStr);
 			} else {
-				// convert y>abs(x) to "y>x and -(y)<x"
-				// TODO: do the same for GREATER_THAN_EQUAL and EQUAL
-				if (stringType.equals(StringType.TARSKI) && right.isOperation(Operation.ABS)) {
-					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // x
-					String r = rightEval.toString(StringTemplate.tarskiTemplate);
-					String rstr = "((" + leftStr + ">" + r + ") /\\ -(" + leftStr + ")<" + r + ")";
-					tpl.infixBinary(sb, left, right, operation,"", rstr, "");
-				} else {
-					tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.greaterSign());
+				if (stringType.equals(StringType.TARSKI)) {
+					// convert y>abs(x) to "y>x and -(y)<x"
+					// TODO: do the same for EQUAL and NOT_EQUAL
+					if (right.isOperation(Operation.ABS)) {
+						ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // x
+						String r = rightEval.toString(StringTemplate.tarskiTemplate);
+						String rstr = "((" + leftStr + ">" + r + ") /\\ -(" + leftStr + ")<" + r + ")";
+						tpl.infixBinary(sb, left, right, operation, "", rstr, "");
+						break;
+					}
+					if (left.isOperation(Operation.ABS)) {
+						// convert abs(x)>y to "x>y or -(y)<x"
+						leftEval = ((ExpressionNode) left).getLeft(); // x
+						String l = leftEval.toString(StringTemplate.tarskiTemplate);
+						String lstr = "((" + l + ">" + rightStr + ") \\/ -(" + rightStr + ")<" + l + ")";
+						tpl.infixBinary(sb, left, right, operation, lstr, "", "");
+						break;
+					}
 				}
+				tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.greaterSign());
 			}
 			break;
 
@@ -295,6 +311,26 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<leq/>", leftStr, rightStr);
 			} else {
+				if (stringType.equals(StringType.TARSKI)) {
+					// convert abs(x)<=y to "x<=y and x>=-(y)"
+					if (left.isOperation(Operation.ABS)) {
+						leftEval = ((ExpressionNode) left).getLeft(); // x
+						String l = leftEval.toString(StringTemplate.tarskiTemplate);
+						String lstr =
+								"((" + l + "<= " + rightStr + ") /\\ (" + l + ">= -(" + rightStr
+										+ ")))";
+						tpl.infixBinary(sb, left, right, operation, lstr, "", "");
+						break;
+					}
+					if (right.isOperation(Operation.ABS)) {
+						// convert x<=abs(y) to "x<=y or x<=-(y)"
+						ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // y
+						String r = rightEval.toString(StringTemplate.tarskiTemplate);
+						String rstr = "((" + leftStr + "<=" + r + ") \\/ (" + leftStr + "<= -(" + r + ")))";
+						tpl.infixBinary(sb, left, right, operation, "", rstr, "");
+						break;
+					}
+				}
 				tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.leqSign());
 			}
 			break;
@@ -303,6 +339,24 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<qeq/>", leftStr, rightStr);
 			} else {
+				if (stringType.equals(StringType.TARSKI)) {
+					// convert y>=abs(x) to "y>=x and -(y)<=x"
+					if (right.isOperation(Operation.ABS)) {
+						ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // x
+						String r = rightEval.toString(StringTemplate.tarskiTemplate);
+						String rstr = "((" + leftStr + ">=" + r + ") /\\ -(" + leftStr + ")<=" + r + ")";
+						tpl.infixBinary(sb, left, right, operation, "", rstr, "");
+						break;
+					}
+					if (left.isOperation(Operation.ABS)) {
+						// convert abs(x)>=y to "x>=y or -(y)<=x"
+						leftEval = ((ExpressionNode) left).getLeft(); // x
+						String l = leftEval.toString(StringTemplate.tarskiTemplate);
+						String lstr = "((" + l + ">=" + rightStr + ") \\/ -(" + rightStr + ")<=" + l + ")";
+						tpl.infixBinary(sb, left, right, operation, lstr, "", "");
+						break;
+					}
+				}
 				tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.geqSign());
 			}
 			break;
