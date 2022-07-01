@@ -285,4 +285,9 @@ public class CASgiacW extends CASgiac {
 	public boolean externalCAS() {
 		return externalCAS;
 	}
+
+	@Override
+	public void setTimeoutMillis(long t) {
+		timeoutMillis = t;
+	}
 }
