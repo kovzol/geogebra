@@ -101,4 +101,8 @@ public class CASgiacD extends CASgiacJre {
 		thread.stop();
 	}
 
+	@Override
+	public void setTimeoutMillis(long t) {
+		timeoutMillis = t;
+	}
 }

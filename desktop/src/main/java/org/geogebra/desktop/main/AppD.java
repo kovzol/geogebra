@@ -522,6 +522,12 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			}
 		}
 
+		// Set the CAS timeout, and do it always.
+		// Note that this is an addition in GeoGebra Discovery and is not fully tested.
+		GeoGebraPreferencesD.getPref().loadXMLPreferences(this);
+		long casTimeout = settings.getCasSettings().getTimeoutMilliseconds();
+		kernel.getGeoGebraCAS().getCurrentCAS().setTimeoutMillis(casTimeout);
+
 		// open file given by startup parameter
 		handleOptionArgsEarly(args); // for --regressionFile=...
 
@@ -559,7 +565,9 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 					.getDefaultImagePath();
 
 			if (!fileLoaded && !ggtloading) {
-				GeoGebraPreferencesD.getPref().loadXMLPreferences(this);
+				// Not needed anymore, since it is already done.
+				// Consider removing this.
+				// GeoGebraPreferencesD.getPref().loadXMLPreferences(this);
 				imageManager.setMaxIconSizeAsPt(getFontSize());
 			}
 

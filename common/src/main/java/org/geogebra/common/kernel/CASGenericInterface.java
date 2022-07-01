@@ -188,4 +188,6 @@ public interface CASGenericInterface extends SettingListener {
 			TreeMap<PVariable, BigInteger> substitutions,
 			String polys, String freeVars, String dependantVars);
 
+	void setTimeoutMillis(long t);
+
 }

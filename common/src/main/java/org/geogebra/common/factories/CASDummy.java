@@ -21,6 +21,11 @@ public class CASDummy extends CASgiac implements CASGenericInterface {
 	}
 
 	@Override
+	public void setTimeoutMillis(long t) {
+		// do nothing
+	}
+
+	@Override
 	public String evaluateCAS(String exp) {
 		return "?";
 	}
