@@ -259,6 +259,8 @@ public class CASparser implements CASParserInterface {
 	 */
 	public synchronized String replaceIndices(String str,
 			boolean replaceUnicode) {
+		if (str == null)
+			return null;
 		int len = str.length();
 		StringBuilder replaceIndices = new StringBuilder();
 

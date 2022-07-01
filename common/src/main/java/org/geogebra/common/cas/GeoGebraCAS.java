@@ -565,10 +565,19 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 			}
 			if (args.size() == 1 && (args.get(0).getOperation() == Operation.FORALL ||
 					args.get(0).getOperation() == Operation.EXISTS)) {
-				// do nothing, just refrain
-				// TODO: consider using normalize
-				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.casPrintTemplate);
-				return "\"" + p + "\""; // maybe this is the same as quote(...), TODO: check
+				// // TODO: consider using normalize
+				// String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.casPrintTemplate);
+				// // do nothing, just refrain
+				// return "\"" + p + "\""; // maybe this is the same as quote(...), TODO: check
+				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.tarskiTemplate);
+				p = GGBToTarski(p);
+				String command = "(syntax 'geogebra (make-prenex [" + p + "]))";
+				String result = getTarskiGGBOutput(command);
+				if (result == "") {
+					return null; // it's an error
+				}
+				result = result.replace("(", " (");
+				return "\"" + result + "\"";
 			}
 
 			if (args.size() == 1 && (args.get(0).getOperation() == Operation.NOT)) {
