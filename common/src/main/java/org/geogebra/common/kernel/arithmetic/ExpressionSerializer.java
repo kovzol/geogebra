@@ -143,6 +143,8 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 		case NOT_EQUAL:
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<neq/>", leftStr, rightStr);
+			} else if (stringType.equals(StringType.GIAC)) {
+				sb.append("(("+leftStr+"<"+rightStr+")||("+leftStr+">"+rightStr+"))");
 			} else {
 				tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.notEqualSign());
 			}
