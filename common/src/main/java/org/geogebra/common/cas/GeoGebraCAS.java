@@ -1433,6 +1433,8 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 		result = result.replace("[", "(");
 		result = result.replace("]", ")");
 		result = result.replaceAll("([_a-zA-Z][_a-zA-Z0-9]*) ([_a-zA-Z][_a-zA-Z0-9]*)", "$1*$2");
+		// "a^2 b" to "a^2 * b"
+		result = result.replaceAll("([_a-zA-Z][_a-zA-Z0-9]*)\\^([0-9]*) ([_a-zA-Z][_a-zA-Z0-9]*)", "$1^$2*$3");
 
 		// change logical operators
 		result = result.replace("\\/", " or ").
