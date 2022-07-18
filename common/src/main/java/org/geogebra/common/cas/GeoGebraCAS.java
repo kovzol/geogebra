@@ -1432,9 +1432,16 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 		// 4 a * c - b^2 <= 0  and  (b != 0  or  c = 0  or  4 a c - b^2 < 0)
 		result = result.replace("[", "(");
 		result = result.replace("]", ")");
-		result = result.replaceAll("([_a-zA-Z][_a-zA-Z0-9]*) ([_a-zA-Z][_a-zA-Z0-9]*)", "$1*$2");
-		// "a^2 b" to "a^2 * b"
-		result = result.replaceAll("([_a-zA-Z][_a-zA-Z0-9]*)\\^([0-9]*) ([_a-zA-Z][_a-zA-Z0-9]*)", "$1^$2*$3");
+		String r;
+		do {
+			r = result;
+			result =
+					result.replaceAll("([_a-zA-Z][_a-zA-Z0-9]*) ([_a-zA-Z][_a-zA-Z0-9]*)", "$1*$2");
+			// "a^2 b" to "a^2 * b"
+			result = result.replaceAll(
+					"([_a-zA-Z][_a-zA-Z0-9]*)\\^([0-9]*) ([_a-zA-Z][_a-zA-Z0-9]*)", "$1^$2*$3");
+			Log.debug("X " + result);
+		} while (!r.equals(result));
 
 		// change logical operators
 		result = result.replace("\\/", " or ").
