@@ -119,12 +119,14 @@ dependencies {
     runtime "com.github:javagiac-linux64:$javaGiacVersion:natives-linux-amd64",
             "com.github:javagiac-mac:$javaGiacVersion:natives-macosx-universal",
             "com.github:javagiac-win32:$javaGiacVersion:natives-windows-i586",
-            "com.github:javagiac-win64:$javaGiacVersion:natives-windows-amd64"
+            "com.github:javagiac-win64:$javaGiacVersion:natives-windows-amd64",
+            "fr.ujf-grenoble:javagiac:69681:natives-linux-arm" // old version, taken from GeoGebra's Maven repository
 
     runtime "tk.tarski:javatarski:$javaTarskiVersion:natives-linux-amd64",
             "tk.tarski:javatarski:$javaTarskiVersion:natives-windows-amd64",
             "tk.tarski:javatarski:$javaTarskiVersion:natives-windows-i586",
-            "tk.tarski:javatarski:$javaTarskiVersion:natives-macosx-universal"
+            "tk.tarski:javatarski:$javaTarskiVersion:natives-macosx-universal",
+            "tk.tarski:javatarski:$javaTarskiVersion:natives-linux-arm"
 
     testCompile project(':keyboard-base')
     testCompile "junit:junit:$junitVersion"
