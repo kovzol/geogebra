@@ -22,4 +22,4 @@ ext.javaGiacVersion = '69971'
 // Override this with an own compiled version:
 javaGiacVersion = '20220411s4'
 // Please don't change this line since the automatism looks for exact match.
-ext.javaTarskiVersion = '2022Jul09'
+ext.javaTarskiVersion = '2022Jul20'
