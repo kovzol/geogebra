@@ -15,6 +15,7 @@ import org.geogebra.common.util.MaxSizeHashMap;
 import org.geogebra.common.util.debug.Log;
 
 public class Pool {
+
     public ArrayList<Point> points = new ArrayList<>();
     public ArrayList<Line> lines = new ArrayList<>();
     public ArrayList<Circle> circles = new ArrayList<>();
@@ -24,6 +25,7 @@ public class Pool {
     public ArrayList<OrthogonalParallelLines> orthogonalParallelLines = new ArrayList<>();
 
     public MaxSizeHashMap<String, GeoList> algoProveDetailsCache = new MaxSizeHashMap<>(5000);
+    private boolean enabled = false;
 
     public GeoList AlgoProveDetailsCached (GeoElement root, String command) {
         // String command = root.getParentAlgorithm().toString();
@@ -544,6 +546,18 @@ public class Pool {
         algoProveDetailsCache.clear(); // TODO: Find a better way.
 
         points.remove(p);
+    }
+
+    public void enable() {
+        enabled = true;
+    }
+
+    public void disable() {
+        enabled = false;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
 }

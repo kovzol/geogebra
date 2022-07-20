@@ -2410,7 +2410,9 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 			if (discovery && !kernel.isSilentMode()) {
 				Discover d = new Discover(this.getApp(), this);
 				d.initDiscoveryPool();
-				d.detectProperties((GeoPoint) this);
+				if (d.runAllowed()) {
+					d.detectProperties((GeoPoint) this);
+				}
 			}
 		}
 

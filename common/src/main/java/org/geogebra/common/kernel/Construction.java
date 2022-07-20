@@ -2986,6 +2986,7 @@ public class Construction {
 		// undo unavailable in applets
 		// if (getApplication().isApplet()) return;
 
+		discoveryPool.disable();
 		undoManager.redo();
 		initDiscoveryPool();
 	}
@@ -2997,6 +2998,7 @@ public class Construction {
 		// undo unavailable in applets
 		// if (getApplication().isApplet()) return;
 
+		discoveryPool.disable();
 		undoManager.undo();
 		initDiscoveryPool();
 	}
@@ -3662,6 +3664,7 @@ public class Construction {
 
 	public void initDiscoveryPool() {
 		discoveryPool = new Pool();
+		discoveryPool.enable();
 	}
 
 	public ArrayList<Group> getGroups() {

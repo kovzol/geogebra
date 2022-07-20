@@ -1487,4 +1487,10 @@ public class Discover {
 		}
 	}
 
+	public boolean runAllowed() {
+		// While undo-redo is performed, do not allow running
+		// stepwise discovery (it seems to imply an infinite loop).
+		return discoveryPool.isEnabled();
+	}
+
 }
