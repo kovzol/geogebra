@@ -328,17 +328,6 @@ public abstract class CASgiac implements CASGenericInterface {
 			"return(r);" +
 		"}")),
 
-		FACTOR_SQR_FREE2("factorsqrfree", ggbGiac("factorsqrfree(p) -> " +
-		"{ local pf,r,ii;" +
-				"pf:=factor(p);" +
-				"if ((sommet(pf))<>'*') if (((sommet(pf))=='^')) return((op(pf))[0]); else if ((sommet(pf))<>(sommet(-x))) return(pf); else return(factorsqrfree(-pf)); ; ; ;" +
-				"opf:=op(pf);" +
-				"r:=1;" +
-				"for (ii:=0;ii<=(size(opf)-1);ii:=ii+1) r:=r*factorsqrfree(opf[ii]); ;" +
-				"return(r);" +
-				"}")),
-
-
 		/**
 		 * Eliminate variables from a polynomial ideal. If the result is a set
 		 * of discrete points, then convert the linear polynomials to a product
@@ -490,7 +479,8 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * elimvars with given precision for the curve variables x and y. Used
 		 * publicly.
 		 */
-		LOCUS_EQU("locusEqu", "locusEqu(polys,elimvars,precision,curvevarx,curvevary):=implicitCurveCoeffs(subst(geomElim(polys,elimvars,precision),[curvevarx=x,curvevary=y]))"),
+		LOCUS_EQU("locusEqu", ggbGiac("locusEqu(polys,elimvars,precision,curvevarx,curvevary)->" +
+				"implicitCurveCoeffs(subst(geomElim(polys,elimvars,precision),[curvevarx=x,curvevary=y]))")),
 		/**
 		 * Compute coefficient matrix of the input polynomial. The output is a
 		 * flattened variant of the matrix: the elements are returned row by

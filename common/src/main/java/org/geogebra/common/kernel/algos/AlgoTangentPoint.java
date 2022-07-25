@@ -12,6 +12,9 @@ the Free Software Foundation.
 
 package org.geogebra.common.kernel.algos;
 
+import static org.geogebra.common.kernel.prover.polynomial.PPolynomial.collinear;
+
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -318,33 +321,29 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 						botanaVarsThis = getBotanaVars(geo);
 					}
 
-					PPolynomial[] botanaPolynomialsThis = new PPolynomial[4];
+					PPolynomial[] botanaPolynomialsThis = new PPolynomial[3];
 
-					PPolynomial m1 = new PPolynomial(botanaVarsThis[0]);
-					PPolynomial m2 = new PPolynomial(botanaVarsThis[1]);
 					// coordinates of focus point of parabola
 					PPolynomial f1 = new PPolynomial(vparabola[8]);
 					PPolynomial f2 = new PPolynomial(vparabola[9]);
 					// coordinates of T' (feet point on the directrix for T)
-					PVariable t_1 = new PVariable(kernel);
-					PVariable t_2 = new PVariable(kernel);
-
-					PPolynomial t_1p = new PPolynomial(t_1);
-					PPolynomial t_2p = new PPolynomial(t_2);
+					PPolynomial t_1 = new PPolynomial(vparabola[2]);
+					PPolynomial t_2 = new PPolynomial(vparabola[3]);
+					// coordinates of M
+					PPolynomial m1 = new PPolynomial(botanaVarsThis[0]);
+					PPolynomial m2 = new PPolynomial(botanaVarsThis[1]);
 
 					// M midpoint of FT'
 					botanaPolynomialsThis[0] = new PPolynomial(2).multiply(m1)
-							.subtract(f1).subtract(t_1p);
+							.subtract(f1).subtract(t_1);
 					botanaPolynomialsThis[1] = new PPolynomial(2).multiply(m2)
-							.subtract(f2).subtract(t_2p);
+							.subtract(f2).subtract(t_2);
 
-					// T' is a feet point (we need to declare it)
-					botanaPolynomialsThis[2] = PPolynomial.collinear(t_1, t_2,
-							vparabola[4], vparabola[5], vparabola[6],
-							vparabola[7]);
-					// TT' = TF
-					botanaPolynomialsThis[3] = PPolynomial.equidistant(t_1, t_2,
-							vPoint[0], vPoint[1], vparabola[8], vparabola[9]);
+					// F, T and T' should not be collinear (it would imply unsolvable degeneracy)
+					botanaPolynomialsThis[2] = collinear(vparabola[8], vparabola[9],
+							vPoint[0], vPoint[1], vparabola[2], vparabola[3])
+							.multiply(new PPolynomial(new  PVariable(kernel)))
+							.subtract(new PPolynomial(BigInteger.ONE));
 
 					botanaPolynomials.put(geo, botanaPolynomialsThis);
 					return botanaPolynomialsThis;
@@ -382,7 +381,7 @@ public class AlgoTangentPoint extends AlgoTangentPointND
             PVariable f_2 = new PVariable(kernel);
 
             // F' is on the directrix (we need to declare it)
-            botanaPolynomialsThis[0] = PPolynomial.collinear(f_1, f_2,
+            botanaPolynomialsThis[0] = collinear(f_1, f_2,
                     vparabola[4], vparabola[5], vparabola[6],
                     vparabola[7]);
             // PF' = PF
@@ -447,7 +446,7 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 					PPolynomial d2 = new PPolynomial(botanaVarsThis[5]);
 
 					// F_1,T,D collinear
-					botanaPolynomialsThis[0] = PPolynomial.collinear(vellipse[6],
+					botanaPolynomialsThis[0] = collinear(vellipse[6],
 							vellipse[7], vPoint[0], vPoint[1], botanaVarsThis[4],
 							botanaVarsThis[5]);
 
@@ -500,7 +499,7 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 			PPolynomial d2 = new PPolynomial(botanaVarsThis[5]);
 
 			// F_1,T,D collinear
-			botanaPolynomialsThis[0] = PPolynomial.collinear(vellipse[6],
+			botanaPolynomialsThis[0] = collinear(vellipse[6],
 					vellipse[7], vellipse[0], vellipse[1], botanaVarsThis[4],
 					botanaVarsThis[5]);
 
@@ -516,7 +515,7 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 					.subtract(d2);
 
 			// T,M,P collinear
-			botanaPolynomialsThis[4] = PPolynomial.collinear(vellipse[0],
+			botanaPolynomialsThis[4] = collinear(vellipse[0],
 					vellipse[1], botanaVarsThis[0], botanaVarsThis[1], botanaVarsThis[2],
 					botanaVarsThis[3]);
 			botanaPolynomials.put(geo, botanaPolynomialsThis);

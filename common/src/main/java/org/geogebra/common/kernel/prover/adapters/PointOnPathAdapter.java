@@ -76,6 +76,14 @@ public class PointOnPathAdapter extends ProverAdapter {
 					return null;
 				}
 
+				int neededPolys = 4;
+				botanaPolynomials = new PPolynomial[neededPolys];
+				for (int i = 0; i < neededPolys; i++) {
+					botanaPolynomials[i] =
+							new PPolynomial(botanaVars[i]).subtract(new PPolynomial(vparabola[i]));
+				}
+
+				/*
 				botanaPolynomials = new PPolynomial[3];
 
 				// FP = PT
@@ -92,6 +100,7 @@ public class PointOnPathAdapter extends ProverAdapter {
 				botanaPolynomials[2] = PPolynomial.perpendicular(botanaVars[0],
 						botanaVars[1], botanaVars[2], botanaVars[3],
 						vparabola[4], vparabola[5], vparabola[6], vparabola[7]);
+				 */
 
 				return botanaPolynomials;
 			}
@@ -115,6 +124,7 @@ public class PointOnPathAdapter extends ProverAdapter {
 					return null;
 				}
 
+				// Consider returning this always. TODO.
 				if (path.getParentAlgorithm() instanceof AlgoConicFivePoints) {
 					botanaPolynomials = new PPolynomial[2];
 					botanaPolynomials[0] = new PPolynomial(vellipse[0])
