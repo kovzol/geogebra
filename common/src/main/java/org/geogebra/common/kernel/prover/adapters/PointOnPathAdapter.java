@@ -76,32 +76,20 @@ public class PointOnPathAdapter extends ProverAdapter {
 					return null;
 				}
 
-				int neededPolys = 4;
+				/* We take the Botana polynomials of the parabola definition
+				 * and substitute the first four variables by the current first four variables.
+				 */
+				PPolynomial[] parabolaPolys = ((SymbolicParametersBotanaAlgo) path)
+						.getBotanaPolynomials(path);
+				int neededPolys = parabolaPolys.length;
 				botanaPolynomials = new PPolynomial[neededPolys];
 				for (int i = 0; i < neededPolys; i++) {
-					botanaPolynomials[i] =
-							new PPolynomial(botanaVars[i]).subtract(new PPolynomial(vparabola[i]));
+					botanaPolynomials[i] = parabolaPolys[i];
+					for (int j = 0; j < 4; j++) {
+						botanaPolynomials[i] =
+								botanaPolynomials[i].substitute(vparabola[j], botanaVars[j]);
+					}
 				}
-
-				/*
-				botanaPolynomials = new PPolynomial[3];
-
-				// FP = PT
-				botanaPolynomials[0] = PPolynomial.equidistant(vparabola[8],
-						vparabola[9], botanaVars[0], botanaVars[1],
-						botanaVars[2], botanaVars[3]);
-
-				// A,T,B collinear
-				botanaPolynomials[1] = PPolynomial.collinear(vparabola[4],
-						vparabola[5], botanaVars[2], botanaVars[3],
-						vparabola[6], vparabola[7]);
-
-				// PT orthogonal AB
-				botanaPolynomials[2] = PPolynomial.perpendicular(botanaVars[0],
-						botanaVars[1], botanaVars[2], botanaVars[3],
-						vparabola[4], vparabola[5], vparabola[6], vparabola[7]);
-				 */
-
 				return botanaPolynomials;
 			}
 			if (((GeoConic) path).isEllipse()

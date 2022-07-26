@@ -327,8 +327,8 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 					PPolynomial f1 = new PPolynomial(vparabola[8]);
 					PPolynomial f2 = new PPolynomial(vparabola[9]);
 					// coordinates of T' (feet point on the directrix for T)
-					PPolynomial t_1 = new PPolynomial(vparabola[2]);
-					PPolynomial t_2 = new PPolynomial(vparabola[3]);
+					PPolynomial t_1 = new PPolynomial(vPoint[2]);
+					PPolynomial t_2 = new PPolynomial(vPoint[3]);
 					// coordinates of M
 					PPolynomial m1 = new PPolynomial(botanaVarsThis[0]);
 					PPolynomial m2 = new PPolynomial(botanaVarsThis[1]);
@@ -341,7 +341,7 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 
 					// F, T and T' should not be collinear (it would imply unsolvable degeneracy)
 					botanaPolynomialsThis[2] = collinear(vparabola[8], vparabola[9],
-							vPoint[0], vPoint[1], vparabola[2], vparabola[3])
+							vPoint[0], vPoint[1], vPoint[2], vPoint[3])
 							.multiply(new PPolynomial(new  PVariable(kernel)))
 							.subtract(new PPolynomial(BigInteger.ONE));
 

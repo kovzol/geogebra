@@ -35,6 +35,7 @@ import org.geogebra.common.kernel.algos.AlgoEllipseHyperbolaFociPoint;
 import org.geogebra.common.kernel.algos.AlgoFractionText;
 import org.geogebra.common.kernel.algos.AlgoIntersectConics;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
+import org.geogebra.common.kernel.algos.AlgoParabolaPointLine;
 import org.geogebra.common.kernel.algos.AlgoPointInRegion;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoPolygonRegular;
@@ -1303,6 +1304,17 @@ public class ProverBotanasMethod {
 								// there is no numerical object,
 								// so we still use this poly
 								useThisPoly = true;
+								/* Do not use objects that are not necessary for the proof and may make computation slow.
+								 * This is especially important for envelope computations.
+								 * In some cases we define a path (e.g. a parabola), but the path definition
+								 * is unnecessary, even if we use the definition when setting up further
+								 * equations (like a point on that path). So we keep the later equations and
+								 * drop the path definition.
+								 */
+								if (algo instanceof AlgoParabolaPointLine ||
+									algo instanceof  AlgoEllipseHyperbolaFociPoint) {
+									useThisPoly = false;
+								}
 							}
 							if (useThisPoly) {
 								Log.debug("Hypotheses:");

@@ -957,9 +957,11 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 				if (botanaVars.containsKey(geo)) {
 					botanaVarsThis = botanaVars.get(geo);
 				} else {
-					botanaVarsThis = new PVariable[2];
+					botanaVarsThis = new PVariable[4];
 					botanaVarsThis[0] = new PVariable(kernel);
 					botanaVarsThis[1] = new PVariable(kernel);
+					botanaVarsThis[2] = new PVariable(kernel);
+					botanaVarsThis[3] = new PVariable(kernel);
 					botanaVars.put(geo, botanaVarsThis);
 				}
 
@@ -972,7 +974,9 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 				for (int i = 0; i < conicPolysNo; i++) {
 					botanaPolynomialsThis[i] = conicPolys[i]
 							.substitute(conicVars[0], botanaVarsThis[0])
-							.substitute(conicVars[1], botanaVarsThis[1]);
+							.substitute(conicVars[1], botanaVarsThis[1])
+							.substitute(conicVars[2], botanaVarsThis[2])
+							.substitute(conicVars[3], botanaVarsThis[3]);
 				}
 				botanaPolynomialsThis[conicPolysNo] = PPolynomial.collinear(
 						botanaVarsThis[0], botanaVarsThis[1], vg[0], vg[1],
