@@ -949,6 +949,7 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 			if (g != null) {
 
 				PVariable[] vg = g.getBotanaVars(g);
+				int neededVars = 2;
 
 				PVariable[] botanaVarsThis = new PVariable[2];
 				if (botanaVars == null) {
@@ -957,11 +958,13 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 				if (botanaVars.containsKey(geo)) {
 					botanaVarsThis = botanaVars.get(geo);
 				} else {
-					botanaVarsThis = new PVariable[4];
-					botanaVarsThis[0] = new PVariable(kernel);
-					botanaVarsThis[1] = new PVariable(kernel);
-					botanaVarsThis[2] = new PVariable(kernel);
-					botanaVarsThis[3] = new PVariable(kernel);
+					if (c.isParabola()) {
+						neededVars = 4;
+					}
+					botanaVarsThis = new PVariable[neededVars];
+					for (int i = 0; i < neededVars; i++) {
+						botanaVarsThis[i] = new PVariable(kernel);
+					}
 					botanaVars.put(geo, botanaVarsThis);
 				}
 
@@ -972,11 +975,11 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 						+ 1];
 
 				for (int i = 0; i < conicPolysNo; i++) {
-					botanaPolynomialsThis[i] = conicPolys[i]
-							.substitute(conicVars[0], botanaVarsThis[0])
-							.substitute(conicVars[1], botanaVarsThis[1])
-							.substitute(conicVars[2], botanaVarsThis[2])
-							.substitute(conicVars[3], botanaVarsThis[3]);
+					botanaPolynomialsThis[i] = conicPolys[i];
+					for (int j = 0; j < neededVars; j++) {
+						botanaPolynomialsThis[i] = botanaPolynomialsThis[i]
+								.substitute(conicVars[j], botanaVarsThis[j]);
+					}
 				}
 				botanaPolynomialsThis[conicPolysNo] = PPolynomial.collinear(
 						botanaVarsThis[0], botanaVarsThis[1], vg[0], vg[1],

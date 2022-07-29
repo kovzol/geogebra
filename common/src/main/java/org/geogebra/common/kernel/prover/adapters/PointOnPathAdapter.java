@@ -95,14 +95,10 @@ public class PointOnPathAdapter extends ProverAdapter {
 			if (((GeoConic) path).isEllipse()
 					|| ((GeoConic) path).isHyperbola()) {
 				if (botanaVars == null) {
-					botanaVars = new PVariable[4];
+					botanaVars = new PVariable[2];
 					// P - point on ellipse/hyperbola
 					botanaVars[0] = new PVariable(kernel); // ,true
 					botanaVars[1] = new PVariable(kernel);
-					// distances between point on ellipse/hyperbola
-					// and foci points
-					botanaVars[2] = new PVariable(kernel);
-					botanaVars[3] = new PVariable(kernel);
 				}
 
 				PVariable[] vellipse = ((SymbolicParametersBotanaAlgo) path)
@@ -112,35 +108,17 @@ public class PointOnPathAdapter extends ProverAdapter {
 					return null;
 				}
 
-				// Consider returning this always. TODO.
-				if (path.getParentAlgorithm() instanceof AlgoConicFivePoints) {
-					botanaPolynomials = new PPolynomial[2];
-					botanaPolynomials[0] = new PPolynomial(vellipse[0])
-							.subtract(new PPolynomial(botanaVars[0]));
-					botanaPolynomials[1] = new PPolynomial(vellipse[1])
-							.subtract(new PPolynomial(botanaVars[1]));
-					return botanaPolynomials;
-				}
-
-				botanaPolynomials = new PPolynomial[3];
-
-				PPolynomial e_1 = new PPolynomial(botanaVars[2]);
-				PPolynomial e_2 = new PPolynomial(botanaVars[3]);
-				PPolynomial d1 = new PPolynomial(vellipse[2]);
-				PPolynomial d2 = new PPolynomial(vellipse[3]);
-
-				// d1+d2 = e1'+e2'
-				botanaPolynomials[0] = d1.add(d2).subtract(e_1).subtract(e_2);
-
-				// e1'^2=Polynomial.sqrDistance(a1,a2,p1,p2)
-				botanaPolynomials[1] = PPolynomial.sqrDistance(botanaVars[0],
-						botanaVars[1], vellipse[6], vellipse[7])
-						.subtract(e_1.multiply(e_1));
-
-				// e2'^2=Polynomial.sqrDistance(b1,b2,p1,p2)
-				botanaPolynomials[2] = PPolynomial.sqrDistance(botanaVars[0],
-						botanaVars[1], vellipse[8], vellipse[9])
-						.subtract(e_2.multiply(e_2));
+				/* We take the Botana polynomial of the ellipse definition
+				 * and substitute its Botana variables by the current Botana variables.
+				 */
+				PPolynomial ellipsePoly = ((SymbolicParametersBotanaAlgo) path)
+						.getBotanaPolynomials(path)[0];
+				botanaPolynomials = new PPolynomial[1];
+				botanaPolynomials[0] = ellipsePoly;
+				for (int j = 0; j < 2; j++) {
+					botanaPolynomials[0] =
+						botanaPolynomials[0].substitute(vellipse[j], botanaVars[j]);
+					}
 
 				return botanaPolynomials;
 

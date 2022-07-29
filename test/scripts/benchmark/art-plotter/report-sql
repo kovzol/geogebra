@@ -343,7 +343,7 @@ for i in range(sx+sy,0,-1):
             exit()
 
 print(0)
-# actually it might be -inf" | python`
+# actually it might be -inf" | python2`
   else
    HTMLRESULT=""
    fi

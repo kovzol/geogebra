@@ -434,25 +434,25 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 						botanaVarsThis = getBotanaVars(geo);
 					}
 
-					PPolynomial[] botanaPolynomialsThis = new PPolynomial[4];
+					PPolynomial[] botanaPolynomialsThis = new PPolynomial[5];
 
 					PPolynomial m1 = new PPolynomial(botanaVarsThis[0]);
 					PPolynomial m2 = new PPolynomial(botanaVarsThis[1]);
 					// coordinates of second focus point of ellipse/hyperbola
-					PPolynomial f21 = new PPolynomial(vellipse[8]);
-					PPolynomial f22 = new PPolynomial(vellipse[9]);
+					PPolynomial f21 = new PPolynomial(vellipse[4]);
+					PPolynomial f22 = new PPolynomial(vellipse[5]);
 					// coordinates of D
 					PPolynomial d1 = new PPolynomial(botanaVarsThis[4]);
 					PPolynomial d2 = new PPolynomial(botanaVarsThis[5]);
 
 					// F_1,T,D collinear
-					botanaPolynomialsThis[0] = collinear(vellipse[6],
-							vellipse[7], vPoint[0], vPoint[1], botanaVarsThis[4],
+					botanaPolynomialsThis[0] = collinear(vellipse[2],
+							vellipse[3], vPoint[0], vPoint[1], botanaVarsThis[4],
 							botanaVarsThis[5]);
 
 					// F_2T = TD
-					botanaPolynomialsThis[1] = PPolynomial.equidistant(vellipse[8],
-							vellipse[9], vPoint[0], vPoint[1], botanaVarsThis[4],
+					botanaPolynomialsThis[1] = PPolynomial.equidistant(vellipse[4],
+							vellipse[5], vPoint[0], vPoint[1], botanaVarsThis[4],
 							botanaVarsThis[5]);
 
 					// M midpoint of F_2D
@@ -461,6 +461,12 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 					botanaPolynomialsThis[3] = new PPolynomial(2).multiply(m2)
 							.subtract(f22).subtract(d2);
 					botanaPolynomials.put(geo, botanaPolynomialsThis);
+
+					// F_1, F_2 and T should not be collinear
+					botanaPolynomialsThis[4] = PPolynomial.collinear(vellipse[2], vellipse[3],
+							vellipse[4], vellipse[5], vPoint[0], vPoint[1])
+							.multiply(new PPolynomial(new PVariable(kernel)))
+							.subtract(new PPolynomial(BigInteger.ONE));
 
 					return botanaPolynomialsThis;
 				}
@@ -492,20 +498,20 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 			PPolynomial m1 = new PPolynomial(botanaVarsThis[0]);
 			PPolynomial m2 = new PPolynomial(botanaVarsThis[1]);
 			// coordinates of second focus point of ellipse/hyperbola
-			PPolynomial f21 = new PPolynomial(vellipse[8]);
-			PPolynomial f22 = new PPolynomial(vellipse[9]);
+			PPolynomial f21 = new PPolynomial(vellipse[4]);
+			PPolynomial f22 = new PPolynomial(vellipse[5]);
 			// coordinates of D
 			PPolynomial d1 = new PPolynomial(botanaVarsThis[4]);
 			PPolynomial d2 = new PPolynomial(botanaVarsThis[5]);
 
 			// F_1,T,D collinear
-			botanaPolynomialsThis[0] = collinear(vellipse[6],
-					vellipse[7], vellipse[0], vellipse[1], botanaVarsThis[4],
+			botanaPolynomialsThis[0] = collinear(vellipse[2],
+					vellipse[3], vellipse[0], vellipse[1], botanaVarsThis[4],
 					botanaVarsThis[5]);
 
 			// F_2T = TD
-			botanaPolynomialsThis[1] = PPolynomial.equidistant(vellipse[8],
-					vellipse[9], vellipse[0], vellipse[1], botanaVarsThis[4],
+			botanaPolynomialsThis[1] = PPolynomial.equidistant(vellipse[4],
+					vellipse[5], vellipse[0], vellipse[1], botanaVarsThis[4],
 					botanaVarsThis[5]);
 
 			// M midpoint of F_2D

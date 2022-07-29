@@ -251,6 +251,33 @@ public class PPolynomial implements Comparable<PPolynomial> {
 		return new PPolynomial(result);
 	}
 
+	/**
+	 * Creates the n-th power of a polynomial
+	 *
+	 * @param poly
+	 *            the polynomial which is to power
+	 * @param n
+	 *            the exponent
+	 * @return the product
+	 */
+	public PPolynomial pow(int n) {
+		if (n==0) {
+			return new PPolynomial(BigInteger.ONE);
+		}
+		if (n==1) {
+			return this;
+		}
+		if (n<0) {
+			Log.error("Invalid exponent: " + n);
+			return new PPolynomial(BigInteger.ZERO);
+		}
+		PPolynomial p = new PPolynomial(this);
+		for (int i = 1; i < n; i++) {
+			p = p.multiply(this);
+		}
+		return p;
+	}
+
 	@Override
 	public int compareTo(PPolynomial poly) {
 		if (this==poly){
