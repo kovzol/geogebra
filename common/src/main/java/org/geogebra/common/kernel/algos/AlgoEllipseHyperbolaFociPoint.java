@@ -176,9 +176,9 @@ public class AlgoEllipseHyperbolaFociPoint
 				}
 
 				/*
-				 * It seems faster to not store the parts of the sums ac+bc=ap+bp as extra variables, but
-				 * compute the quartic polynomial in advance. It is a polynomial of px and py
-				 * where P=(px,py) and A=(ax,ay), B=(bx,by), C=(cx,cy).
+				 * In many cases it seems faster to not store the parts of the sums ac+bc=ap+bp as
+				 * extra variables, but compute the quartic polynomial in advance. It is a
+				 * polynomial of px and py where P=(px,py) and A=(ax,ay), B=(bx,by), C=(cx,cy).
 				 */
 				// Giac provides these computations:
 				// ee:=eliminate([ac^2=(ax-cx)^2+(ay-cy)^2,bc^2=(bx-cx)^2+(b_y-cy)^2,ap^2=(ax-px)^2+(ay-py)^2,bp^2=(bx-px)^2+(b_y-py)^2,ap+bp=ac+bc],[ac,bc,ap,bp])
@@ -194,3310 +194,1177 @@ public class AlgoEllipseHyperbolaFociPoint
 				PPolynomial x = new PPolynomial(botanaVars[0]);
 				PPolynomial y = new PPolynomial(botanaVars[1]);
 
-				PPolynomial p =
-						((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((cx.pow(
-								4)).multiply((ay.pow(4)))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(ay.pow(3)))).multiply(cy)))).add(
-								(((((new PPolynomial(6)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply((cy.pow(3)))))).add(
-								((ax.pow(4)).multiply((cy.pow(4)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply((ay.pow(2)))).multiply(bx)))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(4)))).multiply(
-										(ay.pow(2)))).multiply(bx)))).subtract(
-								((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										(ay.pow(4)))).multiply(bx)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										bx)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply(ay)).multiply(cy)).multiply(
-										bx)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply(bx)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply(bx)))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										cx)).multiply(
-										(cy.pow(2)))).multiply(bx)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply((cy.pow(2)))).multiply(
-										bx)))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										bx)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										ay)).multiply((cy.pow(3)))).multiply(bx)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(
-										(bx.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))))).add(
-								((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(4)))).multiply((bx.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply(cy)).multiply((bx.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										ay)).multiply(cy)).multiply((bx.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply(
-										(bx.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply((bx.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(bx.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(bx.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(bx.pow(2)))))).subtract(
-								(((((new PPolynomial(2)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(bx.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(3)))).multiply((bx.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((cy.pow(3)))).multiply((bx.pow(2)))))).add(
-								((((new PPolynomial(8)).multiply((ay.pow(3)))).multiply(
-										(cy.pow(3)))).multiply((bx.pow(2)))))).subtract(
-								((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(4)))).multiply((bx.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(4)))).multiply((bx.pow(2)))))).add(
-								((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(3)))))).subtract(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply((bx.pow(3)))))).subtract(
-								((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(4)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(cy)).multiply((bx.pow(4)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(4)))))).add(
-								((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply(
-										(bx.pow(4)))))).add(
-								((cy.pow(4)).multiply((bx.pow(4)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(
-										by)))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(by)))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(4)))).multiply(cy)).multiply(by)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply((cy.pow(2)))).multiply(by)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(
-										by)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply((cy.pow(2)))).multiply(by)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply((cy.pow(2)))).multiply(
-										by)))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										(cy.pow(3)))).multiply(by)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										(cy.pow(3)))).multiply(by)))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(3)))).multiply(
-										by)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(3)))).multiply(by)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(4)))).multiply(by)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(
-										cx)).multiply(
-										cy)).multiply(bx)).multiply(by)))).subtract(
-								((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										by)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply(cy)).multiply(bx)).multiply(
-										by)))).add(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(
-										bx)).multiply(by)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(
-										bx)).multiply(by)))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										by)))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(4)))).multiply(
-										cy)).multiply(bx)).multiply(by)))).subtract(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(
-										bx)).multiply(by)))).add(
-								(((((((new PPolynomial(24)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(
-										bx)).multiply(by)))).subtract(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										by)))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(cy.pow(3)))).multiply(bx)).multiply(by)))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										(cy.pow(3)))).multiply(bx)).multiply(by)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										by)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(by)))).add(
-								((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										by)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										by)))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(3)))).multiply((bx.pow(2)))).multiply(by)))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(3)))).multiply((bx.pow(2)))).multiply(
-										by)))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(3)))).multiply((bx.pow(2)))).multiply(by)))).add(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(cy.pow(4)))).multiply(
-										(bx.pow(2)))).multiply(by)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										cy)).multiply((bx.pow(3)))).multiply(by)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										cy)).multiply((bx.pow(3)))).multiply(by)))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										cy)).multiply((bx.pow(3)))).multiply(by)))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(3)))).multiply(
-										by)))).subtract(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(cy.pow(3)))).multiply(
-										(bx.pow(3)))).multiply(by)))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										(cx.pow(2)))).multiply((by.pow(2)))))).add(
-								((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(3)))).multiply((by.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(4)))).multiply((by.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(
-										(by.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply((by.pow(2)))))).subtract(
-								((((new PPolynomial(2)).multiply((cx.pow(4)))).multiply(
-										(ay.pow(2)))).multiply((by.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply(cy)).multiply((by.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										(by.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										ay)).multiply(cy)).multiply((by.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply((by.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply((by.pow(2)))))).add(
-								((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))))).subtract(
-								(((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(by.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(by.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(by.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(by.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(3)))).multiply((by.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((cy.pow(3)))).multiply(
-										(by.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(4)))).multiply((by.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply(bx)).multiply((by.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(4)))).multiply(
-										bx)).multiply((by.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(
-										(by.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										bx)).multiply((by.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										ay)).multiply(
-										cy)).multiply(bx)).multiply((by.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										(by.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(
-										(by.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply(bx)).multiply((by.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(by.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(by.pow(2)))))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										(by.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(
-										(by.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(by.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(by.pow(2)))))).add(
-								(((((new PPolynomial(6)).multiply((cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(by.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(by.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply((by.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										cy)).multiply((by.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(
-										(by.pow(3)))))).subtract(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((cy.pow(2)))).multiply((by.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(2)))).multiply((by.pow(3)))))).add(
-								((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(3)))).multiply((by.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										cy)).multiply(bx)).multiply((by.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										cy)).multiply(bx)).multiply((by.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										cy)).multiply(
-										bx)).multiply((by.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										cy)).multiply(bx)).multiply((by.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((by.pow(3)))))).add(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((by.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(by.pow(4)))))).add(
-								((cx.pow(4)).multiply((by.pow(4)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(cy)).multiply((by.pow(4)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										cy)).multiply((by.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((by.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply((ay.pow(2)))).multiply(
-										x)))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(4)))).multiply(
-										(ay.pow(2)))).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										x)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply(ay)).multiply(cy)).multiply(
-										x)))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply(x)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										cx)).multiply(
-										(cy.pow(2)))).multiply(x)))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply((cy.pow(2)))).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(x)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										(cy.pow(3)))).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										ay)).multiply((cy.pow(3)))).multiply(x)))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										(cy.pow(4)))).multiply(x)))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply(
-										x)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(x)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(4)))).multiply(bx)).multiply(x)))).subtract(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										bx)).multiply(x)))).subtract(
-								((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply(bx)).multiply(
-										x)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(x)))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										x)))).add(
-								((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										x)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										x)))).add(
-								((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										x)))).add(
-								(((((new PPolynomial(8)).multiply((ay.pow(4)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(x)))).subtract(
-								((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply((cy.pow(3)))).multiply(bx)).multiply(
-										x)))).subtract(
-								(((((new PPolynomial(16)).multiply((ay.pow(3)))).multiply(
-										(cy.pow(3)))).multiply(bx)).multiply(x)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(4)))).multiply(bx)).multiply(x)))).add(
-								(((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(4)))).multiply(bx)).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(
-										x)))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(
-										x)))).subtract(
-								(((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(4)))).multiply(
-										(bx.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(x)))).add(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply(x)))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(
-										ay)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										x)))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply((bx.pow(2)))).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply((bx.pow(2)))).multiply(x)))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cy.pow(4)))).multiply(
-										(bx.pow(2)))).multiply(x)))).subtract(
-								(((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(3)))).multiply(x)))).add(
-								((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(cy)).multiply((bx.pow(3)))).multiply(
-										x)))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(3)))).multiply(
-										x)))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(3)))).multiply(
-										x)))).subtract(
-								(((((new PPolynomial(12)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(3)))).multiply(x)))).add(
-								(((((new PPolynomial(12)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply(
-										(bx.pow(3)))).multiply(x)))).subtract(
-								((((new PPolynomial(4)).multiply((cy.pow(4)))).multiply(
-										(bx.pow(3)))).multiply(x)))).add(
-								(((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										(bx.pow(4)))).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										cy)).multiply((bx.pow(4)))).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										cy)).multiply((bx.pow(4)))).multiply(x)))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(4)))).multiply(x)))).add(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(4)))).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(
-										cx)).multiply(
-										cy)).multiply(by)).multiply(x)))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply(by)).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply(cy)).multiply(by)).multiply(
-										x)))).subtract(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(
-										by)).multiply(x)))).add(
-								(((((((new PPolynomial(12)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(
-										by)).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										(cy.pow(2)))).multiply(by)).multiply(x)))).add(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(
-										by)).multiply(x)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(
-										by)).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										(cy.pow(2)))).multiply(by)).multiply(x)))).add(
-								(((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply(
-										(cy.pow(3)))).multiply(by)).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(cy.pow(3)))).multiply(by)).multiply(x)))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(3)))).multiply(by)).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(4)))).multiply(by)).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(
-										cy)).multiply(
-										bx)).multiply(by)).multiply(x)))).add(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										by)).multiply(x)))).subtract(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										by)).multiply(x)))).subtract(
-								(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										by)).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ay.pow(4)))).multiply(
-										cy)).multiply(
-										bx)).multiply(by)).multiply(x)))).add(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										by)).multiply(x)))).add(
-								((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										by)).multiply(x)))).subtract(
-								(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										by)).multiply(x)))).add(
-								((((((new PPolynomial(16)).multiply((ay.pow(3)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(3)))).multiply(bx)).multiply(by)).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(4)))).multiply(
-										bx)).multiply(by)).multiply(x)))).add(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										by)).multiply(x)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										by)).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(x)))).subtract(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										by)).multiply(x)))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										x)))).add(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(12)).multiply(ax)).multiply(
-										(cy.pow(3)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										x)))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(cy.pow(3)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(x)))).add(
-								(((((new PPolynomial(4)).multiply((cy.pow(3)))).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(x)))).add(
-								(((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(
-										cx)).multiply(
-										(by.pow(2)))).multiply(x)))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply((by.pow(2)))).multiply(
-										x)))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply((by.pow(2)))).multiply(x)))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(4)))).multiply(
-										(by.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(ay.pow(2)))).multiply((by.pow(2)))).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((by.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										cy)).multiply((by.pow(2)))).multiply(x)))).subtract(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply(cy)).multiply(
-										(by.pow(2)))).multiply(x)))).subtract(
-								(((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										(by.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										cy)).multiply((by.pow(2)))).multiply(x)))).subtract(
-								(((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(12)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(by.pow(2)))).multiply(x)))).subtract(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(by.pow(2)))).multiply(x)))).add(
-								(((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cy.pow(4)))).multiply(
-										(by.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(
-										x)))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(
-										bx)).multiply(
-										(by.pow(2)))).multiply(x)))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(
-										x)))).add(
-								(((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(cy)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(
-										x)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(
-										x)))).add(((((((new PPolynomial(16)).multiply(ay)).multiply(
-								(cy.pow(3)))).multiply(bx)).multiply((by.pow(2)))).multiply(
-								x)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(x)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										x)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										x)))).subtract(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										x)))).add(((((((new PPolynomial(12)).multiply(ax)).multiply(
-								(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-								(by.pow(2)))).multiply(
-								x)))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(x)))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(cy)).multiply((by.pow(3)))).multiply(
-										x)))).subtract(
-								((((((new PPolynomial(12)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply((by.pow(3)))).multiply(
-										x)))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply((by.pow(3)))).multiply(
-										x)))).subtract(
-								(((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cy.pow(3)))).multiply(
-										(by.pow(3)))).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(
-										bx)).multiply((by.pow(3)))).multiply(x)))).add(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										cy)).multiply(
-										bx)).multiply((by.pow(3)))).multiply(x)))).add(
-								((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										bx)).multiply((by.pow(3)))).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										bx)).multiply((by.pow(3)))).multiply(x)))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(by.pow(4)))).multiply(x)))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(by.pow(4)))).multiply(x)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										cy)).multiply((by.pow(4)))).multiply(x)))).add(
-								(((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply(
-										(by.pow(4)))).multiply(x)))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply((x.pow(2)))))).subtract(
-								((((new PPolynomial(2)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(4)))).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply(cy)).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										ay)).multiply(cy)).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply(
-										(x.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										(cy.pow(2)))).multiply((x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										(cy.pow(2)))).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(
-										(cy.pow(2)))).multiply((x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(3)))).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((cy.pow(3)))).multiply((x.pow(2)))))).add(
-								((((new PPolynomial(8)).multiply((ay.pow(3)))).multiply(
-										(cy.pow(3)))).multiply((x.pow(2)))))).add(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(4)))).multiply((x.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(4)))).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(ay.pow(4)))).multiply(
-										bx)).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										cy)).multiply(bx)).multiply((x.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply(cy)).multiply(bx)).multiply(
-										(x.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										bx)).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(
-										ay)).multiply(
-										cy)).multiply(bx)).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										cy)).multiply(bx)).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply(
-										cy)).multiply(bx)).multiply((x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply(bx)).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply(bx)).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cy.pow(4)))).multiply(
-										bx)).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								(((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(12)).multiply((ay.pow(3)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								(((((new PPolynomial(22)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(12)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))))).add(
-								((((new PPolynomial(4)).multiply((cy.pow(4)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										(bx.pow(3)))).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										cy)).multiply((bx.pow(3)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(3)))).multiply((x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(3)))).multiply((x.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(4)))).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(8)).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(4)))).multiply((x.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(
-										(bx.pow(4)))).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(
-										cy)).multiply(
-										by)).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply(by)).multiply(
-										(x.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										cy)).multiply(by)).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(by)).multiply(
-										(x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(
-										cy)).multiply(
-										by)).multiply((x.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((cy.pow(2)))).multiply(by)).multiply(
-										(x.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(2)))).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(
-										(cy.pow(2)))).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(3)))).multiply(by)).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(3)))).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(3)))).multiply(by)).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(4)))).multiply(
-										by)).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(
-										cy)).multiply(bx)).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(cy)).multiply(bx)).multiply(by)).multiply(
-										(x.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										by)).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(
-										cy)).multiply(
-										bx)).multiply(by)).multiply((x.pow(2)))))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										by)).multiply((x.pow(2)))))).add(
-								(((((((new PPolynomial(12)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										by)).multiply((x.pow(2)))))).subtract(
-								(((((((new PPolynomial(40)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										(x.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cy.pow(3)))).multiply(bx)).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(cy.pow(3)))).multiply(
-										bx)).multiply(by)).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(by)).multiply(
-										(x.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(by)).multiply(
-										(x.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cy.pow(3)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(
-										(bx.pow(3)))).multiply(by)).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(cy)).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(
-										(x.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										cy)).multiply((by.pow(2)))).multiply((x.pow(2)))))).add(
-								(((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(cy)).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										cy)).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(
-										cy)).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(22)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								(((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((cy.pow(4)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										bx)).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										bx)).multiply((by.pow(2)))).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										bx)).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										bx)).multiply((by.pow(2)))).multiply((x.pow(2)))))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										cy)).multiply(bx)).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((((new PPolynomial(4)).multiply(cx)).multiply(ay)).multiply(
-										cy)).multiply(bx)).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).add(
-								((((((new PPolynomial(12)).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(2)).multiply((cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(x.pow(2)))))).subtract(
-								(((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										cy)).multiply((by.pow(3)))).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										cy)).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))))).add(
-								((((new PPolynomial(8)).multiply((cy.pow(3)))).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(
-										bx)).multiply((by.pow(3)))).multiply(
-										(x.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(cx)).multiply(cy)).multiply(
-										bx)).multiply((by.pow(3)))).multiply((x.pow(2)))))).add(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(by.pow(4)))).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(by.pow(4)))).multiply((x.pow(2)))))).subtract(
-								((((new PPolynomial(2)).multiply((cx.pow(2)))).multiply(
-										(by.pow(4)))).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply(
-										(by.pow(4)))).multiply((x.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(
-										(by.pow(4)))).multiply((x.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(ay.pow(2)))).multiply((x.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((x.pow(3)))))).subtract(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply(cy)).multiply(
-										(x.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										cy)).multiply((x.pow(3)))))).add(
-								((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										(cy.pow(2)))).multiply((x.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((x.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(
-										(x.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(
-										(x.pow(3)))))).subtract(
-								((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(
-										bx)).multiply(
-										(x.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(cy)).multiply(bx)).multiply(
-										(x.pow(3)))))).add(
-								(((((new PPolynomial(12)).multiply((ay.pow(3)))).multiply(
-										cy)).multiply(
-										bx)).multiply((x.pow(3)))))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(
-										(x.pow(3)))))).subtract(
-								(((((new PPolynomial(12)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(
-										(x.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(
-										(x.pow(3)))))).subtract(
-								(((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(3)))))).add(
-								((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(3)))).multiply((x.pow(3)))))).subtract(
-								(((((new PPolynomial(16)).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(3)))).multiply((x.pow(3)))))).add(
-								((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply(
-										(bx.pow(3)))).multiply((x.pow(3)))))).subtract(
-								(((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(
-										cy)).multiply(
-										by)).multiply((x.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(cy)).multiply(by)).multiply(
-										(x.pow(3)))))).subtract(
-								((((((new PPolynomial(12)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(by)).multiply(
-										(x.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(by)).multiply(
-										(x.pow(3)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										bx)).multiply(by)).multiply((x.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										(x.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(
-										(x.pow(3)))))).subtract(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply((x.pow(3)))))).add(
-								((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(ay)).multiply(
-										cy)).multiply((by.pow(2)))).multiply(
-										(x.pow(3)))))).subtract(
-								(((((new PPolynomial(12)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										bx)).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										bx)).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										bx)).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))))).subtract(
-								((((((new PPolynomial(12)).multiply(ay)).multiply(cy)).multiply(
-										bx)).multiply((by.pow(2)))).multiply(
-										(x.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(
-										bx)).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(bx.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(bx.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))))).add(
-								(((((new PPolynomial(12)).multiply(ax)).multiply(cy)).multiply(
-										(by.pow(3)))).multiply((x.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply(cy)).multiply(bx)).multiply(
-										(by.pow(3)))).multiply((x.pow(3)))))).subtract(
-								((((new PPolynomial(4)).multiply(ax)).multiply(
-										(by.pow(4)))).multiply(
-										(x.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((x.pow(4)))))).add(
-								((ay.pow(4)).multiply((x.pow(4)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(cy)).multiply((x.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(
-										cy)).multiply(
-										(x.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((x.pow(4)))))).add(
-								((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((x.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										bx)).multiply((x.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										bx)).multiply((x.pow(4)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										cy)).multiply(bx)).multiply((x.pow(4)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										cy)).multiply(bx)).multiply((x.pow(4)))))).add(
-								(((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply(
-										bx)).multiply((x.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(4)))))).add(
-								(((((new PPolynomial(8)).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply((x.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(4)))))).add(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(
-										by)).multiply((x.pow(4)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										cy)).multiply(by)).multiply((x.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										by)).multiply((x.pow(4)))))).subtract(
-								(((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										by)).multiply((x.pow(4)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(
-										bx)).multiply(by)).multiply((x.pow(4)))))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(cy)).multiply(
-										bx)).multiply(by)).multiply((x.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(by.pow(2)))).multiply((x.pow(4)))))).subtract(
-								((((new PPolynomial(2)).multiply((ay.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply(
-										(by.pow(2)))).multiply((x.pow(4)))))).add(
-								((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply((x.pow(4)))))).subtract(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply((x.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply(cy)).multiply(
-										(by.pow(3)))).multiply(
-										(x.pow(4)))))).add(((by.pow(4)).multiply((x.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(ay.pow(3)))).multiply(y)))).subtract(
-								((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(
-										(ay.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(
-										y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(4)))).multiply(cy)).multiply(y)))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply((cy.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply((cy.pow(2)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply((cy.pow(2)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(3)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(4)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(bx)).multiply(
-										y)))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply(ay)).multiply(bx)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(4)))).multiply(
-										ay)).multiply(bx)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply(bx)).multiply(y)))).add(
-								(((((new PPolynomial(12)).multiply((cx.pow(3)))).multiply(
-										(ay.pow(3)))).multiply(bx)).multiply(y)))).subtract(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(
-										bx)).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(
-										bx)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(4)))).multiply(
-										cy)).multiply(bx)).multiply(y)))).add(
-								(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(
-										bx)).multiply(y)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(
-										bx)).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										(cy.pow(3)))).multiply(bx)).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply((bx.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((bx.pow(2)))).multiply(
-										y)))).add(
-								(((((new PPolynomial(8)).multiply((cx.pow(4)))).multiply(
-										ay)).multiply(
-										(bx.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply((bx.pow(2)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply((bx.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										y)))).add(
-								(((((new PPolynomial(8)).multiply((ay.pow(4)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(8)).multiply((ay.pow(3)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(3)))).multiply((bx.pow(2)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(cy.pow(4)))).multiply(
-										(bx.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((bx.pow(3)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(16)).multiply((cx.pow(3)))).multiply(
-										ay)).multiply(
-										(bx.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((bx.pow(3)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(12)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(3)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((bx.pow(4)))).multiply(y)))).add(
-								(((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										(bx.pow(4)))).multiply(y)))).subtract(
-								(((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(4)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(4)))).multiply(y)))).add(
-								(((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(
-										(cx.pow(2)))).multiply(by)).multiply(y)))).subtract(
-								(((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(3)))).multiply(by)).multiply(y)))).add(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(4)))).multiply(by)).multiply(y)))).add(
-								((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(by)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(12)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply((ay.pow(2)))).multiply(by)).multiply(
-										y)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(
-										(ay.pow(2)))).multiply(by)).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(4)))).multiply(by)).multiply(y)))).subtract(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										by)).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										(cy.pow(2)))).multiply(by)).multiply(y)))).subtract(
-								((((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply((cy.pow(2)))).multiply(by)).multiply(
-										y)))).add(
-								((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(
-										y)))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(
-										y)))).add(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(
-										y)))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(4)))).multiply(by)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(
-										cx)).multiply(
-										bx)).multiply(by)).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(4)))).multiply(
-										bx)).multiply(by)).multiply(y)))).subtract(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((ay.pow(2)))).multiply(bx)).multiply(
-										by)).multiply(y)))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply(
-										by)).multiply(y)))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(4)))).multiply(
-										bx)).multiply(by)).multiply(y)))).add(
-								((((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										bx)).multiply(by)).multiply(y)))).subtract(
-								(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										by)).multiply(y)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										by)).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										by)).multiply(y)))).subtract(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										y)))).add(((((((new PPolynomial(16)).multiply(ax)).multiply(
-								(cx.pow(3)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-								y)))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										by)).multiply(y)))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										y)))).add(
-								(((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										y)))).add(
-								((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(4)).multiply((cy.pow(4)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(y)))).add(
-								((((((new PPolynomial(4)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply((by.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										ay)).multiply((by.pow(2)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(
-										ay)).multiply(
-										(by.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(
-										cy)).multiply(
-										(by.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(cy)).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										cy)).multiply((by.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply(
-										y)))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(3)))).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(3)))).multiply((by.pow(2)))).multiply(y)))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(12)).multiply((cx.pow(3)))).multiply(
-										ay)).multiply(bx)).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(cy)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(
-										cy)).multiply(
-										bx)).multiply((by.pow(2)))).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply(y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(cy.pow(3)))).multiply(
-										bx)).multiply((by.pow(2)))).multiply(y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(4)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((cy.pow(3)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((by.pow(3)))).multiply(y)))).add(
-								(((((new PPolynomial(12)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(by.pow(3)))).multiply(y)))).subtract(
-								((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(
-										(by.pow(3)))).multiply(y)))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((by.pow(3)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((by.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply((by.pow(3)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((by.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										bx)).multiply((by.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										bx)).multiply((by.pow(3)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										bx)).multiply(
-										(by.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										bx)).multiply((by.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply(
-										bx)).multiply((by.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((by.pow(4)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										(by.pow(4)))).multiply(y)))).add(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(
-										(by.pow(4)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										cy)).multiply((by.pow(4)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										cy)).multiply(
-										(by.pow(4)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(x)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply(ay)).multiply(x)).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(4)))).multiply(
-										ay)).multiply(x)).multiply(y)))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply(x)).multiply(y)))).add(
-								(((((((new PPolynomial(24)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(
-										x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(
-										x)).multiply(y)))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										(cy.pow(2)))).multiply(x)).multiply(y)))).subtract(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(
-										x)).multiply(
-										y)))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(
-										x)).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										(cy.pow(2)))).multiply(x)).multiply(y)))).subtract(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(3)))).multiply(x)).multiply(
-										y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(4)))).multiply(x)).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(bx)).multiply(
-										x)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(4)))).multiply(
-										ay)).multiply(
-										bx)).multiply(x)).multiply(y)))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply(bx)).multiply(x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										x)).multiply(
-										y)))).add(
-								((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										x)).multiply(
-										y)))).add(
-								(((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										x)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ay.pow(4)))).multiply(
-										cy)).multiply(
-										bx)).multiply(x)).multiply(y)))).subtract(
-								(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										x)).multiply(
-										y)))).add(
-								((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(3)))).multiply(bx)).multiply(x)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(4)))).multiply(
-										bx)).multiply(x)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										(bx.pow(2)))).multiply(x)).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply((bx.pow(2)))).multiply(
-										x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((bx.pow(2)))).multiply(
-										x)).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply((cx.pow(3)))).multiply(
-										ay)).multiply((bx.pow(2)))).multiply(x)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										(bx.pow(2)))).multiply(x)).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply((bx.pow(2)))).multiply(x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										x)).multiply(y)))).subtract(
-								(((((((new PPolynomial(40)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										x)).multiply(y)))).add(
-								(((((((new PPolynomial(12)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(x)).multiply(
-										y)))).add(
-								(((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(x)).multiply(
-										y)))).add(
-								((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply((bx.pow(3)))).multiply(x)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(4)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(x)).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										(bx.pow(4)))).multiply(x)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(bx.pow(4)))).multiply(x)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(
-										cx)).multiply(
-										by)).multiply(x)).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply(by)).multiply(x)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(4)))).multiply(
-										by)).multiply(x)).multiply(y)))).subtract(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((ay.pow(2)))).multiply(by)).multiply(
-										x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(by)).multiply(
-										x)).multiply(y)))).add(
-								((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply(cy)).multiply(by)).multiply(
-										x)).multiply(y)))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										(cy.pow(2)))).multiply(by)).multiply(x)).multiply(y)))).add(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((cy.pow(2)))).multiply(by)).multiply(
-										x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(
-										x)).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(
-										x)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cy.pow(4)))).multiply(
-										by)).multiply(x)).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(
-										bx)).multiply(
-										by)).multiply(x)).multiply(y)))).subtract(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										x)).multiply(
-										y)))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(4)))).multiply(
-										bx)).multiply(
-										by)).multiply(x)).multiply(y)))).add(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										x)).multiply(
-										y)))).add(
-								(((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										x)).multiply(
-										y)))).add(
-								((((((new PPolynomial(8)).multiply((ay.pow(4)))).multiply(
-										bx)).multiply(
-										by)).multiply(x)).multiply(y)))).subtract(
-								(((((((((new PPolynomial(32)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(cy)).multiply(bx)).multiply(by)).multiply(
-										x)).multiply(y)))).add(
-								(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										x)).multiply(
-										y)))).add(
-								(((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										x)).multiply(
-										y)))).add(
-								((((((new PPolynomial(8)).multiply((cy.pow(4)))).multiply(
-										bx)).multiply(
-										by)).multiply(x)).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((bx.pow(2)))).multiply(by)).multiply(
-										x)).multiply(
-										y)))).add((((((((new PPolynomial(8)).multiply(ax)).multiply(
-								(cx.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-								x)).multiply(y)))).subtract(
-								((((((new PPolynomial(16)).multiply((cx.pow(3)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										x)).multiply(y)))).add(
-								((((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(by)).multiply(
-										x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										x)).multiply(y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(
-										x)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(x)).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(x)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(x)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(x)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										(by.pow(2)))).multiply(x)).multiply(y)))).subtract(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply((by.pow(2)))).multiply(
-										x)).multiply(
-										y)))).add(
-								(((((((new PPolynomial(12)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((by.pow(2)))).multiply(
-										x)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										(by.pow(2)))).multiply(x)).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(
-										cy)).multiply((by.pow(2)))).multiply(x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(40)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(cy)).multiply((by.pow(2)))).multiply(
-										x)).multiply(
-										y)))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply(
-										x)).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply(
-										x)).multiply(y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply(
-										y)))).add(((((((new PPolynomial(16)).multiply(ax)).multiply(
-								(cy.pow(3)))).multiply((by.pow(2)))).multiply(x)).multiply(
-								y)))).subtract(
-								(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(bx)).multiply((by.pow(2)))).multiply(
-										x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(bx)).multiply((by.pow(2)))).multiply(
-										x)).multiply(
-										y)))).add(
-								((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										cy)).multiply(bx)).multiply((by.pow(2)))).multiply(
-										x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										cy)).multiply(bx)).multiply((by.pow(2)))).multiply(
-										x)).multiply(
-										y)))).add(
-								(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(bx)).multiply((by.pow(2)))).multiply(
-										x)).multiply(
-										y)))).add((((((((new PPolynomial(8)).multiply(ay)).multiply(
-								(cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(
-								x)).multiply(y)))).subtract(
-								((((((new PPolynomial(16)).multiply((cy.pow(3)))).multiply(
-										bx)).multiply((by.pow(2)))).multiply(x)).multiply(y)))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply(
-										y)))).add(
-								(((((((new PPolynomial(24)).multiply(cx)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply(
-										y)))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((by.pow(3)))).multiply(x)).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(by.pow(3)))).multiply(x)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										bx)).multiply(
-										(by.pow(3)))).multiply(x)).multiply(y)))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										bx)).multiply(
-										(by.pow(3)))).multiply(x)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										bx)).multiply(
-										(by.pow(3)))).multiply(x)).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply(
-										bx)).multiply(
-										(by.pow(3)))).multiply(x)).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										(by.pow(4)))).multiply(x)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(
-										(by.pow(4)))).multiply(x)).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply((x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((x.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply((x.pow(2)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply((x.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((x.pow(2)))).multiply(
-										y)))).add(
-								(((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(
-										cy)).multiply(
-										(x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply((cy.pow(2)))).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(
-										(cy.pow(2)))).multiply((x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										bx)).multiply((x.pow(2)))).multiply(y)))).subtract(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply(bx)).multiply(
-										(x.pow(2)))).multiply(
-										y)))).add((((((((new PPolynomial(8)).multiply(ax)).multiply(
-								(cx.pow(2)))).multiply(ay)).multiply(bx)).multiply(
-								(x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										bx)).multiply((x.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(12)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply(bx)).multiply((x.pow(2)))).multiply(
-										y)))).add((((((((new PPolynomial(8)).multiply(ax)).multiply(
-								(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-								(x.pow(2)))).multiply(y)))).add(
-								(((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										(x.pow(2)))).multiply(y)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((x.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										(bx.pow(3)))).multiply((x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(
-										(bx.pow(3)))).multiply((x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).add(
-								(((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(
-										by)).multiply(
-										(x.pow(2)))).multiply(y)))).subtract(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(cy)).multiply(by)).multiply(
-										(x.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(
-										bx)).multiply(by)).multiply((x.pow(2)))).multiply(y)))).add(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(bx)).multiply(by)).multiply(
-										(x.pow(2)))).multiply(
-										y)))).add((((((((new PPolynomial(8)).multiply(ax)).multiply(
-								(cx.pow(2)))).multiply(bx)).multiply(by)).multiply(
-								(x.pow(2)))).multiply(y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										(x.pow(2)))).multiply(y)))).subtract(
-								(((((((new PPolynomial(4)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										(x.pow(2)))).multiply(y)))).add(
-								((((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										cy)).multiply(bx)).multiply(by)).multiply(
-										(x.pow(2)))).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										(x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(8)).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(16)).multiply((cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(
-										y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(bx.pow(3)))).multiply(
-										by)).multiply((x.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(bx.pow(3)))).multiply(
-										by)).multiply((x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(y)))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										cy)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(4)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										bx)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(
-										y)))).add(
-								(((((((new PPolynomial(12)).multiply(cx)).multiply(ay)).multiply(
-										bx)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(
-										y)))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(
-										bx)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								(((((((new PPolynomial(16)).multiply(cx)).multiply(cy)).multiply(
-										bx)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(
-										y)))).subtract(
-								((((((new PPolynomial(4)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(y)))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))).multiply(y)))).subtract(
-								((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))).multiply(y)))).subtract(
-								(((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(bx)).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(4)).multiply(cx)).multiply(bx)).multiply(
-										(by.pow(3)))).multiply((x.pow(2)))).multiply(y)))).subtract(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(by.pow(4)))).multiply(
-										(x.pow(2)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply(cy)).multiply(
-										(by.pow(4)))).multiply(
-										(x.pow(2)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										ay)).multiply((x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										ay)).multiply((x.pow(3)))).multiply(y)))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										(x.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										cy)).multiply((x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply((x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										bx)).multiply((x.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										bx)).multiply((x.pow(3)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(
-										bx)).multiply(
-										(x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										bx)).multiply((x.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										bx)).multiply((x.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply((x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply((x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										by)).multiply((x.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										by)).multiply((x.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										by)).multiply((x.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply(
-										by)).multiply((x.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										bx)).multiply(
-										by)).multiply((x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										bx)).multiply(
-										by)).multiply((x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										bx)).multiply(
-										by)).multiply((x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply(
-										bx)).multiply(
-										by)).multiply((x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(bx.pow(2)))).multiply(
-										by)).multiply((x.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(bx.pow(2)))).multiply(
-										by)).multiply((x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(ay)).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))).multiply(y)))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(4)).multiply(ay)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))).multiply(y)))).add(
-								((((((new PPolynomial(8)).multiply(cy)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply((x.pow(3)))).multiply(y)))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(by.pow(3)))).multiply(
-										(x.pow(3)))).multiply(y)))).subtract(
-								(((((new PPolynomial(4)).multiply(bx)).multiply(
-										(by.pow(3)))).multiply(
-										(x.pow(3)))).multiply(y)))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										(cx.pow(2)))).multiply((y.pow(2)))))).add(
-								((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(3)))).multiply((y.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(4)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply((y.pow(2)))))).add(
-								((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(
-										(ay.pow(2)))).multiply((y.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(4)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply(cy)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										ay)).multiply(cy)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply(cy)).multiply(
-										(y.pow(2)))))).subtract(
-								((((new PPolynomial(2)).multiply((ax.pow(4)))).multiply(
-										(cy.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										(cy.pow(2)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(3)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((cy.pow(3)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										cx)).multiply(
-										bx)).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply(bx)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(3)))).multiply(bx)).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(4)))).multiply(
-										bx)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply((ay.pow(2)))).multiply(bx)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(12)).multiply((cx.pow(3)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(4)))).multiply(
-										bx)).multiply((y.pow(2)))))).subtract(
-								(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply(cy)).multiply(bx)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(
-										bx)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(
-										ay)).multiply(
-										cy)).multiply(bx)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply(bx)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										(bx.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(bx.pow(2)))).multiply((y.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(
-										(bx.pow(2)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(22)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(
-										(bx.pow(2)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((ay.pow(3)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((bx.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(cy.pow(3)))).multiply(
-										(bx.pow(2)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(bx.pow(3)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(bx.pow(3)))).multiply((y.pow(2)))))).add(
-								((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(
-										(bx.pow(3)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(12)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										(bx.pow(3)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(cx)).multiply(ay)).multiply(
-										cy)).multiply((bx.pow(3)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(3)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(bx.pow(4)))).multiply((y.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(bx.pow(4)))).multiply((y.pow(2)))))).add(
-								((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(4)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(4)))).multiply((y.pow(2)))))).subtract(
-								((((new PPolynomial(2)).multiply((cy.pow(2)))).multiply(
-										(bx.pow(4)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply(by)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(ay)).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((cx.pow(4)))).multiply(
-										ay)).multiply(
-										by)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply(by)).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										cy)).multiply(
-										by)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										cy)).multiply(by)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply(by)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										cy)).multiply(by)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(by)).multiply(
-										(y.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(by)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(2)))).multiply(by)).multiply((y.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((cy.pow(2)))).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(2)))).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(3)))).multiply(by)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(3)))).multiply(by)).multiply((y.pow(2)))))).add(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply(bx)).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(40)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(bx)).multiply(
-										by)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply((cx.pow(3)))).multiply(
-										ay)).multiply(bx)).multiply(by)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply(bx)).multiply(by)).multiply(
-										(y.pow(2)))))).add(
-								(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(cy)).multiply(bx)).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										by)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(
-										cy)).multiply(
-										bx)).multiply(by)).multiply((y.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										by)).multiply((y.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(cy.pow(3)))).multiply(
-										bx)).multiply(by)).multiply((y.pow(2)))))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((bx.pow(2)))).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(by)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(by)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cy.pow(3)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(bx.pow(3)))).multiply(by)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(cx)).multiply(cy)).multiply(
-										(bx.pow(3)))).multiply(by)).multiply((y.pow(2)))))).add(
-								((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										(by.pow(2)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										(by.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(22)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(12)).multiply(ax)).multiply(
-										(cx.pow(3)))).multiply(
-										(by.pow(2)))).multiply((y.pow(2)))))).add(
-								((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(
-										(by.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										cy)).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(cy)).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										cy)).multiply((by.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										bx)).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(
-										bx)).multiply(
-										(by.pow(2)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										cy)).multiply(bx)).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(cy.pow(2)))).multiply(
-										bx)).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(2)).multiply((cx.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((by.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((by.pow(3)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										(by.pow(3)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(
-										(by.pow(3)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										cy)).multiply(
-										(by.pow(3)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										bx)).multiply((by.pow(3)))).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(cy)).multiply(
-										bx)).multiply((by.pow(3)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(by.pow(4)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(by.pow(4)))).multiply((y.pow(2)))))).subtract(
-								((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(by.pow(4)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										cx)).multiply(
-										x)).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										(cx.pow(2)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(ay.pow(2)))).multiply(x)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply((ay.pow(2)))).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										cy)).multiply(x)).multiply((y.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply(cy)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										cy)).multiply(x)).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										(cy.pow(2)))).multiply(x)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										bx)).multiply(
-										x)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(bx)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(cy)).multiply(bx)).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply((ay.pow(3)))).multiply(
-										cy)).multiply(bx)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										(bx.pow(2)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										(bx.pow(2)))).multiply(x)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(bx.pow(2)))).multiply(x)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply((bx.pow(2)))).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(4)).multiply(ax)).multiply(ay)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								(((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(
-										cy)).multiply((bx.pow(2)))).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply(x)).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(12)).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(3)))).multiply(x)).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(
-										(bx.pow(3)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(bx.pow(4)))).multiply(
-										x)).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(bx.pow(4)))).multiply(
-										x)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										by)).multiply(x)).multiply((y.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(by)).multiply(
-										x)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(3)))).multiply(
-										by)).multiply(x)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply(
-										cy)).multiply(by)).multiply(x)).multiply((y.pow(2)))))).add(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(cy)).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(by)).multiply(
-										x)).multiply(
-										(y.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(bx)).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(bx)).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(bx)).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply((ay.pow(3)))).multiply(
-										bx)).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(bx)).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(bx)).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										x)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								(((((((new PPolynomial(12)).multiply(ax)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply(cx)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(bx.pow(3)))).multiply(
-										by)).multiply(x)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply(cy)).multiply(
-										(bx.pow(3)))).multiply(
-										by)).multiply(x)).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										(by.pow(2)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										(by.pow(2)))).multiply(x)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										(by.pow(2)))).multiply(x)).multiply((y.pow(2)))))).add(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										cy)).multiply((by.pow(2)))).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(
-										bx)).multiply((by.pow(2)))).multiply(x)).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										bx)).multiply((by.pow(2)))).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(
-										bx)).multiply((by.pow(2)))).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										bx)).multiply(
-										(by.pow(2)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply(ay)).multiply(cy)).multiply(
-										bx)).multiply((by.pow(2)))).multiply(x)).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply(
-										bx)).multiply(
-										(by.pow(2)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(bx.pow(2)))).multiply(
-										(by.pow(2)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(bx.pow(2)))).multiply(
-										(by.pow(2)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(
-										(by.pow(3)))).multiply(x)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cy)).multiply(
-										(by.pow(3)))).multiply(x)).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(bx)).multiply(
-										(by.pow(3)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cy)).multiply(bx)).multiply(
-										(by.pow(3)))).multiply(x)).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										(x.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(6)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										cy)).multiply((x.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(cy)).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(
-										cy)).multiply(
-										(x.pow(2)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(cy.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										bx)).multiply(
-										(x.pow(2)))).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										bx)).multiply((x.pow(2)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										bx)).multiply((x.pow(2)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										bx)).multiply((x.pow(2)))).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(12)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(bx)).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										cy)).multiply(bx)).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(
-										cy)).multiply(bx)).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply(
-										bx)).multiply((x.pow(2)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(2)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(12)).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(
-										(bx.pow(3)))).multiply(
-										(x.pow(2)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(bx.pow(3)))).multiply(
-										(x.pow(2)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										by)).multiply((x.pow(2)))).multiply((y.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(by)).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										by)).multiply((x.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(
-										by)).multiply(
-										(x.pow(2)))).multiply((y.pow(2)))))).add(
-								((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(by)).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										cy)).multiply(by)).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										by)).multiply((x.pow(2)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										by)).multiply((x.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((((new PPolynomial(24)).multiply(ax)).multiply(ay)).multiply(
-										bx)).multiply(by)).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										bx)).multiply(by)).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(
-										bx)).multiply(by)).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((((new PPolynomial(16)).multiply(cx)).multiply(cy)).multiply(
-										bx)).multiply(by)).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply(
-										by)).multiply((x.pow(2)))).multiply((y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply(
-										by)).multiply((x.pow(2)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								(((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								((((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).subtract(
-								((((((new PPolynomial(4)).multiply(cx)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(6)).multiply((bx.pow(2)))).multiply(
-										(by.pow(2)))).multiply((x.pow(2)))).multiply(
-										(y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(by.pow(3)))).multiply(
-										(x.pow(2)))).multiply((y.pow(2)))))).subtract(
-								(((((new PPolynomial(4)).multiply(cy)).multiply(
-										(by.pow(3)))).multiply(
-										(x.pow(2)))).multiply((y.pow(2)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										ay)).multiply((y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply((y.pow(3)))))).add(
-								((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(3)))).multiply((y.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(
-										(y.pow(3)))))).subtract(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply((y.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(cy.pow(2)))).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(ay)).multiply(bx)).multiply(
-										(y.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(ay)).multiply(bx)).multiply(
-										(y.pow(3)))))).subtract(
-								(((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(3)))).multiply(
-										bx)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(
-										(y.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(bx.pow(2)))).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply((bx.pow(2)))).multiply(
-										(y.pow(3)))))).subtract(
-								(((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										(bx.pow(2)))).multiply((y.pow(3)))))).add(
-								((((new PPolynomial(8)).multiply((ay.pow(3)))).multiply(
-										(bx.pow(2)))).multiply((y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										(bx.pow(2)))).multiply((y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((y.pow(3)))))).add(
-								(((((new PPolynomial(12)).multiply(cx)).multiply(ay)).multiply(
-										(bx.pow(3)))).multiply((y.pow(3)))))).subtract(
-								((((new PPolynomial(4)).multiply(ay)).multiply(
-										(bx.pow(4)))).multiply(
-										(y.pow(3)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(
-										by)).multiply(
-										(y.pow(3)))))).add(
-								(((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										by)).multiply((y.pow(3)))))).subtract(
-								(((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply(by)).multiply(
-										(y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(by)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(by)).multiply(
-										(y.pow(3)))))).subtract(
-								(((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply(by)).multiply(
-										(y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cy.pow(2)))).multiply(by)).multiply(
-										(y.pow(3)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										bx)).multiply(by)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(bx)).multiply(by)).multiply(
-										(y.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(
-										(y.pow(3)))))).subtract(
-								((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(
-										(y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply(
-										(y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply((y.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(
-										(bx.pow(2)))).multiply(by)).multiply((y.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply(cx)).multiply(
-										(bx.pow(3)))).multiply(
-										by)).multiply((y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										(by.pow(2)))).multiply((y.pow(3)))))).subtract(
-								(((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										(by.pow(2)))).multiply((y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(
-										(by.pow(2)))).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										cy)).multiply((by.pow(2)))).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(
-										bx)).multiply((by.pow(2)))).multiply(
-										(y.pow(3)))))).subtract(
-								((((((new PPolynomial(16)).multiply(cx)).multiply(cy)).multiply(
-										bx)).multiply((by.pow(2)))).multiply(
-										(y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply(
-										(by.pow(2)))).multiply((y.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply(
-										(by.pow(2)))).multiply((y.pow(3)))))).add(
-								((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										(by.pow(3)))).multiply((y.pow(3)))))).subtract(
-								(((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(
-										(by.pow(3)))).multiply((y.pow(3)))))).add(
-								((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										(by.pow(3)))).multiply((y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										ay)).multiply(
-										x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										ay)).multiply(x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										ay)).multiply(x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										cy)).multiply(x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										bx)).multiply(x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										bx)).multiply(x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										cy)).multiply(
-										bx)).multiply(x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(
-										(cy.pow(2)))).multiply(
-										bx)).multiply(x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply(x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply(x)).multiply((y.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(bx.pow(3)))).multiply(
-										x)).multiply((y.pow(3)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										by)).multiply(
-										x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										by)).multiply(x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										by)).multiply(x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(ay.pow(2)))).multiply(
-										by)).multiply(x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cy.pow(2)))).multiply(
-										by)).multiply(x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										bx)).multiply(
-										by)).multiply(x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										bx)).multiply(
-										by)).multiply(x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(
-										bx)).multiply(
-										by)).multiply(x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply(
-										bx)).multiply(
-										by)).multiply(x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(4)).multiply(ax)).multiply(
-										(bx.pow(2)))).multiply(
-										by)).multiply(x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(
-										(bx.pow(2)))).multiply(
-										by)).multiply(x)).multiply((y.pow(3)))))).subtract(
-								(((((new PPolynomial(4)).multiply((bx.pow(3)))).multiply(
-										by)).multiply(
-										x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(
-										(by.pow(2)))).multiply(x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(
-										(by.pow(2)))).multiply(x)).multiply((y.pow(3)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ay)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply(x)).multiply((y.pow(3)))))).add(
-								((((((new PPolynomial(8)).multiply(cy)).multiply(bx)).multiply(
-										(by.pow(2)))).multiply(x)).multiply((y.pow(3)))))).add(
-								((ax.pow(4)).multiply((y.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(
-										cx)).multiply(
-										(y.pow(4)))))).add(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(cx.pow(2)))).multiply((y.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(ay.pow(2)))).multiply((y.pow(4)))))).subtract(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										cy)).multiply((y.pow(4)))))).add(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(cy)).multiply((y.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cx)).multiply(
-										bx)).multiply((y.pow(4)))))).subtract(
-								(((((new PPolynomial(8)).multiply(ax)).multiply(
-										(cx.pow(2)))).multiply(
-										bx)).multiply((y.pow(4)))))).add(
-								(((((new PPolynomial(8)).multiply(cx)).multiply(
-										(ay.pow(2)))).multiply(
-										bx)).multiply((y.pow(4)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										cy)).multiply(bx)).multiply((y.pow(4)))))).subtract(
-								((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((y.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(
-										(bx.pow(2)))).multiply((y.pow(4)))))).add(
-								((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((y.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(
-										(bx.pow(2)))).multiply((y.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply((y.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply(cx)).multiply(
-										(bx.pow(3)))).multiply(
-										(y.pow(4)))))).add(((bx.pow(4)).multiply((y.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										ay)).multiply(
-										by)).multiply((y.pow(4)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										ay)).multiply(by)).multiply((y.pow(4)))))).add(
-								(((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(
-										ay)).multiply(
-										by)).multiply((y.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										cy)).multiply(
-										by)).multiply((y.pow(4)))))).subtract(
-								((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										cy)).multiply(by)).multiply((y.pow(4)))))).subtract(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(
-										bx)).multiply(by)).multiply((y.pow(4)))))).add(
-								((((((new PPolynomial(8)).multiply(cx)).multiply(cy)).multiply(
-										bx)).multiply(by)).multiply((y.pow(4)))))).add(
-								(((((new PPolynomial(4)).multiply(ay)).multiply(
-										(bx.pow(2)))).multiply(
-										by)).multiply((y.pow(4)))))).subtract(
-								(((((new PPolynomial(4)).multiply(cy)).multiply(
-										(bx.pow(2)))).multiply(
-										by)).multiply((y.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(
-										(by.pow(2)))).multiply((y.pow(4)))))).add(
-								(((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(
-										(by.pow(2)))).multiply((y.pow(4)))))).subtract(
-								((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(
-										(by.pow(2)))).multiply((y.pow(4))))));
+				PPolynomial p = ((cx.pow(4)).multiply((ay.pow(4))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply((ay.pow(3)))).multiply(cy)));
+				p = p.add((((((new PPolynomial(6)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))));
+				p = p.add(((ax.pow(4)).multiply((cy.pow(4)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply(bx)));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(4)))).multiply((ay.pow(2)))).multiply(bx)));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply((ay.pow(4)))).multiply(bx)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(bx)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply(ay)).multiply(cy)).multiply(bx)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply(cy)).multiply(bx)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply((ay.pow(3)))).multiply(cy)).multiply(bx)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(cx)).multiply((cy.pow(2)))).multiply(bx)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply(bx)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))).multiply(bx)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((bx.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply((bx.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply((ay.pow(2)))).multiply((bx.pow(2)))));
+				p = p.add(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(4)))).multiply((bx.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(3)))).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(3)))).multiply(cy)).multiply((bx.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply(cy)).multiply((bx.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))));
+				p = p.subtract((((((new PPolynomial(2)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(3)))).multiply((bx.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))).multiply((bx.pow(2)))));
+				p = p.add(((((new PPolynomial(8)).multiply((ay.pow(3)))).multiply((cy.pow(3)))).multiply((bx.pow(2)))));
+				p = p.subtract(((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply((cy.pow(4)))).multiply((bx.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((cy.pow(4)))).multiply((bx.pow(2)))));
+				p = p.add(((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply((bx.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((bx.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))).multiply((bx.pow(3)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((bx.pow(4)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(4)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(4)))));
+				p = p.add(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply(ay)).multiply((cy.pow(3)))).multiply((bx.pow(4)))));
+				p = p.add(((cy.pow(4)).multiply((bx.pow(4)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(by)));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply(cy)).multiply(by)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(4)))).multiply(cy)).multiply(by)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(by)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(by)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply(by)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply(by)));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply((cy.pow(3)))).multiply(by)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply((cy.pow(3)))).multiply(by)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply(by)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply(by)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(4)))).multiply(by)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(cx)).multiply(cy)).multiply(bx)).multiply(by)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply(cy)).multiply(bx)).multiply(by)));
+				p = p.add((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(4)))).multiply(cy)).multiply(bx)).multiply(by)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)));
+				p = p.add((((((((new PPolynomial(24)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply(bx)).multiply(by)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply((cy.pow(3)))).multiply(bx)).multiply(by)));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply(bx)).multiply(by)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(3)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)));
+				p = p.add(((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply(by)));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply(by)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply(by)));
+				p = p.add((((((new PPolynomial(4)).multiply(ay)).multiply((cy.pow(4)))).multiply((bx.pow(2)))).multiply(by)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(cy)).multiply((bx.pow(3)))).multiply(by)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(cy)).multiply((bx.pow(3)))).multiply(by)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(3)))).multiply(by)));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply(by)));
+				p = p.subtract((((((new PPolynomial(4)).multiply(cx)).multiply((cy.pow(3)))).multiply((bx.pow(3)))).multiply(by)));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply((cx.pow(2)))).multiply((by.pow(2)))));
+				p = p.add(((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply((cx.pow(3)))).multiply((by.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(4)))).multiply((by.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((by.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract(((((new PPolynomial(2)).multiply((cx.pow(4)))).multiply((ay.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply(cy)).multiply((by.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((by.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply(ay)).multiply(cy)).multiply((by.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(3)))).multiply(cy)).multiply((by.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply(cy)).multiply((by.pow(2)))));
+				p = p.add(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply((cy.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply((cy.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract((((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(3)))).multiply((by.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))).multiply((by.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(4)))).multiply((by.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply(bx)).multiply((by.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(4)))).multiply(bx)).multiply((by.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply(bx)).multiply((by.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))).multiply(bx)).multiply((by.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply((bx.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))));
+				p = p.add((((((new PPolynomial(6)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ay)).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply((by.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(cy)).multiply((by.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply(cy)).multiply((by.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply((by.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply((by.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply((by.pow(3)))));
+				p = p.add(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cy.pow(3)))).multiply((by.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(cy)).multiply(bx)).multiply((by.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(cy)).multiply(bx)).multiply((by.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(cy)).multiply(bx)).multiply((by.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply((by.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(3)))));
+				p = p.add(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((by.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply((by.pow(4)))));
+				p = p.add(((cx.pow(4)).multiply((by.pow(4)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((by.pow(4)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((by.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(4)))).multiply((ay.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply(ay)).multiply(cy)).multiply(x)));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply(cy)).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(cx)).multiply((cy.pow(2)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(ay)).multiply((cy.pow(3)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))).multiply(x)));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply((cy.pow(4)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply((ay.pow(2)))).multiply(bx)).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(4)))).multiply(bx)).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply(cy)).multiply(bx)).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply((cy.pow(2)))).multiply(bx)).multiply(x)));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(x)));
+				p = p.add(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(x)));
+				p = p.add(((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(x)));
+				p = p.add((((((new PPolynomial(8)).multiply((ay.pow(4)))).multiply((cy.pow(2)))).multiply(bx)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(3)))).multiply(bx)).multiply(x)));
+				p = p.subtract((((((new PPolynomial(16)).multiply((ay.pow(3)))).multiply((cy.pow(3)))).multiply(bx)).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(4)))).multiply(bx)).multiply(x)));
+				p = p.add((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply((cy.pow(4)))).multiply(bx)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(4)))).multiply((bx.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(x)));
+				p = p.add((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(x)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(3)))).multiply(cy)).multiply((bx.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(3)))).multiply(cy)).multiply((bx.pow(2)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(ay)).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cy.pow(4)))).multiply((bx.pow(2)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((bx.pow(3)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((bx.pow(3)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(12)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply(x)));
+				p = p.add((((((new PPolynomial(12)).multiply(ay)).multiply((cy.pow(3)))).multiply((bx.pow(3)))).multiply(x)));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cy.pow(4)))).multiply((bx.pow(3)))).multiply(x)));
+				p = p.add((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply((bx.pow(4)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(cy)).multiply((bx.pow(4)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(4)))).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cy.pow(2)))).multiply((bx.pow(4)))).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(4)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(cx)).multiply(cy)).multiply(by)).multiply(x)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply(cy)).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply(cy)).multiply(by)).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply(x)));
+				p = p.add((((((((new PPolynomial(12)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply(x)));
+				p = p.add((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply(by)).multiply(x)));
+				p = p.add((((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply((cy.pow(3)))).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((cy.pow(3)))).multiply(by)).multiply(x)));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply((cy.pow(4)))).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(cy)).multiply(bx)).multiply(by)).multiply(x)));
+				p = p.add((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ay.pow(4)))).multiply(cy)).multiply(bx)).multiply(by)).multiply(x)));
+				p = p.add((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(x)));
+				p = p.add(((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(x)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(3)))).multiply(bx)).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(4)))).multiply(bx)).multiply(by)).multiply(x)));
+				p = p.add((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply(x)));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(x)));
+				p = p.add((((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(12)).multiply(ax)).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply(by)).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply(by)).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cy)).multiply((bx.pow(3)))).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(cy)).multiply((bx.pow(3)))).multiply(by)).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(3)))).multiply(by)).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply(by)).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply((cy.pow(3)))).multiply((bx.pow(3)))).multiply(by)).multiply(x)));
+				p = p.add((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(cx)).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(4)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(3)))).multiply(cy)).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(12)).multiply(ax)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(ax)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.add((((((new PPolynomial(8)).multiply(ax)).multiply((cy.pow(4)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)));
+				p = p.add((((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(16)).multiply(ay)).multiply((cy.pow(3)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(12)).multiply(ax)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply(cy)).multiply((by.pow(3)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(12)).multiply(ax)).multiply((cx.pow(2)))).multiply(cy)).multiply((by.pow(3)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply((cy.pow(2)))).multiply((by.pow(3)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(16)).multiply(ax)).multiply((cy.pow(3)))).multiply((by.pow(3)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cy)).multiply(bx)).multiply((by.pow(3)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(cy)).multiply(bx)).multiply((by.pow(3)))).multiply(x)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply((by.pow(3)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(3)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((by.pow(4)))).multiply(x)));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((by.pow(4)))).multiply(x)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(cy)).multiply((by.pow(4)))).multiply(x)));
+				p = p.add((((((new PPolynomial(8)).multiply(ax)).multiply((cy.pow(2)))).multiply((by.pow(4)))).multiply(x)));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract(((((new PPolynomial(2)).multiply((cx.pow(2)))).multiply((ay.pow(4)))).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply(cy)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(3)))).multiply(ay)).multiply(cy)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((ay.pow(3)))).multiply(cy)).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply(cy)).multiply((x.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply((cy.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply((cy.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply((cy.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(3)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))).multiply((x.pow(2)))));
+				p = p.add(((((new PPolynomial(8)).multiply((ay.pow(3)))).multiply((cy.pow(3)))).multiply((x.pow(2)))));
+				p = p.add(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(4)))).multiply((x.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((cy.pow(4)))).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply(bx)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply(bx)).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(cx)).multiply((ay.pow(4)))).multiply(bx)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply((x.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((x.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(3)))).multiply(cy)).multiply(bx)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(cx)).multiply((ay.pow(3)))).multiply(cy)).multiply(bx)).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply((cy.pow(2)))).multiply(bx)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply((cy.pow(2)))).multiply(bx)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply((cy.pow(3)))).multiply(bx)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))).multiply(bx)).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply(ax)).multiply((cy.pow(4)))).multiply(bx)).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.add(((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply((ay.pow(3)))).multiply(cy)).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(22)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply(ay)).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.add(((((new PPolynomial(4)).multiply((cy.pow(4)))).multiply((bx.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply((bx.pow(3)))).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(cy)).multiply((bx.pow(3)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply((x.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((bx.pow(4)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(8)).multiply(ay)).multiply(cy)).multiply((bx.pow(4)))).multiply((x.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply((bx.pow(4)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(cy)).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(cy)).multiply(by)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(3)))).multiply(cy)).multiply(by)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(cy)).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply((cy.pow(3)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((cy.pow(3)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(4)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(2)))));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(2)))));
+				p = p.add((((((((new PPolynomial(12)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(40)).multiply(ax)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply((cy.pow(3)))).multiply(bx)).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((cy.pow(3)))).multiply(bx)).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply((bx.pow(3)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply(cy)).multiply((bx.pow(3)))).multiply(by)).multiply((x.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(cx)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(cy)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(22)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(3)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cy.pow(4)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(cx)).multiply((ay.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(4)).multiply(cx)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(cx)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.add(((((((new PPolynomial(12)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(2)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(cy)).multiply((by.pow(3)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(cy)).multiply((by.pow(3)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(cy)).multiply((by.pow(3)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(cy)).multiply((by.pow(3)))).multiply((x.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ay)).multiply((cy.pow(2)))).multiply((by.pow(3)))).multiply((x.pow(2)))));
+				p = p.add(((((new PPolynomial(8)).multiply((cy.pow(3)))).multiply((by.pow(3)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(bx)).multiply((by.pow(3)))).multiply((x.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(cx)).multiply(cy)).multiply(bx)).multiply((by.pow(3)))).multiply((x.pow(2)))));
+				p = p.add(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((by.pow(4)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((by.pow(4)))).multiply((x.pow(2)))));
+				p = p.subtract(((((new PPolynomial(2)).multiply((cx.pow(2)))).multiply((by.pow(4)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply((by.pow(4)))).multiply((x.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply((by.pow(4)))).multiply((x.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply((x.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(cy)).multiply((x.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((ay.pow(3)))).multiply(cy)).multiply((x.pow(3)))));
+				p = p.add(((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply((cy.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply((x.pow(3)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(bx)).multiply((x.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply((x.pow(3)))));
+				p = p.add((((((new PPolynomial(12)).multiply((ay.pow(3)))).multiply(cy)).multiply(bx)).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(cx)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply(ax)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(3)))));
+				p = p.add(((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply((bx.pow(3)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(16)).multiply(ay)).multiply(cy)).multiply((bx.pow(3)))).multiply((x.pow(3)))));
+				p = p.add(((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(cy)).multiply(by)).multiply((x.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply(cy)).multiply(by)).multiply((x.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(12)).multiply(ax)).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply((x.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply((x.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply((x.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(cx)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(3)))));
+				p = p.add(((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply(ax)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(12)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply(cx)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(3)))));
+				p = p.add((((((new PPolynomial(12)).multiply(ax)).multiply(cy)).multiply((by.pow(3)))).multiply((x.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply(cy)).multiply(bx)).multiply((by.pow(3)))).multiply((x.pow(3)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply(ax)).multiply((by.pow(4)))).multiply((x.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((x.pow(4)))));
+				p = p.add(((ay.pow(4)).multiply((x.pow(4)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((x.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(cy)).multiply((x.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply((x.pow(4)))));
+				p = p.add(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((x.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((ay.pow(2)))).multiply(bx)).multiply((x.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply(cx)).multiply((ay.pow(2)))).multiply(bx)).multiply((x.pow(4)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((x.pow(4)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((x.pow(4)))));
+				p = p.add((((((new PPolynomial(8)).multiply(ax)).multiply((cy.pow(2)))).multiply(bx)).multiply((x.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(4)))));
+				p = p.add((((((new PPolynomial(8)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((x.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(4)))));
+				p = p.add((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cy)).multiply(by)).multiply((x.pow(4)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(cy)).multiply(by)).multiply((x.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply((x.pow(4)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply((x.pow(4)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(4)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((by.pow(2)))).multiply((x.pow(4)))));
+				p = p.subtract(((((new PPolynomial(2)).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply((x.pow(4)))));
+				p = p.add(((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(4)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(cx)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply(cy)).multiply((by.pow(3)))).multiply((x.pow(4)))));
+				p = p.add(((by.pow(4)).multiply((x.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply((ay.pow(3)))).multiply(y)));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply((ay.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply(cy)).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(4)))).multiply(cy)).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(4)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply(ay)).multiply(bx)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply(ay)).multiply(bx)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(4)))).multiply(ay)).multiply(bx)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply(bx)).multiply(y)));
+				p = p.add((((((new PPolynomial(12)).multiply((cx.pow(3)))).multiply((ay.pow(3)))).multiply(bx)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(4)))).multiply(cy)).multiply(bx)).multiply(y)));
+				p = p.add((((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply(bx)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply(bx)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply((bx.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply((bx.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(8)).multiply((cx.pow(4)))).multiply(ay)).multiply((bx.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(3)))).multiply((bx.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply((bx.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(8)).multiply((ay.pow(4)))).multiply(cy)).multiply((bx.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply(ay)).multiply((cy.pow(4)))).multiply((bx.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply((bx.pow(3)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(16)).multiply((cx.pow(3)))).multiply(ay)).multiply((bx.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(12)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((bx.pow(4)))).multiply(y)));
+				p = p.add((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply((bx.pow(4)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(4)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(4)))).multiply(y)));
+				p = p.add((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply((cx.pow(2)))).multiply(by)).multiply(y)));
+				p = p.subtract((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply((cx.pow(3)))).multiply(by)).multiply(y)));
+				p = p.add((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(4)))).multiply(by)).multiply(y)));
+				p = p.add(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(by)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(12)).multiply(ax)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply(by)).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply((ay.pow(2)))).multiply(by)).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(4)))).multiply(by)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(by)).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply((cy.pow(2)))).multiply(by)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply(cx)).multiply((cy.pow(2)))).multiply(by)).multiply(y)));
+				p = p.add(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(4)))).multiply(by)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(cx)).multiply(bx)).multiply(by)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply(bx)).multiply(by)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(4)))).multiply(bx)).multiply(by)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply(bx)).multiply(by)).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply(by)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply(bx)).multiply(by)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(4)))).multiply(bx)).multiply(by)).multiply(y)));
+				p = p.add(((((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply(by)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(3)))).multiply((bx.pow(2)))).multiply(by)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(y)));
+				p = p.add((((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cy.pow(4)))).multiply((bx.pow(2)))).multiply(by)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((bx.pow(3)))).multiply(by)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((bx.pow(3)))).multiply(by)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply((bx.pow(3)))).multiply(by)).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply(by)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply(ay)).multiply((by.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply(ay)).multiply((by.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(3)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(cy)).multiply((by.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(cx)).multiply(cy)).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(3)))).multiply(cy)).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(3)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((cy.pow(3)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(bx)).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(12)).multiply((cx.pow(3)))).multiply(ay)).multiply(bx)).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply((cy.pow(3)))).multiply(bx)).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(ay)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((by.pow(3)))).multiply(y)));
+				p = p.add((((((new PPolynomial(12)).multiply(ax)).multiply((cx.pow(3)))).multiply((by.pow(3)))).multiply(y)));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply((by.pow(3)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((by.pow(3)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((cy.pow(2)))).multiply((by.pow(3)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(bx)).multiply((by.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(bx)).multiply((by.pow(3)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(bx)).multiply((by.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply(bx)).multiply((by.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((by.pow(4)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(ay)).multiply((by.pow(4)))).multiply(y)));
+				p = p.add((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cy)).multiply((by.pow(4)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(cy)).multiply((by.pow(4)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(cy)).multiply((by.pow(4)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply(ay)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply(ay)).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(4)))).multiply(ay)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(24)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(ay)).multiply((cy.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(ax)).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply((cy.pow(4)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply(bx)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(4)))).multiply(ay)).multiply(bx)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply(bx)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(x)).multiply(y)));
+				p = p.add(((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ay.pow(4)))).multiply(cy)).multiply(bx)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply((cy.pow(3)))).multiply(bx)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(4)))).multiply(bx)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(ay)).multiply((bx.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply((bx.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply((bx.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((cx.pow(3)))).multiply(ay)).multiply((bx.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(3)))).multiply((bx.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(3)))).multiply((bx.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(40)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(12)).multiply(ax)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(3)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply((bx.pow(4)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((bx.pow(4)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(cx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(4)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add(((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(cy)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply((cy.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply((cy.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cy.pow(4)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(4)))).multiply(bx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(bx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(4)))).multiply(bx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ay.pow(4)))).multiply(bx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((((new PPolynomial(32)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(cy)).multiply(bx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((cy.pow(4)))).multiply(bx)).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((cx.pow(3)))).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add(((((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(4)).multiply(ax)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((bx.pow(3)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply((bx.pow(3)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply((bx.pow(3)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply(by)).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(ay)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(12)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(3)))).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(cy)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(40)).multiply((ax.pow(2)))).multiply(cx)).multiply(cy)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply((cy.pow(3)))).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(ay)).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add(((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((cy.pow(3)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add((((((((new PPolynomial(24)).multiply(cx)).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply((by.pow(3)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((by.pow(3)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(bx)).multiply((by.pow(3)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(bx)).multiply((by.pow(3)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(bx)).multiply((by.pow(3)))).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(3)))).multiply(x)).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply((by.pow(4)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply((by.pow(4)))).multiply(x)).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((ay.pow(3)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(cy)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply((cy.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(ay)).multiply(bx)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(bx)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(bx)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(3)))).multiply(bx)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(12)).multiply(cx)).multiply((ay.pow(3)))).multiply(bx)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(ay)).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(ay)).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply((bx.pow(3)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply((bx.pow(3)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(cx)).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(ay)).multiply(cy)).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ax.pow(3)))).multiply(bx)).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(bx)).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(bx)).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply((ay.pow(2)))).multiply(bx)).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(4)).multiply(cx)).multiply((ay.pow(2)))).multiply(bx)).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((bx.pow(3)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((bx.pow(3)))).multiply(by)).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(ay)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(ay)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(cy)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply(ay)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(12)).multiply(cx)).multiply(ay)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(cx)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ay)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((by.pow(3)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply((by.pow(3)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((by.pow(3)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((by.pow(3)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply((by.pow(3)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(bx)).multiply((by.pow(3)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply(cx)).multiply(bx)).multiply((by.pow(3)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ay)).multiply((by.pow(4)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply(cy)).multiply((by.pow(4)))).multiply((x.pow(2)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((ay.pow(3)))).multiply((x.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(2)))).multiply(cy)).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply((cy.pow(2)))).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(ay)).multiply(bx)).multiply((x.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply(bx)).multiply((x.pow(3)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(bx)).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply((x.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply((x.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply((bx.pow(2)))).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((bx.pow(2)))).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(by)).multiply((x.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(by)).multiply((x.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply((ay.pow(2)))).multiply(by)).multiply((x.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cy.pow(2)))).multiply(by)).multiply((x.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(bx)).multiply(by)).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(bx)).multiply(by)).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(bx)).multiply(by)).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(ay)).multiply((by.pow(2)))).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply((by.pow(2)))).multiply((x.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(4)).multiply(ay)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(3)))).multiply(y)));
+				p = p.add(((((((new PPolynomial(8)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(3)))).multiply(y)));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((by.pow(3)))).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract((((((new PPolynomial(4)).multiply(bx)).multiply((by.pow(3)))).multiply((x.pow(3)))).multiply(y)));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply((cx.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply((cx.pow(3)))).multiply((y.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(4)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply((ay.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(4)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply(cy)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(3)))).multiply(ay)).multiply(cy)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(3)))).multiply(cy)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply(cy)).multiply((y.pow(2)))));
+				p = p.subtract(((((new PPolynomial(2)).multiply((ax.pow(4)))).multiply((cy.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply((cy.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(3)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(cx)).multiply(bx)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply(bx)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(3)))).multiply(bx)).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(4)))).multiply(bx)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply(bx)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply((cx.pow(3)))).multiply((ay.pow(2)))).multiply(bx)).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(4)))).multiply(bx)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply((cy.pow(2)))).multiply(bx)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((cy.pow(3)))).multiply(bx)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(3)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(22)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ay.pow(4)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ay.pow(3)))).multiply(cy)).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ay)).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply((bx.pow(3)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((bx.pow(3)))).multiply((y.pow(2)))));
+				p = p.add(((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply((bx.pow(3)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply(cx)).multiply((ay.pow(2)))).multiply((bx.pow(3)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(3)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(cx)).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((bx.pow(4)))).multiply((y.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((bx.pow(4)))).multiply((y.pow(2)))));
+				p = p.add(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((bx.pow(4)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply((bx.pow(4)))).multiply((y.pow(2)))));
+				p = p.subtract(((((new PPolynomial(2)).multiply((cy.pow(2)))).multiply((bx.pow(4)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply(by)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(3)))).multiply(ay)).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((cx.pow(4)))).multiply(ay)).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(3)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(cy)).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply(cy)).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(cy)).multiply(by)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(3)))).multiply(cy)).multiply(by)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(3)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((cy.pow(3)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(bx)).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(40)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(bx)).multiply(by)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply((cx.pow(3)))).multiply(ay)).multiply(bx)).multiply(by)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(3)))).multiply(bx)).multiply(by)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(cx)).multiply(cy)).multiply(bx)).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(3)))).multiply(cy)).multiply(bx)).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((cy.pow(3)))).multiply(bx)).multiply(by)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cy.pow(3)))).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((bx.pow(3)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(cx)).multiply(cy)).multiply((bx.pow(3)))).multiply(by)).multiply((y.pow(2)))));
+				p = p.add(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply(cx)).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(22)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply(ax)).multiply((cx.pow(3)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((new PPolynomial(4)).multiply((cx.pow(4)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(bx)).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(3)))).multiply(bx)).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(2)).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((by.pow(3)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(ay)).multiply((by.pow(3)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cy)).multiply((by.pow(3)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply(cy)).multiply((by.pow(3)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(bx)).multiply((by.pow(3)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply(cy)).multiply(bx)).multiply((by.pow(3)))).multiply((y.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((by.pow(4)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((by.pow(4)))).multiply((y.pow(2)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((by.pow(4)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(cx)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply((cx.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((ay.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(ay)).multiply(cy)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(cy)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(3)))).multiply(cy)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply((cy.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(bx)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(bx)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply(bx)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(bx)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(ay)).multiply(cy)).multiply(bx)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply((ay.pow(3)))).multiply(cy)).multiply(bx)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply(bx)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply((bx.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply((bx.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(4)).multiply(ax)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((bx.pow(3)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((bx.pow(3)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((bx.pow(3)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(12)).multiply(ay)).multiply(cy)).multiply((bx.pow(3)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply((bx.pow(3)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ax)).multiply((bx.pow(4)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(cx)).multiply((bx.pow(4)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(3)))).multiply(ay)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(3)))).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply(cy)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(cx)).multiply(cy)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(ay)).multiply(bx)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(bx)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply(bx)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply((ay.pow(3)))).multiply(bx)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(12)).multiply(ax)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(cx)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ay)).multiply((bx.pow(3)))).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply(cy)).multiply((bx.pow(3)))).multiply(by)).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(ax)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply((ax.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply((cx.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(ax)).multiply(ay)).multiply((by.pow(3)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(cy)).multiply((by.pow(3)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ay)).multiply(bx)).multiply((by.pow(3)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cy)).multiply(bx)).multiply((by.pow(3)))).multiply(x)).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(6)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply(cy)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(cy)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((cy.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(bx)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply(bx)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(bx)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(2)))).multiply(bx)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(12)).multiply(cx)).multiply((ay.pow(2)))).multiply(bx)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cy.pow(2)))).multiply(bx)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(2)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(12)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply((bx.pow(3)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(cx)).multiply((bx.pow(3)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(ay)).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ay.pow(3)))).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(cy)).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(cy)).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(cy)).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(24)).multiply(ax)).multiply(ay)).multiply(bx)).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(bx)).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((((new PPolynomial(16)).multiply(cx)).multiply(cy)).multiply(bx)).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ay)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add(((((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(cx)).multiply(bx)).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(6)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ay)).multiply((by.pow(3)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(cy)).multiply((by.pow(3)))).multiply((x.pow(2)))).multiply((y.pow(2)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply(ay)).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(ay)).multiply((y.pow(3)))));
+				p = p.add(((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply((ay.pow(3)))).multiply((y.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(cy)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply((y.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((cy.pow(2)))).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(bx)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(bx)).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(3)))).multiply(bx)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(cx)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply((y.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((bx.pow(2)))).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply(ay)).multiply((bx.pow(2)))).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply((cx.pow(2)))).multiply(ay)).multiply((bx.pow(2)))).multiply((y.pow(3)))));
+				p = p.add(((((new PPolynomial(8)).multiply((ay.pow(3)))).multiply((bx.pow(2)))).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply(cy)).multiply((bx.pow(2)))).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ay)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(3)))));
+				p = p.add((((((new PPolynomial(12)).multiply(cx)).multiply(ay)).multiply((bx.pow(3)))).multiply((y.pow(3)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply(ay)).multiply((bx.pow(4)))).multiply((y.pow(3)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(4)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.add((((((new PPolynomial(12)).multiply((ax.pow(3)))).multiply(cx)).multiply(by)).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(12)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((ay.pow(2)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((ay.pow(2)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cy.pow(2)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply(bx)).multiply(by)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply((cx.pow(2)))).multiply(bx)).multiply(by)).multiply((y.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(12)).multiply(ax)).multiply(cx)).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply((cy.pow(2)))).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply(cx)).multiply((bx.pow(3)))).multiply(by)).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply((by.pow(2)))).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply((by.pow(2)))).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cy)).multiply((by.pow(2)))).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply(cy)).multiply((by.pow(2)))).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(16)).multiply(cx)).multiply(ay)).multiply(bx)).multiply((by.pow(2)))).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(16)).multiply(cx)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(ay)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply(cy)).multiply((bx.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(3)))));
+				p = p.add(((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply((by.pow(3)))).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(16)).multiply(ax)).multiply(cx)).multiply((by.pow(3)))).multiply((y.pow(3)))));
+				p = p.add(((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply((by.pow(3)))).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(ay)).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(ay)).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(ay)).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(2)))).multiply(cy)).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply((cy.pow(2)))).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply(bx)).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply(bx)).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(cy)).multiply(bx)).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ay)).multiply((cy.pow(2)))).multiply(bx)).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply(ax)).multiply(ay)).multiply((bx.pow(2)))).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply((bx.pow(2)))).multiply(x)).multiply((y.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ay)).multiply((bx.pow(3)))).multiply(x)).multiply((y.pow(3)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((ax.pow(2)))).multiply(cx)).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply((ay.pow(2)))).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply((cy.pow(2)))).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(bx)).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(bx)).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply((ay.pow(2)))).multiply(bx)).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply((cy.pow(2)))).multiply(bx)).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(4)).multiply(ax)).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply((bx.pow(2)))).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((bx.pow(3)))).multiply(by)).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(ay)).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cy)).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(3)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ay)).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(cy)).multiply(bx)).multiply((by.pow(2)))).multiply(x)).multiply((y.pow(3)))));
+				p = p.add(((ax.pow(4)).multiply((y.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(3)))).multiply(cx)).multiply((y.pow(4)))));
+				p = p.add(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((cx.pow(2)))).multiply((y.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((ay.pow(2)))).multiply((y.pow(4)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply(cy)).multiply((y.pow(4)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(cy)).multiply((y.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cx)).multiply(bx)).multiply((y.pow(4)))));
+				p = p.subtract((((((new PPolynomial(8)).multiply(ax)).multiply((cx.pow(2)))).multiply(bx)).multiply((y.pow(4)))));
+				p = p.add((((((new PPolynomial(8)).multiply(cx)).multiply((ay.pow(2)))).multiply(bx)).multiply((y.pow(4)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(cy)).multiply(bx)).multiply((y.pow(4)))));
+				p = p.subtract(((((new PPolynomial(2)).multiply((ax.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ax)).multiply(cx)).multiply((bx.pow(2)))).multiply((y.pow(4)))));
+				p = p.add(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ay.pow(2)))).multiply((bx.pow(2)))).multiply((y.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ay)).multiply(cy)).multiply((bx.pow(2)))).multiply((y.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply(cx)).multiply((bx.pow(3)))).multiply((y.pow(4)))));
+				p = p.add(((bx.pow(4)).multiply((y.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(ay)).multiply(by)).multiply((y.pow(4)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(ay)).multiply(by)).multiply((y.pow(4)))));
+				p = p.add((((((new PPolynomial(8)).multiply((cx.pow(2)))).multiply(ay)).multiply(by)).multiply((y.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply(cy)).multiply(by)).multiply((y.pow(4)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply(cy)).multiply(by)).multiply((y.pow(4)))));
+				p = p.subtract(((((((new PPolynomial(8)).multiply(cx)).multiply(ay)).multiply(bx)).multiply(by)).multiply((y.pow(4)))));
+				p = p.add(((((((new PPolynomial(8)).multiply(cx)).multiply(cy)).multiply(bx)).multiply(by)).multiply((y.pow(4)))));
+				p = p.add((((((new PPolynomial(4)).multiply(ay)).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(4)))));
+				p = p.subtract((((((new PPolynomial(4)).multiply(cy)).multiply((bx.pow(2)))).multiply(by)).multiply((y.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((ax.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(4)))));
+				p = p.add((((((new PPolynomial(8)).multiply(ax)).multiply(cx)).multiply((by.pow(2)))).multiply((y.pow(4)))));
+				p = p.subtract(((((new PPolynomial(4)).multiply((cx.pow(2)))).multiply((by.pow(2)))).multiply((y.pow(4)))));
 
 				botanaPolynomials = new PPolynomial[1];
 
