@@ -101,4 +101,10 @@ public class TarskiD extends Tarski {
 
 	}
 
+	@Override
+	public boolean end() {
+		tarski.TARSKIEND();
+		return true;
+	}
+
 }

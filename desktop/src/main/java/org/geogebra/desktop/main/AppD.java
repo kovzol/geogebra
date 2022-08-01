@@ -1124,6 +1124,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 	@SuppressFBWarnings({ "DM_EXIT", "" })
 	public static void exit(int i) {
+		endTarski();
 		System.exit(i);
 	}
 

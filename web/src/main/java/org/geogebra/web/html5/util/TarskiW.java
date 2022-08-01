@@ -81,4 +81,9 @@ public class TarskiW extends Tarski {
 		return true;
 	}
 
+	@Override
+	public boolean end() {
+		return true; // it seems no need to exit via TARSKIEND()
+	}
+
 }

@@ -587,6 +587,13 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 		Log.debug("End of initialization.");
 	}
 
+	public static void endTarski() {
+		Log.debug("Ending Tarski...");
+		if (tarski != null) {
+			tarski.end();
+		}
+	}
+
 	/* selection handling */
 
 	/**

@@ -24,4 +24,9 @@ public abstract class Tarski {
 		return false;
 	}
 
+	public boolean end() {
+		// Will be overridden by web and desktop
+		return false;
+	}
+
 }
