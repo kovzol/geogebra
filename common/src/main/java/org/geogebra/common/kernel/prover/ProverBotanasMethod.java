@@ -1277,7 +1277,9 @@ public class ProverBotanasMethod {
 										String e = c.evaluateRaw(strForGiac);
 										if (addIneq(e)) {
 											if (ProverSettings.get().captionAlgebra) {
-												geo.addCaptionBotanaPolynomial(e);
+												geo.addCaptionBotanaPolynomial(e.replaceAll("v(\\d*)", "v_{$1}").
+														replaceAll("\\(", "").
+														replaceAll("\\)",""));
 											}
 										}
 									} catch (Throwable t) {
