@@ -1249,14 +1249,42 @@ public class ProverBotanasMethod {
 								}
 							}
 							if (num > 4) {
-								PPolynomial p = tripletSignRotated(A, B, C);
-								String e = p.toString() + ">0";
-								if (addIneq(e)) {
-									if (ProverSettings.get().captionAlgebra) {
-										geo.addCaptionBotanaPolynomial(p.toTeX().replace("=", ">"));
+								if (num < 9) {
+									PPolynomial p = tripletSignRotated(A, B, C);
+									String e = p.toString() + ">0";
+									if (addIneq(e)) {
+										if (ProverSettings.get().captionAlgebra) {
+											geo.addCaptionBotanaPolynomial(
+													p.toTeX().replace("=", ">"));
+										}
+									}
+								} else {
+									// General method, contributed by Keiichi Tsujimoto.
+									// https://geogebra-prover.myjetbrains.com/youtrack/issue/TP-69
+									// Take the rotation polynomial:
+									PPolynomial p = geoPolynomials[0];
+									// Compute its two biggest roots and take their arithmetical mean.
+									// The mean will separate all other roots from the biggest one.
+									String strForGiac = "[[p:=" + p.toString() + "],[s:=solve(p=0)]," +
+											"[s1:=s[-2][2]],[s2:=s[-1][2]]," +
+											"[lvar(p)[0]>simplify(floor((s1+s2)/2*1000)/1000)]][4][0]";
+									// Here we assume that the roots are isolated enough to use
+									// rounding by 3 digits. For small n values this should not be a problem.
+									// For large n values the computation is probably infeasible,
+									// so we ignore that issue...
+									CASGenericInterface c = algo.getKernel().getGeoGebraCAS().getCurrentCAS();
+									try {
+										String e = c.evaluateRaw(strForGiac);
+										if (addIneq(e)) {
+											if (ProverSettings.get().captionAlgebra) {
+												geo.addCaptionBotanaPolynomial(e);
+											}
+										}
+									} catch (Throwable t) {
+										Log.debug("Error computing bound for vertex coordinate");
 									}
 								}
-							} // TODO: add better setting of the interval for num >= 9
+							}
 						}
 
 						/* END OF REAL GEOMETRY SUPPORT. */
