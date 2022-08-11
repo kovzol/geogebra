@@ -6,9 +6,11 @@ import org.geogebra.common.kernel.algos.SymbolicParametersBotanaAlgo;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
+import org.geogebra.common.kernel.geos.GeoPolygon;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.util.debug.Log;
 
 public class PointOnPathAdapter extends ProverAdapter {
 
@@ -123,6 +125,10 @@ public class PointOnPathAdapter extends ProverAdapter {
 				return botanaPolynomials;
 
 			}
+		}
+		if (path instanceof GeoPolygon) {
+			Log.debug("Putting a point on the perimeter of a polygon is not yet supported");
+			throw new NoSymbolicParametersException();
 		}
 		fallback(kernel);
 		return null;

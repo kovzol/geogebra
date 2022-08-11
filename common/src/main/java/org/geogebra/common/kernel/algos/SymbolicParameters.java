@@ -279,6 +279,9 @@ public class SymbolicParameters {
 				.getBotanaVars(input[0]);
 		line2vars = ((SymbolicParametersBotanaAlgo) input[1])
 				.getBotanaVars(input[1]);
+		if (line1vars == null || line2vars == null) {
+			throw new NoSymbolicParametersException();
+		}
 		botanaVars[0] = line1vars[0];
 		botanaVars[1] = line1vars[1];
 		botanaVars[2] = line2vars[0];
