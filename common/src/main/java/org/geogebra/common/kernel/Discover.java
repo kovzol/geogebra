@@ -322,6 +322,10 @@ public class Discover {
 			// Third round: Draw lines from the discovery pool
 			// (those that are not yet drawn):
 			for (Line l : discoveryPool.lines) {
+				// Register the line if it exists as a constructed line (by the user)
+				if (alreadyDrawn(l)) {
+					l.setGeoLine(getAlreadyDrawn(l));
+				}
 				if (l.isTheorem()) {
 					if (l.getPoints().contains(p0)) {
 						if (!alreadyDrawn(l)) {
@@ -1234,20 +1238,29 @@ public class Discover {
 		return circle;
 	}
 
+	// TODO: Unify this with getAlreadyDrawn
 	private boolean alreadyDrawn(Line l) {
 		for (GeoElement ge : cons.getGeoSetLabelOrder()) {
 			if (ge instanceof GeoLine && !(ge instanceof GeoSegment)) {
 				GeoPoint p1 = ((GeoLine) ge).startPoint;
 				GeoPoint p2 = ((GeoLine) ge).endPoint;
+				HashSet<Point> points = l.getPoints();
 				Point pp1 = discoveryPool.getPoint(p1);
 				Point pp2 = discoveryPool.getPoint(p2);
-				HashSet<Point> points = l.getPoints();
 				if (points.contains(pp1) && points.contains(pp2)) {
 					return true;
 				}
-				// FIXME: There are some other cases---they should be covered here.
-				// E.g. A line joining A and B can be created as an orthogonal line
-				// to a line that contains A, and finally B is put on this line.
+				ArrayList<GeoPoint> pol = ((GeoLine) ge).getPointsOnLine();
+				if (pol != null) {
+					if (points.contains(pp1)) {
+						for (Point p : l.getPoints()) {
+							if (!p.equals(pp1) && pol.contains(p.getGeoPoint())) {
+								return true;
+							}
+						}
+					}
+				}
+				// TODO: There may be some other cases---they should be covered here.
 			}
 		}
 		return false;
@@ -1264,6 +1277,17 @@ public class Discover {
 				if (points.contains(pp1) && points.contains(pp2)) {
 					return (GeoLine) ge;
 				}
+				ArrayList<GeoPoint> pol = ((GeoLine) ge).getPointsOnLine();
+				if (pol != null) {
+					if (points.contains(pp1)) {
+						for (Point p : l.getPoints()) {
+							if (!p.equals(pp1) && pol.contains(p.getGeoPoint())) {
+								return (GeoLine) ge;
+							}
+						}
+					}
+				}
+				// TODO: There may be some other cases---they should be covered here.
 			}
 		}
 		return null;
