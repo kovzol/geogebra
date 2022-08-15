@@ -2358,6 +2358,10 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 
 	@Override
 	public final void setLabel(String labelNew) {
+		setLabel(labelNew, true);
+	}
+
+	public final void setLabel(String labelNew, boolean performStepwiseDiscovery) {
 
 		String newLabel = labelNew;
 		if (cons.isSuppressLabelsActive()) {
@@ -2405,7 +2409,7 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 
 		// We have a label. Let's try stepwise discovery then!
 		// boolean discovery = this.getApplication().getSettings().getEuclidian(1).getStepwiseDiscovery();
-		if (this instanceof GeoPoint) {
+		if (performStepwiseDiscovery && this instanceof GeoPoint) {
 			boolean discovery = this.getApp().getSettings().getEuclidian(1).getStepwiseDiscovery();
 			if (discovery && !kernel.isSilentMode()) {
 				Discover d = new Discover(this.getApp(), this);

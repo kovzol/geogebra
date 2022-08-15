@@ -26,6 +26,7 @@ import java.util.TreeSet;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.Discover;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.commands.Commands;
@@ -66,8 +67,17 @@ public class AlgoIntersectLines extends AlgoIntersectAbstract
 		// compute line through P, Q
 		compute();
 
-		S.setLabel(label);
+		S.setLabel(label, false);
 		addIncidence();
+		// Run stepwise discovery only now (after the incidence data are stored):
+		boolean discovery =	cons.getApplication().getSettings().getEuclidian(1).getStepwiseDiscovery();
+		if (discovery && !kernel.isSilentMode()) {
+			Discover d = new Discover(this.cons.getApplication(), S);
+			d.initDiscoveryPool();
+			if (d.runAllowed()) {
+				d.detectProperties(S);
+			}
+		}
 
 	}
 
