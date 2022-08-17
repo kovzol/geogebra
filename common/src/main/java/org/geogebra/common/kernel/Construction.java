@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -250,7 +249,7 @@ public class Construction {
 		geoTable = new HashMap<>(200);
 		initGeoTables();
 		groups = new ArrayList<>();
-		initDiscoveryPool();
+		reinitDiscoveryPool();
 	}
 
 	/**
@@ -2988,7 +2987,7 @@ public class Construction {
 
 		discoveryPool.disable();
 		undoManager.redo();
-		initDiscoveryPool();
+		reinitDiscoveryPool();
 	}
 
 	/**
@@ -3000,7 +2999,7 @@ public class Construction {
 
 		discoveryPool.disable();
 		undoManager.undo();
-		initDiscoveryPool();
+		reinitDiscoveryPool();
 	}
 
 	/**
@@ -3662,7 +3661,7 @@ public class Construction {
 		return discoveryPool;
 	}
 
-	public void initDiscoveryPool() {
+	public void reinitDiscoveryPool() {
 		discoveryPool = new Pool();
 		discoveryPool.enable();
 	}

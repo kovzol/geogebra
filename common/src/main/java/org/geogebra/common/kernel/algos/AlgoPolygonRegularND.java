@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.Discover;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.commands.Commands;
@@ -441,6 +442,25 @@ public abstract class AlgoPolygonRegularND extends AlgoElement
 			outputSegments.augmentOutputSize(vertices - nOld, false);
 			if (labelPointsAndSegments && !labelsNeedIniting) {
 				outputSegments.updateLabels();
+				// Run stepwise discovery only now (after all outputs are stored):
+					boolean discovery =
+							cons.getApplication().getSettings().getEuclidian(1).getStepwiseDiscovery();
+					if (discovery && !kernel.isSilentMode()) {
+						Discover d = new Discover(kernel.getApplication(), (GeoPoint) A);
+						d.initDiscoveryPool();
+						if (d.runAllowed()) {
+							// d.detectProperties((GeoPoint) A);
+							boolean deselect = true;
+							for (int i = 0; i < outputPoints.size(); i++) {
+								if (outputPoints.getElement(i) instanceof GeoPoint) {
+									GeoPoint point = (GeoPoint) outputPoints.getElement(i);
+									d.detectProperties(point, deselect);
+									deselect = false;
+								}
+							}
+							d.detectProperties((GeoPoint) B, deselect);
+						}
+					}
 			}
 		} else {
 			for (int i = vertices; i < nOld; i++) {

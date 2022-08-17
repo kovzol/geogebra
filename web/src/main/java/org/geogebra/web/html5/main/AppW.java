@@ -894,7 +894,7 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 	 *            currently open file
 	 */
 	public void setCurrentFile(GgbFile file) {
-		getKernel().getConstruction().initDiscoveryPool();
+		getKernel().getConstruction().reinitDiscoveryPool();
 		if (currentFile == file) {
 			return;
 		}

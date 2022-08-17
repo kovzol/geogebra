@@ -1239,6 +1239,8 @@ public class ProverBotanasMethod {
 							int num = (int) ((GeoNumeric) algo.input[2]).getValue();
 							AlgoPolygonRegular apr = (AlgoPolygonRegular) algo;
 							GeoPoint C = (GeoPoint) apr.getOutput(num + 1);
+							// int outputLength = apr.getOutputLength();
+							// GeoPoint C = (GeoPoint) apr.getOutput(outputLength - 1); // use the last vertex
 							if (num != 4) { // unnecessary condition for n=4 (it is unambiguous)
 								PPolynomial p = tripletSign(A, B, C);
 								String d = p.toString() + ">0";
@@ -2345,6 +2347,10 @@ public class ProverBotanasMethod {
 													.getPolynomials().size()]),
 									substitutions, k, permutation++, true,
 									false, as.freeVariables);
+							if (eliminationIdeal == null) {
+								Log.debug("eliminationIdeal is null");
+								return ProofResult.UNKNOWN;
+							}
 							ndgSet = eliminationIdeal.iterator();
 							while (ndgSet.hasNext()) {
 								thisNdgSet = ndgSet.next();

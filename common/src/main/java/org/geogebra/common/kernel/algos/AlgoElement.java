@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.Discover;
 import org.geogebra.common.kernel.EuclidianViewCE;
 import org.geogebra.common.kernel.GTemplate;
 import org.geogebra.common.kernel.SetRandomValue;
@@ -38,6 +39,7 @@ import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.CasEvaluableFunction;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoScriptAction;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.geos.LabelManager;
@@ -406,9 +408,9 @@ public abstract class AlgoElement extends ConstructionElement
 						outputList.get(i).setLabel(
 								outputList.get(i).getIndexLabel(indexLabel));
 					} else if ((labels != null) && (i < labels.length)) {
-						outputList.get(i).setLabel(labels[i]);
+						outputList.get(i).setLabel(labels[i], false);
 					} else {
-						outputList.get(i).setLabel(null);
+						outputList.get(i).setLabel(null, false);
 					}
 				}
 			}

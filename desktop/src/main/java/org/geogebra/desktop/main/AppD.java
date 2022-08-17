@@ -159,7 +159,6 @@ import org.geogebra.common.main.SingularWSSettings;
 import org.geogebra.common.main.SpreadsheetTableModel;
 import org.geogebra.common.main.error.ErrorHandler;
 import org.geogebra.common.main.settings.AbstractSettings;
-import org.geogebra.common.main.settings.CASSettings;
 import org.geogebra.common.main.settings.DefaultSettings;
 import org.geogebra.common.main.settings.SettingsBuilder;
 import org.geogebra.common.main.settings.updater.SettingsUpdaterBuilder;
@@ -176,7 +175,6 @@ import org.geogebra.common.util.GTimerListener;
 import org.geogebra.common.util.LowerCaseDictionary;
 import org.geogebra.common.util.NormalizerMinimal;
 import org.geogebra.common.util.StringUtil;
-import org.geogebra.common.util.Tarski;
 import org.geogebra.common.util.Util;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.common.util.debug.Log.LogDestination;
@@ -1447,7 +1445,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	public void setCurrentFile(File file) {
 
 		// Maybe this is not the best place for the re-init. FIXME
-		getKernel().getConstruction().initDiscoveryPool();
+		getKernel().getConstruction().reinitDiscoveryPool();
 
 		if (currentFile == file) {
 			return;

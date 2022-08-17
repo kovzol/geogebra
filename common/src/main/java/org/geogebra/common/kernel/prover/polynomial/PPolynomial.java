@@ -1377,6 +1377,24 @@ public class PPolynomial implements Comparable<PPolynomial> {
 
 		// Giac returns ? or empty string if there was a timeout:
 		if ("?".equals(elimResult) || "".equals(elimResult)) {
+
+			// Attempt to work around Giac error when getting {0,1} instead of {1}.
+			// This should be deleted after the Giac error is fixed.
+			String polys = getPolysAsCommaSeparatedString(eqSystemSubstituted);
+			String elimVars = getVarsAsCommaSeparatedString(eqSystemSubstituted,
+					null, false, freeVariablesInput);
+			String eliminateCommand = "eliminate([" + polys
+						+ "],revlist(["	+ elimVars + "]))";
+			GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
+			elimResult = cas.evaluate(eliminateCommand);
+			if (elimResult.equals("{0,1}") || elimResult.equals("{1,0}")) {
+				Set<Set<PPolynomial>> ret = new HashSet<>();
+				HashSet<PPolynomial> ps = new HashSet<>();
+				ps.add(new PPolynomial(BigInteger.ONE));
+				ret.add(ps);
+				return ret;
+			}
+
 			return null; // cannot decide
 		}
 

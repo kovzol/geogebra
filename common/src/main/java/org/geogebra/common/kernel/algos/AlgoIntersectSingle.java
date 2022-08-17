@@ -69,7 +69,7 @@ public class AlgoIntersectSingle extends AlgoIntersect implements
 			Discover d = new Discover(this.cons.getApplication(), point);
 			d.initDiscoveryPool();
 			if (d.runAllowed()) {
-				d.detectProperties(point);
+				d.detectProperties(point, true);
 			}
 		}
 
@@ -110,7 +110,7 @@ public class AlgoIntersectSingle extends AlgoIntersect implements
 			Discover d = new Discover(this.cons.getApplication(), point);
 			d.initDiscoveryPool();
 			if (d.runAllowed()) {
-				d.detectProperties(point);
+				d.detectProperties(point, true);
 			}
 		}
 

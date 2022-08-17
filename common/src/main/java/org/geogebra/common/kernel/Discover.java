@@ -87,13 +87,17 @@ public class Discover {
 		this.cons = kernel.getConstruction();
 	}
 
-	private void updatePercentInfo() {
+	private void updatePercentInfo(GeoElement geo) {
 		Localization loc = cons.getApplication().getLocalization();
 		String inProgress = loc.getMenuDefault("InProgress",
 				"In progress");
 		if (percent < 100) {
-			cons.getApplication().getGuiManager().updateFrameTitle(inProgress+ " (" +
-					((int) percent) + "%)");
+			String add = "";
+			if (geo != input) {
+				add = geo.getLabelSimple() + ", ";
+			}
+			cons.getApplication().getGuiManager().updateFrameTitle(inProgress+ " ("
+					+ add + ((int) percent) + "%)");
 		} else {
 			cons.getApplication().getGuiManager().updateFrameTitle(null);
 		}
@@ -103,10 +107,17 @@ public class Discover {
 	 * Build the whole database of properties,
 	 * including all points in the construction list.
 	 */
-	public boolean detectProperties(GeoPoint p) {
+	public boolean detectProperties(GeoPoint p, boolean deselectObjects) {
 		percent = 0.0;
-		updatePercentInfo();
+		updatePercentInfo(p);
 		cons.getApplication().setWaitCursor();
+
+		if (deselectObjects) {
+			for (GeoElement ge : cons.getGeoSetConstructionOrder()) {
+				ge.setSelected(false); // de-select each object
+			}
+			cons.updateConstruction(false);
+		}
 
 		HashSet<GeoElement> ges = new HashSet<>();
 		for (GeoElement ge : cons.getGeoSetLabelOrder()) {
@@ -117,6 +128,11 @@ public class Discover {
 		for (GeoElement ge : ges) {
 			if (ge instanceof GeoPoint && !p.equals(ge) && ge.isEuclidianVisible()) {
 				if (!collectIdenticalPoints((GeoPoint) ge, false)) {
+					// The discovery relies heavily on distinguishing points.
+					// If this cannot be done safely, let's quit, after resetting the window.
+					percent = 100.0;
+					updatePercentInfo(p);
+					cons.getApplication().setDefaultCursor();
 					return false;
 				}
 				i++;
@@ -124,15 +140,18 @@ public class Discover {
 		}
 		if (i == 0) {
 			// Only one point exists. No discovery will be done.
+			percent = 100.0;
+			updatePercentInfo(p);
+			cons.getApplication().setDefaultCursor();
 			return false;
 		}
 
 		percent = 5.0;
-		updatePercentInfo();
+		updatePercentInfo(p);
 
 		detectOrthogonalCollinearities();
 		percent = 10.0;
-		updatePercentInfo();
+		updatePercentInfo(p);
 
 		int steps = discoveryPool.points.size() - 1;
 		for (Point pp : discoveryPool.points) {
@@ -140,16 +159,16 @@ public class Discover {
 				collectCollinearities(pp, false);
 				collectConcyclicities(pp, false);
 				percent += 5.0/steps;
-				updatePercentInfo();
+				updatePercentInfo(p);
 			}
 		}
 		collectCollinearities(discoveryPool.getPoint(p), true);
 		percent = 15.0;
-		updatePercentInfo();
+		updatePercentInfo(p);
 
 		collectConcyclicities(discoveryPool.getPoint(p), true);
 		percent = 35.0;
-		updatePercentInfo();
+		updatePercentInfo(p);
 
 		for (Point pp : discoveryPool.points) {
 			if (!p.equals(pp.getGeoPoint())) {
@@ -159,16 +178,18 @@ public class Discover {
 		}
 		collectParallelisms(discoveryPool.getPoint(p), true);
 		percent = 70.0;
-		updatePercentInfo();
+		updatePercentInfo(p);
 
 		collectEqualLongSegments(discoveryPool.getPoint(p), true);
 		percent = 95.0;
-		updatePercentInfo();
+		updatePercentInfo(p);
 
 		collectPerpendicularDirections(discoveryPool.getPoint(p), true);
 		percent = 100.0;
-		updatePercentInfo();
+		updatePercentInfo(p);
 		cons.getApplication().setDefaultCursor();
+
+		cons.updateConstruction(false);
 
 		return true;
 	}
@@ -416,7 +437,7 @@ public class Discover {
 					aac.remove();
 				}
 				percent += 20.0/steps;
-				updatePercentInfo();
+				updatePercentInfo(p0.getGeoPoint());
 			}
 
 			// Third round: Draw circles from the discovery pool
@@ -537,7 +558,7 @@ public class Discover {
 						}
 					}
 					percent += 35.0/steps;
-					updatePercentInfo();
+					updatePercentInfo(p0.getGeoPoint());
 				}
 			}
 
@@ -671,7 +692,7 @@ public class Discover {
 						ajps2.remove();
 					}
 					percent += 25.0/steps;
-					updatePercentInfo();
+					updatePercentInfo(p0.getGeoPoint());
 				}
 			}
 
@@ -804,7 +825,7 @@ public class Discover {
 				}
 			}
 			percent += 5.0/steps;
-			updatePercentInfo();
+			updatePercentInfo(p0.getGeoPoint());
 		}
 
 		// Second round: Draw all lines from the discovery pool:
@@ -930,9 +951,9 @@ public class Discover {
 				cons.getApplication());
 		// FIXME: This is not shown on the web.
 
-		if (!detectProperties((GeoPoint) this.input)) {
+		if (!detectProperties((GeoPoint) this.input, true)) {
 			percent = 100.0;
-			updatePercentInfo();
+			updatePercentInfo(this.input);
 			cons.getApplication().setDefaultCursor();
 
 			String msg1 = loc.getMenuDefault("UnsupportedSteps",
@@ -1158,6 +1179,7 @@ public class Discover {
 			}
 			gl.setEuclidianVisible(true);
 			gl.updateVisualStyle(GProperty.COMBINED);
+			gl.setSelected(true);
 			cons.setSuppressLabelCreation(oldMacroMode);
 			ret.add(gl);
 		}
@@ -1202,6 +1224,7 @@ public class Discover {
 			gs.setEuclidianVisible(true);
 			gs.setLineType(EuclidianStyleConstants.LINE_TYPE_FULL);
 			gs.updateVisualStyle(GProperty.COMBINED);
+			gs.setSelected(true);
 			cons.setSuppressLabelCreation(oldMacroMode);
 			ret.add(gs);
 		}
@@ -1217,6 +1240,7 @@ public class Discover {
 		l.setLineType(EuclidianStyleConstants.LINE_TYPE_DASHED_LONG);
 		l.setLabelVisible(false);
 		l.updateVisualStyle(GProperty.COMBINED); // visibility and style
+		l.setSelected(true);
 		cons.setSuppressLabelCreation(oldMacroMode);
 		return l;
 	}
@@ -1234,6 +1258,7 @@ public class Discover {
 		circle.setLineType(EuclidianStyleConstants.LINE_TYPE_DASHED_LONG);
 		circle.setLabelVisible(false);
 		circle.updateVisualStyle(GProperty.COMBINED); // visibility and style
+		circle.setSelected(true);
 		cons.setSuppressLabelCreation(oldMacroMode);
 		return circle;
 	}

@@ -75,7 +75,7 @@ public class AlgoIntersectLines extends AlgoIntersectAbstract
 			Discover d = new Discover(this.cons.getApplication(), S);
 			d.initDiscoveryPool();
 			if (d.runAllowed()) {
-				d.detectProperties(S);
+				d.detectProperties(S, true);
 			}
 		}
 
