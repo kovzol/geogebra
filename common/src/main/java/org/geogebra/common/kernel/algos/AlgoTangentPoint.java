@@ -454,6 +454,12 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 					botanaPolynomialsThis[1] = PPolynomial.equidistant(vellipse[4],
 							vellipse[5], vPoint[0], vPoint[1], botanaVarsThis[4],
 							botanaVarsThis[5]);
+					// Alternatively (it seems identical):
+					/*
+					botanaPolynomialsThis[1] = PPolynomial.perpendicular(vPoint[0], vPoint[1],
+							botanaVarsThis[0], botanaVarsThis[1],
+							botanaVarsThis[0], botanaVarsThis[1], vellipse[4], vellipse[5]);
+					*/
 
 					// M midpoint of F_2D
 					botanaPolynomialsThis[2] = new PPolynomial(2).multiply(m1)
