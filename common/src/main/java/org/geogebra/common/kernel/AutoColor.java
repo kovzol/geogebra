@@ -8,7 +8,7 @@ import org.geogebra.common.main.GeoGebraColorConstants;
  * Helper for auto coloring geos
  *
  */
-public enum AutoColor {
+public enum 	AutoColor {
 	/** curves, functions (classic app) */
 	CURVES(new GColor[] { GeoGebraColorConstants.GGB_GREEN,
 			GeoGebraColorConstants.GGB_RED, GColor.BLUE,
@@ -27,7 +27,21 @@ public enum AutoColor {
 			GColor.PURPLE_A400,
 			GeoGebraColorConstants.GEOGEBRA_OBJECT_PINK,
 			GeoGebraColorConstants.GEOGEBRA_OBJECT_PURPLE,
-			GeoGebraColorConstants.GEOGEBRA_OBJECT_ORANGE });
+			GeoGebraColorConstants.GEOGEBRA_OBJECT_ORANGE }),
+	/** discovery **/
+	DISCOVERY(new GColor[] { GeoGebraColorConstants.GEOGEBRA_OBJECT_GREEN,
+			GeoGebraColorConstants.GEOGEBRA_OBJECT_BLUE,
+			GeoGebraColorConstants.GEOGEBRA_OBJECT_RED,
+			GeoGebraColorConstants.GEOGEBRA_OBJECT_ORANGE,
+			GeoGebraColorConstants.GEOGEBRA_OBJECT_PURPLE,
+			GeoGebraColorConstants.GEOGEBRA_OBJECT_GREY,
+			GeoGebraColorConstants.DISCOVER_FOREST,
+			GeoGebraColorConstants.DISCOVER_CEDAR,
+			GeoGebraColorConstants.DISCOVER_DENIM,
+			GeoGebraColorConstants.DISCOVER_GOLD,
+			GeoGebraColorConstants.DISCOVER_VIOLET
+	})
+	;
 
 	private GColor[] sequence;
 	private int index;

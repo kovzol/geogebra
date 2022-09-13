@@ -1132,8 +1132,7 @@ public class Discover {
 	}
 
 	private GColor nextColor(GeoElement e) {
-		return e.getAutoColorScheme()
-				.getNext(true);
+		return AutoColor.DISCOVERY.getNext(true);
 	}
 
 	GColor addOutputLines(HashSet<Line> drawn, HashSet<Line> toDraw, HashSet<GColor> colors) {
