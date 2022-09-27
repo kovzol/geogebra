@@ -30,7 +30,7 @@ allprojects {
         mavenCentral()
         jcenter()
         google()
-        maven { url 'http://repo.vertispan.com/gwt-snapshot' }
+        // maven { url 'http://repo.vertispan.com/gwt-snapshot' }
 
         maven {
             url "https://maven.pkg.github.com/kovzol/giac-1"
