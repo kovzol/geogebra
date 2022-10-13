@@ -1486,11 +1486,15 @@ public class EuclidianStyleBarD extends JToolBar
 			 */
 			JPanel panel = new JPanel(new BorderLayout(5, 5));
 			if (app.getSettings().getEuclidian(1).getStepwiseDiscovery()) {
-				JOptionPane.showMessageDialog(panel, "The stepwise discovery mode is enabled.",
-						"Warning", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(panel, loc.getMenuDefault("StepwiseDiscoveryEnabled",
+						"The stepwise discovery mode is enabled."),
+						loc.getMenuDefault("Information", "Information"),
+						JOptionPane.INFORMATION_MESSAGE);
 			} else {
-				JOptionPane.showMessageDialog(panel, "The stepwise discovery mode is disabled.",
-						"Information", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(panel, loc.getMenuDefault("StepwiseDiscoveryDisabled",
+								"The stepwise discovery mode is disabled."),
+						loc.getMenuDefault("Information", "Information"),
+						JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 

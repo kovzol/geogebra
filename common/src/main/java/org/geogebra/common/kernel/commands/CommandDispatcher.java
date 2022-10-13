@@ -389,6 +389,7 @@ public abstract class CommandDispatcher {
 			case SetVisibleInView:
 			case ShowAxes:
 			case ShowGrid:
+			case StepwiseDiscovery:
 			case SlowPlot:
 			case ToolImage:
 			case Turtle:

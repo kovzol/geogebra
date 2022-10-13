@@ -50,6 +50,7 @@ import org.geogebra.common.kernel.scripting.CmdSlider;
 import org.geogebra.common.kernel.scripting.CmdSlowPlot;
 import org.geogebra.common.kernel.scripting.CmdStartAnimation;
 import org.geogebra.common.kernel.scripting.CmdStartRecord;
+import org.geogebra.common.kernel.scripting.CmdToggleDiscover;
 import org.geogebra.common.kernel.scripting.CmdToolImage;
 import org.geogebra.common.kernel.scripting.CmdTurtle;
 import org.geogebra.common.kernel.scripting.CmdTurtleBack;
@@ -178,6 +179,8 @@ public class CommandDispatcherScripting implements CommandDispatcherInterface {
 			return new CmdShowAxes(kernel);
 		case ShowGrid:
 			return new CmdShowGrid(kernel);
+		case StepwiseDiscovery:
+			return new CmdToggleDiscover(kernel);
 		case SlowPlot:
 			return new CmdSlowPlot(kernel);
 		case ToolImage:
