@@ -143,6 +143,7 @@ import org.geogebra.common.kernel.kernelND.GeoSegmentND;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
 import org.geogebra.common.kernel.kernelND.HasSegments;
 import org.geogebra.common.kernel.matrix.Coords;
+import org.geogebra.common.kernel.prover.discovery.Pool;
 import org.geogebra.common.kernel.statistics.AlgoFitLineY;
 import org.geogebra.common.kernel.statistics.CmdFitLineY;
 import org.geogebra.common.kernel.statistics.GeoPieChart;
@@ -11066,7 +11067,17 @@ public abstract class EuclidianController implements SpecialPointsListener {
 			// change tool: remove unfinished creation but not on move <=> move
 			// view switch
 			if (wasUndoableMode) {
+				// If a construction step is cancelled,
+				// we don't want an unnecessary run of stepwise discovery.
+				// So we disable it temporarily.
+				Pool p = kernel.getConstruction().getDiscoveryPool();
+				boolean discoveryEnabled = kernel.getConstruction().getDiscoveryPool().isEnabled();
+				p.disable();
 				kernel.restoreStateForInitNewMode();
+				if (discoveryEnabled) {
+					p.enable();
+					// Re-enabling discovery.
+				}
 			}
 
 			if (kernel.isUndoActive()) {
