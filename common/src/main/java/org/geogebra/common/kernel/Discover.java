@@ -145,6 +145,17 @@ public class Discover {
 			cons.getApplication().setDefaultCursor();
 			return false;
 		}
+		Point p0 = discoveryPool.getPoint(p);
+		if (p0 == null) {
+			// This point could not be detected. Maybe it does not exist.
+			// (This can happen, for example, on intersecting overlapping lines.)
+			// So let's quit discovery immediately to save the time
+			// and avoid an NPE later during the current discovery.
+			percent = 100.0;
+			updatePercentInfo(p);
+			cons.getApplication().setDefaultCursor();
+			return false;
+		}
 
 		percent = 5.0;
 		updatePercentInfo(p);
@@ -162,11 +173,11 @@ public class Discover {
 				updatePercentInfo(p);
 			}
 		}
-		collectCollinearities(discoveryPool.getPoint(p), true);
+		collectCollinearities(p0, true);
 		percent = 15.0;
 		updatePercentInfo(p);
 
-		collectConcyclicities(discoveryPool.getPoint(p), true);
+		collectConcyclicities(p0, true);
 		percent = 35.0;
 		updatePercentInfo(p);
 
@@ -176,15 +187,15 @@ public class Discover {
 				collectEqualLongSegments(pp, false);
 			}
 		}
-		collectParallelisms(discoveryPool.getPoint(p), true);
+		collectParallelisms(p0, true);
 		percent = 70.0;
 		updatePercentInfo(p);
 
-		collectEqualLongSegments(discoveryPool.getPoint(p), true);
+		collectEqualLongSegments(p0, true);
 		percent = 95.0;
 		updatePercentInfo(p);
 
-		collectPerpendicularDirections(discoveryPool.getPoint(p), true);
+		collectPerpendicularDirections(p0, true);
 		percent = 100.0;
 		updatePercentInfo(p);
 		cons.getApplication().setDefaultCursor();
