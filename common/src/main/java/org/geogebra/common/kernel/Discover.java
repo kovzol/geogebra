@@ -845,30 +845,48 @@ public class Discover {
 			HashSet<Line> linesDrawn = new HashSet<>();
 			HashSet<Line> linesToDraw = new HashSet<>();
 			ParallelLines pl1 = opl.getFirstParallelLines();
+			ParallelLines pl2 = opl.getOrthogonalParallelLines();
+
+			// Decide if p0 is related somehow.
+			boolean p0_related = false;
 			for (Line l : pl1.getLines()) {
-				if (alreadyDrawn(l)) {
-					linesDrawn.add(l);
-				} else {
-					linesToDraw.add(l);
+				if (l.getPoints().contains(p0)) {
+					p0_related = true;
 				}
 			}
-			ParallelLines pl2 = opl.getOrthogonalParallelLines();
 			if (pl2 != null) {
 				for (Line l : pl2.getLines()) {
+					if (l.getPoints().contains(p0)) {
+						p0_related = true;
+					}
+				}
+			}
+
+			if (p0_related) { // draw only those sets that are somehow related
+				for (Line l : pl1.getLines()) {
 					if (alreadyDrawn(l)) {
 						linesDrawn.add(l);
 					} else {
 						linesToDraw.add(l);
 					}
 				}
+				if (pl2 != null) {
+					for (Line l : pl2.getLines()) {
+						if (alreadyDrawn(l)) {
+							linesDrawn.add(l);
+						} else {
+							linesToDraw.add(l);
+						}
+					}
+				}
+				GColor color = addOutputLines(linesDrawn, linesToDraw, colors);
+				colors.add(color);
+				pl1.setColor(color);
+				if (pl2 != null) {
+					pl2.setColor(color);
+				}
+				opl.setColor(color);
 			}
-			GColor color = addOutputLines(linesDrawn, linesToDraw, colors);
-			colors.add(color);
-			pl1.setColor(color);
-			if (pl2 != null) {
-				pl2.setColor(color);
-			}
-			opl.setColor(color);
 		}
 		for (OrthogonalParallelLines opl : discoveryPool.orthogonalParallelLines) {
 			drawnOrthogonalParallelLines.add(opl);
