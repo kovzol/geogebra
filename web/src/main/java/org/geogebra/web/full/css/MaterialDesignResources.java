@@ -343,6 +343,9 @@ public interface MaterialDesignResources extends ClientBundle, ResourceIconProvi
 	@Source("org/geogebra/common/icons/svg/web/matDesignIcons/ev/axes_black.svg")
 	SVGResource axes_black();
 
+	@Source("org/geogebra/common/icons/svg/web/matDesignIcons/ev/stepwise_discovery.svg")
+	SVGResource stepwise_discovery();
+
 	@Source("org/geogebra/common/icons/svg/web/matDesignIcons/ev/projection_orthographic_black.svg")
 	SVGResource projection_orthographic();
 

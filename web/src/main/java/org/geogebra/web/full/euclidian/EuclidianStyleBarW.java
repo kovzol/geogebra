@@ -121,6 +121,7 @@ public class EuclidianStyleBarW extends StyleBarW2
 	protected FillingStyleButton btnFilling;
 
 	private MyToggleButtonW btnShowAxes;
+	private MyToggleButtonW btnStepwiseDiscovery;
 	private MyToggleButtonW btnBold;
 	private MyToggleButtonW btnItalic;
 	private MyToggleButtonW btnUnderline;
@@ -411,6 +412,7 @@ public class EuclidianStyleBarW extends StyleBarW2
 	protected void setActionCommands() {
 		setActionCommand(btnShowAxes, "showAxes");
 		setActionCommand(btnPointCapture, "pointCapture");
+		setActionCommand(btnStepwiseDiscovery, "toggleDiscover");
 	}
 
 	/**
@@ -668,6 +670,8 @@ public class EuclidianStyleBarW extends StyleBarW2
 		if (mode != EuclidianConstants.MODE_ERASER) {
 			add(btnShowGrid);
 		}
+
+		add(btnStepwiseDiscovery);
 	}
 
 	/**
@@ -697,7 +701,7 @@ public class EuclidianStyleBarW extends StyleBarW2
 	}
 
 	protected MyToggleButtonW[] newToggleBtnList() {
-		return new MyToggleButtonW[] { getAxesOrGridToggleButton(), btnBold,
+		return new MyToggleButtonW[] { getAxesOrGridToggleButton(), btnStepwiseDiscovery, btnBold,
 				btnItalic, btnUnderline, btnFixPosition, btnFixObject, btnDeleteSizes[0],
 				btnDeleteSizes[1], btnDeleteSizes[2], btnCrop };
 	}
@@ -812,6 +816,13 @@ public class EuclidianStyleBarW extends StyleBarW2
 		}
 		btnShowGrid = new GridPopup(app, grids, ev);
 		btnShowGrid.addPopupHandler(this);
+
+		// ========================================
+		// show stepwise discovery button
+		btnStepwiseDiscovery = new MyToggleButtonWforEV(
+				MaterialDesignResources.INSTANCE.stepwise_discovery(), this);
+		btnStepwiseDiscovery.setSelected(app.getSettings().getEuclidian(1).getStepwiseDiscovery());
+		btnStepwiseDiscovery.addValueChangeHandler(this);
 	}
 
 	private void createDeleteSiztBtn() {
@@ -1440,6 +1451,10 @@ public class EuclidianStyleBarW extends StyleBarW2
 		btnShowAxes.addValueChangeHandler(this);
 
 		btnShowGrid.setSelectedIndex(gridIndex(ev));
+
+		btnStepwiseDiscovery.removeValueChangeHandler();
+		btnStepwiseDiscovery.setSelected(app.getSettings().getEuclidian(1).getStepwiseDiscovery());
+		btnStepwiseDiscovery.addValueChangeHandler(this);
 	}
 
 	@Override
@@ -1995,6 +2010,7 @@ public class EuclidianStyleBarW extends StyleBarW2
 	protected void setAxesAndGridToolTips(Localization loc) {
 		btnShowGrid.setToolTipText(loc.getPlainTooltip("stylebar.Grid"));
 		btnShowAxes.setToolTipText(loc.getPlainTooltip("stylebar.Axes"));
+		btnStepwiseDiscovery.setToolTipText(loc.getPlainTooltip("stylebar.Discover"));
 	}
 
 	/**
