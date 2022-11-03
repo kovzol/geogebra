@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.geogebra.common.awt.GColor;
+import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.javax.swing.RelationPane;
 import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -103,11 +104,20 @@ public class Discover {
 		}
 	}
 
+	int startTime;
+
+	private void debugElapsedTime(GeoPoint p0) {
+		int elapsedTime = (int) (UtilFactory.getPrototype().getMillisecondTime()
+				- startTime);
+		Log.debug("Discovery for point " + p0.getLabelSimple() + " took " + elapsedTime + " ms");
+	}
+
 	/*
 	 * Build the whole database of properties,
 	 * including all points in the construction list.
 	 */
 	public boolean detectProperties(GeoPoint p, boolean deselectObjects) {
+		startTime = (int) UtilFactory.getPrototype().getMillisecondTime();
 		percent = 0.0;
 		updatePercentInfo(p);
 		cons.getApplication().setWaitCursor();
@@ -130,9 +140,7 @@ public class Discover {
 				if (!collectIdenticalPoints((GeoPoint) ge, false)) {
 					// The discovery relies heavily on distinguishing points.
 					// If this cannot be done safely, let's quit, after resetting the window.
-					percent = 100.0;
-					updatePercentInfo(p);
-					cons.getApplication().setDefaultCursor();
+					finish(p);
 					return false;
 				}
 				i++;
@@ -140,9 +148,7 @@ public class Discover {
 		}
 		if (i == 0) {
 			// Only one point exists. No discovery will be done.
-			percent = 100.0;
-			updatePercentInfo(p);
-			cons.getApplication().setDefaultCursor();
+			finish(p);
 			return false;
 		}
 		Point p0 = discoveryPool.getPoint(p);
@@ -151,9 +157,7 @@ public class Discover {
 			// (This can happen, for example, on intersecting overlapping lines.)
 			// So let's quit discovery immediately to save the time
 			// and avoid an NPE later during the current discovery.
-			percent = 100.0;
-			updatePercentInfo(p);
-			cons.getApplication().setDefaultCursor();
+			finish(p);
 			return false;
 		}
 
@@ -161,9 +165,7 @@ public class Discover {
 		if (ae == null) {
 			// This is a free point. Clearly, it will not result in new discovery.
 			// So we quit discovery immediately.
-			percent = 100.0;
-			updatePercentInfo(p);
-			cons.getApplication().setDefaultCursor();
+			finish(p);
 			return false;
 		}
 
@@ -206,13 +208,18 @@ public class Discover {
 		updatePercentInfo(p);
 
 		collectPerpendicularDirections(p0, true);
-		percent = 100.0;
-		updatePercentInfo(p);
-		cons.getApplication().setDefaultCursor();
+		finish(p);
 
 		cons.updateConstruction(false);
 
 		return true;
+	}
+
+	private void finish(GeoElement p) {
+		percent = 100.0;
+		updatePercentInfo(p);
+		cons.getApplication().setDefaultCursor();
+		debugElapsedTime((GeoPoint) p);
 	}
 
 	/*
