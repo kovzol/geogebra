@@ -68,6 +68,7 @@ import org.geogebra.common.kernel.commands.AlgebraProcessor;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoImage;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.prover.discovery.Pool;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.DialogManager;
 import org.geogebra.common.main.Localization;
@@ -2446,10 +2447,20 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 
 	@Override
 	public boolean loadFile(final File file, final boolean isMacroFile) {
+		// We don't want an unnecessary run of stepwise discovery.
+		// So we disable it temporarily.
+		Pool p = kernel.getConstruction().getDiscoveryPool();
+		boolean discoveryEnabled = kernel.getConstruction().getDiscoveryPool().isEnabled();
+		p.disable();
 		boolean success = getApp().loadFile(file, isMacroFile);
 
 		updateGUIafterLoadFile(success, isMacroFile);
 		getApp().setDefaultCursor();
+
+		if (discoveryEnabled) {
+			p.enable();
+			// Re-enabling discovery.
+		}
 		return success;
 	}
 
