@@ -105,7 +105,19 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
-		if (botanaPolynomials != null) {
+		boolean cachable = true;
+		GeoNumeric num = null;
+
+		if (!(this.getInput(1) instanceof GeoSegment) && this.getInput(1) instanceof GeoNumeric) {
+			num = (GeoNumeric) this.getInput(1);
+			if (num != null && (num.isNumberValue())) {
+				cachable = false; // this may be a slider or a non-constant value, so don't cache
+				// TODO: This may be speeded up. Consider checking num.isDrawable or num.definition
+				// to decide if this is just a fixed number and therefore it is cachable
+			}
+
+		}
+		if (botanaPolynomials != null && cachable) {
 			return botanaPolynomials;
 		}
 
@@ -150,7 +162,6 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 
 		/* SPECIAL CASE 2: radius is an expression */
 
-		GeoNumeric num = null;
 		if (this.getInput(1) instanceof GeoNumeric) {
 			num = (GeoNumeric) this.getInput(1);
 		}
@@ -172,11 +183,16 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 		}
 
 		PPolynomial[] extraPolys = null;
+		// FIXME: This does not work if the expression is based on a slider.
 		if (num.getParentAlgorithm() instanceof AlgoDependentNumber) {
 			extraPolys = num.getBotanaPolynomials(num);
 			botanaPolynomials = new PPolynomial[extraPolys.length + 1];
 		} else {
-			botanaPolynomials = new PPolynomial[1];
+			if (this.getInput(1).isNumberValue()) { // the fix radius will be another equation
+				botanaPolynomials = new PPolynomial[2];
+			} else {
+				botanaPolynomials = new PPolynomial[1];
+			}
 		}
 
 		/*
@@ -198,6 +214,29 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 		// define circle
 		botanaPolynomials[k] = PPolynomial.sqrDistance(botanaVars[0],
 				botanaVars[1], botanaVars[2], botanaVars[3]).subtract(sqrR);
+
+		// Solving TP-9:
+		if (this.getInput(1).isNumberValue()) {
+			k++;
+			long[] q = new long[2]; // borrowed from ProverBotanasMethod
+			double x = num.getValue();
+			/*
+			 * Use the fraction P/Q according to the current kernel
+			 * setting. We use the P/Q=x <=> P-Q*x=0 equation.
+			 */
+			if ((x % 1) == 0) { // integer
+				q[0] = (long) x;
+				q[1] = 1L;
+			} else { // fractional
+				q = kernel.doubleToRational(x);
+			}
+			botanaPolynomials[k] = new PPolynomial((int) q[0])
+					.subtract(new PPolynomial(radiusBotanaVars[0])
+							.multiply(new PPolynomial((int) q[1])));
+			// Only for integers (this is already handled above, just for the record):
+			// botanaPolynomials[k] = (new PPolynomial(radiusBotanaVars[0])
+			//         .subtract(new PPolynomial((long)(num.getValue()))));
+		}
 
 		return botanaPolynomials;
 
