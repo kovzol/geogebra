@@ -67,6 +67,16 @@ public class ConstructionProtocolView implements ConstructionStepper {
 		return geo.getNameDescriptionTextOrHTML();
 	}
 
+	protected static String getNameLaTeX(GeoElement geo) {
+		// TODO: this is just a workaround. For a better approach the internal code
+		// in GeoElement should be improved.
+		String ret = getName(geo);
+		if (ret.startsWith("<html>")) {
+			ret = geo.getNameDescription().replace("_", "\\_");
+		}
+		return ret;
+	}
+
 	protected static String getCaption(GeoElement geo, boolean wrapHTML) {
 		return geo.getCaptionDescriptionHTML(wrapHTML,
 				StringTemplate.defaultTemplate);
@@ -82,6 +92,16 @@ public class ConstructionProtocolView implements ConstructionStepper {
 	 */
 	protected static String getDescription(GeoElement geo, boolean addHTMLtag) {
 		return geo.getDescriptionHTML(addHTMLtag);
+	}
+
+	protected static String getDescriptionLaTeX(GeoElement geo, boolean addHTMLtag) {
+		// TODO: this is just a workaround. For a better approach the internal code
+		// in GeoElement should be improved.
+		String ret = geo.getDescriptionHTML(addHTMLtag);
+		if (ret.contains("<")) {
+			ret = geo.getDefinitionDescription(StringTemplate.latexTemplate).replace("_", "\\_");
+		}
+		return ret;
 	}
 
 	/**
@@ -1363,7 +1383,7 @@ public class ConstructionProtocolView implements ConstructionStepper {
 					break;
 
 				case NAME:
-					str = getName(geo);
+					str = getNameLaTeX(geo);
 					break;
 
 				case TOOLBARICON:
@@ -1375,11 +1395,13 @@ public class ConstructionProtocolView implements ConstructionStepper {
 						m = geo.getRelatedModeID();
 					}
 					String icon = EuclidianConstants.getModeTextSimple(m).toLowerCase();
-					str = "\\raisebox{-1mm}{\\includegraphics[width=0.5cm]{mode_" + icon + "}}";
+					if (!"".equals(icon)) {
+						str = "\\raisebox{-1mm}{\\includegraphics[width=0.5cm]{mode_" + icon + "}}";
+					}
 					break;
 
 				case DESCRIPTION:
-					str = getDescription(geo, false);
+					str = getDescriptionLaTeX(geo, false);
 					break;
 
 				case DEFINITION:
