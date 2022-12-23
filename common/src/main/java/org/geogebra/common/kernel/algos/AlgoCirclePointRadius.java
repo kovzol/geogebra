@@ -110,10 +110,8 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 
 		if (!(this.getInput(1) instanceof GeoSegment) && this.getInput(1) instanceof GeoNumeric) {
 			num = (GeoNumeric) this.getInput(1);
-			if (num != null && (num.isNumberValue())) {
+			if (num != null && num.isNumberValue() && num.isDrawable()) {
 				cachable = false; // this may be a slider or a non-constant value, so don't cache
-				// TODO: This may be speeded up. Consider checking num.isDrawable or num.definition
-				// to decide if this is just a fixed number and therefore it is cachable
 			}
 
 		}
@@ -162,9 +160,6 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 
 		/* SPECIAL CASE 2: radius is an expression */
 
-		if (this.getInput(1) instanceof GeoNumeric) {
-			num = (GeoNumeric) this.getInput(1);
-		}
 		if (P == null || num == null) {
 			throw new NoSymbolicParametersException();
 		}
@@ -188,7 +183,7 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 			extraPolys = num.getBotanaPolynomials(num);
 			botanaPolynomials = new PPolynomial[extraPolys.length + 1];
 		} else {
-			if (this.getInput(1).isNumberValue()) { // the fix radius will be another equation
+			if (num.isNumberValue()) { // the fix radius or slider value will be another equation
 				botanaPolynomials = new PPolynomial[2];
 			} else {
 				botanaPolynomials = new PPolynomial[1];
@@ -216,7 +211,8 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 				botanaVars[1], botanaVars[2], botanaVars[3]).subtract(sqrR);
 
 		// Solving TP-9:
-		if (this.getInput(1).isNumberValue()) {
+		if (!(num.getParentAlgorithm() instanceof AlgoDependentNumber) &&
+				num.isNumberValue()) {
 			k++;
 			long[] q = new long[2]; // borrowed from ProverBotanasMethod
 			double x = num.getValue();
