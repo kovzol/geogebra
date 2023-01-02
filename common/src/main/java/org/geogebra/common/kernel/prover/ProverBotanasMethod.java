@@ -20,7 +20,9 @@ import org.geogebra.common.cas.realgeom.Compute;
 import org.geogebra.common.cas.realgeom.RealGeomWebService;
 import org.geogebra.common.cas.singularws.SingularWebService;
 import org.geogebra.common.factories.UtilFactory;
+import org.geogebra.common.javax.swing.RelationPane;
 import org.geogebra.common.kernel.CASGenericInterface;
+import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.advanced.AlgoDynamicCoordinates;
@@ -59,6 +61,7 @@ import org.geogebra.common.kernel.matrix.Coords;
 import org.geogebra.common.kernel.prover.adapters.DependentNumberAdapter;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.ProverSettings;
 import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.DoubleUtil;
@@ -1368,6 +1371,33 @@ public class ProverBotanasMethod {
 						Log.info(geo.getParentAlgorithm()
 								+ " is not fully implemented");
 						result = ProofResult.UNKNOWN;
+						if (!(geo.getKernel().isSilentMode()) &&
+								(geoProver.getProverEngine() == ProverEngine.LOCUS_EXPLICIT ||
+										geoProver.getProverEngine()
+												== ProverEngine.LOCUS_IMPLICIT)) {
+							Construction cons = geo.getConstruction();
+							RelationPane tablePane =
+									cons.getApplication().getFactory().newRelationPane();
+							final RelationPane.RelationRow[] rr = new RelationPane.RelationRow[1];
+							rr[0] = new RelationPane.RelationRow();
+							StringBuilder html = new StringBuilder("<html>");
+							rr[0].setInfo(html.toString());
+							Localization loc = cons.getApplication().getLocalization();
+							String problematicCommand = geo.getDefinitionForInputBar();
+
+							String warning = loc.getPlainDefault("AnimatedGIF.ErrorA",
+									"Error: " + problematicCommand,
+									problematicCommand);
+
+							tablePane.showDialog(warning, rr,
+									cons.getApplication());
+							String msg1 = loc.getMenuDefault("UnsupportedSteps",
+									"The construction contains unsupported steps.");
+							String msg2 = loc.getMenuDefault("RedrawDifferently",
+									"Please redraw the figure in a different way.");
+							tablePane.changeRowLeftColumn(0, "<html>" + msg1 + "<br>" +
+									msg2 + "</html>");
+						}
 						return;
 					}
 				} else {

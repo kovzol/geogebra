@@ -149,6 +149,7 @@ public class AlgoLocusEquation extends AlgoElement implements UsesCAS {
 	 * @return true if the fingerprint was reset
 	 */
 	public boolean resetFingerprint(Kernel k, boolean force) {
+		force = false; // experimental setting for preventing show the warning twice
 		long kernelPrecision = k.precision();
 		double precisionRatio = (double) myPrecision / kernelPrecision;
 		if (precisionRatio > 5 || precisionRatio < 0.2 || force) {
