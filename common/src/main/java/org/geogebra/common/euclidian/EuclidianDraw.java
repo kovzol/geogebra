@@ -16,6 +16,7 @@ import org.geogebra.common.euclidian.draw.DrawImage;
 import org.geogebra.common.euclidian.draw.DrawImageResizable;
 import org.geogebra.common.euclidian.draw.DrawImplicitCurve;
 import org.geogebra.common.euclidian.draw.DrawInequality;
+import org.geogebra.common.euclidian.draw.DrawInequalityExternal;
 import org.geogebra.common.euclidian.draw.DrawInlineTable;
 import org.geogebra.common.euclidian.draw.DrawInlineText;
 import org.geogebra.common.euclidian.draw.DrawInputBox;
@@ -47,6 +48,8 @@ import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoFunctionAreaSums;
 import org.geogebra.common.kernel.algos.AlgoSlope;
 import org.geogebra.common.kernel.arithmetic.Command;
+import org.geogebra.common.kernel.arithmetic.Function;
+import org.geogebra.common.kernel.arithmetic.FunctionNVar;
 import org.geogebra.common.kernel.arithmetic.FunctionalNVar;
 import org.geogebra.common.kernel.arithmetic.ValidExpression;
 import org.geogebra.common.kernel.cas.AlgoIntegralDefinite;
@@ -58,6 +61,7 @@ import org.geogebra.common.kernel.geos.GeoButton;
 import org.geogebra.common.kernel.geos.GeoEmbed;
 import org.geogebra.common.kernel.geos.GeoFormula;
 import org.geogebra.common.kernel.geos.GeoFunction;
+import org.geogebra.common.kernel.geos.GeoFunctionNVar;
 import org.geogebra.common.kernel.geos.GeoImage;
 import org.geogebra.common.kernel.geos.GeoInlineTable;
 import org.geogebra.common.kernel.geos.GeoInlineText;
@@ -87,6 +91,7 @@ import org.geogebra.common.kernel.matrix.CoordSys;
 import org.geogebra.common.kernel.statistics.AlgoDotPlot;
 import org.geogebra.common.kernel.statistics.GeoPieChart;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
+import org.geogebra.common.util.debug.Log;
 
 /**
  * Factory class for drawables
@@ -166,7 +171,12 @@ public class EuclidianDraw {
 		case FUNCTION_NVAR:
 			// create inequality drawable for *all* functions as a placeholder
 			// x+y may later become x>y via SetValue / input box
-			d = new DrawInequality(ev, (FunctionalNVar) geo);
+
+			if (!((GeoFunctionNVar) geo).getFunction().isPolynomial()) {
+				d = new DrawInequality(ev, (FunctionalNVar) geo);
+			} else {
+				d = new DrawInequalityExternal(ev, geo);
+			}
 			break;
 		case ANGLE:
 			if (geo.isIndependent()) {

@@ -149,7 +149,13 @@ public class GeoFunctionNVar extends GeoElement
 		this(c, false);
 		setFunction(f);
 		fun.initFunction(simplifyInt);
-		isInequality = fun.initIneqs(this.getFunctionExpression());
+		int equalityType = fun.initIneqs(this.getFunctionExpression());
+		isInequality = equalityType > 0;
+		if (equalityType == 2) {
+			f.setPolynomial(true);
+		} else {
+			f.setPolynomial(false);
+		}
 
 		setConstructionDefaults();
 	}
@@ -242,7 +248,13 @@ public class GeoFunctionNVar extends GeoElement
 		if (geo instanceof GeoFunctionNVar) {
 			setForceInequality(((GeoFunctionNVar) geo).isForceInequality());
 		}
-		isInequality = fun.initIneqs(this.getFunctionExpression());
+		int equalityType = fun.initIneqs(this.getFunctionExpression());
+		isInequality = equalityType > 0;
+		if (equalityType == 2) {
+			fun.setPolynomial(true);
+		} else {
+			fun.setPolynomial(false);
+		}
 	}
 
 	/**
@@ -744,7 +756,13 @@ public class GeoFunctionNVar extends GeoElement
 	 * Reset all inequalities (slow, involves parser)
 	 */
 	public void resetIneqs() {
-		isInequality = fun.initIneqs(getFunctionExpression());
+		int equalityType = fun.initIneqs(getFunctionExpression());
+		isInequality = equalityType > 0;
+		if (equalityType == 2) {
+			fun.setPolynomial(true);
+		} else {
+			fun.setPolynomial(false);
+		}
 	}
 
 	/**
@@ -753,7 +771,7 @@ public class GeoFunctionNVar extends GeoElement
 	@Override
 	public IneqTree getIneqs() {
 		if (fun.getIneqs() == null) {
-			isInequality = fun.initIneqs(fun.getExpression());
+			isInequality = fun.initIneqs(fun.getExpression()) > 0;
 		}
 		return fun.getIneqs();
 	}

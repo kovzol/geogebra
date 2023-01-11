@@ -40,6 +40,8 @@ public class Inequality {
 	public enum IneqType {
 		/** can be used e.g. by PointIn, but cannot be drawn */
 		INEQUALITY_INVALID,
+		/** polynomial, can be plotted with Tarski */
+		INEQUALITY_POLYNOMIAL,
 
 		/** x > f(y) */
 		INEQUALITY_PARAMETRIC_X,
@@ -212,7 +214,7 @@ public class Inequality {
 				border = conicBorder;
 				setAboveBorderFromConic();
 			} else {
-				type = IneqType.INEQUALITY_INVALID;
+				type = IneqType.INEQUALITY_POLYNOMIAL;
 				return;
 			}
 			// TODO implicit ineq

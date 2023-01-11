@@ -12,6 +12,8 @@ the Free Software Foundation.
 
 package org.geogebra.common.kernel.arithmetic;
 
+import static java.lang.Math.max;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -74,6 +76,16 @@ public class FunctionNVar extends ValidExpression
 	private String casEvalStringSymbolic;
 
 	private boolean forceInequality;
+
+	public boolean isPolynomial() {
+		return polynomial;
+	}
+
+	public void setPolynomial(boolean polynomial) {
+		this.polynomial = polynomial;
+	}
+
+	private boolean polynomial; // for higher degree polynomials
 
 	private static ArrayList<ExpressionNode> undecided = new ArrayList<>();
 
@@ -786,18 +798,18 @@ public class FunctionNVar extends ValidExpression
 	 * 
 	 * @param fe
 	 *            expression node
-	 * @return true if the functions consists of inequalities
+	 * @return 1 or 2 if the functions consists of inequalities, 2 if external tool is suggested
 	 */
-	public boolean initIneqs(ExpressionNode fe) {
+	public int initIneqs(ExpressionNode fe) {
 		if (ineqs == null || fe == getExpression()) {
 			ineqs = new IneqTree();
 		}
-		boolean b = initIneqs(fe, ineqs, false);
+		int b = initIneqs(fe, ineqs, false);
 		ineqs.recomputeSize();
 		return b;
 	}
 
-	private boolean initIneqs(ExpressionNode fe,
+	private int initIneqs(ExpressionNode fe,
 			IneqTree tree, boolean negate) {
 		Operation op = fe.getOperation();
 		ExpressionNode leftTree = fe.getLeftTree();
@@ -809,30 +821,37 @@ public class FunctionNVar extends ValidExpression
 					adjustOp(op, negate), getFunction().getFunctionVariables());
 			if (newIneq.getType() != IneqType.INEQUALITY_INVALID) {
 				if (newIneq.getType() != IneqType.INEQUALITY_1VAR_X
-						&& newIneq.getType() != IneqType.INEQUALITY_1VAR_Y) {
+						&& newIneq.getType() != IneqType.INEQUALITY_1VAR_Y &&
+						newIneq.getType() != IneqType.INEQUALITY_POLYNOMIAL) {
 					newIneq.getBorder().setInverseFill(newIneq.isAboveBorder());
 				}
 				tree.setIneq(newIneq);
 			}
-			return newIneq.getType() != IneqType.INEQUALITY_INVALID;
+			if (newIneq.getType() == IneqType.INEQUALITY_INVALID) {
+				return 0; // cannot handle
+			};
+			if (newIneq.getType() == IneqType.INEQUALITY_POLYNOMIAL) {
+				return 2; // handle it externally
+			};
+			return 1; // handle it internally
 		} else if (op.equals(Operation.AND) || op.equals(Operation.AND_INTERVAL)
 				|| op.equals(Operation.OR) || op.equals(Operation.EQUAL_BOOLEAN)
 				|| op.equals(Operation.NOT_EQUAL) || op.equals(Operation.XOR)) {
 			tree.setOperation(adjustOp(op, negate));
 			tree.setLeft(new IneqTree());
 			tree.setRight(new IneqTree());
-			return initIneqs(leftTree,  tree.getLeft(), negate)
-					&& initIneqs(rightTree,  tree.getRight(),
-							negate);
+			return max(initIneqs(leftTree,  tree.getLeft(), negate),
+					initIneqs(rightTree,  tree.getRight(),
+							negate));
 		} else if (op.equals(Operation.NOT)) {
 			return initIneqs(leftTree,  tree, !negate);
 		} else if (op.equals(Operation.IMPLICATION)) {
 			tree.setOperation(adjustOp(Operation.OR, negate));
 			tree.setLeft(new IneqTree());
 			tree.setRight(new IneqTree());
-			return initIneqs(leftTree,  tree.getLeft(), !negate)
-					&& initIneqs(rightTree,  tree.getRight(),
-							negate);
+			return max(initIneqs(leftTree,  tree.getLeft(), !negate),
+					 initIneqs(rightTree,  tree.getRight(),
+							negate));
 		} else if (op.equals(Operation.FUNCTION_NVAR)) {
 			FunctionalNVar nv = (FunctionalNVar) leftTree.getLeft();
 			ExpressionNode subExpr = nv.getFunction().getExpression()
@@ -845,7 +864,7 @@ public class FunctionNVar extends ValidExpression
 			}
 			return initIneqs(subExpr,  tree, negate);
 		} else {
-			return false;
+			return 0;
 		}
 
 	}

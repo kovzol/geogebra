@@ -2520,13 +2520,25 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 	 * Reset all inequalities (slow, involves parser)
 	 */
 	public void resetIneqs() {
-		isInequality = fun.initIneqs(getFunctionExpression());
+		int inequalityType = fun.initIneqs(getFunctionExpression());
+		isInequality = inequalityType > 0;
+		if (inequalityType == 2) {
+			fun.setPolynomial(true);
+		} else {
+			fun.setPolynomial(false);
+		}
 	}
 
 	@Override
 	public IneqTree getIneqs() {
 		if (fun.getIneqs() == null) {
-			isInequality = fun.initIneqs(fun.getExpression());
+			int inequalityType = fun.initIneqs(fun.getExpression());
+			isInequality = inequalityType > 0;
+			if (inequalityType == 2) {
+				fun.setPolynomial(true);
+			} else {
+				fun.setPolynomial(false);
+			}
 		} else if (isInequality == null) {
 			isInequality = fun.getIneqs().isValid();
 		}
