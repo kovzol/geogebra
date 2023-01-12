@@ -179,14 +179,14 @@ public class DrawInequalityExternal extends Drawable {
 				if (area) {
 					gp.lineTo(x1, y1);
 				} else {
-					g2.drawLine((int) x, (int) y, (int) x1, (int) y1);
+					// g2.drawLine((int) x, (int) y, (int) x1, (int) y1);
 				}
 				x = x1;
 				y = y1;
 			}
 			if (area) {
 				gp.closePath();
-				g2.setStroke(objStroke);
+				// g2.setStroke(objStroke);
 				g2.setPaint(geo.getObjectColor());
 				g2.setColor(geo.getObjectColor());
 				g2.fill(gp);
@@ -196,8 +196,13 @@ public class DrawInequalityExternal extends Drawable {
 		// Process small circles:
 		for (int circle = 0; circle < circles; circle++) {
 			int style = (int) circlevalues[circle][0];
-			g2.setColor(mycolor(geo, style));
-			drawCircle(g2, circlevalues[circle][1], circlevalues[circle][2], 1);
+			boolean area = style >= 300;
+			if (area) {
+				drawCircle(geo, g2, circlevalues[circle][1], circlevalues[circle][2], 2, true);
+			} else {
+				drawCircle(geo, g2, circlevalues[circle][1], circlevalues[circle][2], 3, true);
+				drawCircle(geo, g2, circlevalues[circle][1], circlevalues[circle][2], 2, false);
+			}
 		}
 	}
 
@@ -226,7 +231,8 @@ public class DrawInequalityExternal extends Drawable {
 		return c;
 	}
 
-	private void drawCircle(GGraphics2D g2, double x, double y, double r) {
+	private void drawCircle(GeoElement geo, GGraphics2D g2, double x, double y, double r, boolean filled) {
+		g2.setColor(geo.getObjectColor());
 		GeneralPathClipped gp = new GeneralPathClipped(view);
 		gp.resetWithThickness(geo.getLineThickness());
 		gp.moveTo(x-r, y-r);
@@ -234,6 +240,11 @@ public class DrawInequalityExternal extends Drawable {
 		gp.lineTo(x+r, y+r);
 		gp.lineTo(x-r,y+r);
 		gp.closePath();
+		if (filled) {
+			g2.setPaint(geo.getObjectColor());
+		} else {
+			g2.setPaint(view.getBackgroundCommon());
+		}
 		g2.fill(gp);
 		// FIXME: draw a small circle, not a square
 	}
