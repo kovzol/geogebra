@@ -2,10 +2,12 @@ package org.geogebra.common.euclidian.draw;
 
 import java.util.ArrayList;
 
+import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.awt.GRectangle;
 import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianView;
+import org.geogebra.common.euclidian.GeneralPathClipped;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoFunctionNVar;
@@ -89,13 +91,24 @@ public class DrawInequalityExternal extends Drawable {
 				// 5. Get the line style class for both types of graphics:
 				int cindex = l.indexOf("class");
 				c = l.substring(cindex + 7, cindex + 11);
-				int style = 0;
-				switch (c) {
-					case "c10F":
-					case "c00F":
-						style = 1;
-						// TODO: handle all kind of styles
+				int style;
+
+				char L = c.charAt(3);
+				switch (L) {
+					case 'F':
+						style = 100;
+						break;
+					case 'U':
+						style = 200;
+						break;
+					case 'T':
+						style = 300;
+						break;
+					default:
+						style = -1;
+						break;
 				}
+				style += Integer.parseInt(c.substring(1,3));
 
 				if (l.startsWith("<polyline")) {
 					// 6. Read off the points:
@@ -149,29 +162,80 @@ public class DrawInequalityExternal extends Drawable {
 			i++;
 			y = height - pointvalues.get(i) / 1000 * height; // scaling back
 			i++;
+
+			boolean area = false;
+			area = (style >= 300);
+
+			GeneralPathClipped gp = new GeneralPathClipped(view);
+			if (area) {
+				gp.resetWithThickness(geo.getLineThickness());
+				gp.moveTo(x, y);
+			}
 			for (int j = 0; j < N - 1; j++) {
 				double x1 = pointvalues.get(i) / 1000 * width; // scaling back
 				i++;
 				double y1 = height - pointvalues.get(i) / 1000 * height; // scaling back
 				i++;
-				g2.drawLine((int) x, (int) y, (int) x1, (int) y1);
+				if (area) {
+					gp.lineTo(x1, y1);
+				} else {
+					g2.drawLine((int) x, (int) y, (int) x1, (int) y1);
+				}
 				x = x1;
 				y = y1;
+			}
+			if (area) {
+				gp.closePath();
+				g2.setStroke(objStroke);
+				g2.setPaint(geo.getObjectColor());
+				g2.setColor(geo.getObjectColor());
+				g2.fill(gp);
 			}
 		}
 
 		// Process small circles:
 		for (int circle = 0; circle < circles; circle++) {
-			drawCircle(g2, circlevalues[circle][1], circlevalues[circle][2], 5);
+			int style = (int) circlevalues[circle][0];
+			g2.setColor(mycolor(geo, style));
+			drawCircle(g2, circlevalues[circle][1], circlevalues[circle][2], 1);
 		}
 	}
 
+	private GColor mycolor(GeoElement geo, int style) {
+		GColor c = geo.getObjectColor();
+		switch (style) {
+		case 300:
+		case 301:
+		case 310:
+		case 311:
+			c = GColor.BLUE;
+			break;
+		case 200:
+		case 201:
+		case 210:
+		case 211:
+			c = GColor.GEOGEBRA_GRAY;
+			break;
+		case 100:
+		case 101:
+		case 110:
+		case 111:
+			c = GColor.YELLOW;
+			break;
+		}
+		return c;
+	}
+
 	private void drawCircle(GGraphics2D g2, double x, double y, double r) {
+		GeneralPathClipped gp = new GeneralPathClipped(view);
+		gp.resetWithThickness(geo.getLineThickness());
+		gp.moveTo(x-r, y-r);
+		gp.lineTo(x+r,y-r);
+		gp.lineTo(x+r, y+r);
+		gp.lineTo(x-r,y+r);
+		gp.closePath();
+		g2.fill(gp);
 		// FIXME: draw a small circle, not a square
-		g2.drawLine((int) (x-r), (int) (y-r), (int) (x+r), (int) (y-r));
-		g2.drawLine((int) (x-r), (int) (y+r), (int) (x+r), (int) (y+r));
-		g2.drawLine((int) (x-r), (int) (y-r), (int) (x-r), (int) (y+r));
-		g2.drawLine((int) (x+r), (int) (y-r), (int) (x+r), (int) (y+r));
 	}
 
 	@Override
