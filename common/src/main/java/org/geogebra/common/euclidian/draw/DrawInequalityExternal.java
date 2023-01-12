@@ -21,6 +21,11 @@ import org.geogebra.common.util.debug.Log;
  */
 public class DrawInequalityExternal extends Drawable {
 
+	private int XLABEL_DEFAULT = 10;
+	private int YLABEL_DEFAULT = 10;
+	private int XLABEL_OFFSET_DEFAULT = -20;
+	private int YLABEL_OFFSET_DEFAULT = -10;
+
 	private boolean isVisible;
 	private GeoElementND function;
 	private ArrayList<Double> pointvalues;
@@ -146,6 +151,13 @@ public class DrawInequalityExternal extends Drawable {
 		if (!isVisible) {
 			return;
 		}
+
+		// We are searching for a good position for the label:
+		int xl = XLABEL_DEFAULT;
+		int yl = YLABEL_DEFAULT;
+		// At the beginning we put it on the top-left. If there is no better candidate,
+		// we use this position.
+
 		g2.setColor(geo.getSelColor());
 
 		// Process polylines:
@@ -157,42 +169,54 @@ public class DrawInequalityExternal extends Drawable {
 			i++;
 			int N = entries.intValue();
 			N = N / 2; // two coordinates per point
-			double x, y;
-			x = pointvalues.get(i) / 1000 * width; // scaling back
-			i++;
-			y = height - pointvalues.get(i) / 1000 * height; // scaling back
-			i++;
 
 			boolean shown = false;
 			shown = style >= 300;
-			boolean area = false;
-			area = style == 311;
 
-			GeneralPathClipped gp = new GeneralPathClipped(view);
-			if (area) {
-				gp.resetWithThickness(geo.getLineThickness());
-				gp.moveTo(x, y);
-			}
-			for (int j = 0; j < N - 1; j++) {
-				double x1 = pointvalues.get(i) / 1000 * width; // scaling back
+			if (shown) {
+				boolean area = false;
+				area = style == 311;
+
+				double x, y;
+				x = pointvalues.get(i) / 1000 * width; // scaling back
 				i++;
-				double y1 = height - pointvalues.get(i) / 1000 * height; // scaling back
+				y = height - pointvalues.get(i) / 1000 * height; // scaling back
 				i++;
+
+				GeneralPathClipped gp = new GeneralPathClipped(view);
 				if (area) {
-					gp.lineTo(x1, y1);
-				} else {
-					if (shown) {
+					gp.resetWithThickness(geo.getLineThickness());
+					gp.moveTo(x, y);
+				}
+
+				for (int j = 0; j < N - 1; j++) {
+					double x1 = pointvalues.get(i) / 1000 * width; // scaling back
+					i++;
+					double y1 = height - pointvalues.get(i) / 1000 * height; // scaling back
+					i++;
+					if (area) {
+						gp.lineTo(x1, y1);
+					} else {
 						g2.setColor(geo.getObjectColor());
 						g2.drawLine((int) x, (int) y, (int) x1, (int) y1);
 					}
+					x = x1;
+					y = y1;
+
+					// This may be a candidate for the label position:
+					if (xl == XLABEL_DEFAULT && x > XLABEL_DEFAULT - XLABEL_OFFSET_DEFAULT
+							&& y > YLABEL_DEFAULT - YLABEL_OFFSET_DEFAULT) {
+						xl = (int) x + XLABEL_OFFSET_DEFAULT;
+						yl = (int) y + YLABEL_OFFSET_DEFAULT;
+					}
 				}
-				x = x1;
-				y = y1;
-			}
-			if (area) {
-				gp.closePath();
-				g2.setPaint(geo.getSelColor());
-				g2.fill(gp);
+				if (area) {
+					gp.closePath();
+					g2.setPaint(geo.getSelColor());
+					g2.fill(gp);
+				}
+			} else {
+				i += N * 2; // skip the unnecessary components
 			}
 		}
 
@@ -200,13 +224,33 @@ public class DrawInequalityExternal extends Drawable {
 		for (int circle = 0; circle < circles; circle++) {
 			int style = (int) circlevalues[circle][0];
 			boolean area = style >= 300;
+			double x = circlevalues[circle][1];
+			double y = circlevalues[circle][2];
 			if (area) {
-				drawCircle(geo, g2, circlevalues[circle][1], circlevalues[circle][2], 2, true);
+				drawCircle(geo, g2, x, y, 2, true);
 			} else {
-				drawCircle(geo, g2, circlevalues[circle][1], circlevalues[circle][2], 3, true);
-				drawCircle(geo, g2, circlevalues[circle][1], circlevalues[circle][2], 2, false);
+				drawCircle(geo, g2, x, y, 3, true);
+				drawCircle(geo, g2, x, y, 2, false);
+			}
+
+			// This may be a candidate for the label position:
+			if (xl == XLABEL_DEFAULT && x > XLABEL_DEFAULT - XLABEL_OFFSET_DEFAULT
+					&& y > YLABEL_DEFAULT - YLABEL_OFFSET_DEFAULT) {
+				xl = (int) x + XLABEL_OFFSET_DEFAULT;
+				yl = (int) y + YLABEL_OFFSET_DEFAULT;
 			}
 		}
+
+		// Draw label:
+		if (geo.isLabelVisible()) {
+			labelDesc = geo.getLabelDescription();
+			xLabel = xl;
+			yLabel = yl;
+			g2.setPaint(geo.getLabelColor());
+			g2.setFont(view.getFontPoint());
+			drawLabel(g2);
+		}
+
 	}
 
 	// This is unused and should be removed:
