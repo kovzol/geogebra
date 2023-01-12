@@ -146,7 +146,7 @@ public class DrawInequalityExternal extends Drawable {
 		if (!isVisible) {
 			return;
 		}
-		g2.setColor(geo.getObjectColor());
+		g2.setColor(geo.getSelColor());
 
 		// Process polylines:
 		int i = 0;
@@ -163,8 +163,10 @@ public class DrawInequalityExternal extends Drawable {
 			y = height - pointvalues.get(i) / 1000 * height; // scaling back
 			i++;
 
+			boolean shown = false;
+			shown = style >= 300;
 			boolean area = false;
-			area = (style >= 300);
+			area = style == 311;
 
 			GeneralPathClipped gp = new GeneralPathClipped(view);
 			if (area) {
@@ -179,16 +181,17 @@ public class DrawInequalityExternal extends Drawable {
 				if (area) {
 					gp.lineTo(x1, y1);
 				} else {
-					// g2.drawLine((int) x, (int) y, (int) x1, (int) y1);
+					if (shown) {
+						g2.setColor(geo.getObjectColor());
+						g2.drawLine((int) x, (int) y, (int) x1, (int) y1);
+					}
 				}
 				x = x1;
 				y = y1;
 			}
 			if (area) {
 				gp.closePath();
-				// g2.setStroke(objStroke);
-				g2.setPaint(geo.getObjectColor());
-				g2.setColor(geo.getObjectColor());
+				g2.setPaint(geo.getSelColor());
 				g2.fill(gp);
 			}
 		}
@@ -206,6 +209,7 @@ public class DrawInequalityExternal extends Drawable {
 		}
 	}
 
+	// This is unused and should be removed:
 	private GColor mycolor(GeoElement geo, int style) {
 		GColor c = geo.getObjectColor();
 		switch (style) {
