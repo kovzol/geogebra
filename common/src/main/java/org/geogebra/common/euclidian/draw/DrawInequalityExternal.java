@@ -6,6 +6,7 @@ import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.awt.GRectangle;
 import org.geogebra.common.euclidian.Drawable;
+import org.geogebra.common.euclidian.EuclidianStatic;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.GeneralPathClipped;
 import org.geogebra.common.kernel.StringTemplate;
@@ -18,7 +19,11 @@ import org.geogebra.common.util.debug.Log;
  * Graphical representation of inequality (external).
  * It uses Tarski to compute an SVG image of the solution of the inequality system
  * and then it processes the image and draws it directly in the EuclideanView.
+ *
+ * @author Zoltan Kovacs (zoltan@geogebra.org)
+ * @thanks to Laszlo Gal (laszlo@geogebra.org) for several useful hints
  */
+
 public class DrawInequalityExternal extends Drawable {
 
 	private int XLABEL_DEFAULT = 10;
@@ -129,6 +134,7 @@ public class DrawInequalityExternal extends Drawable {
 					}
 				}
 				if (l.startsWith("<circle")) {
+					// 6. Read off the point:
 					circlevalues[circle][0] = style;
 					int cxindex = l.indexOf("cx=");
 					int cyindex = l.indexOf("cy=");
@@ -198,6 +204,7 @@ public class DrawInequalityExternal extends Drawable {
 						gp.lineTo(x1, y1);
 					} else {
 						g2.setColor(geo.getObjectColor());
+						g2.setStroke(EuclidianStatic.getDefaultStroke());
 						g2.drawLine((int) x, (int) y, (int) x1, (int) y1);
 					}
 					x = x1;
