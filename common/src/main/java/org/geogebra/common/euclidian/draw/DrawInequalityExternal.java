@@ -9,10 +9,12 @@ import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianStatic;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.GeneralPathClipped;
+import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoFunctionNVar;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
+import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.util.debug.Log;
 
 /**
@@ -36,6 +38,8 @@ public class DrawInequalityExternal extends Drawable {
 	private ArrayList<Double> pointvalues;
 	private double[][] circlevalues;
 	private int lines, circles, height, width;
+
+	private int startTime;
 
 	public DrawInequalityExternal(EuclidianView view, GeoElementND function) {
 		this.view = view;
@@ -67,7 +71,10 @@ public class DrawInequalityExternal extends Drawable {
 		String command = "(plot2d [ " + def + "] \"" + height + " " + width + " "
 				+ xmin + " " + xmax + " "
 				+ ymin + " " + " " + ymax + " -\" '(ord (x y))) ";
+		startTime = (int) (UtilFactory.getPrototype().getMillisecondTime());
 		String result = function.getApp().tarski.eval(command);
+		debugElapsedTime();
+
 		// Tarski returns the SVG as a widthxheight image, but the coordinates are
 		// scaled to fit in a box [0,0]-[1000,1000].
 
@@ -149,11 +156,12 @@ public class DrawInequalityExternal extends Drawable {
 				}
 			}
 		}
-		Log.debug(def);
+		// Log.debug(def);
 	}
 
 	@Override
 	public void draw(GGraphics2D g2) {
+
 		if (!isVisible) {
 			return;
 		}
@@ -176,23 +184,39 @@ public class DrawInequalityExternal extends Drawable {
 			int N = entries.intValue();
 			N = N / 2; // two coordinates per point
 
-			boolean shown = false;
-			shown = style >= 300;
+			boolean shown = style >= 300;
+			boolean removed = (style == 110 || style == 101);
 
-			if (shown) {
+			// Log.debug(style);
+
+			if (shown || removed) {
 				boolean area = false;
 				area = style == 311;
 
-				double x, y;
+				double x, y, sx, sy;
 				x = pointvalues.get(i) / 1000 * width; // scaling back
 				i++;
 				y = height - pointvalues.get(i) / 1000 * height; // scaling back
 				i++;
+				sx = x; sy = y;
 
 				GeneralPathClipped gp = new GeneralPathClipped(view);
 				if (area) {
 					gp.resetWithThickness(geo.getLineThickness());
 					gp.moveTo(x, y);
+				} else {
+					if (removed) {
+						// g2.setColor(view.getBackgroundCommon());
+						g2.setColor(geo.getObjectColor());
+						g2.setStroke(EuclidianStatic.getStroke(1,
+								EuclidianStyleConstants.LINE_TYPE_DASHED_LONG));
+						// Log.debug("dashed");
+					} else {
+						g2.setColor(geo.getObjectColor());
+						g2.setStroke(EuclidianStatic.getStroke(3,
+								EuclidianStyleConstants.LINE_TYPE_FULL));
+						// Log.debug("normal");
+					}
 				}
 
 				for (int j = 0; j < N - 1; j++) {
@@ -203,9 +227,11 @@ public class DrawInequalityExternal extends Drawable {
 					if (area) {
 						gp.lineTo(x1, y1);
 					} else {
-						g2.setColor(geo.getObjectColor());
-						g2.setStroke(EuclidianStatic.getDefaultStroke());
-						g2.drawLine((int) x, (int) y, (int) x1, (int) y1);
+						double EPSILON = 0.00001;
+						if (j < N - 2 || (Math.abs(sx-x1)>EPSILON || Math.abs(sy-y1)>EPSILON)) { // don't draw the last point
+							// if it is the same as the first point (it confuses dashed line drawing)
+							g2.drawLine((int) x, (int) y, (int) x1, (int) y1);
+						}
 					}
 					x = x1;
 					y = y1;
@@ -313,4 +339,12 @@ public class DrawInequalityExternal extends Drawable {
 	public boolean isInside(GRectangle rect) {
 		return false;
 	}
+
+	private void debugElapsedTime() {
+		int elapsedTime = (int) (UtilFactory.getPrototype().getMillisecondTime()
+				- startTime);
+
+		Log.debug("Benchmarking: " + elapsedTime + " ms");
+	}
+
 }
