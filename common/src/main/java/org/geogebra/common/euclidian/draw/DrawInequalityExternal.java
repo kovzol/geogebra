@@ -67,7 +67,7 @@ public class DrawInequalityExternal extends Drawable {
 		height = view.getHeight();
 
 		// Create the Tarski command and get the result:
-		String def = ((GeoFunctionNVar) function).getCASString(StringTemplate.tarskiTemplate, true);
+		String def = ((GeoFunctionNVar) function).getCASString(StringTemplate.tarskiTemplate, false);
 		String command = "(plot2d [ " + def + "] \"" + height + " " + width + " "
 				+ xmin + " " + xmax + " "
 				+ ymin + " " + " " + ymax + " -\" '(ord (x y))) ";
@@ -262,7 +262,7 @@ public class DrawInequalityExternal extends Drawable {
 			double x = circlevalues[circle][1];
 			double y = circlevalues[circle][2];
 			if (area) {
-				drawCircle(geo, g2, x, y, 2, true);
+				drawCircle(geo, g2, x, y, 3, true);
 			} else {
 				drawCircle(geo, g2, x, y, 3, true);
 				drawCircle(geo, g2, x, y, 2, false);

@@ -427,6 +427,7 @@ public abstract class CommandDispatcher {
 			case Iteration:
 			case PathParameter:
 			case Asymptote:
+			case Plot2D:
 			case CurvatureVector:
 			case Curvature:
 			case OsculatingCircle:

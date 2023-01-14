@@ -30,6 +30,7 @@ public class CommandFilterFactoryTest {
 			Commands.RigidPolygon, Commands.Sector, Commands.Segment, Commands.Slope,
 			Commands.Tangent, Commands.TriangleCenter, Commands.TriangleCurve, Commands.Trilinear,
 			Commands.Vertex, Commands.Polynomial, Commands.TaylorPolynomial, Commands.Asymptote,
+			Commands.Plot2D,
 			Commands.OsculatingCircle, Commands.CommonDenominator, Commands.CompleteSquare,
 			Commands.Div, Commands.Mod, Commands.Division
 	};

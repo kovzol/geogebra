@@ -356,6 +356,8 @@ public enum Commands implements CommandsConstants,
 
 	SVD(TABLE_FUNCTION),
 
+	Plot2D(TABLE_FUNCTION),
+
 	// =============================================================
 	// conics
 	// =============================================================

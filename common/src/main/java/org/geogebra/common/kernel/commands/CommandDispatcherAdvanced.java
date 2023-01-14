@@ -59,6 +59,7 @@ import org.geogebra.common.kernel.advanced.CmdOrdinal;
 import org.geogebra.common.kernel.advanced.CmdOsculatingCircle;
 import org.geogebra.common.kernel.advanced.CmdParameter;
 import org.geogebra.common.kernel.advanced.CmdPathParameter;
+import org.geogebra.common.kernel.advanced.CmdPlot2D;
 import org.geogebra.common.kernel.advanced.CmdPolar;
 import org.geogebra.common.kernel.advanced.CmdPrimeFactors;
 import org.geogebra.common.kernel.advanced.CmdReducedRowEchelonForm;
@@ -127,6 +128,8 @@ public class CommandDispatcherAdvanced implements CommandDispatcherInterface {
 			return new CmdPathParameter(kernel);
 		case Asymptote:
 			return new CmdAsymptote(kernel);
+		case Plot2D:
+			return new CmdPlot2D(kernel);
 		case CurvatureVector:
 			return new CmdCurvatureVector(kernel);
 		case Curvature:

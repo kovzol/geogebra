@@ -102,7 +102,7 @@ public final class CommandFilterFactory {
 				// CAS specific command
 				Commands.Delete, Commands.Poisson,
 				// Function Commands
-				Commands.Asymptote, Commands.CurvatureVector, Commands.DataFunction,
+				Commands.Asymptote, Commands.Plot2D, Commands.CurvatureVector, Commands.DataFunction,
 				Commands.Function, Commands.ImplicitCurve, Commands.IterationList,
 				Commands.NSolveODE, Commands.OsculatingCircle, Commands.ParametricDerivative,
 				Commands.PathParameter, Commands.RootList, Commands.Roots,
