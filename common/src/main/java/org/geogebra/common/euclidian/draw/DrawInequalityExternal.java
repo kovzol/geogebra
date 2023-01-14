@@ -201,23 +201,8 @@ public class DrawInequalityExternal extends Drawable {
 				sx = x; sy = y;
 
 				GeneralPathClipped gp = new GeneralPathClipped(view);
-				if (area) {
-					gp.resetWithThickness(geo.getLineThickness());
-					gp.moveTo(x, y);
-				} else {
-					if (removed) {
-						// g2.setColor(view.getBackgroundCommon());
-						g2.setColor(geo.getObjectColor());
-						g2.setStroke(EuclidianStatic.getStroke(1,
-								EuclidianStyleConstants.LINE_TYPE_DASHED_LONG));
-						// Log.debug("dashed");
-					} else {
-						g2.setColor(geo.getObjectColor());
-						g2.setStroke(EuclidianStatic.getStroke(3,
-								EuclidianStyleConstants.LINE_TYPE_FULL));
-						// Log.debug("normal");
-					}
-				}
+				gp.resetWithThickness(geo.getLineThickness());
+				gp.moveTo(x, y);
 
 				for (int j = 0; j < N - 1; j++) {
 					double x1 = pointvalues.get(i) / 1000 * width; // scaling back
@@ -230,7 +215,7 @@ public class DrawInequalityExternal extends Drawable {
 						double EPSILON = 0.00001;
 						if (j < N - 2 || (Math.abs(sx-x1)>EPSILON || Math.abs(sy-y1)>EPSILON)) { // don't draw the last point
 							// if it is the same as the first point (it confuses dashed line drawing)
-							g2.drawLine((int) x, (int) y, (int) x1, (int) y1);
+							gp.lineTo(x1, y1);
 						}
 					}
 					x = x1;
@@ -247,6 +232,23 @@ public class DrawInequalityExternal extends Drawable {
 					gp.closePath();
 					g2.setPaint(geo.getSelColor());
 					g2.fill(gp);
+				} else {
+					g2.setPaint(geo.getObjectColor());
+					if (removed) {
+						g2.setStroke(EuclidianStatic.getStroke(3,
+								EuclidianStyleConstants.LINE_TYPE_DASHED_SHORT));
+					} else {
+						g2.setStroke(EuclidianStatic.getStroke(3,
+								EuclidianStyleConstants.LINE_TYPE_FULL));
+					}
+					g2.draw(gp);
+					// If highlighted, draw it another time, but with a different linetype:
+					if (isHighlighted()) {
+						g2.setPaint(geo.getSelColor());
+						g2.setStroke(selStroke);
+						updateStrokes(geo);
+						g2.draw(gp);
+					}
 				}
 			} else {
 				i += N * 2; // skip the unnecessary components
