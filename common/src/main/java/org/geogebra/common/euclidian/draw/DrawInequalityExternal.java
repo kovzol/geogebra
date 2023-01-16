@@ -99,6 +99,12 @@ public class DrawInequalityExternal extends Drawable {
 		// 4. We (re)create the data arrays that will be used on plotting the data:
 		circlevalues = new double[circles][3];
 		pointvalues = new ArrayList<Double>();
+		if (!result.startsWith("\"<!DOCTYPE svg")) {
+			// There is an error during processing. Avoid further processing of the faulty SVG:
+			Log.debug("Tarski could not compute the input");
+			return;
+		}
+
 		int line = 0;
 		int circle = 0;
 
@@ -167,8 +173,8 @@ public class DrawInequalityExternal extends Drawable {
 		}
 
 		// We are searching for a good position for the label:
-		int xl = XLABEL_DEFAULT;
-		int yl = YLABEL_DEFAULT;
+		int xl = -100; // This should be invisible.
+		int yl = -100; // This should be invisible.
 		// At the beginning we put it on the top-left. If there is no better candidate,
 		// we use this position.
 
@@ -222,7 +228,7 @@ public class DrawInequalityExternal extends Drawable {
 					y = y1;
 
 					// This may be a candidate for the label position:
-					if (xl == XLABEL_DEFAULT && x > XLABEL_DEFAULT - XLABEL_OFFSET_DEFAULT
+					if (xl <= XLABEL_DEFAULT && x > XLABEL_DEFAULT - XLABEL_OFFSET_DEFAULT
 							&& y > YLABEL_DEFAULT - YLABEL_OFFSET_DEFAULT) {
 						xl = (int) x + XLABEL_OFFSET_DEFAULT;
 						yl = (int) y + YLABEL_OFFSET_DEFAULT;
@@ -269,7 +275,7 @@ public class DrawInequalityExternal extends Drawable {
 			}
 
 			// This may be a candidate for the label position:
-			if (xl == XLABEL_DEFAULT && x > XLABEL_DEFAULT - XLABEL_OFFSET_DEFAULT
+			if (xl <= XLABEL_DEFAULT && x > XLABEL_DEFAULT - XLABEL_OFFSET_DEFAULT
 					&& y > YLABEL_DEFAULT - YLABEL_OFFSET_DEFAULT) {
 				xl = (int) x + XLABEL_OFFSET_DEFAULT;
 				yl = (int) y + YLABEL_OFFSET_DEFAULT;
