@@ -24,6 +24,7 @@ import org.geogebra.common.kernel.arithmetic.Inequality;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoFunctionNVar;
+import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.implicit.GeoImplicitCurve;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
@@ -64,6 +65,15 @@ public class AlgoPlot2D extends AlgoElement {
 			// Build the output accordingly. We store it as a proper input.
 			FunctionNVar fnv = new FunctionNVar(kernel, function.getDefinition());
 			fnv.setExpression(function.getDefinition(), ((GeoImplicitCurve) function).getFunctionDefinition().getFunctionVariables());
+			fnv.setForceInequality(true);
+			fnv.initFunction();
+			outp = new GeoFunctionNVar(cons, fnv, true);
+			// Force this object as an (external) polynomial one.
+			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
+		}
+		if (function instanceof GeoLine) {
+			FunctionNVar fnv = new FunctionNVar(kernel, function.getDefinition());
+			fnv.setExpression(function.getDefinition(), ((GeoLine) function).getFunction().getFunctionVariables());
 			fnv.setForceInequality(true);
 			fnv.initFunction();
 			outp = new GeoFunctionNVar(cons, fnv, true);

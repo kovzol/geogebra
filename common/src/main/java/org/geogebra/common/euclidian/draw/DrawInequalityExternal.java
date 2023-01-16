@@ -66,11 +66,23 @@ public class DrawInequalityExternal extends Drawable {
 		width = view.getWidth();
 		height = view.getHeight();
 
-		// Create the Tarski command and get the result:
+		/* Create the Tarski command and get the result... */
 		String def = ((GeoFunctionNVar) function).getCASString(StringTemplate.tarskiTemplate, false);
-		String command = "(plot2d [ " + def + "] \"" + height + " " + width + " "
+		String extraDef = "";
+
+		// Add a half-plane to force two variables:
+		if (!def.contains("x")) {
+			extraDef += " /\\ (x < " + ((int) xmax+1) + ")";
+		}
+		if (!def.contains("y")) {
+			extraDef += " /\\ (y < " + ((int) ymax+1) + ")";
+		}
+		// Otherwise tarski/plot2d complains about getting the input in just one variable.
+
+		String command = "(plot2d [ " + def + extraDef + "] \"" + height + " " + width + " "
 				+ xmin + " " + xmax + " "
 				+ ymin + " " + " " + ymax + " -\" '(ord (x y))) ";
+		Log.debug(command);
 		startTime = (int) (UtilFactory.getPrototype().getMillisecondTime());
 		String result = function.getApp().tarski.eval(command);
 		debugElapsedTime();
