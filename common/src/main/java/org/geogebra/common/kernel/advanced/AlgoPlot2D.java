@@ -22,7 +22,9 @@ import org.geogebra.common.kernel.arithmetic.FunctionNVar;
 import org.geogebra.common.kernel.arithmetic.FunctionalNVar;
 import org.geogebra.common.kernel.arithmetic.Inequality;
 import org.geogebra.common.kernel.commands.Commands;
+import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.kernel.geos.GeoFunctionNVar;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumeric;
@@ -74,6 +76,24 @@ public class AlgoPlot2D extends AlgoElement {
 		if (function instanceof GeoLine) {
 			FunctionNVar fnv = new FunctionNVar(kernel, function.getDefinition());
 			fnv.setExpression(function.getDefinition(), ((GeoLine) function).getFunction().getFunctionVariables());
+			fnv.setForceInequality(true);
+			fnv.initFunction();
+			outp = new GeoFunctionNVar(cons, fnv, true);
+			// Force this object as an (external) polynomial one.
+			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
+		}
+		if (function instanceof GeoFunction) {
+			FunctionNVar fnv = new FunctionNVar(kernel, function.getDefinition());
+			fnv.setExpression(function.getDefinition(), ((GeoFunction) function).getFunction().getFunctionVariables());
+			fnv.setForceInequality(true);
+			fnv.initFunction();
+			outp = new GeoFunctionNVar(cons, fnv, true);
+			// Force this object as an (external) polynomial one.
+			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
+		}
+		if (function instanceof GeoConic) {
+			FunctionNVar fnv = new FunctionNVar(kernel, function.getDefinition());
+			fnv.setExpression(function.getDefinition(), ((GeoConic) function).getFunction().getFunctionVariables());
 			fnv.setForceInequality(true);
 			fnv.initFunction();
 			outp = new GeoFunctionNVar(cons, fnv, true);

@@ -244,6 +244,7 @@ public class DrawInequalityExternal extends Drawable {
 							&& y > YLABEL_DEFAULT - YLABEL_OFFSET_DEFAULT) {
 						xl = (int) x + XLABEL_OFFSET_DEFAULT;
 						yl = (int) y + YLABEL_OFFSET_DEFAULT;
+						// Log.debug("label " + xl + " " + yl);
 					}
 				}
 				if (area) {
