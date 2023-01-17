@@ -63,8 +63,15 @@ public class DrawInequalityExternal extends Drawable {
 		double ymax = view.getYmax();
 		double ymin = view.getYmin();
 
+		double aspectratio_math = (ymax - ymin) / (xmax - xmin);
+
 		width = view.getWidth();
 		height = view.getHeight();
+
+		double aspectratio_screen = ((double) height) / width;
+		double stretch_factor = aspectratio_screen / aspectratio_math;
+		Log.debug("aspectratio math=" + aspectratio_math + " screen=" + aspectratio_screen
+			+ " stretch=" + stretch_factor);
 
 		/* Create the Tarski command and get the result... */
 		String def = ((GeoFunctionNVar) function).getCASString(StringTemplate.tarskiTemplate, false);
@@ -79,7 +86,7 @@ public class DrawInequalityExternal extends Drawable {
 		}
 		// Otherwise tarski/plot2d complains about getting the input in just one variable.
 
-		String command = "(plot2d [ " + def + extraDef + "] \"" + height + " " + width + " "
+		String command = "(plot2d [ " + def + extraDef + "] \"" + (int) (height / stretch_factor) + " " + width + " "
 				+ xmin + " " + xmax + " "
 				+ ymin + " " + " " + ymax + " -\" '(ord (x y))) ";
 		Log.debug(command);
