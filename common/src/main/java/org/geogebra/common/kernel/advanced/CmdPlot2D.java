@@ -48,17 +48,9 @@ public class CmdPlot2D extends CommandProcessor {
 				}
 				AlgoPlot2D algo = new AlgoPlot2D(cons, (GeoFunctionNVar) arg[0]);
 				return algo.getOutput();
-			} else if (arg[0] instanceof GeoImplicitCurve) {
-				AlgoPlot2D algo = new AlgoPlot2D(cons,  (GeoImplicitCurve) arg[0]);
-				return algo.getOutput();
-			} else if (arg[0] instanceof GeoLine) {
-				AlgoPlot2D algo = new AlgoPlot2D(cons,  (GeoLine) arg[0]);
-				return algo.getOutput();
-			} else if (arg[0] instanceof GeoFunction) {
-				AlgoPlot2D algo = new AlgoPlot2D(cons,  (GeoFunction) arg[0]);
-				return algo.getOutput();
-			} else if (arg[0] instanceof GeoConic) {
-				AlgoPlot2D algo = new AlgoPlot2D(cons,  (GeoConic) arg[0]);
+			} else if (arg[0] instanceof GeoImplicitCurve || arg[0] instanceof GeoLine ||
+					arg[0] instanceof GeoFunction || arg[0] instanceof GeoConic) {
+				AlgoPlot2D algo = new AlgoPlot2D(cons, arg[0]);
 				return algo.getOutput();
 			}
 			throw argErr(c, arg[0]);

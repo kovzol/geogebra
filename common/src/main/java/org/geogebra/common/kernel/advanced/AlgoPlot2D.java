@@ -19,6 +19,7 @@ import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 import org.geogebra.common.kernel.arithmetic.FunctionNVar;
+import org.geogebra.common.kernel.arithmetic.FunctionVariable;
 import org.geogebra.common.kernel.arithmetic.FunctionalNVar;
 import org.geogebra.common.kernel.arithmetic.Inequality;
 import org.geogebra.common.kernel.commands.Commands;
@@ -62,38 +63,24 @@ public class AlgoPlot2D extends AlgoElement {
 			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
 			// Otherwise it will be still visualized via the built-in method in EuclidianDraw.
 			// Instead, we use DrawInequalityExternal.
-		}
-		if (function instanceof GeoImplicitCurve) {
+		} else {
 			// Build the output accordingly. We store it as a proper input.
 			FunctionNVar fnv = new FunctionNVar(kernel, function.getDefinition());
-			fnv.setExpression(function.getDefinition(), ((GeoImplicitCurve) function).getFunctionDefinition().getFunctionVariables());
-			fnv.setForceInequality(true);
-			fnv.initFunction();
-			outp = new GeoFunctionNVar(cons, fnv, true);
-			// Force this object as an (external) polynomial one.
-			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
-		}
-		if (function instanceof GeoLine) {
-			FunctionNVar fnv = new FunctionNVar(kernel, function.getDefinition());
-			fnv.setExpression(function.getDefinition(), ((GeoLine) function).getFunction().getFunctionVariables());
-			fnv.setForceInequality(true);
-			fnv.initFunction();
-			outp = new GeoFunctionNVar(cons, fnv, true);
-			// Force this object as an (external) polynomial one.
-			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
-		}
-		if (function instanceof GeoFunction) {
-			FunctionNVar fnv = new FunctionNVar(kernel, function.getDefinition());
-			fnv.setExpression(function.getDefinition(), ((GeoFunction) function).getFunction().getFunctionVariables());
-			fnv.setForceInequality(true);
-			fnv.initFunction();
-			outp = new GeoFunctionNVar(cons, fnv, true);
-			// Force this object as an (external) polynomial one.
-			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
-		}
-		if (function instanceof GeoConic) {
-			FunctionNVar fnv = new FunctionNVar(kernel, function.getDefinition());
-			fnv.setExpression(function.getDefinition(), ((GeoConic) function).getFunction().getFunctionVariables());
+			FunctionVariable[] fv = null;
+			if (function instanceof GeoImplicitCurve) {
+				fv = ((GeoImplicitCurve) function).getFunctionDefinition().getFunctionVariables();
+			}
+			if (function instanceof GeoLine) {
+				fv = ((GeoLine) function).getFunction().getFunctionVariables();
+			}
+			if (function instanceof GeoConic) {
+				fv = ((GeoConic) function).getFunction().getFunctionVariables();
+			}
+			if (function instanceof GeoFunction) {
+				fv = ((GeoFunction) function).getFunction().getFunctionVariables();
+			}
+			// Hopefully we handled all possible cases.
+			fnv.setExpression(function.getDefinition(), fv);
 			fnv.setForceInequality(true);
 			fnv.initFunction();
 			outp = new GeoFunctionNVar(cons, fnv, true);
