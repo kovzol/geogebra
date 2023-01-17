@@ -152,7 +152,7 @@ public class MyDouble extends ValidExpression
 
 		// Note: exact(0.3333333333333) gives 1/3
 		if (ret.indexOf('.') > -1) {
-			return StringUtil.wrapInExact(ret, tpl);
+			return StringUtil.wrapInExact(val, ret, tpl, kernel);
 		}
 
 		return ret;

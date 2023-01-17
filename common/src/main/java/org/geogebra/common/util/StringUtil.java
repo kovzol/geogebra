@@ -1015,17 +1015,6 @@ public class StringUtil extends com.himamis.retex.editor.share.input.Character {
 	}
 
 	/**
-	 * @param s
-	 *            String to wrap
-	 * @param tpl
-	 *            String template
-	 * @return "exact(" + s + ")" if necessary (for Giac)
-	 */
-	public static String wrapInExact(String s, StringTemplate tpl) {
-		return wrapInExact(0, s, tpl, null);
-	}
-
-	/**
 	 * @param x
 	 *            the number to convert
 	 * @param s0
@@ -1067,7 +1056,7 @@ public class StringUtil extends com.himamis.retex.editor.share.input.Character {
 		}
 
 		StringBuilder sb1 = new StringBuilder();
-		if (tpl == StringTemplate.giacTemplateInternal && kernel != null) {
+		if ((tpl == StringTemplate.giacTemplateInternal) || (tpl == StringTemplate.tarskiTemplate) && kernel != null) {
 			// GGB-641 this is just for ProverBotanasMethod
 			sb1.append("(");
 			long[] l = kernel.doubleToRational(x);

@@ -669,7 +669,7 @@ public class GeoNumeric extends GeoElement
 			if (getDefinition() != null) {
 				return getDefinition().toValueString(tpl);
 			}
-			return StringUtil.wrapInExact(kernel.format(value, tpl), tpl);
+			return StringUtil.wrapInExact(value, kernel.format(value, tpl), tpl, kernel);
 		}
 		if (symbolicMode && getDefinition() != null && tpl.supportsFractions()) {
 			return getDefinition().toFractionString(tpl);
