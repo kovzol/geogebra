@@ -31,7 +31,7 @@ public class DrawInequalityExternal extends Drawable {
 	private int XLABEL_DEFAULT = 10;
 	private int YLABEL_DEFAULT = 10;
 	private int XLABEL_OFFSET_DEFAULT = -20;
-	private int YLABEL_OFFSET_DEFAULT = -10;
+	private int YLABEL_OFFSET_DEFAULT = -20;
 
 	private boolean isVisible;
 	private GeoElementND function;
@@ -248,7 +248,7 @@ public class DrawInequalityExternal extends Drawable {
 
 					// This may be a candidate for the label position:
 					if (xl <= XLABEL_DEFAULT && x > XLABEL_DEFAULT - XLABEL_OFFSET_DEFAULT
-							&& y > YLABEL_DEFAULT - YLABEL_OFFSET_DEFAULT) {
+							&& y > YLABEL_DEFAULT - YLABEL_OFFSET_DEFAULT && y < height) {
 						xl = (int) x + XLABEL_OFFSET_DEFAULT;
 						yl = (int) y + YLABEL_OFFSET_DEFAULT;
 						// Log.debug("label " + xl + " " + yl);
@@ -296,7 +296,7 @@ public class DrawInequalityExternal extends Drawable {
 
 			// This may be a candidate for the label position:
 			if (xl <= XLABEL_DEFAULT && x > XLABEL_DEFAULT - XLABEL_OFFSET_DEFAULT
-					&& y > YLABEL_DEFAULT - YLABEL_OFFSET_DEFAULT) {
+					&& y > YLABEL_DEFAULT - YLABEL_OFFSET_DEFAULT && y < height) {
 				xl = (int) x + XLABEL_OFFSET_DEFAULT;
 				yl = (int) y + YLABEL_OFFSET_DEFAULT;
 			}
