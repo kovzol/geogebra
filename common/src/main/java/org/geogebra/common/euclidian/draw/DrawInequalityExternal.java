@@ -33,6 +33,10 @@ public class DrawInequalityExternal extends Drawable {
 	private int XLABEL_OFFSET_DEFAULT = -20;
 	private int YLABEL_OFFSET_DEFAULT = -20;
 
+	double EPSILON = 0.00001;
+
+	int CIRCLE_RADIUS = 4;
+
 	private boolean isVisible;
 	private GeoElementND function;
 	private ArrayList<Double> pointvalues;
@@ -237,7 +241,6 @@ public class DrawInequalityExternal extends Drawable {
 					if (area) {
 						gp.lineTo(x1, y1);
 					} else {
-						double EPSILON = 0.00001;
 						if (j < N - 2 || (Math.abs(sx-x1)>EPSILON || Math.abs(sy-y1)>EPSILON)) { // don't draw the last point
 							// if it is the same as the first point (it confuses dashed line drawing)
 							gp.lineTo(x1, y1);
@@ -288,10 +291,10 @@ public class DrawInequalityExternal extends Drawable {
 			double x = circlevalues[circle][1];
 			double y = circlevalues[circle][2];
 			if (area) {
-				drawCircle(geo, g2, x, y, 3, true);
+				drawCircle(geo, g2, x, y, CIRCLE_RADIUS, true);
 			} else {
-				drawCircle(geo, g2, x, y, 3, true);
-				drawCircle(geo, g2, x, y, 2, false);
+				drawCircle(geo, g2, x, y, CIRCLE_RADIUS, true);
+				drawCircle(geo, g2, x, y, CIRCLE_RADIUS - 1, false);
 			}
 
 			// This may be a candidate for the label position:
