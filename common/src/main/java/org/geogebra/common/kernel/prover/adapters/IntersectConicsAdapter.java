@@ -28,6 +28,9 @@ public class IntersectConicsAdapter {
 		Kernel kernel = a.getKernel();
 		// Special cases first.
 
+		// Circles are defined with the midpoint and a fixed circumpoint,
+		// parabolas and ellipses/hyperbolas are defined differently.
+
 		if (a.isCircle() && b.isCircle()) {
 			PVariable[] botanaVarsThis = new PVariable[2];
 			if (botanaVars == null) {
@@ -92,15 +95,13 @@ public class IntersectConicsAdapter {
 				botanaPolynomialsThis = new PPolynomial[2 + excludePoint];
 			}
 
-			PVariable[] vA = a.getBotanaVars(a); // 4 variables from the first
-													// circle
-			PVariable[] vB = b.getBotanaVars(b); // 4 variables from the first
-													// circle
+				PVariable[] vA = a.getBotanaVars(a); // 4 variables from the firs circle
+				PVariable[] vB = b.getBotanaVars(b); // 4 variables from the second circle
 
-			botanaPolynomialsThis[0] = PPolynomial.equidistant(vA[2], vA[3], vA[0], vA[1],
-					botanaVarsThis[0], botanaVarsThis[1]);
-			botanaPolynomialsThis[1] = PPolynomial.equidistant(vB[2], vB[3], vB[0], vB[1],
-					botanaVarsThis[0], botanaVarsThis[1]);
+				botanaPolynomialsThis[0] = PPolynomial.equidistant(vA[2], vA[3], vA[0], vA[1],
+						botanaVarsThis[0], botanaVarsThis[1]);
+				botanaPolynomialsThis[1] = PPolynomial.equidistant(vB[2], vB[3], vB[0], vB[1],
+						botanaVarsThis[0], botanaVarsThis[1]);
 
 			if (botanaPolynomials == null) {
 				botanaPolynomials = new HashMap<>();
@@ -117,7 +118,7 @@ public class IntersectConicsAdapter {
 						.sqrDistance(botanaVarsThis[0], botanaVarsThis[1], botanaVarsOther[0],
 								botanaVarsOther[1])
 						.multiply(new PPolynomial(new PVariable(kernel))))
-								.subtract(new PPolynomial(1));
+							.subtract(new PPolynomial(1));
 			}
 
 			botanaPolynomials.put(geo, botanaPolynomialsThis);
@@ -130,7 +131,91 @@ public class IntersectConicsAdapter {
 			return botanaPolynomialsThis;
 		}
 
-		/* General case */
+		if (!a.isCircle() && b.isCircle()) {
+			PVariable[] botanaVarsThis = new PVariable[2];
+			if (botanaVars == null) {
+				botanaVars = new HashMap<>();
+			}
+			if (botanaVars.containsKey(geo)) {
+				botanaVarsThis = botanaVars.get(geo);
+			} else {
+				// Intersection point (we create only one):
+				botanaVarsThis = new PVariable[2];
+				botanaVarsThis[0] = new PVariable(kernel);
+				botanaVarsThis[1] = new PVariable(kernel);
+				botanaVars.put(geo, botanaVarsThis);
+			}
+			if (botanaPolynomials == null) {
+				PPolynomial[] conic1Polys = a.getBotanaPolynomials(a);
+				PVariable[] conic1Vars = a.getBotanaVars(a);
+
+				int conic1PolysNo = conic1Polys.length;
+
+				PPolynomial[] botanaPolynomialsThis = new PPolynomial[conic1PolysNo	+ 1];
+
+				// Get the variables from the conic (non-circle):
+				for (int i = 0; i < conic1PolysNo; i++) {
+					botanaPolynomialsThis[i] = conic1Polys[i]
+							.substitute(conic1Vars[0], botanaVarsThis[0])
+							.substitute(conic1Vars[1], botanaVarsThis[1]);
+				}
+				PVariable[] vB = b.getBotanaVars(b); // 4 variables from the circle
+				botanaPolynomialsThis[conic1PolysNo] = PPolynomial.equidistant(vB[2], vB[3], vB[0], vB[1],
+						botanaVarsThis[0], botanaVarsThis[1]);
+
+				if (botanaPolynomials == null) {
+					botanaPolynomials = new HashMap<>();
+				}
+				botanaPolynomials.put(geo, botanaPolynomialsThis);
+
+				return botanaPolynomialsThis;
+			}
+		}
+
+		// This is literally same as above, but by swapping the role of a and b.
+		// TODO: Unify.
+		if (a.isCircle() && !b.isCircle()) {
+			PVariable[] botanaVarsThis = new PVariable[2];
+			if (botanaVars == null) {
+				botanaVars = new HashMap<>();
+			}
+			if (botanaVars.containsKey(geo)) {
+				botanaVarsThis = botanaVars.get(geo);
+			} else {
+				// Intersection point (we create only one):
+				botanaVarsThis = new PVariable[2];
+				botanaVarsThis[0] = new PVariable(kernel);
+				botanaVarsThis[1] = new PVariable(kernel);
+				botanaVars.put(geo, botanaVarsThis);
+			}
+			if (botanaPolynomials == null) {
+				PPolynomial[] conic2Polys = b.getBotanaPolynomials(b);
+				PVariable[] conic2Vars = b.getBotanaVars(b);
+
+				int conic2PolysNo = conic2Polys.length;
+
+				PPolynomial[] botanaPolynomialsThis = new PPolynomial[conic2PolysNo	+ 1];
+
+				// Get the variables from the conic (non-circle):
+				for (int i = 0; i < conic2PolysNo; i++) {
+					botanaPolynomialsThis[i] = conic2Polys[i]
+							.substitute(conic2Vars[0], botanaVarsThis[0])
+							.substitute(conic2Vars[1], botanaVarsThis[1]);
+				}
+				PVariable[] vA = a.getBotanaVars(a); // 4 variables from the circle
+				botanaPolynomialsThis[conic2PolysNo] = PPolynomial.equidistant(vA[2], vA[3], vA[0], vA[1],
+						botanaVarsThis[0], botanaVarsThis[1]);
+
+				if (botanaPolynomials == null) {
+					botanaPolynomials = new HashMap<>();
+				}
+				botanaPolynomials.put(geo, botanaPolynomialsThis);
+
+				return botanaPolynomialsThis;
+			}
+		}
+
+		/* General case: none of the conics is a circle */
 		PVariable[] botanaVarsThis = new PVariable[2];
 		if (botanaVars == null) {
 			botanaVars = new HashMap<>();
