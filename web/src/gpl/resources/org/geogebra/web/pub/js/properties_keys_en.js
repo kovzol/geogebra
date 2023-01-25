@@ -659,6 +659,8 @@ __GGB__keysVar.en.command = {
     "PlaneBisector.Syntax": "[ <Segment> ]\n[ <Point>, <Point> ]",
     "PlaySound": "PlaySound",
     "PlaySound.Syntax": "[ <URL> ]\n[ <Boolean Play> ]\n[ <Note Sequence>, <Instrument> ]\n[ <Note>, <Duration>, <Instrument> ]\n[ <Function>, <Min Value>, <Max Value> ]\n[ <Function>, <Min Value>, <Max Value>, <Sample Rate>, <Sample Depth> ]",
+    "Plot2D": "Plot2D",
+    "Plot2D.Syntax": "[ <Function> ]",
     "Point": "Point",
     "Point.Syntax": "[ <Object> ]\n[ <Object>, <Parameter> ]\n[ <Point>, <Vector> ]\n[ <List> ]",
     "PointIn": "PointIn",
