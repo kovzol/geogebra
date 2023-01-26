@@ -1383,7 +1383,14 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 				return tpl.convertScientificNotation(scientificStr);
 			}
 		case TARSKI:
+			// This is yet incomplete, big numbers are converted incorrectly. FIXME
+			if (isLongInteger) {
+				return Long.toString(rounded);
+			}
 			long[] l = doubleToRational(x);
+			if (l[1] == 1) {
+				return l[0] + "";
+			}
 			return "((" + l[0] + ")/" + l[1] + ")"; // we assume that the denominator is positive
 
 			// number formatting for screen output
