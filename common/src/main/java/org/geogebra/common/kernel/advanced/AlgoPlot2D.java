@@ -34,6 +34,7 @@ import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 
 import org.geogebra.common.plugin.Operation;
+import org.geogebra.common.util.debug.Log;
 
 /**
  * Adapted from AlgoPerimeterPoly
@@ -43,6 +44,8 @@ public class AlgoPlot2D extends AlgoElement {
 
 	private GeoElement inp;
 	private GeoElement outp;
+
+	private FunctionNVar fnv;
 
 	/**
 	 * @param cons
@@ -56,40 +59,9 @@ public class AlgoPlot2D extends AlgoElement {
 
 		this.inp = function;
 
-		if (function instanceof GeoFunctionNVar) {
-			// this.outp = function.deepCopyGeo();
-			this.outp = function.copy();
-			// Force this object as an (external) polynomial one.
-			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
-			// Otherwise it will be still visualized via the built-in method in EuclidianDraw.
-			// Instead, we use DrawInequalityExternal.
-		} else {
-			// Build the output accordingly. We store it as a proper input.
-			FunctionNVar fnv = new FunctionNVar(kernel, function.getDefinition());
-			FunctionVariable[] fv = null;
-			if (function instanceof GeoImplicitCurve) {
-				fv = ((GeoImplicitCurve) function).getFunctionDefinition().getFunctionVariables();
-			}
-			if (function instanceof GeoLine) {
-				fv = ((GeoLine) function).getFunction().getFunctionVariables();
-			}
-			if (function instanceof GeoConic) {
-				fv = ((GeoConic) function).getFunction().getFunctionVariables();
-			}
-			if (function instanceof GeoFunction) {
-				fv = ((GeoFunction) function).getFunction().getFunctionVariables();
-			}
-			// Hopefully we handled all possible cases.
-			fnv.setExpression(function.getDefinition(), fv);
-			fnv.setForceInequality(true);
-			fnv.initFunction();
-			outp = new GeoFunctionNVar(cons, fnv, true);
-			// Force this object as an (external) polynomial one.
-			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
-		}
-
+		compute_init();
 		setInputOutput();
-		compute();
+
 	}
 
 	@Override
@@ -106,8 +78,46 @@ public class AlgoPlot2D extends AlgoElement {
 		setDependencies();
 	}
 
+	private void compute_init() {
+		if (inp instanceof GeoFunctionNVar) {
+			this.outp = inp.copy();
+			// Force this object as an (external) polynomial one.
+			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
+			// Otherwise it will be still visualized via the built-in method in EuclidianDraw.
+			// Instead, we use DrawInequalityExternal.
+		} else {
+			// Build the output accordingly. We store it as a proper input.
+			fnv = new FunctionNVar(kernel, inp.getDefinition());
+			FunctionVariable[] fv = null;
+			if (inp instanceof GeoImplicitCurve) {
+				fv = ((GeoImplicitCurve) inp).getFunctionDefinition().getFunctionVariables();
+			}
+			if (inp instanceof GeoLine) {
+				fv = ((GeoLine) inp).getFunction().getFunctionVariables();
+			}
+			if (inp instanceof GeoConic) {
+				fv = ((GeoConic) inp).getFunction().getFunctionVariables();
+			}
+			if (inp instanceof GeoFunction) {
+				fv = ((GeoFunction) inp).getFunction().getFunctionVariables();
+			}
+			// Hopefully we handled all possible cases.
+			fnv.setExpression(inp.getDefinition(), fv);
+			fnv.setForceInequality(true);
+			fnv.initFunction();
+			outp = new GeoFunctionNVar(cons, fnv, true);
+			// Force this object as an (external) polynomial one.
+			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
+		}
+
+	}
+
 	@Override
 	public final void compute() {
+		compute_init();
+		super.setOutput(0, outp);
+		cons.getApplication().getActiveEuclidianView().updateAllDrawables(true);
+
 		// The trick is that we hacked the GeoFunctionNVar object. It will be
 		// drawn by the kernel, so here is nothing to do!
 		// DrawInequalityExternal die = new DrawInequalityExternal(kernel.getApplication().getActiveEuclidianView(), outp);

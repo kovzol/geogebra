@@ -11,6 +11,7 @@ import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.GeneralPathClipped;
 import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.kernel.StringTemplate;
+import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoFunctionNVar;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
@@ -78,7 +79,16 @@ public class DrawInequalityExternal extends Drawable {
 			+ " stretch=" + stretch_factor);
 
 		/* Create the Tarski command and get the result... */
-		String def = ((GeoFunctionNVar) function).getCASString(StringTemplate.tarskiTemplate, false);
+		String def = "";
+		AlgoElement ap = ((GeoFunctionNVar) function).getParentAlgorithm();
+		if (ap != null && ap.getOutput().length > 0) {
+			// This is a Plot2D command...
+			def = ((GeoFunctionNVar) function).getParentAlgorithm().getOutput(0).getCASString(StringTemplate.tarskiTemplate, false);
+		} else {
+			// This is a direct inequality input...
+			def = ((GeoFunctionNVar) function).getCASString(StringTemplate.tarskiTemplate, false);
+		}
+
 		String extraDef = "";
 
 		// Add a half-plane to force two variables:

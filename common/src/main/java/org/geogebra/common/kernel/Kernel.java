@@ -1382,6 +1382,9 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 
 				return tpl.convertScientificNotation(scientificStr);
 			}
+		case TARSKI:
+			long[] l = doubleToRational(x);
+			return "((" + l[0] + ")/" + l[1] + ")"; // we assume that the denominator is positive
 
 			// number formatting for screen output
 		default:
