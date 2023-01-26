@@ -1060,7 +1060,7 @@ public class StringUtil extends com.himamis.retex.editor.share.input.Character {
 			// GGB-641 this is just for ProverBotanasMethod
 			sb1.append("(");
 			long[] l = kernel.doubleToRational(x);
-			sb1.append(l[0] + "/" + l[1]);
+			sb1.append("(" + l[0] + ")/" + l[1]); // we assume that the denominator is positive
 			sb1.append(')');
 		} else {
 			sb1.append("exact(");

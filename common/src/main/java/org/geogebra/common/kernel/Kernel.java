@@ -1307,6 +1307,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 		long gcd = gcd(ret[0], ret[1]);
 		ret[0] /= gcd;
 		ret[1] /= gcd;
+		// Make sure that the denominator is positive (it is required for Tarski):
+		if (ret[1] < 0) {
+			ret[0] *= (-1);
+			ret[1] *= (-1);
+		}
 		return ret;
 	}
 
