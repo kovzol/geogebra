@@ -1993,6 +1993,19 @@ public class ProverBotanasMethod {
 					if (factResult.length() > 1 && factResult.substring(0, 2).equals("-(")) {
 						factResult = factResult.substring(1);
 					}
+
+					// If the result does not start with a "(", but there is one in it later,
+					// it means that this is a product like -v28*v27*(4*v25-v26)*(v23+v24).
+					// So we change it to (-v28)*(v27)*(4*v25-v26)*(v23+v24).
+					int firstMultParen = factResult.indexOf("*(");
+					if (!factResult.startsWith("(") && firstMultParen >= 0) {
+						String firstPart = factResult.substring(0, firstMultParen);
+						String secondPart = factResult.substring(firstMultParen);
+						firstPart = "(" + firstPart + ")";
+						firstPart = firstPart.replace("*", ")*(");
+						factResult = firstPart + secondPart;
+					}
+
 					// split regarding to )*(
 					String[] factors = factResult.split("\\)\\*\\(");
 					// if there are more factors, the first and last
@@ -2011,6 +2024,15 @@ public class ProverBotanasMethod {
 					if (!polyIsConst) {
 						for (String factor : factors) {
 							// parse factors into expression
+							// if (factor.startsWith("-")) {
+							//	factor = "(" + factor + ")"; // work around leading minus
+							// }
+							// Log.debug("factor " + factor);
+
+							// For some strange reason the parser sometimes crashes.
+							// This can be worked around by adding extra parentheses:
+							factor = "(" + factor + ")";
+
 							ValidExpression resultVE = cas.getCASparser().
 									parseGeoGebraCASInputAndResolveDummyVars(factor, k, null);
 							PolynomialNode polyRoot = new PolynomialNode();
