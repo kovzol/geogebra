@@ -780,6 +780,11 @@ public class DependentBooleanAdapter extends ProverAdapter {
 		if (polyNode.getPoly() != null) {
 			return;
 		}
+		if (polyNode.getRight() == null && polyNode.getOperation() == NO_OPERATION) {
+			// maybe a single monomial?
+			polyNode.setPoly(polyNode.getLeft().getPoly());
+			return;
+		}
 		if (polyNode.getLeft().getPoly() != null
 				&& polyNode.getRight().getPoly() != null) {
 			PPolynomial leftPoly = polyNode.getLeft().getPoly();
