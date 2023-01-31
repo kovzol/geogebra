@@ -22,25 +22,37 @@ import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.arithmetic.NumberValue;
+import org.geogebra.common.kernel.arithmetic.Polynomial;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.Dilateable;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
+import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.matrix.Coords;
+import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
+import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
+import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.util.debug.Log;
 
 /**
  * 
  * @author Markus
  */
-public class AlgoDilate extends AlgoTransformation {
+public class AlgoDilate extends AlgoTransformation
+	implements  SymbolicParametersBotanaAlgo {
 
 	protected GeoPointND S;
 	private Dilateable out;
 	private NumberValue r;
 	private GeoElement rgeo;
+
+	private PVariable[] botanaVars;
+	private PPolynomial[] botanaPolynomials;
 
 	/**
 	 * Creates new labeled enlarge geo
@@ -195,4 +207,71 @@ public class AlgoDilate extends AlgoTransformation {
 		return r.getDouble() * r.getDouble();
 	}
 
+	@Override
+	public PVariable[] getBotanaVars(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVars;
+	}
+
+	@Override
+	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
+			throws NoSymbolicParametersException {
+		GeoNumeric num = null;
+		boolean cachable = true;
+		if (this.r instanceof GeoNumeric) {
+			num = (GeoNumeric) this.getInput(1);
+			if (num != null && num.isNumberValue() && num.isDrawable()) {
+				cachable = false; // this may be a slider or a non-constant value, so don't cache
+			}
+		}
+
+		if (botanaPolynomials != null && cachable) {
+			return botanaPolynomials;
+		}
+
+		PVariable[] vS = ((GeoPoint) S.toGeoElement()).getBotanaVars(S);
+
+		if (inGeo.isGeoPoint()) {
+			GeoPoint A = (GeoPoint) inGeo;
+			PVariable[] vA = A.getBotanaVars(A);
+
+			if (botanaVars == null) {
+				botanaVars = new PVariable[2];
+				// outGeo
+				botanaVars[0] = new PVariable(geo.getKernel());
+				botanaVars[1] = new PVariable(geo.getKernel());
+			}
+
+			botanaPolynomials = new PPolynomial[2];
+
+			long[] q = new long[2]; // borrowed from ProverBotanasMethod
+			double x = num.getValue();
+			/*
+			 * Use the fraction P/Q according to the current kernel
+			 * setting. We use the P/Q=x <=> P-Q*x=0 equation.
+			 */
+			if ((x % 1) == 0) { // integer
+				q[0] = (long) x;
+				q[1] = 1L;
+			} else { // fractional
+				q = kernel.doubleToRational(x);
+			}
+			PPolynomial sx = new PPolynomial(vS[0]);
+			PPolynomial sy = new PPolynomial(vS[1]);
+			PPolynomial ax = new PPolynomial(vA[0]);
+			PPolynomial ay = new PPolynomial(vA[1]);
+			PPolynomial outX = new PPolynomial(botanaVars[0]);
+			PPolynomial outY = new PPolynomial(botanaVars[1]);
+
+			botanaPolynomials[0] = ((ax.subtract(sx)).multiply(new PPolynomial((int) q[0])))
+					.subtract((outX.subtract(sx)).multiply(new PPolynomial((int) q[1])));
+			botanaPolynomials[1] = ((ay.subtract(sy)).multiply(new PPolynomial((int) q[0])))
+					.subtract((outY.subtract(sy)).multiply(new PPolynomial((int) q[1])));
+
+			return botanaPolynomials;
+		}
+
+		Log.debug("unimplemented");
+		throw new NoSymbolicParametersException();
+
+	}
 }
