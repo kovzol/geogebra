@@ -25,6 +25,7 @@ import org.geogebra.common.kernel.arithmetic.NumberValue;
 import org.geogebra.common.kernel.arithmetic.Polynomial;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.Dilateable;
+import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
@@ -230,6 +231,22 @@ public class AlgoDilate extends AlgoTransformation
 
 		PVariable[] vS = ((GeoPoint) S.toGeoElement()).getBotanaVars(S);
 
+		long[] q = new long[2]; // borrowed from ProverBotanasMethod
+		double x = num.getValue();
+		/*
+		 * Use the fraction P/Q according to the current kernel
+		 * setting. We use the P/Q=x <=> P-Q*x=0 equation.
+		 */
+		if ((x % 1) == 0) { // integer
+			q[0] = (long) x;
+			q[1] = 1L;
+		} else { // fractional
+			q = kernel.doubleToRational(x);
+		}
+
+		PPolynomial sx = new PPolynomial(vS[0]);
+		PPolynomial sy = new PPolynomial(vS[1]);
+
 		if (inGeo.isGeoPoint()) {
 			GeoPoint A = (GeoPoint) inGeo;
 			PVariable[] vA = A.getBotanaVars(A);
@@ -243,20 +260,6 @@ public class AlgoDilate extends AlgoTransformation
 
 			botanaPolynomials = new PPolynomial[2];
 
-			long[] q = new long[2]; // borrowed from ProverBotanasMethod
-			double x = num.getValue();
-			/*
-			 * Use the fraction P/Q according to the current kernel
-			 * setting. We use the P/Q=x <=> P-Q*x=0 equation.
-			 */
-			if ((x % 1) == 0) { // integer
-				q[0] = (long) x;
-				q[1] = 1L;
-			} else { // fractional
-				q = kernel.doubleToRational(x);
-			}
-			PPolynomial sx = new PPolynomial(vS[0]);
-			PPolynomial sy = new PPolynomial(vS[1]);
 			PPolynomial ax = new PPolynomial(vA[0]);
 			PPolynomial ay = new PPolynomial(vA[1]);
 			PPolynomial outX = new PPolynomial(botanaVars[0]);
@@ -270,7 +273,45 @@ public class AlgoDilate extends AlgoTransformation
 			return botanaPolynomials;
 		}
 
+		if (inGeo.isGeoConic() && ((GeoConic) inGeo).isCircle()) {
+			// Do the same as for points, but dilate both the center and the circumpoint.
+			GeoConic A = (GeoConic) inGeo;
+			PVariable[] vA = A.getBotanaVars(A);
+
+			if (botanaVars == null) {
+				botanaVars = new PVariable[4];
+				// outGeo
+				botanaVars[0] = new PVariable(geo.getKernel());
+				botanaVars[1] = new PVariable(geo.getKernel());
+				botanaVars[2] = new PVariable(geo.getKernel());
+				botanaVars[3] = new PVariable(geo.getKernel());
+			}
+
+			botanaPolynomials = new PPolynomial[4];
+
+			PPolynomial aox = new PPolynomial(vA[0]);
+			PPolynomial aoy = new PPolynomial(vA[1]);
+			PPolynomial apx = new PPolynomial(vA[2]);
+			PPolynomial apy = new PPolynomial(vA[3]);
+			PPolynomial outoX = new PPolynomial(botanaVars[0]);
+			PPolynomial outoY = new PPolynomial(botanaVars[1]);
+			PPolynomial outpX = new PPolynomial(botanaVars[2]);
+			PPolynomial outpY = new PPolynomial(botanaVars[3]);
+
+			botanaPolynomials[0] = ((aox.subtract(sx)).multiply(new PPolynomial((int) q[0])))
+					.subtract((outoX.subtract(sx)).multiply(new PPolynomial((int) q[1])));
+			botanaPolynomials[1] = ((aoy.subtract(sy)).multiply(new PPolynomial((int) q[0])))
+					.subtract((outoY.subtract(sy)).multiply(new PPolynomial((int) q[1])));
+			botanaPolynomials[2] = ((apx.subtract(sx)).multiply(new PPolynomial((int) q[0])))
+					.subtract((outpX.subtract(sx)).multiply(new PPolynomial((int) q[1])));
+			botanaPolynomials[3] = ((apy.subtract(sy)).multiply(new PPolynomial((int) q[0])))
+					.subtract((outpY.subtract(sy)).multiply(new PPolynomial((int) q[1])));
+
+			return botanaPolynomials;
+		}
+
 		Log.debug("unimplemented");
+		// TODO: Implement missing cases (parabola, ellipse/hyperbola, algebraic curves)
 		throw new NoSymbolicParametersException();
 
 	}
