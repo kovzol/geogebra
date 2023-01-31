@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.apache.commons.math3.fraction.BigFraction;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.euclidian.EuclidianView;
@@ -1294,11 +1295,20 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	/**
 	 * Converts the double into a fraction based on the current kernel rounding
 	 * precision.
-	 * 
+	 *
 	 * @param x
 	 *            input number to be rationalized
 	 * @return numerator and denominator
 	 */
+	public long[] doubleToRational(double d) {
+		BigFraction bigFraction = new BigFraction(d, Kernel.STANDARD_PRECISION, 10000);
+		long[] ret = new long[2];
+		ret[0] = bigFraction.getNumeratorAsLong();
+		ret[1] = bigFraction.getDenominatorAsLong();
+		return ret;
+	}
+
+	/*
 	public long[] doubleToRational(double x) {
 		long[] ret = new long[2];
 		ret[1] = precision();
@@ -1314,6 +1324,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 		}
 		return ret;
 	}
+    */
 
 	/**
 	 * Formats the value of x using the currently set NumberFormat or
