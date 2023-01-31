@@ -5,12 +5,16 @@
 # In this text file the correct outputs are listed. They can be obtained by
 # reading off the expanded coefficients of the implicit curve in the DEBUG
 # log while running GeoGebra. (That is, the coefficients of the factors are
-# ignored. They can be essential in the plotting since componentwise
+# ignored. They can be, however, essential in the plotting since componentwise
 # plotting is always more accurate.) Empty lines and lines beginning with a
 # hash mark (#) are allowed in this file to insert comments, otherwise the
 # database consists of lines which start with the name of the .ggb test
 # file (without extension) and then the coefficients. See also
 # GeoImplicitCurve and CASgiac.getBivarPolyCoefficientsAll.
+# Multiple entries are also allowed for the same test case. In some cases
+# the output can be different if the algorithms slightly differ or
+# the approximations in some steps are not the same. In these cases
+# we accept each output.
 
 ## Examples from "Variations on implicit loci in a triangle"
 ## at https://www.geogebra.org/m/gH3b2Vwa
@@ -168,6 +172,7 @@ Surynkova-kinematic-1 5,5,85272630900043404489579777389585761,130699597612213010
 Surynkova-kinematic-1-integer 5,5,94864,-87584,-33288,16984,37249,-174832,276976,-92428,-129696,0,-980,2744,179242,0,0,-12348,-98784,0,0,0,21609,0,0,0,0
 Velez-rectangle-area-perimeter 5,5,0,0,0,0,16,0,0,0,0,0,0,0,-32,0,-8,0,0,0,0,0,16,0,-8,0,1
 always 1,1,0
+analemma-dilate 5,5,-80,32,49,-2,1,64,-60,-4,0,0,4,-2,2,0,0,-4,0,0,0,0,1,0,0,0,0
 angle-bisector-discrete 5,5,897672815224918209,-119743596167034000,199190393045000000,-513600000000000,500000000000000,-922643517996012000,12869454120000000,-21951700000000000,0,0,282950524805000000,-513600000000000,1000000000000000,0,0,-21951700000000000,0,0,0,0,500000000000000,0,0,0,0
 # Singular has a different rounding method, hence the coefficients are different:
 angle-bisector-discrete 5,5,14116415780827874885227258532,-1882707712237877725686782668,3132306483166243523512024681,-8075594292208091355686820,7862599935568467505988100,-14508979094174038970480038352,202345777271698141521138240,-345195249135717329169163200,0,0,4449471569008193511111835321,-8075594292208091355686820,15725199871136935011976200,0,0,-345195249135717329169163200,0,0,0,0,7862599935568467505988100,0,0,0,0
