@@ -1301,7 +1301,8 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 * @return numerator and denominator
 	 */
 	public long[] doubleToRational(double d) {
-		BigFraction bigFraction = new BigFraction(d, Kernel.STANDARD_PRECISION, 10000);
+		long p = precision();
+		BigFraction bigFraction = new BigFraction(d, 1.0d/precision(), 10000);
 		long[] ret = new long[2];
 		ret[0] = bigFraction.getNumeratorAsLong();
 		ret[1] = bigFraction.getDenominatorAsLong();
