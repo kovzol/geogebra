@@ -1416,7 +1416,7 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 
 	String getTarskiGGBOutput(String command) {
 		Log.debug(command);
-		String result = App.tarski.eval(command);
+		String result = App.tarski.evalCached(command);
 		result = TarskiToGGB(result);
 		String [] resultlines = result.split("\n");
 		result = resultlines[resultlines.length - 1];

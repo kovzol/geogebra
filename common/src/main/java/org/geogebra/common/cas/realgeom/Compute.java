@@ -450,7 +450,7 @@ public class Compute {
 
 		appendResponse("LOG: code=" + code);
 
-		result = k.getApplication().tarski.eval(code);
+		result = k.getApplication().tarski.evalCached(code);
 
 		if (result.contains("\n")) {
 			String [] resultlines = result.split("\n");
@@ -662,7 +662,7 @@ public class Compute {
 		int expectedLines = 4;
 
 		appendResponse("LOG: code=" + code);
-		result = k.getApplication().tarski.eval(code);
+		result = k.getApplication().tarski.evalCached(code);
 
 		if (result.contains("\n")) {
 			String [] resultlines = result.split("\n");

@@ -19,6 +19,17 @@ public abstract class Tarski {
 		return "?";
 	}
 
+	public MaxSizeHashMap<String, String> tarskiResultCache = new MaxSizeHashMap<>(5000);
+
+	public String evalCached (String command) {
+		if (tarskiResultCache.containsKey(command)) {
+			return tarskiResultCache.get(command);
+		}
+		String ret = eval(command);
+		tarskiResultCache.put(command, ret);
+		return ret;
+	}
+
 	public boolean reinit(int timeout) {
 		// Will be overridden by web and desktop
 		return false;

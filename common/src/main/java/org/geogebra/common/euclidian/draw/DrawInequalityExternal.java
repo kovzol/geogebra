@@ -105,7 +105,7 @@ public class DrawInequalityExternal extends Drawable {
 				+ ymin + " " + " " + ymax + " -\" '(ord (x y))) ";
 		Log.debug(command);
 		startTime = (int) (UtilFactory.getPrototype().getMillisecondTime());
-		String result = function.getApp().tarski.eval(command);
+		String result = function.getApp().tarski.evalCached(command);
 		debugElapsedTime();
 
 		// Tarski returns the SVG as a widthxheight image, but the coordinates are
