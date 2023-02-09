@@ -223,6 +223,10 @@ public class AlgoDilate extends AlgoTransformation
 			if (num != null && num.isNumberValue() && num.isDrawable()) {
 				cachable = false; // this may be a slider or a non-constant value, so don't cache
 			}
+			AlgoElement ae = num.getParentAlgorithm();
+			if (ae instanceof AlgoDependentNumber) {
+				cachable = false; // this is a dependent expression, so don't cache
+			}
 		}
 
 		if (botanaPolynomials != null && cachable) {
