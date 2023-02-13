@@ -2409,7 +2409,8 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 
 		// We have a label. Let's try stepwise discovery then!
 		// boolean discovery = this.getApplication().getSettings().getEuclidian(1).getStepwiseDiscovery();
-		if (performStepwiseDiscovery && this instanceof GeoPoint) {
+		if (performStepwiseDiscovery && this instanceof GeoPoint && getParentAlgorithm() != null) {
+			// Free points must be skipped.
 			boolean discovery = this.getApp().getSettings().getEuclidian(1).getStepwiseDiscovery();
 			if (discovery && !kernel.isSilentMode()) {
 				Discover d = new Discover(this.getApp(), this);

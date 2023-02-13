@@ -161,14 +161,6 @@ public class Discover {
 			return false;
 		}
 
-		AlgoElement ae = p0.getGeoPoint().getParentAlgorithm();
-		if (ae == null) {
-			// This is a free point. Clearly, it will not result in new discovery.
-			// So we quit discovery immediately.
-			finish(p);
-			return false;
-		}
-
 		percent = 5.0;
 		updatePercentInfo(p);
 
