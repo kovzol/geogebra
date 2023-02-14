@@ -806,6 +806,9 @@ public class FunctionNVar extends ValidExpression
 		}
 		int b = initIneqs(fe, ineqs, false);
 		ineqs.recomputeSize();
+		if (b==2) {
+			polynomial = true;
+		}
 		return b;
 	}
 
