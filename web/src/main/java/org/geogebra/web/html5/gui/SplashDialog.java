@@ -82,7 +82,7 @@ public class SplashDialog extends SimplePanel {
 
 			final DecoratedPopupPanel popup = new DecoratedPopupPanel();
 			popup.add(logo);
-			popup.setSize("427px", "527px");
+			popup.setSize("427px", /* "527px" */ "120px");
 			popup.center();
 			popup.show();
 			// Now here i want to wait for like 5 secs and then
@@ -95,7 +95,7 @@ public class SplashDialog extends SimplePanel {
 				}
 			};
 
-			timer.schedule(5000);
+			timer.schedule(/* 5000 */ 2000);
 
 		} else {
 			Timer afterConstructor = new Timer() {
