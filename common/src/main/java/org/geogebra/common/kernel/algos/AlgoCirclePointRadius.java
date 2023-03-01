@@ -230,9 +230,9 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 			} else { // fractional
 				q = kernel.doubleToRational(x);
 			}
-			botanaPolynomials[k] = new PPolynomial((int) q[0])
+			botanaPolynomials[k] = new PPolynomial(q[0])
 					.subtract(new PPolynomial(radiusBotanaVars[0])
-							.multiply(new PPolynomial((int) q[1])));
+							.multiply(new PPolynomial(q[1])));
 			// Only for integers (this is already handled above, just for the record):
 			// botanaPolynomials[k] = (new PPolynomial(radiusBotanaVars[0])
 			//         .subtract(new PPolynomial((long)(num.getValue()))));

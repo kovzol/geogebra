@@ -269,10 +269,10 @@ public class AlgoDilate extends AlgoTransformation
 			PPolynomial outX = new PPolynomial(botanaVars[0]);
 			PPolynomial outY = new PPolynomial(botanaVars[1]);
 
-			botanaPolynomials[0] = ((ax.subtract(sx)).multiply(new PPolynomial((int) q[0])))
-					.subtract((outX.subtract(sx)).multiply(new PPolynomial((int) q[1])));
-			botanaPolynomials[1] = ((ay.subtract(sy)).multiply(new PPolynomial((int) q[0])))
-					.subtract((outY.subtract(sy)).multiply(new PPolynomial((int) q[1])));
+			botanaPolynomials[0] = ((ax.subtract(sx)).multiply(new PPolynomial(q[0])))
+					.subtract((outX.subtract(sx)).multiply(new PPolynomial(q[1])));
+			botanaPolynomials[1] = ((ay.subtract(sy)).multiply(new PPolynomial(q[0])))
+					.subtract((outY.subtract(sy)).multiply(new PPolynomial(q[1])));
 
 			return botanaPolynomials;
 		}

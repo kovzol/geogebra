@@ -2736,12 +2736,12 @@ public class ProverBotanasMethod {
 				long[] c = k.doubleToRational(P.get(3));
 
 				// Setting up two equations for the two points:
-				PPolynomial a0 = new PPolynomial((int) a[0]);
-				PPolynomial a1 = new PPolynomial((int) a[1]);
-				PPolynomial b0 = new PPolynomial((int) b[0]);
-				PPolynomial b1 = new PPolynomial((int) b[1]);
-				PPolynomial c0 = new PPolynomial((int) c[0]);
-				PPolynomial c1 = new PPolynomial((int) c[1]);
+				PPolynomial a0 = new PPolynomial(a[0]);
+				PPolynomial a1 = new PPolynomial(a[1]);
+				PPolynomial b0 = new PPolynomial(b[0]);
+				PPolynomial b1 = new PPolynomial(b[1]);
+				PPolynomial c0 = new PPolynomial(c[0]);
+				PPolynomial c1 = new PPolynomial(c[1]);
 				PPolynomial xp = new PPolynomial(vars[0]);
 				PPolynomial yp = new PPolynomial(vars[1]);
 				PPolynomial xq = new PPolynomial(vars[2]);
@@ -3029,9 +3029,9 @@ public class ProverBotanasMethod {
 						q = k.doubleToRational(x);
 					}
 					as.freeVariables.remove(vars[0]);
-					PPolynomial ph = new PPolynomial((int) q[0])
+					PPolynomial ph = new PPolynomial(q[0])
 							.subtract(new PPolynomial(vars[0])
-									.multiply(new PPolynomial((int) q[1])));
+									.multiply(new PPolynomial(q[1])));
 					as.addPolynomial(ph);
 					Log.debug("Extra poly for x of "
 							+ freePoint.getLabelSimple() + ": " + ph);
