@@ -18,6 +18,8 @@ the Free Software Foundation.
 
 package org.geogebra.common.kernel.algos;
 
+import java.math.BigInteger;
+
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.StringTemplate;
@@ -218,24 +220,16 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 		if (!(num.getParentAlgorithm() instanceof AlgoDependentNumber) &&
 				num.isNumberValue()) {
 			k++;
-			long[] q = new long[2]; // borrowed from ProverBotanasMethod
+			BigInteger[] q = new BigInteger[2]; // borrowed from ProverBotanasMethod
 			double x = num.getValue();
 			/*
 			 * Use the fraction P/Q according to the current kernel
 			 * setting. We use the P/Q=x <=> P-Q*x=0 equation.
 			 */
-			if ((x % 1) == 0) { // integer
-				q[0] = (long) x;
-				q[1] = 1L;
-			} else { // fractional
-				q = kernel.doubleToRational(x);
-			}
+			q = kernel.doubleToRational(x);
 			botanaPolynomials[k] = new PPolynomial(q[0])
 					.subtract(new PPolynomial(radiusBotanaVars[0])
 							.multiply(new PPolynomial(q[1])));
-			// Only for integers (this is already handled above, just for the record):
-			// botanaPolynomials[k] = (new PPolynomial(radiusBotanaVars[0])
-			//         .subtract(new PPolynomial((long)(num.getValue()))));
 		}
 
 		return botanaPolynomials;

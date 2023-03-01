@@ -2731,9 +2731,9 @@ public class ProverBotanasMethod {
 				 * a0*b1*c1*x+a1*b0*c1*y+a1*b1*c0=0
 				 */
 				Coords P = l.getCoords();
-				long[] a = k.doubleToRational(P.get(1));
-				long[] b = k.doubleToRational(P.get(2));
-				long[] c = k.doubleToRational(P.get(3));
+				BigInteger[] a = k.doubleToRational(P.get(1));
+				BigInteger[] b = k.doubleToRational(P.get(2));
+				BigInteger[] c = k.doubleToRational(P.get(3));
 
 				// Setting up two equations for the two points:
 				PPolynomial a0 = new PPolynomial(a[0]);
@@ -2758,7 +2758,7 @@ public class ProverBotanasMethod {
 				as.addPolynomial(ph);
 				Log.debug("Extra poly 2 for " + l.getLabelSimple() + ": " + ph);
 
-				if (a[0] != 0) {
+				if (!(a[0].equals(BigInteger.ZERO))) {
 					/*
 					 * This equation is not horizontal, so y can be arbitrarily
 					 * chosen. Let's choose y=0 and y=1 for the 2 points.
@@ -3015,19 +3015,15 @@ public class ProverBotanasMethod {
 						as.removeGeoPolys(freePoint);
 					}
 				}
-				long[] q = new long[2]; // P and Q for P/Q
+				BigInteger[] q = new BigInteger[2]; // P and Q for P/Q
 				if (createX) {
 					double x = ((GeoPoint) freePoint).getInhomX();
 					/*
 					 * Use the fraction P/Q according to the current kernel
 					 * setting. We use the P/Q=x <=> P-Q*x=0 equation.
 					 */
-					if ((x % 1) == 0) { // integer
-						q[0] = (long) x;
-						q[1] = 1L;
-					} else { // fractional
-						q = k.doubleToRational(x);
-					}
+					q = k.doubleToRational(x);
+
 					as.freeVariables.remove(vars[0]);
 					PPolynomial ph = new PPolynomial(q[0])
 							.subtract(new PPolynomial(vars[0])
@@ -3042,16 +3038,12 @@ public class ProverBotanasMethod {
 					 * Use the fraction P/Q according to the current kernel
 					 * setting. We use the P/Q=x <=> P-Q*x=0 equation.
 					 */
-					if ((y % 1) == 0) { // integer
-						q[0] = (long) y;
-						q[1] = 1L;
-					} else { // fractional
-						q = k.doubleToRational(y);
-					}
+					q = k.doubleToRational(y);
+
 					as.freeVariables.remove(vars[1]);
-					PPolynomial ph = new PPolynomial((int) q[0])
+					PPolynomial ph = new PPolynomial(q[0])
 							.subtract(new PPolynomial(vars[1])
-									.multiply(new PPolynomial((int) q[1])));
+									.multiply(new PPolynomial(q[1])));
 					as.addPolynomial(ph);
 					Log.debug("Extra poly for y of "
 							+ freePoint.getLabelSimple() + ": " + ph);

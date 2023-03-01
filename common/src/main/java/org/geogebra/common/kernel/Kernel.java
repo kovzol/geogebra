@@ -1,5 +1,7 @@
 package org.geogebra.common.kernel;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -1300,13 +1302,20 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            input number to be rationalized
 	 * @return numerator and denominator
 	 */
-	public long[] doubleToRational(double d) {
-		long p = precision();
-		BigFraction bigFraction = new BigFraction(d, 1.0d/precision(), 10000);
-		long[] ret = new long[2];
-		ret[0] = bigFraction.getNumeratorAsLong();
-		ret[1] = bigFraction.getDenominatorAsLong();
-		return ret;
+
+	public BigInteger[] doubleToRational(double d) {
+		BigInteger[] ret = new BigInteger[2];
+		try {
+			long p = precision();
+			BigFraction bigFraction = new BigFraction(d, 1.0d / precision(), 10000);
+			ret[0] = bigFraction.getNumerator();
+			ret[1] = bigFraction.getDenominator();
+			return ret;
+		} catch (Exception e) { // This can happen for very big numbers.
+			ret[0] = BigDecimal.valueOf(d).toBigInteger(); // Try to use the nearest integer.
+			ret[1] = BigInteger.ONE;
+			return ret;
+		}
 	}
 
 	/*
@@ -1399,8 +1408,8 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 			if (isLongInteger) {
 				return Long.toString(rounded);
 			}
-			long[] l = doubleToRational(x);
-			if (l[1] == 1) {
+			BigInteger[] l = doubleToRational(x);
+			if (l[1].equals(BigInteger.ONE)) {
 				return l[0] + "";
 			}
 			return "((" + l[0] + ")/" + l[1] + ")"; // we assume that the denominator is positive

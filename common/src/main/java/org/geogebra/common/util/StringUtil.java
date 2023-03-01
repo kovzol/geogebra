@@ -1,5 +1,6 @@
 package org.geogebra.common.util;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
@@ -1059,7 +1060,7 @@ public class StringUtil extends com.himamis.retex.editor.share.input.Character {
 		if ((tpl == StringTemplate.giacTemplateInternal) || (tpl == StringTemplate.tarskiTemplate) && kernel != null) {
 			// GGB-641 this is just for ProverBotanasMethod
 			sb1.append("(");
-			long[] l = kernel.doubleToRational(x);
+			BigInteger[] l = kernel.doubleToRational(x);
 			sb1.append("(" + l[0] + ")/" + l[1]); // we assume that the denominator is positive
 			sb1.append(')');
 		} else {

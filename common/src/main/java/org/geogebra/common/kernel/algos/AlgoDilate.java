@@ -18,6 +18,8 @@ the Free Software Foundation.
 
 package org.geogebra.common.kernel.algos;
 
+import java.math.BigInteger;
+
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.StringTemplate;
@@ -235,18 +237,13 @@ public class AlgoDilate extends AlgoTransformation
 
 		PVariable[] vS = ((GeoPoint) S.toGeoElement()).getBotanaVars(S);
 
-		long[] q = new long[2]; // borrowed from ProverBotanasMethod
+		BigInteger[] q = new BigInteger[2]; // borrowed from ProverBotanasMethod
 		double x = num.getValue();
 		/*
 		 * Use the fraction P/Q according to the current kernel
 		 * setting. We use the P/Q=x <=> P-Q*x=0 equation.
 		 */
-		if ((x % 1) == 0) { // integer
-			q[0] = (long) x;
-			q[1] = 1L;
-		} else { // fractional
-			q = kernel.doubleToRational(x);
-		}
+		q = kernel.doubleToRational(x);
 
 		PPolynomial sx = new PPolynomial(vS[0]);
 		PPolynomial sy = new PPolynomial(vS[1]);
@@ -302,14 +299,14 @@ public class AlgoDilate extends AlgoTransformation
 			PPolynomial outpX = new PPolynomial(botanaVars[2]);
 			PPolynomial outpY = new PPolynomial(botanaVars[3]);
 
-			botanaPolynomials[0] = ((aox.subtract(sx)).multiply(new PPolynomial((int) q[0])))
-					.subtract((outoX.subtract(sx)).multiply(new PPolynomial((int) q[1])));
-			botanaPolynomials[1] = ((aoy.subtract(sy)).multiply(new PPolynomial((int) q[0])))
-					.subtract((outoY.subtract(sy)).multiply(new PPolynomial((int) q[1])));
-			botanaPolynomials[2] = ((apx.subtract(sx)).multiply(new PPolynomial((int) q[0])))
-					.subtract((outpX.subtract(sx)).multiply(new PPolynomial((int) q[1])));
-			botanaPolynomials[3] = ((apy.subtract(sy)).multiply(new PPolynomial((int) q[0])))
-					.subtract((outpY.subtract(sy)).multiply(new PPolynomial((int) q[1])));
+			botanaPolynomials[0] = ((aox.subtract(sx)).multiply(new PPolynomial(q[0])))
+					.subtract((outoX.subtract(sx)).multiply(new PPolynomial(q[1])));
+			botanaPolynomials[1] = ((aoy.subtract(sy)).multiply(new PPolynomial(q[0])))
+					.subtract((outoY.subtract(sy)).multiply(new PPolynomial(q[1])));
+			botanaPolynomials[2] = ((apx.subtract(sx)).multiply(new PPolynomial(q[0])))
+					.subtract((outpX.subtract(sx)).multiply(new PPolynomial(q[1])));
+			botanaPolynomials[3] = ((apy.subtract(sy)).multiply(new PPolynomial(q[0])))
+					.subtract((outpY.subtract(sy)).multiply(new PPolynomial(q[1])));
 
 			return botanaPolynomials;
 		}
