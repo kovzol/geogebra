@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.cas.realgeom.RealGeomWebService;
 import org.geogebra.common.cas.singularws.SingularWebService;
+import org.geogebra.common.kernel.CASGenericInterface;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.move.events.BaseEvent;
@@ -513,6 +514,14 @@ public class GeoGebraMenuBar extends JMenuBar implements EventRenderable {
 		sb.append("MB, ");
 		sb.append(App.getCASVersionString());
 
+		CASGenericInterface c = app.getKernel().getGeoGebraCAS().getCurrentCAS();
+		try {
+			String giacVersion = c.evaluateRaw("version()");
+			sb.append("<br>" + giacVersion);
+		} catch (Throwable t) {
+			// do nothing
+		}
+
 		String v;
 		SingularWebService singularWS = app.getSingularWS();
 
@@ -529,8 +538,13 @@ public class GeoGebraMenuBar extends JMenuBar implements EventRenderable {
 		}
 
 		sb.append(")<br>");
-
 		sb.append(GeoGebraConstants.BUILD_DATE);
+
+		String tarskiVersion = App.tarski.eval("(version)");
+		int tvl = tarskiVersion.length();
+		tarskiVersion = tarskiVersion.substring(1, tvl - 6);
+
+		sb.append("<br>and " + tarskiVersion);
 
 		// license
 		String text = app.loadTextFile(AppD.LICENSE_FILE);
