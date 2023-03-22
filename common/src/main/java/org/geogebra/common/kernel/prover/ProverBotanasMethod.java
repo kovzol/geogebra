@@ -1846,13 +1846,13 @@ public class ProverBotanasMethod {
 				rgResult = Compute.euclideanSolverProve(geoStatement.kernel, 4, paramLookup(rgs, "ineq"),
 								paramLookup(rgs, "ineqs"), paramLookup(rgs, "polys"),
 								paramLookup(rgs, "triangles"), paramLookup(rgs, "vars"),
-						paramLookup(rgs, "posvariables"));
+						paramLookup(rgs, "posvariables"), freeVars);
 
 			}
 
 			rgResult = rewriteResult(rgResult);
 
-			if (rgResult == null) {
+			if (rgResult == null || rgResult.equals("")) {
 				result = ProofResult.UNKNOWN;
 				return;
 			}
@@ -1863,9 +1863,32 @@ public class ProverBotanasMethod {
 			}
 
 			if (rgResult.equals("true")) {
-				// Consider checking if we can say something like true if some
-				// non-degeneracy conditions hold... TODO
 				result = ProofResult.FALSE;
+				return;
+			}
+
+			if (!(rgResult.contains(" = ") || rgResult.contains(" > ") || rgResult.contains(" < ")
+				|| rgResult.contains(" >= ") || rgResult.contains(" <= ") || rgResult.contains(" \\/ "))) {
+				// If the result is a conjunction of NOT-EQUAL operations, return false.
+				// In this case the statement is true under some condition which is a disjunction
+				// of EQUAL operations which has a lower dimension as the variable space.
+				result = ProofResult.FALSE;
+				return;
+			}
+
+			// We could process the output here, maybe the conditions can be read off somehow... TODO
+
+			// In general it is difficult to tell if the negation of the result is "small enough".
+			// Here we handle some special cases and leave the decision of the general case
+			// for future work.
+			String rgResultP = geoStatement.getKernel().getApplication().tarski.evalCached("(t-neg [" + rgResult + "])");
+			rgResultP = Compute.getTarskiOutput(rgResultP);
+			// A special case: If there is no conjunction and there is at least one inequality (<, <=, >, >=)
+			// in the "positive" result, then the statement holds in a "large enough" set:
+			if (!(rgResultP.contains(" /\\ ")) && (rgResultP.contains(" > ") || rgResultP.contains(" < ")
+					|| rgResultP.contains(" >= ") || rgResultP.contains(" <= "))) {
+				// e.g. 2 v5 - 3 >= 0 \/ 2 v5 + 1 <= 0
+				result = ProofResult.TRUE_ON_COMPONENTS;
 				return;
 			}
 
