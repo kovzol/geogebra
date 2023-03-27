@@ -719,6 +719,7 @@ public class Compute {
 		// "; NOTE: epc doesn't handle edge cases like F := [true] / [false] / [ex x[true]] / [ex x[false]]";
 		 */
 
+		/*
 		return "; (process F) - F is an existentially quantified formula\n"
 				+ "; 1. Let F' be the quantifier-free part of F and do BBWB simplification on F'\n"
 				+ "; 2. if result is FALSE, return\n"
@@ -761,7 +762,50 @@ public class Compute {
 				+ "; 2. Lp = list resulting from applying process to each of the elements of L and collecting the result\n"
 				+ "; 3. \"or\" the elements of Lp all together and simplify the result\n"
 				+ "(def epc (lambda (F) (normalize (bin-reduce t-or (map (lambda (G) (if (equal? (t-type G) 6) (process G) G)) (expand F))))))\n";
+		 */
 
+		return "; epcx - version 1.0 2023-03-26 - Chris Brown\n"
+				+ "; (process F) - F is an existentially quantified formula\n"
+				+ "; 1. Let F' be the quantifier-free part of F and do BBWB simplification on F'\n"
+				+ "; 2. if result is FALSE, return \n"
+				+ "; 3. do \"quantified formula rewrite\", which is repeated linear substitutions for quantified variables followed by simplifications\n"
+				+ ";    which results in a disjunction of quantified formulas\n"
+				+ "; 4. call qepcad on each formula independently to eliminate quanfied variables and return a list of the resulting formulas\n"
+				+ "(def process\n"
+				+ "     (lambda (F)\n"
+				+ "       (def L (getargs F))\n"
+				+ "       (def V (get L 0 0 1))\n"
+				+ "       (def B (normalize (get L 1)))\n"
+				+ "       (if (equal? B [false])\n"
+				+ "          [false]\n"
+				+ "          (\n"
+				+ "            (lambda ()\n"
+				+ "              (def G (qfr (t-ex V B)))\n"
+				+ "              (if (equal? (t-type G) 1)\n"
+				+ "                G\n"
+				+ "                (if (equal? (t-type G) 6)\n"
+				+ "        (qepcad-api-call G 'T)\n"
+				+ "        (if (equal? (t-type G) 5)\n"
+				+ "     (qepcad-api-call (bin-reduce t-or (map (lambda (H) (qepcad-api-call (t-ex V H) 'T)) (getargs G))) 'T) (qepcad-api-call G 'T)))))))))\n"
+				+ "\n"
+				+ "; (expand F) - F is an existentially quantified formula\n"
+				+ "; 1. Take the quantifier-free part of F and expand into DNF F1 \\/ F2 \\/ ... \\/ Fk\n"
+				+ "; 2. For each Fi reintroduce the quantified variables from F and call the result Gi\n"
+				+ "; 3. Return (G1 G2 ... Gk)\n"
+				+ "(def expand\n"
+				+ "     (lambda (F)\n"
+				+ "       (def A (getargs F))\n"
+				+ "       (def V (get A 0 0 1))\n"
+				+ "       (def G (get A 1))\n"
+				+ "       (def X (dnf G))\n"
+				+ "       (def L (if (equal? (t-type X) 5) (getargs X) (list X)))\n"
+				+ "       (map (lambda (f) (t-ex V f)) L) ))\n"
+				+ "\n"
+				+ "; (epc F) - F is an existentially quantified formula\n"
+				+ "; 1. L = (expand F)\n"
+				+ "; 2. Lp = list resulting from applying process to each of the elements of L and collecting the result\n"
+				+ "; 3. \"or\" the elements of Lp all together and simplify the result\n"
+				+ "(def epc (lambda (F) (normalize (bin-reduce t-or (map (lambda (G) (if (equal? (t-type G) 6) (process G) G)) (expand F))))))";
 	}
 
 	// Taken from RealGeom's ExternalCAS:
