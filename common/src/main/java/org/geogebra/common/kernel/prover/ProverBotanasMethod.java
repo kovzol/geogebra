@@ -76,6 +76,8 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.himamis.retex.editor.share.util.Unicode;
 
+import jdk.nashorn.internal.runtime.Debug;
+
 /**
  * A prover which uses Francisco Botana's method to prove geometric theorems.
  * 
@@ -1883,10 +1885,11 @@ public class ProverBotanasMethod {
 			// for future work.
 			String rgResultP = geoStatement.getKernel().getApplication().tarski.evalCached("(t-neg [" + rgResult + "])");
 			rgResultP = Compute.getTarskiOutput(rgResultP);
-			// A special case: If there is no conjunction and there is at least one inequality (<, <=, >, >=)
+			// Log.debug("resultP=" + rgResultP);
+			// A special case: If there is no conjunction and there is at least one inequality (<, <=, >, >=, /=)
 			// in the "positive" result, then the statement holds in a "large enough" set:
 			if (!(rgResultP.contains(" /\\ ")) && (rgResultP.contains(" > ") || rgResultP.contains(" < ")
-					|| rgResultP.contains(" >= ") || rgResultP.contains(" <= "))) {
+					|| rgResultP.contains(" >= ") || rgResultP.contains(" <= ") || rgResultP.contains(" /= "))) {
 				// e.g. 2 v5 - 3 >= 0 \/ 2 v5 + 1 <= 0
 				result = ProofResult.TRUE_ON_COMPONENTS;
 				return;
