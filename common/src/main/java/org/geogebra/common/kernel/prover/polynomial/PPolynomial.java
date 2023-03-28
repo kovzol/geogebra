@@ -468,7 +468,13 @@ public class PPolynomial implements Comparable<PPolynomial> {
 			HashSet<PVariable> extraVars, Boolean free,
 			Set<PVariable> freeVariables) {
 		StringBuilder sb = new StringBuilder();
-		HashSet<PVariable> vars = getVars(polys);
+		HashSet<PVariable> vars = new HashSet<>();
+		if (polys.length != 0) {
+			vars = getVars(polys);
+		} else {
+			// If no polynomials are given, we are still interested in the variables.
+			vars.addAll(freeVariables);
+		}
 		if (extraVars != null)
 			vars.addAll(extraVars);
 		Iterator<PVariable> it = vars.iterator();
