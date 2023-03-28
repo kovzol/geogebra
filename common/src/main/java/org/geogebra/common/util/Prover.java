@@ -402,7 +402,7 @@ public abstract class Prover {
 				} else {
 					s = sb(loc.getCommand(condition));
 				}
-				s.append("[");
+				s.append("(");
 				for (int i = 0; i < geos.length; ++i) {
 					if (i > 0) {
 						s.append(',');
@@ -424,7 +424,7 @@ public abstract class Prover {
 						s.append(Unicode.ELLIPSIS);
 					}
 				}
-				s.append("]");
+				s.append(")");
 			}
 			return s.toString();
 		}
