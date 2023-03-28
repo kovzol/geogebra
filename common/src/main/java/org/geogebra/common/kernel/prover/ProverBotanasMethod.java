@@ -1883,6 +1883,18 @@ public class ProverBotanasMethod {
 			// In general it is difficult to tell if the negation of the result is "small enough".
 			// Here we handle some special cases and leave the decision of the general case
 			// for future work.
+
+			if (ineqs.size() > 0) {
+				// There may be some assumptions that disallow a simple negation.
+				// For example, we assume that a point is on a segment (not just on a line),
+				// and this should be added as a conjunctive part to the negation. TODO.
+				// Now we return with UNKNOWN.
+				Log.debug("There are hypotheses that are of form inequality.");
+				result = ProofResult.UNKNOWN;
+				return;
+			}
+
+			// Here we use the fact that the are not inequality assumptions.
 			String rgResultP = geoStatement.getKernel().getApplication().tarski.evalCached("(t-neg [" + rgResult + "])");
 			rgResultP = Compute.getTarskiOutput(rgResultP);
 			// Log.debug("resultP=" + rgResultP);
