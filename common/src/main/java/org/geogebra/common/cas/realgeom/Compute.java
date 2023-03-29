@@ -813,7 +813,7 @@ public class Compute {
 				+ "              (if (equal? (t-type G) 1) ; is G a T/F constant ?\n"
 				+ "                G\n"
 				+ "                (if (equal? (t-type G) 6) ; is G of the form [ex x1,...,xn [ Conjunction ]]?\n"
-				+ "                   (qepcad-simplify (qepcad-ex-elim G 'E) 'T) ; inner call does QE, outer call simplifies result (e.g. if there are assumptions)\n"
+				+ "                   (qepcad-simplify (qepcad-ex-elim G 'T) 'T) ; inner call does QE, outer call simplifies result (e.g. if there are assumptions)\n"
 				+ "                   (if (equal? (t-type G) 5) ; is G a disjunction of formulas?\n"
 				+ "                       (qepcad-simplify (bin-reduce t-or (map (lambda (H) (qepcad-ex-elim H 'T)) (getargs G))) 'T)\n"
 				+ "                        ; quantifier-free atom or conjunction\n"
