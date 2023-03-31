@@ -60,8 +60,10 @@ dependencies {
         files(project(':ggbjdk').sourceSets.main.java.srcDirs),
         files(project(':editor-web').sourceSets.main.allSource.srcDirs),
         files(project(':keyboard-web').sourceSets.main.allSource.srcDirs),
-        "fr.ujf-grenoble:giac-gwt:69820", // FIXME: this is now hardcoded (new official version uses different libraries)
-        "fr.ujf-grenoble:giac-gwt:69820:sources",
+        // "fr.ujf-grenoble:giac-gwt:69820", // FIXME: this is now hardcoded (new official version uses different libraries)
+        // "fr.ujf-grenoble:giac-gwt:69820:sources",
+        "com.github:giac-gwt:$javaGiacVersion",
+        "com.github:giac-gwt-sources:$javaGiacVersion",
         "com.google.gwt:gwt-dev:$gwtCompilerVersion"
 
     testCompile "junit:junit:$junitVersion",
