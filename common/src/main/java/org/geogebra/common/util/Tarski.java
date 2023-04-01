@@ -26,6 +26,12 @@ public abstract class Tarski {
 			return tarskiResultCache.get(command);
 		}
 		String ret = eval(command);
+
+		// Handle erroneous results:
+		if (ret.contains("Exception")) {
+			ret = ""; // TODO: consider calling reinit()
+		}
+
 		tarskiResultCache.put(command, ret);
 		return ret;
 	}

@@ -26,6 +26,8 @@ public class TarskiW extends Tarski {
 
 	public static native String tarskiEval(String command) /*-{
 	    var output = $wnd.TARSKIEVAL(command);
+	    console.log("tarski < " + command);
+	    console.log("tarski > " + output);
 	    return output;
 	}-*/;
 
