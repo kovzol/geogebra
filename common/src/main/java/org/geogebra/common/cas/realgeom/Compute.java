@@ -27,7 +27,7 @@ public class Compute {
 			return cas.evaluateRaw(command);
 		} catch (Throwable e) {
 			Log.error("Error in RealGeom/Compute/executeGiac: input=" + command);
-			return "";
+			return "ERROR";
 		}
 	}
 
@@ -350,7 +350,12 @@ public class Compute {
 
 		String ineqs2 = "";
 		if (!ineqs.equals("")) {
-			ineqs2 = executeGiac("subst([" + ineqs + "],[" + varsubst + "])");
+			// quote is a workaround here, because gwt-giac may crash on simple inequalities
+			// like x+x*y>0 -- see also some other instances below
+			ineqs2 = executeGiac("subst(quote([" + ineqs + "]),[" + varsubst + "])");
+			if (ineqs2.equals("ERROR")) {
+				return "GIAC ERROR";
+			}
 			ineqs2 = removeHeadTail(ineqs2, 1);
 		}
 
@@ -525,11 +530,17 @@ public class Compute {
 
 		String ineqs2 = "";
 		if (!ineqs.equals("")) {
-			ineqs2 = executeGiac("subst([" + ineqs + "],[" + varsubst + "])");
+			ineqs2 = executeGiac("subst(quote([" + ineqs + "]),[" + varsubst + "])");
+			if (ineqs2.equals("ERROR")) {
+				return "GIAC ERROR";
+			}
 			ineqs2 = removeHeadTail(ineqs2, 1);
 		}
 
-		String ineq2 = executeGiac("subst([" + ineq + "],[" + varsubst + "])");
+		String ineq2 = executeGiac("subst(quote([" + ineq + "]),[" + varsubst + "])");
+		if (ineq2.equals("ERROR")) {
+			return "GIAC ERROR";
+		}
 		ineq2 = removeHeadTail(ineq2, 1);
 
 		appendResponse("LOG: after substitution, polys=" + polys2+ ", ineqs=" + ineqs2 + ", ineq=" + ineq2);
@@ -629,7 +640,10 @@ public class Compute {
 			}
 		}
 		if (!substs.equals("")) {
-			ineq = executeGiac("subst([" + ineq + "],[" + substs + "])");
+			ineq = executeGiac("subst(quote([" + ineq + "]),[" + substs + "])");
+			if (ineq.equals("ERROR")) {
+				return "GIAC ERROR";
+			}
 			ineq = removeHeadTail(ineq, 1);
 		}
 		// If ineq contains "true", an internal issue in Tarski's code prevents getting
