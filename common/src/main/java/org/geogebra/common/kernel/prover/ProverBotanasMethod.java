@@ -365,7 +365,7 @@ public class ProverBotanasMethod {
 
 		private boolean disallowFixSecondPoint = false;
 
-		private String polys, elimVars, freeVars, freeVarsWithoutAlmostFree, elimVarsWithAlmostFree;
+		private String polys, elimVars, freeVars, freeVarsWithAlmostFree, freeVarsWithoutAlmostFree, elimVarsWithAlmostFree;
 		private String rgVars; // all variables that are required for real geometry
 		private PPolynomial[] thesisFactors;
 		private TreeMap<GeoElement, PPolynomial[]> geoPolys = new TreeMap<>();
@@ -528,6 +528,10 @@ public class ProverBotanasMethod {
 			return freeVarsWithoutAlmostFree;
 		}
 
+		public String getFreeVarsWithAlmostFree() {
+			return freeVarsWithAlmostFree;
+		}
+
 		/**
 		 * Return all variables for the RG subsystem. Use
 		 * computeStrings() before using this method.
@@ -676,6 +680,8 @@ public class ProverBotanasMethod {
 		public void computeStrings() {
 			TreeSet<PVariable> dependentVariables = new TreeSet<>();
 			TreeSet<PVariable> dependentVariablesWithAlmostFree = new TreeSet<>();
+			TreeSet<PVariable> freeVariablesWithAlmostFree = new TreeSet<>();
+			freeVariablesWithAlmostFree.addAll(freeVariables);
 
 			PPolynomial[] eqSystem = this.getPolynomials()
 					.toArray(new PPolynomial[this.getPolynomials().size()]);
@@ -691,6 +697,7 @@ public class ProverBotanasMethod {
 				}
 				if (almostFreeVariables.contains(variable)) {
 					dependentVariablesWithAlmostFree.add(variable);
+					freeVariablesWithAlmostFree.add(variable);
 				}
 			}
 
@@ -720,6 +727,8 @@ public class ProverBotanasMethod {
 					eqSystemSubstituted, null, true, dependentVariablesWithAlmostFree);
 			this.freeVarsWithoutAlmostFree = PPolynomial.getVarsAsCommaSeparatedString(
 					eqSystemSubstituted, null, false, dependentVariablesWithAlmostFree);
+			this.freeVarsWithAlmostFree = PPolynomial.getVarsAsCommaSeparatedString(
+					eqSystemSubstituted, null, true, freeVariablesWithAlmostFree);
 
 			/* Construct the needed variables for the real algebraic geometry subsystem. */
 			this.rgVars = freeVarsWithoutAlmostFree;
@@ -1848,7 +1857,7 @@ public class ProverBotanasMethod {
 				rgResult = Compute.euclideanSolverProve(geoStatement.kernel, 4, paramLookup(rgs, "ineq"),
 								paramLookup(rgs, "ineqs"), paramLookup(rgs, "polys"),
 								paramLookup(rgs, "triangles"), paramLookup(rgs, "vars"),
-						paramLookup(rgs, "posvariables"), freeVars);
+						paramLookup(rgs, "posvariables"), freeVarsWithAlmostFree);
 
 			}
 
@@ -1894,10 +1903,11 @@ public class ProverBotanasMethod {
 				return;
 			}
 
-			// Here we use the fact that the are not inequality assumptions.
+			// Here we use the fact that there are no inequality assumptions.
+			// 1. round, only negation.
 			String rgResultP = geoStatement.getKernel().getApplication().tarski.evalCached("(t-neg [" + rgResult + "])");
 			rgResultP = Compute.getTarskiOutput(rgResultP);
-			// Log.debug("resultP=" + rgResultP);
+			Log.debug("resultP=" + rgResultP);
 			// A special case: If there is no conjunction and there is at least one inequality (<, <=, >, >=, /=)
 			// in the "positive" result, then the statement holds in a "large enough" set:
 			if (!(rgResultP.contains(" /\\ ")) && (rgResultP.contains(" > ") || rgResultP.contains(" < ")
@@ -1906,7 +1916,32 @@ public class ProverBotanasMethod {
 				result = ProofResult.TRUE_ON_COMPONENTS;
 				return;
 			}
+			// Another special case: If there is no disjunction and there is at least one inequality (<, <=, >, >=, /=)
+			// in the "positive" result, then the statement holds in a "large enough" set:
+			if (!(rgResultP.contains(" \\/ ")) && (rgResultP.contains(" > ") || rgResultP.contains(" < ")
+					|| rgResultP.contains(" >= ") || rgResultP.contains(" <= ") || rgResultP.contains(" /= "))) {
+				// e.g. v5 >= 0 /\ v5 - 1 <= 0
+				result = ProofResult.TRUE_ON_COMPONENTS;
+				return;
+			}
+			// 2. round, simplifying the negation.
+			// Maybe we can simplify the formula... In fact, in some cases this will not simplify
+			// things, either... :-( TODO in Tarski/QEPCAD.
+			// Note that qepcad-api-call can be expensive when there are more variables.
+			String rgResultP2 = geoStatement.getKernel().getApplication().tarski.evalCached("(qepcad-api-call [" + rgResultP + "])");
+			Log.debug("resultP2=" + rgResultP2);
+			if (!(rgResultP2.contains(" /\\ ")) && (rgResultP2.contains(" > ") || rgResultP2.contains(" < ")
+					|| rgResultP2.contains(" >= ") || rgResultP2.contains(" <= ") || rgResultP2.contains(" /= "))) {
+				result = ProofResult.TRUE_ON_COMPONENTS;
+				return;
+			}
+			if (!(rgResultP2.contains(" \\/ ")) && (rgResultP2.contains(" > ") || rgResultP2.contains(" < ")
+					|| rgResultP2.contains(" >= ") || rgResultP2.contains(" <= ") || rgResultP2.contains(" /= "))) {
+				result = ProofResult.TRUE_ON_COMPONENTS;
+				return;
+			}
 
+			// No idea what this formula means. Stay on the safe side and say nothing...
 			result = ProofResult.UNKNOWN;
 		}
 
