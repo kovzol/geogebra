@@ -1853,6 +1853,10 @@ public class ProverBotanasMethod {
 				rgResult = realgeomWS.directCommand(rgCommand, rgParameters.toString());
 			} else {
 				String[] rgs = rgParameters.toString().split("&");
+				Log.debug("maxFixcoords = " + maxFixcoords);
+				if (maxFixcoords == -1) {
+					maxFixcoords = 4;
+				}
 				rgResult = Compute.euclideanSolverProve(geoStatement.kernel, maxFixcoords, paramLookup(rgs, "ineq"),
 								paramLookup(rgs, "ineqs"), paramLookup(rgs, "polys"),
 								paramLookup(rgs, "triangles"), paramLookup(rgs, "vars"),
@@ -1970,12 +1974,6 @@ public class ProverBotanasMethod {
 		private PPolynomial[][] getExpressionStatements(GeoElement geoStatement) {
 			PPolynomial[][] statements;
 
-			/*
-			 * Disallow fixing the second point. This is crucial, otherwise false theorems
-			 * like Segment[A,B]==1 will be proven.
-			 */
-			maxFixcoords = 2;
-
 			AlgoElement algo = geoStatement.getParentAlgorithm();
 			/*
 			 * First the MEP code must be computed. It implicitly computes the Botana variables
@@ -2042,6 +2040,14 @@ public class ProverBotanasMethod {
 					return null;
 				}
 			}
+
+			/*
+			 * Disallow fixing the second point. This is crucial, otherwise false theorems
+			 * like Segment[A,B]==1 will be proven.
+			 */
+			maxFixcoords = 2;
+			// We set this here and not before.
+			// Otherwise the inequalities will be too difficult to solve.
 
 			try {
 				/* K: extended polynomial */
