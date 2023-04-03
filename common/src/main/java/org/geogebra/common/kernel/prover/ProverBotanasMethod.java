@@ -1853,11 +1853,10 @@ public class ProverBotanasMethod {
 				rgResult = realgeomWS.directCommand(rgCommand, rgParameters.toString());
 			} else {
 				String[] rgs = rgParameters.toString().split("&");
-				// FIXME: Set 4 to the correct value.
-				rgResult = Compute.euclideanSolverProve(geoStatement.kernel, 4, paramLookup(rgs, "ineq"),
+				rgResult = Compute.euclideanSolverProve(geoStatement.kernel, maxFixcoords, paramLookup(rgs, "ineq"),
 								paramLookup(rgs, "ineqs"), paramLookup(rgs, "polys"),
 								paramLookup(rgs, "triangles"), paramLookup(rgs, "vars"),
-						paramLookup(rgs, "posvariables"), freeVarsWithAlmostFree);
+						paramLookup(rgs, "posvariables"), freeVars);
 
 			}
 
@@ -1883,6 +1882,14 @@ public class ProverBotanasMethod {
 				// If the result is a conjunction of NOT-EQUAL operations, return false.
 				// In this case the statement is true under some condition which is a disjunction
 				// of EQUAL operations which has a lower dimension as the variable space.
+				result = ProofResult.FALSE;
+				return;
+			}
+
+			if (!rgResult.contains(" /\\ ") && rgResult.contains(" /= ")) {
+				// If the result is a disjunction of certain operations, and at least a NOT-EQUAL appears, return false.
+				// In this case the statement is true under some condition which contains a conjunction
+				// of an EQUAL operation which has a lower dimension as the variable space.
 				result = ProofResult.FALSE;
 				return;
 			}
