@@ -447,6 +447,11 @@ public class AlgoCompare extends AlgoElement {
                         retval += inpWithExponent(0) + " = " + result + " " + Unicode.CENTER_DOT
                                 + " " + inpWithExponent(1);
                     }
+                    if (retval.contains("ERROR")) {
+                        retval = "";
+                        outputText.setTextString(retval);
+                        return;
+                    }
                     outputText.setTextString(retval);
                     debugElapsedTime();
                     if (!useRealGeom) {
