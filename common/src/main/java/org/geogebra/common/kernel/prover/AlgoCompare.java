@@ -449,8 +449,6 @@ public class AlgoCompare extends AlgoElement {
                     }
                     if (retval.contains("ERROR")) {
                         retval = "";
-                        outputText.setTextString(retval);
-                        return;
                     }
                     outputText.setTextString(retval);
                     debugElapsedTime();
