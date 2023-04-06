@@ -681,12 +681,14 @@ public class ProverBotanasMethod {
 			TreeSet<PVariable> dependentVariables = new TreeSet<>();
 			TreeSet<PVariable> dependentVariablesWithAlmostFree = new TreeSet<>();
 			TreeSet<PVariable> freeVariablesWithAlmostFree = new TreeSet<>();
+			TreeSet<PVariable> freeVariablesWithoutAlmostFree = new TreeSet<>();
 			freeVariablesWithAlmostFree.addAll(freeVariables);
 
 			PPolynomial[] eqSystem = this.getPolynomials()
 					.toArray(new PPolynomial[this.getPolynomials().size()]);
-			TreeSet<PVariable> variables = new TreeSet<>(
-					PPolynomial.getVars(eqSystem));
+			TreeSet<PVariable> variables = new TreeSet<>();
+			variables.addAll(freeVariables);
+			variables.addAll(PPolynomial.getVars(eqSystem));
 
 			Iterator<PVariable> variablesIterator = variables.iterator();
 			while (variablesIterator.hasNext()) {
@@ -697,6 +699,11 @@ public class ProverBotanasMethod {
 				}
 				if (almostFreeVariables.contains(variable)) {
 					dependentVariablesWithAlmostFree.add(variable);
+				}
+				if (freeVariables.contains(variable) && !almostFreeVariables.contains(variable)) {
+					freeVariablesWithoutAlmostFree.add(variable);
+				}
+				if (freeVariables.contains(variable) && almostFreeVariables.contains(variable)) {
 					freeVariablesWithAlmostFree.add(variable);
 				}
 			}
@@ -725,8 +732,10 @@ public class ProverBotanasMethod {
 					eqSystemSubstituted, null, true, freeVariables);
 			this.elimVarsWithAlmostFree = PPolynomial.getVarsAsCommaSeparatedString(
 					eqSystemSubstituted, null, true, dependentVariablesWithAlmostFree);
+			// this.freeVarsWithoutAlmostFree = PPolynomial.getVarsAsCommaSeparatedString(
+			// 		eqSystemSubstituted, null, false, dependentVariablesWithAlmostFree);
 			this.freeVarsWithoutAlmostFree = PPolynomial.getVarsAsCommaSeparatedString(
-					eqSystemSubstituted, null, false, dependentVariablesWithAlmostFree);
+					eqSystemSubstituted, null, true, freeVariablesWithoutAlmostFree);
 			this.freeVarsWithAlmostFree = PPolynomial.getVarsAsCommaSeparatedString(
 					eqSystemSubstituted, null, true, freeVariablesWithAlmostFree);
 
@@ -1856,6 +1865,18 @@ public class ProverBotanasMethod {
 				Log.debug("maxFixcoords = " + maxFixcoords);
 				if (maxFixcoords == -1) {
 					maxFixcoords = 4;
+				}
+				if (maxFixcoords == 4) {
+					NDGCondition ndgc = new NDGCondition();
+					ndgc.setCondition("AreEqual");
+					GeoElement[] geos = new GeoElement[2];
+					int i = 0;
+					List<GeoElement> fp = getFreePoints(geoStatement);
+					geos[0] = fp.get(0);
+					geos[1] = fp.get(1);
+					ndgc.setGeos(geos);
+					Arrays.sort(ndgc.getGeos());
+					geoProver.addNDGcondition(ndgc);
 				}
 				rgResult = Compute.euclideanSolverProve(geoStatement.kernel, maxFixcoords, paramLookup(rgs, "ineq"),
 								paramLookup(rgs, "ineqs"), paramLookup(rgs, "polys"),
