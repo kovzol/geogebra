@@ -54,13 +54,14 @@ public class AlgoPlot2D extends AlgoElement {
 	 *            the function to be plotted (via an external plotter)
 	 */
 
-	public AlgoPlot2D(Construction cons, GeoElement function) {
+	public AlgoPlot2D(Construction cons, String label, GeoElement function) {
 		super(cons);
 
 		this.inp = function;
 
 		compute_init();
 		setInputOutput();
+		outp.setLabel(label); // don't forget this -- in that case no GeoElement will be saved
 
 	}
 

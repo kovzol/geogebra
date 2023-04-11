@@ -46,11 +46,11 @@ public class CmdPlot2D extends CommandProcessor {
 				if (fvars.length > 2) {
 					throw new MyError(app.getLocalization(), "InvalidEquation");
 				}
-				AlgoPlot2D algo = new AlgoPlot2D(cons, (GeoFunctionNVar) arg[0]);
+				AlgoPlot2D algo = new AlgoPlot2D(cons, c.getLabel(), (GeoFunctionNVar) arg[0]);
 				return algo.getOutput();
 			} else if (arg[0] instanceof GeoImplicitCurve || arg[0] instanceof GeoLine ||
 					arg[0] instanceof GeoFunction || arg[0] instanceof GeoConic) {
-				AlgoPlot2D algo = new AlgoPlot2D(cons, arg[0]);
+				AlgoPlot2D algo = new AlgoPlot2D(cons, c.getLabel(), arg[0]);
 				return algo.getOutput();
 			}
 			throw argErr(c, arg[0]);
