@@ -22,6 +22,7 @@ import org.geogebra.common.kernel.arithmetic.FunctionNVar;
 import org.geogebra.common.kernel.arithmetic.FunctionVariable;
 import org.geogebra.common.kernel.arithmetic.FunctionalNVar;
 import org.geogebra.common.kernel.arithmetic.Inequality;
+import org.geogebra.common.kernel.cas.UsesCAS;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -40,7 +41,7 @@ import org.geogebra.common.util.debug.Log;
  * Adapted from AlgoPerimeterPoly
  */
 
-public class AlgoPlot2D extends AlgoElement {
+public class AlgoPlot2D extends AlgoElement implements UsesCAS {
 
 	private GeoElement inp;
 	private GeoElement outp;
