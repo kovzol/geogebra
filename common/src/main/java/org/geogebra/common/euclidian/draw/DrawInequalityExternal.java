@@ -43,6 +43,8 @@ public class DrawInequalityExternal extends Drawable {
 	private ArrayList<Double> pointvalues;
 	private double[][] circlevalues;
 	private int lines, circles, height, width;
+	private boolean removeCAD = true; // TODO: Add an option to set this to false
+	// and eventually change the order x/y
 
 	private int startTime;
 
@@ -100,9 +102,13 @@ public class DrawInequalityExternal extends Drawable {
 		}
 		// Otherwise tarski/plot2d complains about getting the input in just one variable.
 
+		String removeCADlines = "";
+		if (removeCAD) {
+			removeCADlines = "'(sset true) ";
+		}
 		String command = "(plot2d [ " + def + extraDef + "] \"" + (int) (height / stretch_factor) + " " + width + " "
 				+ xmin + " " + xmax + " "
-				+ ymin + " " + " " + ymax + " -\" '(ord (x y))) ";
+				+ ymin + " " + " " + ymax + " -\" " + removeCADlines + "'(ord (x y))) ";
 		Log.debug(command);
 		startTime = (int) (UtilFactory.getPrototype().getMillisecondTime());
 		String result = function.getApp().tarski.evalCached(command);
@@ -140,6 +146,10 @@ public class DrawInequalityExternal extends Drawable {
 
 		int line = 0;
 		int circle = 0;
+		int position = 3;
+		if (removeCAD) {
+			position = 2;
+		}
 
 		for (String l : plotlines) {
 			if (l.startsWith("<polyline") || l.startsWith("<circle")) {
@@ -149,7 +159,7 @@ public class DrawInequalityExternal extends Drawable {
 				c = l.substring(cindex + 7, cindex + 11);
 				int style;
 
-				char L = c.charAt(3);
+				char L = c.charAt(position);
 				switch (L) {
 					case 'F':
 						style = 100;
@@ -164,7 +174,7 @@ public class DrawInequalityExternal extends Drawable {
 						style = -1;
 						break;
 				}
-				style += Integer.parseInt(c.substring(1,3));
+				style += Integer.parseInt(c.substring(1,position));
 
 				if (l.startsWith("<polyline")) {
 					// 6. Read off the points:
@@ -230,7 +240,12 @@ public class DrawInequalityExternal extends Drawable {
 
 			if (shown || removed) {
 				boolean area = false;
-				area = style == 311;
+				if (removeCAD) {
+					area = style == 300;
+				} else {
+					area = style == 311;
+				}
+
 
 				double x, y, sx, sy;
 				x = pointvalues.get(i) / 1000 * width; // scaling back
