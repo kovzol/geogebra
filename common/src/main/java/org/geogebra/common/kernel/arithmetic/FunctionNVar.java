@@ -819,7 +819,7 @@ public class FunctionNVar extends ValidExpression
 		ExpressionNode rightTree = fe.getRightTree();
 		if (op.equals(Operation.GREATER) || op.equals(Operation.GREATER_EQUAL)
 				|| op.equals(Operation.LESS)
-				|| op.equals(Operation.LESS_EQUAL)) {
+				|| op.equals(Operation.LESS_EQUAL) || op.equals(Operation.EQUAL_BOOLEAN)) {
 			Inequality newIneq = new Inequality(kernel, leftTree, rightTree,
 					adjustOp(op, negate), getFunction().getFunctionVariables());
 			if (newIneq.getType() != IneqType.INEQUALITY_INVALID) {
@@ -838,7 +838,7 @@ public class FunctionNVar extends ValidExpression
 			};
 			return 1; // handle it internally
 		} else if (op.equals(Operation.AND) || op.equals(Operation.AND_INTERVAL)
-				|| op.equals(Operation.OR) || op.equals(Operation.EQUAL_BOOLEAN)
+				|| op.equals(Operation.OR)
 				|| op.equals(Operation.NOT_EQUAL) || op.equals(Operation.XOR)) {
 			tree.setOperation(adjustOp(op, negate));
 			tree.setLeft(new IneqTree());

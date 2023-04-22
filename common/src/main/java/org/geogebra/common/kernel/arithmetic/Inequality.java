@@ -102,7 +102,7 @@ public class Inequality {
 		this.fv = fv;
 
 		if (op.equals(Operation.GREATER)
-				|| op.equals(Operation.GREATER_EQUAL)) {
+				|| op.equals(Operation.GREATER_EQUAL) || op.equals(Operation.EQUAL_BOOLEAN)) {
 			normal = new ExpressionNode(kernel, lhs, Operation.MINUS, rhs);
 
 		} else {
@@ -139,6 +139,10 @@ public class Inequality {
 				type = IneqType.INEQUALITY_1VAR_X;
 			}
 
+			return;
+		}
+		if (fv.length == 2 && op == Operation.EQUAL_BOOLEAN) {
+			type = IneqType.INEQUALITY_POLYNOMIAL; // handle this externally
 			return;
 		}
 		for (int i = 0; i < 2; i++) {
