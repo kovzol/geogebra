@@ -245,6 +245,8 @@ public enum Commands implements CommandsConstants,
 
 	Relation(TABLE_LOGICAL),
 
+	ShowProof(TABLE_LOGICAL),
+
 	Defined(TABLE_LOGICAL),
 
 	IsInRegion(TABLE_LOGICAL),

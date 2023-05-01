@@ -1,6 +1,7 @@
 package org.geogebra.common.kernel.commands;
 
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.scripting.CmdShowProof;
 import org.geogebra.common.kernel.scripting.CmdButton;
 import org.geogebra.common.kernel.scripting.CmdCenterView;
 import org.geogebra.common.kernel.scripting.CmdCheckbox;
@@ -77,6 +78,8 @@ public class CommandDispatcherScripting implements CommandDispatcherInterface {
 			return new CmdRigidPolygon(kernel);
 		case Relation:
 			return new CmdRelation(kernel);
+		case ShowProof:
+			return new CmdShowProof(kernel);
 		case CopyFreeObject:
 			return new CmdCopyFreeObject(kernel);
 		case DataFunction:

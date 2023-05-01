@@ -48,6 +48,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	private GeoList list; // output
 	private boolean relTool = false;
 	private boolean discovery = false;
+	private boolean showproof = false;
 	private String inputFingerprint;
 
 	/**
@@ -63,13 +64,16 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	 * @param discovery
 	 *            true if output should be given for Discover (where we don't need
 	 *            fancy new objects---they are maintained by Discover)
+	 * @param showproof
+	 *            true if the proof steps must be shown
 	 */
 	public AlgoProveDetails(Construction cons, GeoElement root,
-			boolean relationTool, boolean discovery) {
+			boolean relationTool, boolean discovery, boolean showproof) {
 		super(cons);
 		this.root = root;
 		this.relTool = relationTool;
 		this.discovery = discovery;
+		this.showproof = showproof;
 
 		list = new GeoList(cons);
 		setInputOutput(); // for AlgoElement
@@ -80,7 +84,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	}
 
 	public AlgoProveDetails(Construction cons, GeoElement root, boolean relTool) {
-		this(cons, root, relTool, false);
+		this(cons, root, relTool, false, false);
 	}
 
 	/**
@@ -319,6 +323,10 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	 * may not be the case if rounding/precision is not as presumed.
 	 */
 	private static String fingerprint(GeoElement statement) {
+		return Prover.getTextFormat(statement, true);
+	}
+
+	public static String statementText (GeoElement statement) {
 		return Prover.getTextFormat(statement, true);
 	}
 

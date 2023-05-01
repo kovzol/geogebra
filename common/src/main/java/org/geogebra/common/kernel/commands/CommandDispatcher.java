@@ -338,6 +338,7 @@ public abstract class CommandDispatcher {
 			// scripting
 			case RigidPolygon:
 			case Relation:
+			case ShowProof:
 			case CopyFreeObject:
 			case DataFunction:
 			case SetColor:

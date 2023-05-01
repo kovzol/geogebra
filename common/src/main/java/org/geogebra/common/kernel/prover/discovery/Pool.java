@@ -32,7 +32,7 @@ public class Pool {
         if (algoProveDetailsCache.containsKey(command)) {
             return algoProveDetailsCache.get(command);
         }
-        AlgoProveDetails apd = new AlgoProveDetails(root.getConstruction(), root, false, true);
+        AlgoProveDetails apd = new AlgoProveDetails(root.getConstruction(), root, false, true, false);
         apd.compute();
         GeoElement[] o = apd.getOutput();
         GeoList ret = (GeoList) o[0];
