@@ -156,6 +156,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 		p.setStatement(root);
 		// Compute extra NDG's:
 		p.setReturnExtraNDGs(true);
+		p.setShowproof(showproof);
 
 		// Adding benchmarking:
 		double startTime = UtilFactory.getPrototype().getMillisecondTime();
@@ -284,6 +285,16 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 					classification.setEuclidianVisible(false);
 					list.add(classification);
 				}
+
+				if (showproof) {
+					GeoText proof = new GeoText(cons);
+					String c = p.getProof();
+					proof.setTextString(c);
+					proof.setLabelVisible(false);
+					proof.setEuclidianVisible(false);
+					list.add(proof);
+				}
+
 			}
 		}
 

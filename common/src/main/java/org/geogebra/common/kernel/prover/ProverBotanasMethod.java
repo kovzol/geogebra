@@ -462,6 +462,9 @@ public class ProverBotanasMethod {
 					if (ProverSettings.get().captionAlgebra) {
 						geo.addCaptionBotanaPolynomial(p.toTeX());
 					}
+					if (geoProver.getShowproof()) {
+						geoProver.addProofLine(p.toString() + "=0");
+					}
 				}
 			}
 		}
@@ -993,6 +996,12 @@ public class ProverBotanasMethod {
 									+ geo.getDefinitionDescription(
 									StringTemplate.noLocalDefault)
 									+ " */");
+							if (geoProver.getShowproof()) {
+								geoProver.addProofLine("Considering definition " +
+										geo.getLabelSimple() + " = "
+										+ geo.getDefinition(
+										StringTemplate.noLocalDefault) + "...");
+							}
 						} else {
 							String description = geo
 									.getAlgebraDescriptionDefault();
@@ -1016,6 +1025,10 @@ public class ProverBotanasMethod {
 									Log.debug("// Free point "
 											+ geo.getLabelSimple() + "(" + v[0]
 											+ "," + v[1] + ")");
+									if (geoProver.getShowproof()) {
+										geoProver.addProofLine("Let free point " + geo.getLabelSimple() +
+												" be denoted by (" + v[0] + "," + v[1] + ").");
+									}
 								}
 							}
 						}
@@ -1324,6 +1337,10 @@ public class ProverBotanasMethod {
 								Log.debug("// Constrained point "
 										+ geo.getLabelSimple() + "(" + v[0]
 										+ "," + v[1] + ")");
+								if (geoProver.getShowproof()) {
+									geoProver.addProofLine("Let dependent point " + geo.getLabelSimple() +
+											" be denoted by (" + v[0] + "," + v[1] + ").");
+								}
 								if (proverSettings.captionAlgebra) {
 									String color = "cyan";
 									if (algo instanceof AlgoPointOnPath) {
@@ -1500,6 +1517,10 @@ public class ProverBotanasMethod {
 					PPolynomial[] botanaPolynomials = new PPolynomial[1];
 					botanaPolynomials[0] = botanaPolynomial;
 					addGeoPolys(movingPoint, botanaPolynomials);
+					if (geoProver.getShowproof()) {
+						geoProver.addProofLine("Adding object numerically:");
+						geoProver.addProofLine(botanaPolynomial.toString() + "=0");
+					}
 					// Maybe to be removed:
 					if (proverSettings.captionAlgebra) {
 						numerical.addCaptionBotanaPolynomial(
@@ -1621,10 +1642,16 @@ public class ProverBotanasMethod {
 				}
 				ProverSettings proverSettings = ProverSettings.get();
 				Log.debug("Thesis equations (non-denied ones):");
+				if (geoProver.getShowproof()) {
+					geoProver.addProofLine("Thesis equations (non-denied ones)...");
+				}
 				for (PPolynomial[] statement : statements) {
 					for (int j = 0; j < statement.length - minus; ++j) {
 						/* Note: the geo is not stored */
 						if (addPolynomial(statement[j])) {
+							if (geoProver.getShowproof()) {
+								geoProver.addProofLine(statement[j].toString() + "=0");
+							}
 							if (proverSettings.captionAlgebra) {
 								geoStatement.addCaptionBotanaPolynomial(
 										statement[j].toTeX());
@@ -1649,6 +1676,9 @@ public class ProverBotanasMethod {
 				 */
 				Log.debug(
 						"Thesis reductio ad absurdum (denied statement), product of factors:");
+				if (geoProver.getShowproof()) {
+					geoProver.addProofLine("Thesis reductio ad absurdum (denied statement)...");
+				}
 				PPolynomial spoly = new PPolynomial(BigInteger.ONE);
 				PVariable z = new PVariable(geoStatement.getKernel());
 				/*
@@ -2364,6 +2394,8 @@ public class ProverBotanasMethod {
 		GeoElement statement = prover.getStatement();
 		ProverSettings proverSettings = ProverSettings.get();
 		Kernel k = statement.getKernel();
+		boolean showproof = prover.getShowproof();
+
 		/*
 		 * Decide quickly if proving this kind of statement is already
 		 * implemented at all:

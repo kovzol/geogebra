@@ -84,6 +84,18 @@ public class CmdShowProof extends CmdScripting {
 				gcc2.update();
 				cons.setCasCellRow(gcc2, rows++);
 
+				String proofs = ((GeoText) output.get(output.size() - 1)).toString();
+				proofs = proofs.substring(1, proofs.length() - 1);
+				String[] proof = proofs.split("\n");
+				for (String step : proof) {
+					GeoCasCell gcc3 = new GeoCasCell(cons);
+					gcc3.setUseAsText(true);
+					gcc3.setInput(step);
+					gcc3.computeOutput();
+					gcc3.update();
+					cons.setCasCellRow(gcc3, rows++);
+				}
+
 				cons.updateConstruction(false);
 
 				algo.remove();

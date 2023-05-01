@@ -150,6 +150,24 @@ public abstract class Prover {
 	private boolean returnExtraNDGs;
 	private List<ProverEngine> proveAutoOrder;
 	private List<ProverEngine> proveDetailsAutoOrder;
+	private boolean showproof = false;
+	private String proof = "";
+
+	public boolean getShowproof() {
+		return showproof;
+	}
+
+	public void setShowproof(boolean set) {
+		showproof = set;
+	}
+
+	public String getProof() {
+		return proof;
+	}
+
+	public void addProofLine(String line) {
+		proof += line + "\n";
+	}
 
 	/**
 	 * An object which contains a condition description (e.g. "AreCollinear")
