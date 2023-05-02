@@ -1000,7 +1000,7 @@ public class ProverBotanasMethod {
 								geoProver.addProofLine("Considering definition " +
 										geo.getLabelSimple() + " = "
 										+ geo.getDefinition(
-										StringTemplate.noLocalDefault) + "...");
+										StringTemplate.noLocalDefault) + ":");
 							}
 						} else {
 							String description = geo
@@ -1643,7 +1643,7 @@ public class ProverBotanasMethod {
 				ProverSettings proverSettings = ProverSettings.get();
 				Log.debug("Thesis equations (non-denied ones):");
 				if (geoProver.getShowproof()) {
-					geoProver.addProofLine("Thesis equations (non-denied ones)...");
+					geoProver.addProofLine("Thesis equations (non-denied ones):");
 				}
 				for (PPolynomial[] statement : statements) {
 					for (int j = 0; j < statement.length - minus; ++j) {
@@ -1677,7 +1677,7 @@ public class ProverBotanasMethod {
 				Log.debug(
 						"Thesis reductio ad absurdum (denied statement), product of factors:");
 				if (geoProver.getShowproof()) {
-					geoProver.addProofLine("Thesis reductio ad absurdum (denied statement)...");
+					geoProver.addProofLine("Thesis reductio ad absurdum (denied statement):");
 				}
 				PPolynomial spoly = new PPolynomial(BigInteger.ONE);
 				PVariable z = new PVariable(geoStatement.getKernel());

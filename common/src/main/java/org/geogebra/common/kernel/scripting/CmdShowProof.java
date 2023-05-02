@@ -87,13 +87,31 @@ public class CmdShowProof extends CmdScripting {
 				String proofs = ((GeoText) output.get(output.size() - 1)).toString();
 				proofs = proofs.substring(1, proofs.length() - 1);
 				String[] proof = proofs.split("\n");
-				for (String step : proof) {
-					GeoCasCell gcc3 = new GeoCasCell(cons);
-					gcc3.setUseAsText(true);
-					gcc3.setInput(step);
-					gcc3.computeOutput();
-					gcc3.update();
-					cons.setCasCellRow(gcc3, rows++);
+				int steps = proof.length;
+				for (int s = 0; s < steps; s++) {
+					String step = proof[s];
+					boolean showstep = true;
+					if (s < steps - 1) {
+						String nextstep = proof[s+1];
+						if (step.endsWith(":") && nextstep.endsWith(":")) {
+							showstep = false; // don't show this step,
+							// because it contains empty substeps
+						}
+					}
+					if (showstep) {
+						GeoCasCell gcc3 = new GeoCasCell(cons);
+						gcc3.setUseAsText(true);
+						gcc3.setInput(step);
+						if (step.contains("free point")) {
+							gcc3.setFontColor(GColor.ORANGE);
+						}
+						if (step.contains("dependent point")) {
+							gcc3.setFontColor(GColor.DARK_CYAN);
+						}
+						gcc3.computeOutput();
+						gcc3.update();
+						cons.setCasCellRow(gcc3, rows++);
+					}
 				}
 
 				cons.updateConstruction(false);
