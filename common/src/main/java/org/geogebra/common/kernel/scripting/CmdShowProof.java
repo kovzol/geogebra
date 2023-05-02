@@ -103,8 +103,8 @@ public class CmdShowProof extends CmdScripting {
 						}
 						if (showstep) {
 							GeoCasCell gcc3 = new GeoCasCell(cons);
-							if (step.endsWith("0")) {
-								gcc3.setUseAsText(false); // this is a formula
+							if (step.endsWith("0") || step.endsWith("}")) {
+								gcc3.setUseAsText(false); // this is a formula or a list
 							} else {
 								gcc3.setUseAsText(true);
 							}

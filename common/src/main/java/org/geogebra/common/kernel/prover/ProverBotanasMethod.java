@@ -2466,6 +2466,10 @@ public class ProverBotanasMethod {
 				return as.result;
 			}
 			Log.debug("substitutions: " + substitutions);
+			if (prover.getShowproof()) {
+				prover.addProofLine("Without loss of generality, some coordinates can be fixed:");
+				prover.addProofLine(substitutions.toString());
+			}
 		}
 
 		if (prover.isReturnExtraNDGs() ||
