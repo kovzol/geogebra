@@ -100,7 +100,11 @@ public class CmdShowProof extends CmdScripting {
 					}
 					if (showstep) {
 						GeoCasCell gcc3 = new GeoCasCell(cons);
-						gcc3.setUseAsText(true);
+						if (step.endsWith("0")) {
+							gcc3.setUseAsText(false); // this is a formula
+						} else {
+							gcc3.setUseAsText(true);
+						}
 						gcc3.setInput(step);
 						if (step.contains("free point")) {
 							gcc3.setFontColor(GColor.ORANGE);
