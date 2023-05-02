@@ -462,9 +462,6 @@ public class ProverBotanasMethod {
 					if (ProverSettings.get().captionAlgebra) {
 						geo.addCaptionBotanaPolynomial(p.toTeX());
 					}
-					if (geoProver.getShowproof()) {
-						geoProver.addProofLine(p.toString() + "=0");
-					}
 				}
 			}
 		}
@@ -582,6 +579,9 @@ public class ProverBotanasMethod {
 			polynomials.add(p);
 			int size = polynomials.size();
 			Log.debug("Adding poly #" + (size) + ": " + p.toTeX());
+			if (geoProver.getShowproof()) {
+				geoProver.addProofLine(p + "=0");
+			}
 			return true;
 		}
 
@@ -593,6 +593,9 @@ public class ProverBotanasMethod {
 			ineqs.add(ie);
 			int size = ineqs.size();
 			Log.debug("Adding ineq #" + (size) + ": " + ie);
+			if (geoProver.getShowproof()) {
+				geoProver.addProofLine(ie);
+			}
 			return true;
 		}
 
@@ -604,6 +607,9 @@ public class ProverBotanasMethod {
 			posVars.add(v);
 			int size = posVars.size();
 			Log.debug("Adding posVar #" + (size) + ": " + v);
+			if (geoProver.getShowproof()) {
+				geoProver.addProofLine(v + ">=0");
+			}
 			return true;
 		}
 
@@ -626,6 +632,9 @@ public class ProverBotanasMethod {
 			extPolys.add(p);
 			int size = extPolys.size();
 			Log.debug("Adding external poly #" + (size) + ": " + p);
+			if (geoProver.getShowproof()) {
+				geoProver.addProofLine(p + "=0");
+			}
 			return true;
 		}
 
@@ -1649,9 +1658,6 @@ public class ProverBotanasMethod {
 					for (int j = 0; j < statement.length - minus; ++j) {
 						/* Note: the geo is not stored */
 						if (addPolynomial(statement[j])) {
-							if (geoProver.getShowproof()) {
-								geoProver.addProofLine(statement[j].toString() + "=0");
-							}
 							if (proverSettings.captionAlgebra) {
 								geoStatement.addCaptionBotanaPolynomial(
 										statement[j].toTeX());
@@ -1743,6 +1749,9 @@ public class ProverBotanasMethod {
 				nonDegPolys = create3FreePointsNeverCollinearNDG(geoProver);
 			} catch (Exception e) {
 				return null;
+			}
+			if (geoProver.getShowproof()) {
+				geoProver.addProofLine("Forcing non-collinearity for certain point triplets:");
 			}
 			for (PPolynomial ndp : nonDegPolys) {
 				addPolynomial(ndp);
@@ -1868,6 +1877,11 @@ public class ProverBotanasMethod {
 			if (thesisIneq.equals("false")) {
 				result = ProofResult.FALSE;
 				return;
+			}
+
+			if (geoProver.getShowproof()) {
+				geoProver.addProofLine("Thesis inequality:");
+				geoProver.addProofLine(thesisIneq);
 			}
 
 			String rgCommand = "euclideansolver";
