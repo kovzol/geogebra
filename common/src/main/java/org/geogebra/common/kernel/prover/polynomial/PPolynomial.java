@@ -898,7 +898,29 @@ public class PPolynomial implements Comparable<PPolynomial> {
 			return ret.substring(1);
 		return "";
 	}
-		
+
+
+	/** Converts substitutions to Giac strings
+	 *
+	 * @param substitutions
+	 *            input as a TreeMap
+	 * @return the parameters for Giac (e.g. "v1=0,v2=0,v3=0,v4=1")
+	 */
+	static String substitutionsStringGiac(
+			TreeMap<PVariable, BigInteger> substitutions) {
+		StringBuilder ret = new StringBuilder();
+		Iterator<Entry<PVariable, BigInteger>> it = substitutions.entrySet()
+				.iterator();
+		while (it.hasNext()) {
+			Entry<PVariable, BigInteger> entry = it.next();
+			PVariable v = entry.getKey();
+			ret.append("," + v.toString() + "=" + entry.getValue());
+		}
+		if (ret.length()>0)
+			return ret.substring(1);
+		return "";
+	}
+
 	/**
 	 * Adds a leading comma to the input string if it is not empty
 	 * @param in input
@@ -1143,6 +1165,45 @@ public class PPolynomial implements Comparable<PPolynomial> {
 			return ExtendedBoolean.TRUE; // at least one solution exists
 		}
 		return ExtendedBoolean.UNKNOWN; // cannot decide
+	}
+
+	public static String syzygy(PPolynomial[] polys,
+			TreeMap<PVariable, BigInteger> substitutions, Kernel kernel,
+			boolean transcext, Set<PVariable> freeVariables) {
+
+		HashSet<PVariable> substVars = null;
+		String polysAsCommaSeparatedString = getPolysAsCommaSeparatedString(polys);
+		substVars = new HashSet<>(substitutions.keySet());
+
+		String freeVars = getVarsAsCommaSeparatedString(polys, substVars, true,
+				freeVariables);
+		String dependantVars = getVarsAsCommaSeparatedString(polys, substVars,
+				false, freeVariables);
+		String syzygyResult, syzygyProgram;
+
+		GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
+
+		String ret = "greduce(1,";
+		// FIXME: This command is not exactly what we want. So this part is not working yet.
+
+		if (substitutions != null) {
+			ret += "subst(";
+		}
+
+		ret += "[" + polysAsCommaSeparatedString + "]";
+
+		if (substitutions != null) {
+			String substParams = substitutionsStringGiac(substitutions);
+			ret += ",[" + substParams + "])";
+		}
+
+		String vars = freeVars + PPolynomial.addLeadingComma(dependantVars);
+
+		ret += ",[" + vars + "],quo)";
+
+		syzygyResult = cas.evaluate(ret);
+
+		return syzygyResult;
 	}
 	
 	/** Returns the square of the input polynomial

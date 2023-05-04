@@ -580,7 +580,7 @@ public class ProverBotanasMethod {
 			int size = polynomials.size();
 			Log.debug("Adding poly #" + (size) + ": " + p.toTeX());
 			if (geoProver.getShowproof()) {
-				geoProver.addProofLine(p + "=0");
+				geoProver.addProofLine("e" + size + ":=" + p + "=0");
 			}
 			return true;
 		}
@@ -594,7 +594,7 @@ public class ProverBotanasMethod {
 			int size = ineqs.size();
 			Log.debug("Adding ineq #" + (size) + ": " + ie);
 			if (geoProver.getShowproof()) {
-				geoProver.addProofLine(ie);
+				geoProver.addProofLine("i" + size + ":=" + ie);
 			}
 			return true;
 		}
@@ -608,7 +608,7 @@ public class ProverBotanasMethod {
 			int size = posVars.size();
 			Log.debug("Adding posVar #" + (size) + ": " + v);
 			if (geoProver.getShowproof()) {
-				geoProver.addProofLine(v + ">=0");
+				geoProver.addProofLine("p" + size + ":=" + v + ">=0");
 			}
 			return true;
 		}
@@ -621,6 +621,7 @@ public class ProverBotanasMethod {
 			extVars.add(v);
 			int size = extVars.size();
 			Log.debug("Adding extVar #" + (size) + ": " + v);
+
 			return true;
 		}
 
@@ -633,7 +634,7 @@ public class ProverBotanasMethod {
 			int size = extPolys.size();
 			Log.debug("Adding external poly #" + (size) + ": " + p);
 			if (geoProver.getShowproof()) {
-				geoProver.addProofLine(p + "=0");
+				geoProver.addProofLine("q" + size + ":=" + p + "=0");
 			}
 			return true;
 		}
@@ -2826,6 +2827,16 @@ public class ProverBotanasMethod {
 			return ProofResult.UNKNOWN;
 		}
 		Log.debug("Statement is GENERALLY TRUE");
+		if (prover.getShowproof()) {
+			// We compute the syzygy. TODO: Do this for the other cases as well.
+			String syzygy = PPolynomial.syzygy(
+					as.getPolynomials()
+							.toArray(new PPolynomial[as.getPolynomials()
+									.size()]),
+					substitutions, statement.getKernel(),
+					proverSettings.transcext,
+					as.freeVariables);
+		}
 		return ProofResult.TRUE;
 	}
 
