@@ -1883,7 +1883,7 @@ public class ProverBotanasMethod {
 
 			if (geoProver.getShowproof()) {
 				geoProver.addProofLine("Thesis inequality:");
-				geoProver.addProofLine(thesisIneq);
+				geoProver.addProofLine("ti:=" + thesisIneq);
 			}
 
 			String rgCommand = "euclideansolver";

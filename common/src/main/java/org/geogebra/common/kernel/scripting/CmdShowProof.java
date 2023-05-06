@@ -92,6 +92,10 @@ public class CmdShowProof extends CmdScripting {
 					proofs = proofs.substring(1, proofs.length() - 1);
 					if (proofs.contains("proves") && proofs.contains("Contradiction!")) {
 						proofs = "We prove this by contradiction.\n" + proofs;
+					} else {
+						proofs = "(Currently no full proof can be provided, but just some steps.)\n" +
+								"(In the background, all steps are checked, but a full presentation is not yet implemented.)\n" +
+								"(Please try a newer version of GeoGebra Discovery if possible.)\n" + proofs;
 					}
 					String[] proof = proofs.split("\n");
 					int steps = proof.length;
@@ -122,6 +126,10 @@ public class CmdShowProof extends CmdScripting {
 							if (step.contains("proves")) {
 								gcc3.setFontColor(GColor.RED);
 								gcc3.setFontStyle(GFont.BOLD);
+							}
+							if (step.startsWith("(") && step.endsWith(")")) {
+								gcc3.setFontStyle(GFont.ITALIC);
+								gcc3.setInput(step.substring(1, step.length()-1));
 							}
 							gcc3.computeOutput();
 							gcc3.update();
