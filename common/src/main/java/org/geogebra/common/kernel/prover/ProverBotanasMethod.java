@@ -2841,7 +2841,7 @@ public class ProverBotanasMethod {
 
 		PPolynomial[] polys = as.getPolynomials().toArray(new PPolynomial[as.getPolynomials().size()]);
 		int se = 1;
-		prover.addProofLine("All equations after substitutions:");
+		prover.addProofLine("All equations after substitutions and reordering:");
 		for (PPolynomial p : as.getPolynomials()) {
 			prover.addProofLine("s" + se + ":" + p.substitute(substitutions).toString() + "=0");
 			se += 1;
