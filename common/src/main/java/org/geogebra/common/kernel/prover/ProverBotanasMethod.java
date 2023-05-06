@@ -63,6 +63,7 @@ import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.ProverSettings;
+import org.geogebra.common.main.SingularWSSettings;
 import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.DoubleUtil;
 import org.geogebra.common.util.ExtendedBoolean;
@@ -2829,16 +2830,104 @@ public class ProverBotanasMethod {
 		Log.debug("Statement is GENERALLY TRUE");
 		if (prover.getShowproof()) {
 			// We compute the syzygy. TODO: Do this for the other cases as well.
-			String syzygy = PPolynomial.syzygy(
-					as.getPolynomials()
-							.toArray(new PPolynomial[as.getPolynomials()
-									.size()]),
-					substitutions, statement.getKernel(),
-					proverSettings.transcext,
-					as.freeVariables);
+			syzygy(as, substitutions, statement.getKernel(), proverSettings.transcext, prover);
+
 		}
 		return ProofResult.TRUE;
 	}
+
+	public static void syzygy(AlgebraicStatement as, TreeMap<PVariable, BigInteger> substitutions,
+			Kernel kernel, boolean transcext, Prover prover) {
+
+		PPolynomial[] polys = as.getPolynomials().toArray(new PPolynomial[as.getPolynomials().size()]);
+		int se = 1;
+		prover.addProofLine("All equations after substitutions:");
+		for (PPolynomial p : as.getPolynomials()) {
+			prover.addProofLine("s" + se + ":" + p.substitute(substitutions).toString() + "=0");
+			se += 1;
+		}
+		se--;
+
+		Set<PVariable> freeVariables = as.freeVariables;
+		HashSet<PVariable> substVars = null;
+		String polysAsCommaSeparatedString = PPolynomial.getPolysAsCommaSeparatedString(polys);
+		substVars = new HashSet<>(substitutions.keySet());
+
+		String freeVars = PPolynomial.getVarsAsCommaSeparatedString(polys, substVars, true,
+				freeVariables);
+		String dependantVars = PPolynomial.getVarsAsCommaSeparatedString(polys, substVars,
+				false, freeVariables);
+		String syzygyResult = "", syzygyProgram;
+
+		SingularWebService singularWS = kernel.getApplication().getSingularWS();
+
+		if (singularWS != null && singularWS.isAvailable()) {
+
+			syzygyProgram = PPolynomial.createSyzygyScript(substitutions, polysAsCommaSeparatedString,
+					freeVars, dependantVars, transcext);
+
+			if (syzygyProgram.length() > SingularWSSettings.debugMaxProgramSize)
+				Log.trace(syzygyProgram.length() + " bytes -> singular");
+			else
+				Log.trace(syzygyProgram + " -> singular");
+			try {
+				syzygyResult = singularWS.directCommand(syzygyProgram);
+				if (syzygyResult.length() > SingularWSSettings.debugMaxProgramSize)
+					Log.trace("singular -> " + syzygyResult.length()
+							+ " bytes");
+				else
+					Log.trace("singular -> " + syzygyResult);
+			} catch (Throwable e) {
+				Log.debug("Could not compute syzygy with SingularWS");
+				return;
+			}
+		}
+
+		if (syzygyResult != null && !syzygyResult.equals("")) {
+			String sum = "";
+			String[] coeffs = syzygyResult.split("\n");
+			int s = coeffs.length;
+			if (s != se) {
+				Log.debug("Unexpected number of coeffs");
+				return;
+			}
+			for (int i=0; i < s; i++) {
+				String c[] = coeffs[i].split("=");
+				sum += "s" + (i+1) + "*(" + c[1] + ")";
+				if (i<s-1) {
+					sum += "+";
+				}
+			}
+			prover.addProofLine(sum);
+			prover.addProofLine("Contradiction! This proves the original statement.");
+			return;
+		}
+
+		GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
+
+		String ret = "greduce(1,";
+		// FIXME: This command is not exactly what we want. So this part is not working yet.
+
+		if (substitutions != null) {
+			ret += "subst(";
+		}
+
+		ret += "[" + polysAsCommaSeparatedString + "]";
+
+		if (substitutions != null) {
+			String substParams = PPolynomial.substitutionsStringGiac(substitutions);
+			ret += ",[" + substParams + "])";
+		}
+
+		String vars = freeVars + PPolynomial.addLeadingComma(dependantVars);
+
+		ret += ",[" + vars + "],quo)";
+
+		syzygyResult = cas.evaluate(ret);
+
+		return;
+	}
+
 
 	/**
 	 * Create algebraic equations of the construction to prepare computing a

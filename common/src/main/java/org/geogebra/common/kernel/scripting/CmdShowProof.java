@@ -3,6 +3,7 @@ package org.geogebra.common.kernel.scripting;
 import static org.geogebra.common.main.App.VIEW_CAS;
 
 import org.geogebra.common.awt.GColor;
+import org.geogebra.common.awt.GFont;
 import org.geogebra.common.cas.view.CASTable;
 import org.geogebra.common.cas.view.CASView;
 import org.geogebra.common.kernel.Kernel;
@@ -89,6 +90,9 @@ public class CmdShowProof extends CmdScripting {
 				if (statementTrue) {
 					String proofs = ((GeoText) output.get(output.size() - 1)).toString();
 					proofs = proofs.substring(1, proofs.length() - 1);
+					if (proofs.contains("proves") && proofs.contains("Contradiction!")) {
+						proofs = "We prove this by contradiction.\n" + proofs;
+					}
 					String[] proof = proofs.split("\n");
 					int steps = proof.length;
 					for (int s = 0; s < steps; s++) {
@@ -103,8 +107,8 @@ public class CmdShowProof extends CmdScripting {
 						}
 						if (showstep) {
 							GeoCasCell gcc3 = new GeoCasCell(cons);
-							if (step.endsWith("0") || step.endsWith("}")) {
-								gcc3.setUseAsText(false); // this is a formula or a list
+							if (step.endsWith("0") || step.endsWith("}") || step.startsWith("s")) {
+								gcc3.setUseAsText(false); // this is a formula or a list or a syzygy
 							} else {
 								gcc3.setUseAsText(true);
 							}
@@ -114,6 +118,10 @@ public class CmdShowProof extends CmdScripting {
 							}
 							if (step.contains("dependent point")) {
 								gcc3.setFontColor(GColor.DARK_CYAN);
+							}
+							if (step.contains("proves")) {
+								gcc3.setFontColor(GColor.RED);
+								gcc3.setFontStyle(GFont.BOLD);
 							}
 							gcc3.computeOutput();
 							gcc3.update();

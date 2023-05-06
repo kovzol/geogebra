@@ -186,7 +186,7 @@ public class SingularWebService {
 		String result;
 		try {
 			result = directCommand("LIB \"" + name + ".lib\";");
-			if (result.length() == 0) {
+			if (result == null || result.length() == 0) {
 				Log.debug("SingularWS supports library " + name);
 				return true;
 			}

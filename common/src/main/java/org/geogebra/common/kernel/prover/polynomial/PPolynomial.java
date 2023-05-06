@@ -906,7 +906,7 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 *            input as a TreeMap
 	 * @return the parameters for Giac (e.g. "v1=0,v2=0,v3=0,v4=1")
 	 */
-	static String substitutionsStringGiac(
+	public static String substitutionsStringGiac(
 			TreeMap<PVariable, BigInteger> substitutions) {
 		StringBuilder ret = new StringBuilder();
 		Iterator<Entry<PVariable, BigInteger>> it = substitutions.entrySet()
@@ -989,7 +989,51 @@ public class PPolynomial implements Comparable<PPolynomial> {
 		ret += "groebner(" + idealVariable + ")!=1;"; // the Groebner basis calculation command
 		return ret;
 	}
-	
+
+	/**
+	 * Creates a Singular program for creating a ring to work with several
+	 * polynomials, and returns a script for syzygy computation.
+	 * @param substitutions TreeMap with variables and values, e.g. {v1->0},{v2->1}
+	 * @param polys polynomials, e.g. "v1+v2-3*v4-10"
+	 * @param fieldVars field variables (comma separated)
+	 * @param ringVars ring variables (comma separated)
+	 * @param transcext use coefficients from a transcendental extension
+	 * @return the Singular program code
+	 */
+	public static String createSyzygyScript(
+			TreeMap<PVariable, BigInteger> substitutions, String polys,
+			String fieldVars, String ringVars, boolean transcext) {
+
+		String ringVariable = "r";
+		String idealVariable = "i";
+		String dummyVar = "d";
+
+		String vars = ringVars + addLeadingComma(fieldVars);
+
+		String substCommand = "";
+		if (substitutions != null) {
+			String substParams = substitutionsString(substitutions);
+			substCommand = idealVariable + "=subst(" + idealVariable + "," + substParams + ");";
+		}
+		String ret = "ring " + ringVariable + "=";
+
+		if (transcext) {
+			ret += "(0" + addLeadingComma(fieldVars)
+					+ "),(" + coalesce(ringVars, dummyVar);
+		}
+		else {
+			ret += "0,(" + coalesce(vars, dummyVar);
+		}
+
+		ret += "),dp;" // ring definition in Singular, using revgradlex
+				+ "ideal " + idealVariable + "="
+				+ polys + ";"; // ideal definition in Singular
+
+		ret += substCommand;
+
+		ret += "lift(" + idealVariable + ",1);"; // the syzygy calculation command
+		return ret;
+	}
 	
 	/**
 	 * Creates a Singular program for the elimination ideal given by
@@ -1167,45 +1211,6 @@ public class PPolynomial implements Comparable<PPolynomial> {
 		return ExtendedBoolean.UNKNOWN; // cannot decide
 	}
 
-	public static String syzygy(PPolynomial[] polys,
-			TreeMap<PVariable, BigInteger> substitutions, Kernel kernel,
-			boolean transcext, Set<PVariable> freeVariables) {
-
-		HashSet<PVariable> substVars = null;
-		String polysAsCommaSeparatedString = getPolysAsCommaSeparatedString(polys);
-		substVars = new HashSet<>(substitutions.keySet());
-
-		String freeVars = getVarsAsCommaSeparatedString(polys, substVars, true,
-				freeVariables);
-		String dependantVars = getVarsAsCommaSeparatedString(polys, substVars,
-				false, freeVariables);
-		String syzygyResult, syzygyProgram;
-
-		GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
-
-		String ret = "greduce(1,";
-		// FIXME: This command is not exactly what we want. So this part is not working yet.
-
-		if (substitutions != null) {
-			ret += "subst(";
-		}
-
-		ret += "[" + polysAsCommaSeparatedString + "]";
-
-		if (substitutions != null) {
-			String substParams = substitutionsStringGiac(substitutions);
-			ret += ",[" + substParams + "])";
-		}
-
-		String vars = freeVars + PPolynomial.addLeadingComma(dependantVars);
-
-		ret += ",[" + vars + "],quo)";
-
-		syzygyResult = cas.evaluate(ret);
-
-		return syzygyResult;
-	}
-	
 	/** Returns the square of the input polynomial
 	 * @param p input polynomial
 	 * @return the square (p*p)
