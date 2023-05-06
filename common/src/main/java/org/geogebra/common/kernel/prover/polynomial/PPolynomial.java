@@ -1031,7 +1031,9 @@ public class PPolynomial implements Comparable<PPolynomial> {
 
 		ret += substCommand;
 
-		ret += "lift(" + idealVariable + ",1);"; // the syzygy calculation command
+		ret += "list l=lift(" + idealVariable + ",1);"; // the syzygy calculation command
+		ret += "l;"; // show the result
+		ret += "deg(l[1][1]);"; // show the degree
 		return ret;
 	}
 	

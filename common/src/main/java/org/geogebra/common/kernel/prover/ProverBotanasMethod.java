@@ -2864,7 +2864,7 @@ public class ProverBotanasMethod {
 		if (singularWS != null && singularWS.isAvailable()) {
 
 			syzygyProgram = PPolynomial.createSyzygyScript(substitutions, polysAsCommaSeparatedString,
-					freeVars, dependantVars, transcext);
+					freeVars, dependantVars, false);
 
 			if (syzygyProgram.length() > SingularWSSettings.debugMaxProgramSize)
 				Log.trace(syzygyProgram.length() + " bytes -> singular");
@@ -2887,19 +2887,23 @@ public class ProverBotanasMethod {
 			String sum = "";
 			String[] coeffs = syzygyResult.split("\n");
 			int s = coeffs.length;
+			s-=2; // the last entry is the degree, and the first entry is unused
 			if (s != se) {
 				Log.debug("Unexpected number of coeffs");
 				return;
 			}
 			for (int i=0; i < s; i++) {
-				String c[] = coeffs[i].split("=");
+				String c[] = coeffs[i+1].split("=");
 				sum += "s" + (i+1) + "*(" + c[1] + ")";
 				if (i<s-1) {
 					sum += "+";
 				}
 			}
+			prover.addProofLine("Now we consider the following expression:");
 			prover.addProofLine(sum);
 			prover.addProofLine("Contradiction! This proves the original statement.");
+			String deg = coeffs[s+1];
+			prover.addProofLine("The statement has a difficulty of degree " + deg + ".");
 			return;
 		}
 
