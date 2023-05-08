@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.TreeSet;
 
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.RelationNumerical;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -26,6 +27,7 @@ import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
 import org.geogebra.common.kernel.prover.ProverBotanasMethod;
 import org.geogebra.common.kernel.prover.ProverPureSymbolicMethod;
+import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.util.debug.Log;
@@ -187,6 +189,19 @@ public abstract class Prover {
 		 */
 		double readability = 1.0;
 
+		public PPolynomial[] getPolys() {
+			return polys;
+		}
+
+		public void setPolys(PPolynomial[] polys) {
+			this.polys = polys;
+		}
+
+		/**
+		 * The polynomials that explain this condition (optional).
+		 */
+		PPolynomial[] polys;
+
 		/**
 		 * Array of GeoElements (parameters of the condition)
 		 */
@@ -248,6 +263,40 @@ public abstract class Prover {
 		public void setGeos(GeoElement[] object) {
 			this.geos = object;
 		}
+
+		public StringBuilder explain(Localization loc) {
+			String cond = getCondition();
+			StringBuilder s = new StringBuilder();
+			if ("AreParallel".equals(cond)) {
+				// non-parallism in 2D means intersecting
+				// FIXME: this is not true for 3D
+				s = sb(RelationNumerical.intersectString(
+						getGeos()[0], getGeos()[1],
+						true, loc));
+			} else if ("AreCollinear".equals(cond)) {
+				s = sb(RelationNumerical
+						.triangleNonDegenerateString(
+								(GeoPoint) getGeos()[0],
+								(GeoPoint) getGeos()[1],
+								(GeoPoint) getGeos()[2],
+								loc));
+			} else if ("AreEqual".equals(cond)) {
+				s = sb(RelationNumerical.equalityString(
+						getGeos()[0], getGeos()[1],
+						false, loc));
+			} else if ("ArePerpendicular".equals(cond)) {
+				s = sb(RelationNumerical.perpendicularString(
+						(GeoLine) getGeos()[0],
+						(GeoLine) getGeos()[1], false,
+						loc));
+			} else if ("AreCongruent".equals(cond)) {
+				s = sb(RelationNumerical.congruentSegmentString(
+						getGeos()[0], getGeos()[1],
+						false, loc));
+			}
+			return s;
+		}
+
 
 		/**
 		 * Should this condition be used in the Discover command?

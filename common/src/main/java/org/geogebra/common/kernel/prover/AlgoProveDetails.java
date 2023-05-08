@@ -213,34 +213,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 						StringBuilder s = null;
 
 						if (relTool) {
-							String cond = ndgc.getCondition();
-							if ("AreParallel".equals(cond)) {
-								// non-parallism in 2D means intersecting
-								// FIXME: this is not true for 3D
-								s = sb(RelationNumerical.intersectString(
-										ndgc.getGeos()[0], ndgc.getGeos()[1],
-										true, getLoc()));
-							} else if ("AreCollinear".equals(cond)) {
-								s = sb(RelationNumerical
-										.triangleNonDegenerateString(
-												(GeoPoint) ndgc.getGeos()[0],
-												(GeoPoint) ndgc.getGeos()[1],
-												(GeoPoint) ndgc.getGeos()[2],
-												getLoc()));
-							} else if ("AreEqual".equals(cond)) {
-								s = sb(RelationNumerical.equalityString(
-										ndgc.getGeos()[0], ndgc.getGeos()[1],
-										false, getLoc()));
-							} else if ("ArePerpendicular".equals(cond)) {
-								s = sb(RelationNumerical.perpendicularString(
-										(GeoLine) ndgc.getGeos()[0],
-										(GeoLine) ndgc.getGeos()[1], false,
-										getLoc()));
-							} else if ("AreCongruent".equals(cond)) {
-								s = sb(RelationNumerical.congruentSegmentString(
-										ndgc.getGeos()[0], ndgc.getGeos()[1],
-										false, getLoc()));
-							}
+							s = ndgc.explain(getLoc());
 						}
 						if (s == null || !relTool) {
 							s = sb(ndgc.toString(getLoc()));

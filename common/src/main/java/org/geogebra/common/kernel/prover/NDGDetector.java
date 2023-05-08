@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.RelationNumerical;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
 import org.geogebra.common.kernel.algos.SymbolicParametersBotanaAlgo;
@@ -20,6 +21,8 @@ import org.geogebra.common.kernel.arithmetic.Equation;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoLine;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PTerm;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
@@ -241,6 +244,9 @@ public class NDGDetector {
 				ndgc.setGeos(points);
 				Arrays.sort(ndgc.getGeos());
 				ndgc.setCondition("AreCollinear");
+				PPolynomial[] polys = new PPolynomial[1];
+				polys[0] = coll;
+				ndgc.setPolys(polys);
 				lookupTable.put(keyString, ndgc);
 				return ndgc;
 			}
@@ -283,6 +289,9 @@ public class NDGDetector {
 				Arrays.sort(ndgc.getGeos());
 				ndgc.setCondition("AreEqual");
 				ndgc.setReadability(0.5);
+				PPolynomial[] polys = new PPolynomial[1];
+				polys[0] = eq;
+				ndgc.setPolys(polys);
 				lookupTable.put(keyString, ndgc);
 				return ndgc;
 			}
@@ -441,6 +450,9 @@ public class NDGDetector {
 					ndgc.setGeos(points);
 					ndgc.setCondition("ArePerpendicular");
 					ndgc.setReadability(0.75);
+					PPolynomial[] polys = new PPolynomial[1];
+					polys[0] = eq;
+					ndgc.setPolys(polys);
 					lookupTable.put(keyString, ndgc);
 					return ndgc;
 				}
@@ -471,6 +483,9 @@ public class NDGDetector {
 					ndgc.setGeos(points);
 					ndgc.setCondition("AreCongruent");
 					ndgc.setReadability(0.75);
+					PPolynomial[] polys = new PPolynomial[1];
+					polys[0] = eq;
+					ndgc.setPolys(polys);
 					lookupTable.put(keyString, ndgc);
 					return ndgc;
 				}

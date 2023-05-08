@@ -193,7 +193,6 @@ public class ProverBotanasMethod {
 		}
 		ndgc.setGeos(geos);
 		Arrays.sort(ndgc.getGeos());
-		prover.addNDGcondition(ndgc);
 
 		/* The output will contain $\binom{n}{3}$ elements: */
 		PPolynomial[] ret = new PPolynomial[setSize * (setSize - 1)
@@ -250,6 +249,8 @@ public class ProverBotanasMethod {
 				}
 			}
 		}
+		ndgc.setPolys(ret);
+		prover.addNDGcondition(ndgc);
 		return ret;
 	}
 
@@ -581,6 +582,7 @@ public class ProverBotanasMethod {
 			int size = polynomials.size();
 			Log.debug("Adding poly #" + (size) + ": " + p.toTeX());
 			if (geoProver.getShowproof()) {
+				// geoProver.addProofLine("e" + size + ":=" + p.toTeX());
 				geoProver.addProofLine("e" + size + ":=" + p + "=0");
 			}
 			return true;
@@ -2474,6 +2476,8 @@ public class ProverBotanasMethod {
 			}
 		}
 
+		PPolynomial ndgproduct = new PPolynomial(1);
+
 		if (prover.isReturnExtraNDGs() ||
 				!prover.getConstruction().getApplication()
 						.singularWSisAvailable()) {
@@ -2713,9 +2717,27 @@ public class ProverBotanasMethod {
 						}
 					}
 				}
-				if (found) {
+				if (found && bestNdgSet.size() > 0) {
+					Localization loc = prover.getConstruction().getApplication().getLocalization();
+					if (prover.getShowproof()) {
+						prover.addProofLine("The statement is true under some non-degeneracy conditions.");
+					}
+					ndgproduct = ndgproduct.multiply(new PPolynomial(new PVariable(statement.getKernel())));
 					for (NDGCondition aBestNdgSet : bestNdgSet) {
 						prover.addNDGcondition(aBestNdgSet);
+						for(PPolynomial p : aBestNdgSet.getPolys()) {
+							ndgproduct = ndgproduct.multiply(p);
+						}
+						if (prover.getShowproof()) {
+							aBestNdgSet.getCondition();
+							String explanation = aBestNdgSet.explain(loc).toString();
+							explanation = explanation.replaceAll("<[^>]*>", "");
+							prover.addProofLine(explanation + ":");
+						}
+					}
+					ndgproduct = ndgproduct.subtract(new PPolynomial(1));
+					if (prover.getShowproof()) {
+						prover.addProofLine("ndg:" + ndgproduct + "=0");
 					}
 				}
 			}
@@ -2730,7 +2752,7 @@ public class ProverBotanasMethod {
 			/* END OF PROVEDETAILS. */
 
 			/* START OF PROVE. */
-		} else {
+		} else { /* TODO: Remove this completely. That is, compute everything via ProveDetails. */
 			ExtendedBoolean solvable = PPolynomial.solvable(
 					as.getPolynomials()
 							.toArray(new PPolynomial[as.getPolynomials()
@@ -2830,18 +2852,25 @@ public class ProverBotanasMethod {
 		Log.debug("Statement is GENERALLY TRUE");
 		if (prover.getShowproof()) {
 			// We compute the syzygy. TODO: Do this for the other cases as well.
-			syzygy(as, substitutions, statement.getKernel(), proverSettings.transcext, prover);
+			syzygy(as, ndgproduct, substitutions, statement.getKernel(), proverSettings.transcext, prover);
 
 		}
 		return ProofResult.TRUE;
 	}
 
-	public static void syzygy(AlgebraicStatement as, TreeMap<PVariable, BigInteger> substitutions,
+	public static void syzygy(AlgebraicStatement as, PPolynomial ndgproduct, TreeMap<PVariable, BigInteger> substitutions,
 			Kernel kernel, boolean transcext, Prover prover) {
 
-		PPolynomial[] polys = as.getPolynomials().toArray(new PPolynomial[as.getPolynomials().size()]);
+		int ndgs = 0;
+		if (!ndgproduct.isOne()) {
+			ndgs = 1;
+		}
+		PPolynomial[] polys = as.getPolynomials().toArray(new PPolynomial[as.getPolynomials().size() + ndgs]);
+		if (ndgs == 1) {
+			polys[polys.length - 1] = ndgproduct;
+		}
 		int se = 1;
-		prover.addProofLine("All equations after substitutions and reordering:");
+		prover.addProofLine("All hypotheses and the negated thesis after substitutions and reordering:");
 		for (PPolynomial p : as.getPolynomials()) {
 			prover.addProofLine("s" + se + ":" + p.substitute(substitutions).toString() + "=0");
 			se += 1;
@@ -2888,6 +2917,7 @@ public class ProverBotanasMethod {
 			String[] coeffs = syzygyResult.split("\n");
 			int s = coeffs.length;
 			s-=2; // the last entry is the degree, and the first entry is unused
+			s-=ndgs;
 			if (s != se) {
 				Log.debug("Unexpected number of coeffs");
 				return;
@@ -2898,6 +2928,11 @@ public class ProverBotanasMethod {
 				if (i<s-1) {
 					sum += "+";
 				}
+			}
+			if (ndgs == 1) {
+				s += 1;
+				String c[] = coeffs[s].split("=");
+				sum += "+ndg*(" + c[1] + ")";
 			}
 			prover.addProofLine("Now we consider the following expression:");
 			prover.addProofLine(sum);

@@ -123,6 +123,9 @@ public class CmdShowProof extends CmdScripting {
 							if (step.contains("dependent point")) {
 								gcc3.setFontColor(GColor.DARK_CYAN);
 							}
+							if (step.contains("degener")) {
+								gcc3.setFontColor(GColor.MAGENTA);
+							}
 							if (step.contains("proves")) {
 								gcc3.setFontColor(GColor.RED);
 								gcc3.setFontStyle(GFont.BOLD);
