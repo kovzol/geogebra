@@ -2720,7 +2720,7 @@ public class ProverBotanasMethod {
 				if (found && bestNdgSet.size() > 0) {
 					Localization loc = prover.getConstruction().getApplication().getLocalization();
 					if (prover.getShowproof()) {
-						prover.addProofLine("The statement is true under some non-degeneracy conditions.");
+						prover.addProofLine("The statement is true under some non-degeneracy conditions:");
 					}
 					ndgproduct = ndgproduct.multiply(new PPolynomial(new PVariable(statement.getKernel())));
 					for (NDGCondition aBestNdgSet : bestNdgSet) {
@@ -2732,7 +2732,7 @@ public class ProverBotanasMethod {
 							aBestNdgSet.getCondition();
 							String explanation = aBestNdgSet.explain(loc).toString();
 							explanation = explanation.replaceAll("<[^>]*>", "");
-							prover.addProofLine(explanation + ":");
+							prover.addProofLine(Unicode.BULLET + " " + explanation);
 						}
 					}
 					ndgproduct = ndgproduct.subtract(new PPolynomial(1));

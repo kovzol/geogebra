@@ -22,6 +22,8 @@ import org.geogebra.common.main.App;
 import org.geogebra.common.main.MyError;
 import org.geogebra.common.util.debug.Log;
 
+import com.himamis.retex.editor.share.util.Unicode;
+
 
 /**
  * ToolImage
@@ -123,7 +125,7 @@ public class CmdShowProof extends CmdScripting {
 							if (step.contains("dependent point")) {
 								gcc3.setFontColor(GColor.DARK_CYAN);
 							}
-							if (step.contains("degener")) {
+							if (step.contains("degener") || step.startsWith(Unicode.BULLET + "")) {
 								gcc3.setFontColor(GColor.MAGENTA);
 							}
 							if (step.contains("proves")) {
