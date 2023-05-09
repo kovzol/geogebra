@@ -2725,14 +2725,17 @@ public class ProverBotanasMethod {
 					ndgproduct = ndgproduct.multiply(new PPolynomial(new PVariable(statement.getKernel())));
 					for (NDGCondition aBestNdgSet : bestNdgSet) {
 						prover.addNDGcondition(aBestNdgSet);
-						for(PPolynomial p : aBestNdgSet.getPolys()) {
-							ndgproduct = ndgproduct.multiply(p);
-						}
-						if (prover.getShowproof()) {
-							aBestNdgSet.getCondition();
-							String explanation = aBestNdgSet.explain(loc).toString();
-							explanation = explanation.replaceAll("<[^>]*>", "");
-							prover.addProofLine(Unicode.BULLET + " " + explanation);
+						PPolynomial[] polys = aBestNdgSet.getPolys();
+						if (polys != null) {
+							for (PPolynomial p : polys) {
+								ndgproduct = ndgproduct.multiply(p);
+							}
+							if (prover.getShowproof()) {
+								aBestNdgSet.getCondition();
+								String explanation = aBestNdgSet.explain(loc).toString();
+								explanation = explanation.replaceAll("<[^>]*>", "");
+								prover.addProofLine(Unicode.BULLET + " " + explanation);
+							}
 						}
 					}
 					ndgproduct = ndgproduct.subtract(new PPolynomial(1));
