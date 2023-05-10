@@ -2476,7 +2476,7 @@ public class ProverBotanasMethod {
 			}
 		}
 
-		PPolynomial ndgproduct = new PPolynomial(1);
+		PPolynomial ndgproduct = new PPolynomial(BigInteger.ONE);
 
 		if (prover.isReturnExtraNDGs() ||
 				!prover.getConstruction().getApplication()
@@ -2539,6 +2539,7 @@ public class ProverBotanasMethod {
 					boolean readable = true;
 					Set<PPolynomial> thisNdgSet = ndgSet.next();
 					Iterator<PPolynomial> ndg = thisNdgSet.iterator();
+					ndgproduct = new PPolynomial(BigInteger.ONE);
 					while (ndg.hasNext() && readable) {
 						PPolynomial poly = ndg.next();
 						if (poly.isZero()) {
@@ -2643,6 +2644,7 @@ public class ProverBotanasMethod {
 								Log.debug("Interpreting TRUE as UNKNOWN");
 								return ProofResult.UNKNOWN;
 							}
+							ndgproduct = ndgproduct.multiply(poly);
 							NDGCondition ndgc = ndgd.detect(poly);
 							if (ndgc == null) {
 								readable = false;
@@ -2722,7 +2724,7 @@ public class ProverBotanasMethod {
 					if (prover.getShowproof()) {
 						prover.addProofLine("The statement is true under some non-degeneracy conditions:");
 					}
-					ndgproduct = ndgproduct.multiply(new PPolynomial(new PVariable(statement.getKernel())));
+					ndgproduct = new PPolynomial(new PVariable(statement.getKernel()));
 					for (NDGCondition aBestNdgSet : bestNdgSet) {
 						prover.addNDGcondition(aBestNdgSet);
 						PPolynomial[] polys = aBestNdgSet.getPolys();
@@ -2738,7 +2740,7 @@ public class ProverBotanasMethod {
 							}
 						}
 					}
-					ndgproduct = ndgproduct.subtract(new PPolynomial(1));
+					ndgproduct = ndgproduct.subtract(new PPolynomial(BigInteger.ONE));
 					if (prover.getShowproof()) {
 						prover.addProofLine("ndg:" + ndgproduct + "=0");
 					}
@@ -2750,6 +2752,13 @@ public class ProverBotanasMethod {
 			 */
 			if (!found) {
 				Log.debug("Statement is TRUE but NDGs are UNREADABLE");
+				if (prover.getShowproof()) {
+					prover.addProofLine("The statement is true under some non-degeneracy conditions (they cannot be expressed in simple geometric terms):");
+					ndgproduct = ndgproduct.multiply(new PPolynomial(new PVariable(statement.getKernel())));
+					ndgproduct = ndgproduct.subtract(new PPolynomial(BigInteger.ONE));
+					prover.addProofLine("ndg:" + ndgproduct + "=0");
+					syzygy(as, ndgproduct, substitutions, statement.getKernel(), proverSettings.transcext, prover);
+				}
 				return ProofResult.TRUE_NDG_UNREADABLE;
 			}
 			/* END OF PROVEDETAILS. */
