@@ -918,8 +918,14 @@ public abstract class Prover {
 			// remove last two chars:
 			freePointsText.deleteCharAt(l - 1);
 			freePointsText.deleteCharAt(l - 2);
-			theoremText.append(loc.getPlain("LetABeArbitraryPoints",
-					freePointsText.toString())).append(separator);
+			if (freePoints.size() > 1) {
+				theoremText.append(loc.getPlain("LetABeArbitraryPoints",
+						freePointsText.toString())).append(separator);
+			} else {
+				theoremText.append(loc.getPlainDefault("LetABeAnArbitraryPoint",
+						"Let %0 be an arbitrary point.",
+						freePointsText.toString())).append(separator);
+			}
 		}
 
 		theoremText.append(hypotheses);

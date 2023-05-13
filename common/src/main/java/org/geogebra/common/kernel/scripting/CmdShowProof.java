@@ -85,7 +85,7 @@ public class CmdShowProof extends CmdScripting {
 						if (output.size() == 2) {
 							gcc2.setInput("The statement is always true.");
 						} else {
-							gcc2.setInput("The statement is true under some degeneracy conditions (see below).");
+							gcc2.setInput("The statement is true under some non-degeneracy conditions (see below).");
 						}
 					} else {
 						gcc2.setInput("The statement is false.");
