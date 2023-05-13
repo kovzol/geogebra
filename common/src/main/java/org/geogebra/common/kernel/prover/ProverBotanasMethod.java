@@ -2472,7 +2472,19 @@ public class ProverBotanasMethod {
 			Log.debug("substitutions: " + substitutions);
 			if (prover.getShowproof()) {
 				prover.addProofLine("Without loss of generality, some coordinates can be fixed:");
-				prover.addProofLine(substitutions.toString());
+				// Do it in reversed order (which is the natural order here).
+				Iterator<PVariable> it = substitutions.keySet().iterator();
+				String substs = "}";
+				while (it.hasNext()) {
+					PVariable entry = it.next();
+					BigInteger val = substitutions.get(entry);
+					if (substs.length() > 1) {
+						substs = "," + substs;
+					}
+					substs =  entry + "=" + val + substs;
+				}
+				substs = "{" + substs;
+				prover.addProofLine(substs);
 			}
 		}
 

@@ -842,7 +842,7 @@ public abstract class Prover {
 	 *            the input statement
 	 * @return a localized statement in readable format
 	 */
-	public static String getTextFormat(GeoElement statement, boolean showStatement) {
+	public static String getTextFormat(GeoElement statement, boolean showStatement, String separator) {
 		// FIXME: This is now English specific. For a more general approach we need
 		// more work on the localization (with additional database entries).
 		Localization loc = statement.getKernel().getLocalization();
@@ -891,7 +891,7 @@ public abstract class Prover {
 						}
 					}
 					if (textLocalized != null) {
-						hypotheses.append(textLocalized).append(" ");
+						hypotheses.append(textLocalized).append(separator);
 					}
 				}
 			} else { // geo is a GeoNumeric
@@ -901,7 +901,7 @@ public abstract class Prover {
 					String textLocalized = loc.getPlain("DenoteTheExpressionAByB",
 							definition, geo.getLabelSimple());
 					if (textLocalized != null) {
-						hypotheses.append(textLocalized).append(" ");
+						hypotheses.append(textLocalized).append(separator);
 					}
 				}
 			}
@@ -919,7 +919,7 @@ public abstract class Prover {
 			freePointsText.deleteCharAt(l - 1);
 			freePointsText.deleteCharAt(l - 2);
 			theoremText.append(loc.getPlain("LetABeArbitraryPoints",
-					freePointsText.toString())).append(" ");
+					freePointsText.toString())).append(separator);
 		}
 
 		theoremText.append(hypotheses);

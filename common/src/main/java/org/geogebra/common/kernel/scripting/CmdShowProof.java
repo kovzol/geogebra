@@ -61,13 +61,16 @@ public class CmdShowProof extends CmdScripting {
 				AlgoProveDetails algo = new AlgoProveDetails(cons, arg[0], false, false, true);
 				String statementText = algo.statementText(arg[0]);
 
-				GeoCasCell gcc1 = new GeoCasCell(cons);
-				gcc1.setInput(statementText);
-				gcc1.setUseAsText(true);
-				gcc1.setFontColor(GColor.BLUE);
-				gcc1.computeOutput();
-				gcc1.update();
-				cons.setCasCellRow(gcc1, rows++);
+				String[] statementTexts = statementText.split("\n");
+				for (String s : statementTexts) {
+					GeoCasCell gcc1 = new GeoCasCell(cons);
+					gcc1.setInput(s);
+					gcc1.setUseAsText(true);
+					gcc1.setFontColor(GColor.BLUE);
+					gcc1.computeOutput();
+					gcc1.update();
+					cons.setCasCellRow(gcc1, rows++);
+				}
 
 				boolean statementTrue = false;
 				GeoList output = algo.getGeoList();
@@ -78,8 +81,12 @@ public class CmdShowProof extends CmdScripting {
 				} else {
 					boolean proofResult = ((GeoBoolean) output.get(0)).getBoolean();
 					if (proofResult) {
-						gcc2.setInput("The statement is true.");
 						statementTrue = true;
+						if (output.size() == 1) {
+							gcc2.setInput("The statement is always true.");
+						} else {
+							gcc2.setInput("The statement is true under some degeneracy conditions (see below).");
+						}
 					} else {
 						gcc2.setInput("The statement is false.");
 					}

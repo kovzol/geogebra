@@ -307,11 +307,11 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	 * may not be the case if rounding/precision is not as presumed.
 	 */
 	private static String fingerprint(GeoElement statement) {
-		return Prover.getTextFormat(statement, true);
+		return Prover.getTextFormat(statement, true, " ");
 	}
 
 	public static String statementText (GeoElement statement) {
-		return Prover.getTextFormat(statement, true);
+		return Prover.getTextFormat(statement, true, "\n");
 	}
 
 }

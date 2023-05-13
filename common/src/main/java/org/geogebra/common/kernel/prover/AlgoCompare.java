@@ -297,7 +297,7 @@ public class AlgoCompare extends AlgoElement {
         inp[0] = "";
         inp[1] = "";
 
-        String currentProblem = p.getTextFormat(p.getStatement(), false);
+        String currentProblem = p.getTextFormat(p.getStatement(), false, " ");
         Localization loc = kernel.getLocalization();
         String def1 = inpElem[0].getDefinitionDescription(fancyFormat);
         String def2 = inpElem[1].getDefinitionDescription(fancyFormat);
