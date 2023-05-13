@@ -340,7 +340,8 @@ public class ProverBotanasMethod {
 		 * The set of polynomials which are the translations of the geometric
 		 * hypotheses and the thesis. The thesis is stored reductio ad absurdum.
 		 */
-		private Set<PPolynomial> polynomials;
+		ArrayList<PPolynomial> polynomials;
+
 		/**
 		 * The set of free variables. By default each variable is non-free, thus
 		 * this list is empty. Some algos and geo types should create an entry
@@ -547,7 +548,7 @@ public class ProverBotanasMethod {
 		/**
 		 * @return the polynomials
 		 */
-		public Set<PPolynomial> getPolynomials() {
+		public ArrayList<PPolynomial> getPolynomials() {
 			return polynomials;
 		}
 
@@ -578,6 +579,7 @@ public class ProverBotanasMethod {
 				Log.debug("Ignoring existing poly " + p);
 				return false;
 			}
+
 			polynomials.add(p);
 			int size = polynomials.size();
 			Log.debug("Adding poly #" + (size) + ": " + p.toTeX());
@@ -870,7 +872,7 @@ public class ProverBotanasMethod {
 		}
 
 		private void setHypotheses(GeoElement movingPoint) {
-			polynomials = new TreeSet<>();
+			polynomials = new ArrayList<>();
 
 			TreeSet<GeoElement> predecessors = new TreeSet<>();
 			TreeSet<GeoElement> allPredecessors = geoStatement
@@ -2894,7 +2896,7 @@ public class ProverBotanasMethod {
 			polys[polys.length - 1] = ndgproduct;
 		}
 		int se = 1;
-		prover.addProofLine("All hypotheses and the negated thesis after substitutions and reordering:");
+		prover.addProofLine("All hypotheses and the negated thesis after substitutions:");
 		for (PPolynomial p : as.getPolynomials()) {
 			prover.addProofLine("s" + se + ":" + p.substitute(substitutions).toString() + "=0");
 			se += 1;

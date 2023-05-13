@@ -1,6 +1,7 @@
 package org.geogebra.common.kernel.prover.polynomial;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -440,7 +441,7 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 *            the polynomials
 	 * @return the set of variables
 	 */
-	public static HashSet<PVariable> getVars(Set<PPolynomial> polys) {
+	public static HashSet<PVariable> getVars(ArrayList<PPolynomial> polys) {
 		HashSet<PVariable> v = new HashSet<>();
 		for (PPolynomial poly : polys) {
 			HashSet<PVariable> vars = poly.getVars();

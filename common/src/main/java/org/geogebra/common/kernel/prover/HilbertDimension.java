@@ -1,6 +1,7 @@
 package org.geogebra.common.kernel.prover;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,7 +39,7 @@ public class HilbertDimension {
 		return aMaximalSet;
 	}
 
-	private static boolean eliminationIsZero(Set<PPolynomial> polys,
+	private static boolean eliminationIsZero(ArrayList<PPolynomial> polys,
 			Set<PVariable> vars, TreeMap<PVariable, BigInteger> substitutions) {
 		Set<Set<PPolynomial>> eliminationIdeal = PPolynomial.eliminate(
 				polys.toArray(new PPolynomial[polys.size()]), substitutions,
