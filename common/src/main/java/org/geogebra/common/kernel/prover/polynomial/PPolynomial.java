@@ -1009,6 +1009,9 @@ public class PPolynomial implements Comparable<PPolynomial> {
 		String dummyVar = "d";
 
 		String vars = ringVars + addLeadingComma(fieldVars);
+		if (vars.startsWith(",")) {
+			vars = vars.substring(1);
+		}
 
 		String substCommand = "";
 		if (substitutions != null) {
