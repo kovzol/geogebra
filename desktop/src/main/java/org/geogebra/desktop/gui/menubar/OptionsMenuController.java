@@ -69,7 +69,8 @@ public class OptionsMenuController {
 		// font size
 		else if (cmd.endsWith("pt")) {
 			try {
-				app.setFontSize(Integer.parseInt(cmd.substring(0, 2)), true);
+				int index = cmd.indexOf(" ");
+				app.setFontSize(Integer.parseInt(cmd.substring(0, index)), true);
 				app.setUnsaved();
 			} catch (Exception e) {
 				app.showError(e.toString());
