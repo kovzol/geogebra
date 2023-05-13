@@ -82,7 +82,7 @@ public class CmdShowProof extends CmdScripting {
 					boolean proofResult = ((GeoBoolean) output.get(0)).getBoolean();
 					if (proofResult) {
 						statementTrue = true;
-						if (output.size() == 1) {
+						if (output.size() == 2) {
 							gcc2.setInput("The statement is always true.");
 						} else {
 							gcc2.setInput("The statement is true under some degeneracy conditions (see below).");
