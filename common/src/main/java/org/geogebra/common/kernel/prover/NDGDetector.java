@@ -468,6 +468,9 @@ public class NDGDetector {
 					ndgc.setGeos(points);
 					ndgc.setCondition("AreParallel");
 					ndgc.setReadability(0.75);
+					PPolynomial[] polys = new PPolynomial[1];
+					polys[0] = eq;
+					ndgc.setPolys(polys);
 					lookupTable.put(keyString, ndgc);
 					return ndgc;
 				}

@@ -2747,7 +2747,7 @@ public class ProverBotanasMethod {
 								ndgproduct = ndgproduct.multiply(p);
 							}
 							if (prover.getShowproof()) {
-								aBestNdgSet.getCondition();
+								aBestNdgSet.rewrite(prover.getConstruction(), false);
 								String explanation = aBestNdgSet.explain(loc).toString();
 								explanation = explanation.replaceAll("<[^>]*>", "");
 								prover.addProofLine(Unicode.BULLET + " " + explanation);
