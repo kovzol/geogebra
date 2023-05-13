@@ -2736,7 +2736,7 @@ public class ProverBotanasMethod {
 				if (found && bestNdgSet.size() > 0) {
 					Localization loc = prover.getConstruction().getApplication().getLocalization();
 					if (prover.getShowproof()) {
-						prover.addProofLine("The statement is true under some non-degeneracy conditions:");
+						prover.addProofLine("The statement can be suspected to be true under some non-degeneracy conditions:");
 					}
 					ndgproduct = new PPolynomial(new PVariable(statement.getKernel()));
 					for (NDGCondition aBestNdgSet : bestNdgSet) {
