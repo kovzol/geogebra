@@ -55,6 +55,8 @@ public class CmdShowProof extends CmdScripting {
 					throw new MyError(loc, "Please open the CAS View first.");
 				}
 
+				kernel.storeUndoInfo();
+
 				int rows;
 				rows = cv.getConsoleTable().getRowCount();
 
@@ -122,6 +124,14 @@ public class CmdShowProof extends CmdScripting {
 							GeoCasCell gcc3 = new GeoCasCell(cons);
 							if (step.endsWith("0") || step.endsWith("}") || step.startsWith("s")) {
 								gcc3.setUseAsText(false); // this is a formula or a list or a syzygy
+								if (step.contains(":")) {
+									int index = step.indexOf(":");
+									String var = step.substring(0, index);
+									if (cons.getAllLabels().contains(var)) {
+										kernel.undo();
+										throw new MyError(loc, "Variable " + var + " is already defined. Please remove it first.");
+									}
+								}
 							} else {
 								gcc3.setUseAsText(true);
 							}
