@@ -341,6 +341,7 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "  print(ee);"
 				+ "  ll:=lvar(ee);"
 				+ "  print(ll);"
+				// If the elimination ideal contains more elements, find the isolated points numerically by fsolve:
 				+ "  if ((size(ee))>1) {"
 				+ "      ff:=round(fsolve(ee,ll)*precision)/precision;"
 				+ "      print(ff);"
@@ -349,7 +350,8 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "            gg:=gg*((ll[0]-(ff[ii,0]))^2+(ll[1]-(ff[ii,1]))^2);"
 				+ "            print(gg);"
 				+ "          };"
-				+ "      ee:=copy([expand(lcm(denom(coeff(gg)))*gg)]);"
+				// Also, taking the gcd of the elements seems to be important (and copy the discrete points too):
+				+ "      ee:=gcd(ee)*copy([expand(lcm(denom(coeff(gg)))*gg)]);"
 				+ "    };"
 				+ "  print(ee);"
 				+ "  if (((size(ee))==0)) return(0); else return((primpoly(ee))[0]); ;"
