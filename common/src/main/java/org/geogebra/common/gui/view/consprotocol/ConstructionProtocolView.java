@@ -1352,96 +1352,105 @@ public class ConstructionProtocolView implements ConstructionStepper {
 		// Restart iteration
 		it = geos.iterator();
 
+		boolean showOnlyBreakPoints = kernel.getConstruction().showOnlyBreakpoints();
+		int nRowS = 0;
+
 		// table rows
 		for (int nRow = 0; nRow < endRow; nRow++) {
+
 			GeoElement geo = it.next();
-			String colorname = "ggbcolor" + nRow;
-			GColor color = useColors ? geo.getAlgebraColor()
-					: GColor.BLACK;
+			if (!showOnlyBreakPoints || getBreakpoint(geo)) {
+				nRowS++;
+				String colorname = "ggbcolor" + nRow;
+				GColor color = useColors ? geo.getAlgebraColor()
+						: GColor.BLACK;
 
-			for (int nCol = 0; nCol < nColumns; nCol++) {
+				for (int nCol = 0; nCol < nColumns; nCol++) {
 
-				Columns column = columns.get(nCol);
+					Columns column = columns.get(nCol);
 
-				// toolbar icon will only be inserted on request
+					// toolbar icon will only be inserted on request
 
-				String str = "";
+					String str = "";
 
-				switch (column) {
-				default:
-					str = "";
-					break;
+					switch (column) {
+					default:
+						str = "";
+						break;
 
-				case NUMBER:
-					str = (nRow + 1) + "";
-					break;
-				case CAPTION:
-					str = geo.getCaption(StringTemplate.algebraTemplate.deriveLaTeXTemplate());
-					if (!"".equals(str)) {
-						str = "$" + str + "$";
+					case NUMBER:
+						str = (nRowS) + "";
+						break;
+					case CAPTION:
+						str = geo.getCaption(StringTemplate.algebraTemplate.deriveLaTeXTemplate());
+						if (!"".equals(str)) {
+							str = "$" + str + "$";
+						}
+						break;
+
+					case NAME:
+						str = getNameLaTeX(geo);
+						break;
+
+					case TOOLBARICON:
+						// str = getModeIcon(geo);
+						int m = -1;
+						if (geo.getParentAlgorithm() != null) {
+							m = geo.getParentAlgorithm().getRelatedModeID();
+						} else {
+							m = geo.getRelatedModeID();
+						}
+						String icon = EuclidianConstants.getModeTextSimple(m).toLowerCase();
+						if (!"".equals(icon)) {
+							str = "\\raisebox{-1mm}{\\includegraphics[width=0.5cm]{mode_" + icon
+									+ "}}";
+						}
+						break;
+
+					case DESCRIPTION:
+						str = getDescriptionLaTeX(geo, false);
+						break;
+
+					case DEFINITION:
+						str = geo.getDefinition(
+								StringTemplate.algebraTemplate.deriveLaTeXTemplate());
+						if (!"".equals(str)) {
+							str = "$" + str + "$";
+						}
+						break;
+
+					case VALUE:
+						str = "$" + geo.getAlgebraDescriptionLaTeX() + "$";
+						break;
+
+					case BREAKPOINT:
+						if (getBreakpoint(geo)) {
+							str += "\\checkmark";
+						}
+						break;
 					}
-					break;
 
-				case NAME:
-					str = getNameLaTeX(geo);
-					break;
+					if (nCol > 0) {
+						sb.append("&");
+					}
 
-				case TOOLBARICON:
-					// str = getModeIcon(geo);
-					int m = -1;
-					if (geo.getParentAlgorithm() != null) {
-						m = geo.getParentAlgorithm().getRelatedModeID();
+					if ("".equals(str)) {
+						sb.append(" "); // space
 					} else {
-						m = geo.getRelatedModeID();
-					}
-					String icon = EuclidianConstants.getModeTextSimple(m).toLowerCase();
-					if (!"".equals(icon)) {
-						str = "\\raisebox{-1mm}{\\includegraphics[width=0.5cm]{mode_" + icon + "}}";
-					}
-					break;
 
-				case DESCRIPTION:
-					str = getDescriptionLaTeX(geo, false);
-					break;
-
-				case DEFINITION:
-					str = geo.getDefinition(StringTemplate.algebraTemplate.deriveLaTeXTemplate());
-					if (!"".equals(str)) {
-						str = "$" + str + "$";
-					}
-					break;
-
-				case VALUE:
-					str = "$" + geo.getAlgebraDescriptionLaTeX() + "$";
-					break;
-
-				case BREAKPOINT:
-					if (geo.isConsProtocolBreakpoint()) {
-						str += "\\checkmark";
-					}
-					break;
-				}
-
-				if (nCol > 0) {
-					sb.append("&");
-				}
-
-				if ("".equals(str)) {
-					sb.append(" "); // space
-				} else {
-
-					if (!GColor.BLACK.equals(color)) {
-						sb.append("\\textcolor{");
-						sb.append(colorname);
-						sb.append("}{");
-						sb.append(str);
-						sb.append("}");
-					} else {
-						sb.append(str);
+						if (!GColor.BLACK.equals(color)) {
+							sb.append("\\textcolor{");
+							sb.append(colorname);
+							sb.append("}{");
+							sb.append(str);
+							sb.append("}");
+						} else {
+							sb.append(str);
+						}
 					}
 				}
+				sb.append("\\tabularnewline\n");
 			}
-			sb.append("\\tabularnewline\n");
 		}
 
 		sb.append("\\bottomrule\n");
