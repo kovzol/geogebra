@@ -273,6 +273,7 @@ public class AlgoCompare extends AlgoElement {
         Prover p = UtilFactory.getPrototype().newProver();
         p.setProverEngine(Prover.ProverEngine.BOTANAS_PROVER);
         as = new AlgebraicStatement(gb, null, p, true);
+        // We should learn if this was unsuccessful, and return quickly with an negative report.
         as.removeThesis();
 
         String mepCode = null;

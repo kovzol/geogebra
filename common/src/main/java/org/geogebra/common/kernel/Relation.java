@@ -276,7 +276,7 @@ public class Relation {
 			AlgoCompare ac = new AlgoCompare(cons, ra, rb, true);
 			GeoElement[] o = ac.getOutput();
 			String out = ((GeoText) o[0]).getTextString();
-			if ("".equals(out)) {
+			if (out == null || "".equals(out)) {
 				ret = new String[1];
 				ret[0] = ""; // undefined (UNKNOWN)
 				return ret;

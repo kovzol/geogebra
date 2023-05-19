@@ -859,6 +859,9 @@ public abstract class Prover {
 					String definition =
 							geo.getDefinitionDescription(StringTemplate.defaultTemplate);
 					// Make the first letter lowercase. TODO: Check if this is OK for all locales.
+					if (definition == null || definition.equals("")) {
+						definition = geo.toString(); // handle e.g. xAxis: y = 0, TODO: improve this.
+					}
 					definition = (definition.substring(0, 1)).toLowerCase(Locale.ROOT)
 							+ definition.substring(1);
 					definition = definition.replace("Bisector", "bisector");
