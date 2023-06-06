@@ -2518,6 +2518,7 @@ public class ProverBotanasMethod {
 				 * with 7, too)
 				 */
 				/* Pappus6 is at https://www.geogebra.org/m/TEQGgRKe */
+				MAX_PERMUTATIONS = 1; // it is unnecessary to look after more readable NDGs
 			}
 			while (!found && permutation < MAX_PERMUTATIONS) {
 
