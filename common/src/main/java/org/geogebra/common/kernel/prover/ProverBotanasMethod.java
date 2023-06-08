@@ -2096,8 +2096,9 @@ public class ProverBotanasMethod {
 							.replace("<=", "-").replace(">", "-").replace("<", "-");
 					int deg = getDegree(degExp);
 					if (deg == -1) {
-						result = ProofResult.FALSE;
-						return null;
+						// result = ProofResult.FALSE;
+						// return null;
+						maxFixcoords = 2;
 					}
 
 					if (operation == EQUAL_BOOLEAN) {
