@@ -1986,8 +1986,42 @@ public class ProverBotanasMethod {
 			}
 
 			// Here we use the fact that there are no inequality assumptions.
+
+			// We compute the dimension of the "positive" result, by using Tarski's
+			// solution-dimension and get-free-vars commands.
+
+			String rgResultPS = geoStatement.getKernel().getApplication().tarski.evalCached("(t-neg [" + rgResult + "])");
+			String rgResultP = Compute.getTarskiOutput(rgResultPS);
+			// example: [v3 < 0 /\ v16 > 0] \/ [v3 < 0 /\ v16 - v3 < 0] \/ [v3 = 0 /\ v4 = 0] \/ [v3 > 0 /\ v16 < 0] \/ [v3 > 0 /\ v16 - v3 > 0] \/ [v16 = 0 /\ v16 - v3 = 0]
+			// Log.debug("Positive result: " + rgResultP);
+			String solDim = geoStatement.getKernel().getApplication().tarski.evalCached("(solution-dimension [" + rgResultP + "])");
+			// example: 3:num
+			// Log.debug("Solution dimension: " + solDim);
+			String freeVars = geoStatement.getKernel().getApplication().tarski.evalCached("(get-free-vars [" + rgResultP + "])");
+			// example: ( v3:sym v16:sym v4:sym )
+			// Log.debug("Free variables: " + freeVars);
+			String[] solDimS = solDim.split(":");
+			int solDimI = Integer.parseInt(solDimS[0]);
+			int freeVarsI = 0;
+			for (int i = 0; i < freeVars.length(); i++) {
+				if (freeVars.substring(i, i+1).equals(":")) {
+					freeVarsI ++;
+				}
+			}
+			Log.debug("Positive result " + rgResultP + " has " + freeVarsI + " variables and dimension " + solDimI);
+			if (freeVarsI == solDimI) {
+				result = ProofResult.TRUE_ON_COMPONENTS;
+				return;
+			}
+			if (freeVarsI != solDimI)
+			{
+				result = ProofResult.FALSE;
+				return;
+			}
+
+			// The rest below this is just legacy code and can be deleted on a cleanup...
+
 			// 1. round, only negation.
-			String rgResultP = geoStatement.getKernel().getApplication().tarski.evalCached("(t-neg [" + rgResult + "])");
 			rgResultP = Compute.getTarskiOutput(rgResultP);
 			Log.debug("resultP=" + rgResultP);
 			// A special case: If there is no conjunction and there is at least one inequality (<, <=, >, >=, /=)
