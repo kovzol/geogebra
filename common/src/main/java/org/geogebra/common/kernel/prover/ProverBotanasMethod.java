@@ -1975,17 +1975,29 @@ public class ProverBotanasMethod {
 			// Here we handle some special cases and leave the decision of the general case
 			// for future work.
 
-			if (ineqs.size() > 0) {
-				// There may be some assumptions that disallow a simple negation.
-				// For example, we assume that a point is on a segment (not just on a line),
-				// and this should be added as a conjunctive part to the negation. TODO.
-				// Now we return with UNKNOWN.
-				Log.debug("There are hypotheses that are of form inequality.");
-				result = ProofResult.UNKNOWN;
-				return;
-			}
+			String ineqVars = "";
 
-			// Here we use the fact that there are no inequality assumptions.
+			if (ineqs.size() > 0) {
+				String ineqsExpr = "";
+				for (String ineq : ineqs) {
+					if (!"".equals(ineqsExpr)) {
+						ineqsExpr += ",";
+					}
+					ineqsExpr += ineq.replace(">=", "-")
+							.replace("<=", "-").replace(">", "-").replace("<", "-")
+							.replace("=", "-");
+				}
+				GeoGebraCAS cas = (GeoGebraCAS) geoStatement.getKernel().getGeoGebraCAS();
+				CASGenericInterface c = cas.getCurrentCAS();
+				try {
+					ineqVars = c.evaluateRaw("lvar(" + ineqsExpr + ")");
+				} catch (Throwable e) {
+					Log.error("Problem when computing ineqs variables");
+				}
+				// Now ineqVars contains all variables from ineqs.
+				ineqVars = ineqVars.replace("{", "").replace("}", "");
+			}
+			String[] ineqVarsS = ineqVars.split(",");
 
 			// We compute the dimension of the "positive" result, by using Tarski's
 			// solution-dimension and get-free-vars commands.
@@ -2009,15 +2021,32 @@ public class ProverBotanasMethod {
 				}
 			}
 			Log.debug("Positive result " + rgResultP + " has " + freeVarsI + " variables and dimension " + solDimI);
-			if (freeVarsI == solDimI) {
-				result = ProofResult.TRUE_ON_COMPONENTS;
-				return;
-			}
+
 			if (freeVarsI != solDimI)
 			{
 				result = ProofResult.FALSE;
 				return;
 			}
+
+			// There may be some assumptions that modify the geometric set.
+			// For example, we assume that a point is on a segment (not just on a line),
+			// and this changes the assumption set drastically. So we cannot compare
+			// it to the solution set in an easy way.
+			for (String ineqVar : ineqVarsS) {
+				if (freeVars.contains(" " + ineqVar + ":sym")) {
+					// An ineq variable is present among the free variables. This is too difficult to analyze. TODO.
+					// So we return with UNKNOWN.
+					Log.debug("There are hypotheses that are of form inequality and some variables are present in the positive result.");
+					result = ProofResult.UNKNOWN;
+					return;
+				}
+			}
+
+			if (freeVarsI == solDimI) {
+				result = ProofResult.TRUE_ON_COMPONENTS;
+				return;
+			}
+
 
 			// The rest below this is just legacy code and can be deleted on a cleanup...
 
