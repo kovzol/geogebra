@@ -172,7 +172,7 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 
 		if (botanaVars == null) {
 			PVariable[] centerBotanaVars = P.getBotanaVars(P);
-			botanaVars = new PVariable[5];
+			botanaVars = new PVariable[4];
 			// center
 			botanaVars[0] = centerBotanaVars[0];
 			botanaVars[1] = centerBotanaVars[1];
@@ -180,19 +180,19 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 			botanaVars[2] = new PVariable(kernel);
 			botanaVars[3] = new PVariable(kernel);
 			// radius
-			botanaVars[4] = new PVariable(kernel);
+			// botanaVars[4] = new PVariable(kernel);
 		}
 
 		PPolynomial[] extraPolys = null;
 		// FIXME: This does not work if the expression is based on a slider.
 		if (num.getParentAlgorithm() instanceof AlgoDependentNumber) {
 			extraPolys = num.getBotanaPolynomials(num);
-			botanaPolynomials = new PPolynomial[extraPolys.length + 1];
+			botanaPolynomials = new PPolynomial[extraPolys.length + 2];
 		} else {
 			if (num.isNumberValue()) { // the fix radius or slider value will be another equation
-				botanaPolynomials = new PPolynomial[2];
+				botanaPolynomials = new PPolynomial[3];
 			} else {
-				botanaPolynomials = new PPolynomial[1];
+				botanaPolynomials = new PPolynomial[2];
 			}
 		}
 
@@ -203,23 +203,32 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 		PVariable[] radiusBotanaVars = num.getBotanaVars(num);
 		int k = 0;
 		// r^2
-		PPolynomial sqrR = PPolynomial.sqr(new PPolynomial(radiusBotanaVars[0]));
+		// PPolynomial sqrR = PPolynomial.sqr(new PPolynomial(radiusBotanaVars[0]));
+		PPolynomial R = new PPolynomial(radiusBotanaVars[0]);
 		// define radius
 		if (extraPolys != null) {
-			botanaPolynomials = new PPolynomial[extraPolys.length + 1];
+			botanaPolynomials = new PPolynomial[extraPolys.length + 2];
 			for (k = 0; k < extraPolys.length; k++) {
 				botanaPolynomials[k] = extraPolys[k];
 			}
 		}
 
 		// define circle
-		botanaPolynomials[k] = PPolynomial.sqrDistance(botanaVars[0],
-				botanaVars[1], botanaVars[2], botanaVars[3]).subtract(sqrR);
+		// botanaPolynomials[k] = PPolynomial.sqrDistance(botanaVars[0],
+		//				botanaVars[1], botanaVars[2], botanaVars[3]).subtract(sqrR);
+
+		// Put the circumpoint to East, to distance R:
+		botanaPolynomials[k] = new PPolynomial(botanaVars[2])
+				.subtract(new PPolynomial(botanaVars[0]))
+				.subtract(R);
+		botanaPolynomials[k+1] = new PPolynomial(botanaVars[3])
+				.subtract(new PPolynomial(botanaVars[1]));
+		// done for both coordinates!
 
 		// Solving TP-9:
 		if (!(num.getParentAlgorithm() instanceof AlgoDependentNumber) &&
 				num.isNumberValue()) {
-			k++;
+			k+=2;
 			BigInteger[] q = new BigInteger[2]; // borrowed from ProverBotanasMethod
 			double x = num.getValue();
 			/*
