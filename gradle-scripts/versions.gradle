@@ -20,6 +20,6 @@ ext.hamcrestVersion = '2.2'
 // This is automatically updated when there is a new version of Giac out:
 ext.javaGiacVersion = '69971'
 // Override this with an own compiled version:
-javaGiacVersion = '20230403'
+javaGiacVersion = '20230718b'
 // Please don't change this line since the automatism looks for exact match.
-ext.javaTarskiVersion = '1.34_20230626'
+ext.javaTarskiVersion = '1.36_20230718'
