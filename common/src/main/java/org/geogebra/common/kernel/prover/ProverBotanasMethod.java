@@ -3001,62 +3001,119 @@ public class ProverBotanasMethod {
 				Log.debug("Could not compute syzygy with SingularWS");
 				return;
 			}
-		}
 
-		if (syzygyResult != null && !syzygyResult.equals("")) {
-			String sum = "";
-			String[] coeffs = syzygyResult.split("\n");
-			int s = coeffs.length;
-			s-=2; // the last entry is the degree, and the first entry is unused
-			s-=ndgs;
-			if (s != se) {
-				Log.debug("Unexpected number of coeffs");
+			if (syzygyResult != null && !syzygyResult.equals("")) {
+				String sum = "";
+				String[] coeffs = syzygyResult.split("\n");
+				int s = coeffs.length;
+				s-=2; // the last entry is the degree, and the first entry is unused
+				s-=ndgs;
+				if (s != se) {
+					Log.debug("Unexpected number of coeffs");
+					return;
+				}
+				for (int i=0; i < s; i++) {
+					String c[] = coeffs[i+1].split("=");
+					sum += "s" + (i+1) + "*(" + c[1] + ")";
+					if (i<s-1) {
+						sum += "+";
+					}
+				}
+				if (ndgs == 1) {
+					s += 1;
+					String c[] = coeffs[s].split("=");
+					sum += "+ndg*(" + c[1] + ")";
+				}
+				prover.addProofLine("Now we consider the following expression:");
+				prover.addProofLine(sum);
+				prover.addProofLine("Contradiction! This proves the original statement.");
+				String deg = coeffs[s+1];
+				prover.addProofLine("The statement has a difficulty of degree " + deg + ".");
 				return;
 			}
-			for (int i=0; i < s; i++) {
-				String c[] = coeffs[i+1].split("=");
-				sum += "s" + (i+1) + "*(" + c[1] + ")";
-				if (i<s-1) {
-					sum += "+";
+			Log.debug("Could not compute syzygy with SingularWS");
+			return;
+		} else {
+			/*
+			I0:=[2*v7-v5-v3,2*v8-v6-v4,2*v9-v5-v1,2*v10-v6-v2,-1+v14*v9*v4-v14*v7*v4-v14*v10*v3+v14*v8*v3-v14*v9*v2+v14*v7*v2+v14*v10*v1-v14*v8*v1]
+			I1:=subst(I0,[v4=1,v3=0,v2=0,v1=0])
+			v:=[v7,v8,v9,v10,v14,v1,v2,v3,v4,v5,v6]
+			G,M:=gbasis(I1,v,coeffs)
+			Q:=greduce(1,G,v,quo)
+			Q[1]*M
+
+			evalfa([[I0:=[2*v7-v5-v3,2*v8-v6-v4,2*v9-v5-v1,2*v10-v6-v2,v14^2-v4^2-v3^2+2*v4*v2-v2^2+2*v3*v1-v1^2,
+			 v15^2-v10^2-v9^2+2*v10*v8-v8^2+2*v9*v7-v7^2,-1+4*v16*v15^2-v16*v14^2]],
+			 [I1:=subst(I0,v2=0,v1=0)],[v:=[v7,v8,v9,v10,v14,v15,v16,v1,v2,v3,v4,v5,v6]],
+			 [G,M:=gbasis(I1,v,coeffs)],[Q:=greduce(1,G,v,quo)],[A:=Q[1]*M],[d:=-1],
+			 [for ii from 0 to size(A)-1 do D:=total_degree(A[ii],lname(A[ii])); if(D>d) begin d:=D; end; od],[A,d]][8])
+			*/
+
+			String polys1 = polysAsCommaSeparatedString;
+			String fieldVars = freeVars;
+			String ringVars = dependantVars;
+			String vars = ringVars + PPolynomial.addLeadingComma(fieldVars);
+			if (vars.startsWith(",")) {
+				vars = vars.substring(1);
+			}
+
+			String substCommand = "";
+			String substParams = PPolynomial.substitutionsStringGiac(substitutions);
+			substCommand = "I1:=subst(I0,[" + substParams + "])";
+			syzygyProgram = "[[I0:=[" + polys1 + "]],[";
+			syzygyProgram += substCommand + "],";
+			syzygyProgram += "[v:=[" + vars + "]],";
+			syzygyProgram += "[G,M:=gbasis(I1,v,coeffs)],";
+			syzygyProgram += "[Q:=greduce(1,G,v,quo)],";
+			syzygyProgram += "[A:=Q[1]*M],";
+			syzygyProgram += "[d:=-1],";
+			syzygyProgram += "[for ii from 0 to size(A)-1 do D:=total_degree(A[ii],lname(A[ii])); if(D>d) begin d:=D; end; od],[A,d]][8]";
+
+			GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
+			CASGenericInterface c = cas.getCurrentCAS();
+			try {
+				syzygyResult = c.evaluateRaw(syzygyProgram);
+			} catch (Throwable e) {
+				Log.error("Problem when computing syzygy");
+			}
+
+			if (syzygyResult != null && !syzygyResult.equals("")) {
+				// This is the Giac adaptation of the Singular code written above. TODO: Unify.
+
+				// {{v13*v3+v13*v5+2*v13*v7-4*v13*v9,-4*v10*v13+v13*v4+v13*v6+2*v13*v8,-2*v13*v3-v13*v5+2*v13*v9,2*v10*v13-2*v13*v4-v13*v6,-v13,4*v13,-1},2}
+
+				int endOfCoeffs = syzygyResult.indexOf("},");
+				String coeffs1 = syzygyResult.substring(2,endOfCoeffs);
+
+				String sum = "";
+				String[] coeffs = coeffs1.split(",");
+				int s = coeffs.length;
+				s-=ndgs;
+				if (s != se) {
+					Log.debug("Unexpected number of coeffs");
+					return;
 				}
+				for (int i=0; i < s; i++) {
+					sum += "s" + (i+1) + "*(" + coeffs[i] + ")";
+					if (i<s-1) {
+						sum += "+";
+					}
+				}
+				if (ndgs == 1) {
+					s += 1;
+					sum += "+ndg*(" + coeffs[s-1] + ")";
+				}
+				prover.addProofLine("Now we consider the following expression:");
+				prover.addProofLine(sum);
+				prover.addProofLine("Contradiction! This proves the original statement.");
+				String deg = syzygyResult.substring(endOfCoeffs+2,syzygyResult.length()-1);
+				prover.addProofLine("The statement has a difficulty of degree " + deg + ".");
+				return;
 			}
-			if (ndgs == 1) {
-				s += 1;
-				String c[] = coeffs[s].split("=");
-				sum += "+ndg*(" + c[1] + ")";
-			}
-			prover.addProofLine("Now we consider the following expression:");
-			prover.addProofLine(sum);
-			prover.addProofLine("Contradiction! This proves the original statement.");
-			String deg = coeffs[s+1];
-			prover.addProofLine("The statement has a difficulty of degree " + deg + ".");
+			Log.debug("Could not compute syzygy with Giac");
 			return;
 		}
-
-		GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
-
-		String ret = "greduce(1,";
-		// FIXME: This command is not exactly what we want. So this part is not working yet.
-
-		if (substitutions != null) {
-			ret += "subst(";
-		}
-
-		ret += "[" + polysAsCommaSeparatedString + "]";
-
-		if (substitutions != null) {
-			String substParams = PPolynomial.substitutionsStringGiac(substitutions);
-			ret += ",[" + substParams + "])";
-		}
-
-		String vars = freeVars + PPolynomial.addLeadingComma(dependantVars);
-
-		ret += ",[" + vars + "],quo)";
-
-		syzygyResult = cas.evaluate(ret);
-
-		return;
-	}
+			}
 
 
 	/**
