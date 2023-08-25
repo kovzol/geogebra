@@ -4,7 +4,7 @@
 # @author Zoltan Kovacs <zoltan@geogebra.org>
 
 # Setting defaults.
-MY_VERSION=2.2
+MY_VERSION=2.3
 
 DEBUG=0 # In tmp/ there can be some log, if you set this to 1.
 DBDEBUG=0
@@ -35,6 +35,7 @@ usage() {
  echo "  where options can be as follows (defaults in parentheses):"
  echo "   -S <name>    run scenario: 'name' can be one of the following: jar-paper, giac-test, ndg"
  echo "   -D           rewrite Prove commands to ProveDetails"
+ echo "   -F           rewrite Prove commands to ShowProof"
  echo "   -d           put some debugging logs into tmp/"
  echo "   -b           save debugging information in the database"
  echo "   -t <number>  timeout: exit from a single test after the given number of seconds ($TIMEOUT)"
@@ -61,7 +62,7 @@ version() {
  exit 0
  }
 
-while getopts "t:p:P:S:dbDhvrV" OPT; do
+while getopts "t:p:P:s:S:dbDFhvrV" OPT; do
  case $OPT in
   t)
    TIMEOUT="$OPTARG"
@@ -113,6 +114,9 @@ while getopts "t:p:P:S:dbDhvrV" OPT; do
    ;;
   D)
    PROVEDETAILS=1
+   ;;
+  F)
+   PROVEDETAILS=2
    ;;
   h)
    usage
@@ -240,6 +244,49 @@ for i in `find -name '*.ggb' | sort`; do
   rm -fR $TMPDIR
   fi
 
+ if [ "$PROVEDETAILS" = 2 ]; then
+  TMPDIR=tempdir
+  mkdir -p $TMPDIR
+  unzip $i -d $TMPDIR >/dev/null 2>&1
+  # Remove Prove command but save its input for ShowProof first:
+  SP_INPUT=`cat $TMPDIR/geogebra.xml | grep -A1 Prove | tail -1 | cut -d\" -f2`
+  cat $TMPDIR/geogebra.xml | awk '{
+   if ($0=="<command name=\"Prove\">") rm=1;
+   if (rm!=1) print $0;
+   if (rm==1 && $0=="</command>") rm=0;
+   }' > $TMPDIR/geogebra.xml.new
+  mv $TMPDIR/geogebra.xml.new $TMPDIR/geogebra.xml
+
+  # Open CAS View:
+  cat $TMPDIR/geogebra.xml | awk '{
+    if (index($0, "<view id=\"8\"")>0) print "<view id=\"8\" toolbar=\"1001 | 1002 | 1003  || 1005 | 1004 || 1006 | 1007 | 1010 || 1008 1009 || 66 68 || 6\" visible=\"true\" inframe=\"false\" stylebar=\"false\" location=\"1,3\" size=\"300\" window=\"100,100,600,400\" />";
+     else print $0;
+   }' > $TMPDIR/geogebra.xml.new
+  mv $TMPDIR/geogebra.xml.new $TMPDIR/geogebra.xml
+
+  # Fix pane settings by appending a new pane:
+  cat $TMPDIR/geogebra.xml | awk '{
+    print $0;
+    if (index($0, "<pane location")>0) print "<pane location=\"1\" divider=\"0.2561912894961571\" orientation=\"1\" />";
+   }' > $TMPDIR/geogebra.xml.new
+  mv $TMPDIR/geogebra.xml.new $TMPDIR/geogebra.xml
+
+  # Fix Algebra View:
+  cat $TMPDIR/geogebra.xml | awk '{
+    if (index($0, "<view id=\"1\"")>0) print "<view id=\"1\" visible=\"true\" inframe=\"false\" stylebar=\"false\" location=\"1,1\" size=\"714\" window=\"100,100,600,400\" />";
+     else print $0;
+   }' > $TMPDIR/geogebra.xml.new
+  mv $TMPDIR/geogebra.xml.new $TMPDIR/geogebra.xml
+
+  # Run the ShowProof command on startup:
+  echo "function ggbOnInit() {ggbApplet.evalCommand(\"ShowProof($SP_INPUT)\");}" > $TMPDIR/geogebra_javascript.js
+
+  i=$i-ShowProof
+  rm -f $i
+  zip -j -r $i $TMPDIR >/dev/null 2>&1
+  rm -fR $TMPDIR
+  fi # ShowProof
+
  for j in $PROVERS; do
   cd $MYDIR; cd $RUNDIR
   ENGINE=`echo $j | cut -f1 -d_`
@@ -292,13 +339,16 @@ for i in `find -name '*.ggb' | sort`; do
    grep --silent ^SEVERE: $MYDIR/tmp/.test.stdout && echo "Prove or ProveDetails == null = undefined" > $REGRESSIONFILE
    # List k = ProveDetails[j] == null = true "AreCollinear[D,E,A]", "AreEqual[f,k_1]", "AreEqual[f,l]", "AreParallel[d,e]", "AreParallel[f,g]", "AreParallel[h,i]"
    RESULT=`cat $REGRESSIONFILE | grep Prove | sed s/" null ="//g | sed s/'"'//g | sed 's/\(.*\) == \(.*\)/\2/' | sed s/*/·/g`
-  else
+  else # desktop
    echo 'xml_user_preferences=<?xml version\="1.0" encoding\="utf-8"?>\n<geogebra format\="5.0" version\="5.0.641.0" app\="classic" platform\="d"  xsi\:noNamespaceSchemaLocation\="http\://www.geogebra.org/apps/xsd/ggb.xsd" xmlns\="" xmlns\:xsi\="http\://www.w3.org/2001/XMLSchema-instance" >\n<gui>\n\t<window width\="1012" height\="742" />\n\t<perspectives>\n<perspective id\="tmp">\n\t<panes>\n\t\t<pane location\="" divider\="0.7549407114624506" orientation\="1" />\n\t\t<pane location\="0" divider\="0.48921832884097033" orientation\="0" />\n\t</panes>\n\t<views>\n\t\t<view id\="512" toolbar\="0 | 1 501 5 19 , 67 | 2 15 45 18 , 7 37 | 514 3 9 , 13 44 , 47 | 16 51 | 551 550 11 ,  20 22 21 23 , 55 56 57 , 12 | 69 | 510 511 , 512 513 | 533 531 , 534 532 , 522 523 , 537 536 , 535 , 538 | 521 520 | 36 , 38 49 560 | 571 30 29 570 31 33 | 17 | 540 40 41 42 , 27 28 35 , 6 , 502" visible\="false" inframe\="false" stylebar\="false" location\="1,1,1" size\="500" window\="100,100,600,400" />\n\t\t<view id\="1" visible\="false" inframe\="false" stylebar\="false" location\="1,3" size\="114" window\="100,100,600,400" />\n\t\t<view id\="4" toolbar\="0 || 2020 , 2021 , 2022 , 66 || 2001 , 2003 , 2002 , 2004 , 2005 || 2040 , 2041 , 2042 , 2044 , 2043" visible\="false" inframe\="false" stylebar\="true" location\="1,1" size\="300" window\="100,100,600,400" />\n\t\t<view id\="2" visible\="true" inframe\="false" stylebar\="false" location\="3,0" size\="363" tab\="ALGEBRA" window\="100,100,600,400" />\n\t\t<view id\="8" toolbar\="1001 | 1002 | 1003  || 1005 | 1004 || 1006 | 1007 | 1010 || 1008 1009 || 66 68 || 6" visible\="true" inframe\="false" stylebar\="false" location\="3,2" size\="228" window\="100,100,600,400" />\n\t\t<view id\="16" visible\="false" inframe\="false" stylebar\="false" location\="1" size\="150" window\="50,50,500,500" />\n\t\t<view id\="32" visible\="false" inframe\="false" stylebar\="true" location\="1" size\="150" window\="50,50,500,500" />\n\t\t<view id\="64" toolbar\="0" visible\="false" inframe\="false" stylebar\="false" location\="1" size\="150" window\="50,50,500,500" />\n\t\t<view id\="4097" visible\="true" inframe\="false" stylebar\="true" location\="1" size\="227" window\="100,100,700,550" />\n\t\t<view id\="70" toolbar\="0 || 2020 || 2021 || 2022" visible\="false" inframe\="false" stylebar\="true" location\="1" size\="150" window\="50,50,500,500" />\n\t</views>\n\t<toolbar show\="true" items\="0 39 73 62 | 1 501 67 , 5 19 , 72 75 76 | 2 15 45 , 18 65 , 7 37 | 4 3 8 9 , 13 44 , 58 , 47 147 148 | 16 51 64 , 70 | 10 34 53 11 143 142 , 24  20 22 , 21 23 | 55 56 57 , 12 | 36 46 , 38 49  50 , 71  14  141  68 | 30 29 54 32 31 33 | 25 17 26 60 52 61 | 40 41 42 , 27 28 35 , 6" position\="1" help\="false" />\n\t<input show\="true" cmd\="true" top\="algebra" />\n\t<dockBar show\="true" east\="true" />\n</perspective>\n\t</perspectives>\n\t<settings ignoreDocument\="false" showTitleBar\="true" allowStyleBar\="true" />\n\t<labelingStyle  val\="0"/>\n\t<font  size\="16"/>\n\t<menuFont  size\="-1"/>\n\t<tooltipSettings  timeout\="-1"/>\n</gui>\n<euclidianView>\n\t<viewNumber viewNo\="1"/>\n\t<size  width\="114" height\="579"/>\n\t<coordSystem xZero\="215.0" yZero\="315.00000000000006" scale\="49.99999999999999" yscale\="50.00000000000002"/>\n\t<evSettings axes\="true" grid\="true" gridIsBold\="false" pointCapturing\="3" rightAngleStyle\="1" allowShowMouseCoords\="false" allowToolTips\="0" deleteToolSize\="20" checkboxSize\="26" gridType\="3"/>\n\t<bgColor r\="255" g\="255" b\="255"/>\n\t<axesColor r\="0" g\="0" b\="0"/>\n\t<gridColor r\="192" g\="192" b\="192"/>\n\t<lineStyle axes\="1" grid\="0"/>\n\t<axis id\="0" show\="true" label\="" unitLabel\="" tickStyle\="1" showNumbers\="true"/>\n\t<axis id\="1" show\="true" label\="" unitLabel\="" tickStyle\="1" showNumbers\="true"/>\n</euclidianView>\n<algebraView>\n\t<mode val\="3"/>\n</algebraView>\n<keyboard width\="400" height\="235" opacity\="0.699999988079071" language\="null" show\="false"/><kernel>\n\t<continuous val\="false"/>\n\t<usePathAndRegionParameters val\="true"/>\n\t<decimals val\="2"/>\n\t<angleUnit val\="degree"/>\n\t<algebraStyle val\="0" spreadsheet\="0"/>\n\t<coordStyle val\="0"/>\n\t<localization digits\="false" labels\="true"/>\n\t<casSettings timeout\="60" expRoots\="true"/>\n</kernel>\n<tableview min\="-2.0" max\="2.0" step\="1.0"/>\n<scripting blocked\="false"/>\n</geogebra>' > $SETTINGSFILE
+   if [ "$PROVEDETAILS" != 2 ]; then
+    REGFILE="--regressionFile=$REGRESSIONFILE"
+    fi
    timeout $TIMEOUT $BINBASE \
     --settingsFile=$SETTINGSFILE \
     --prover=engine:$ENGINE,method:$METHOD,timeout:$TIMEOUT --singularws=remoteurl:${SINGULARWSREMOTEURL}${SWSOPTS} \
     --logFile=$LOGFILE \
-    --regressionFile=$REGRESSIONFILE --language=en $EXTRAOPTS $MYDIR/$i \
+    $REGFILE --language=en $EXTRAOPTS $MYDIR/$i \
     --realgeomws=enable:false \
     >$MYDIR/tmp/.test.stdout 2>$MYDIR/tmp/.test.stderr
    # --regressionFile is broken since 5.0.244.0, so we don't use its output
@@ -311,7 +361,7 @@ for i in `find -name '*.ggb' | sort`; do
   accepted=1
   errortype=0
 
-  if [ $RETVAL = 124 ]; then
+  if [ $RETVAL = 124 -a "$PROVEDETAILS" != 2 ]; then
    RESULT=""
    TIME=timeout
    errortype=1
@@ -327,7 +377,33 @@ for i in `find -name '*.ggb' | sort`; do
      sed s/{//g | sed s/}//g | sed s/*/·/g`
     RESULT=`echo $RESULT | sed s/\"//g`
     # FIXME in GeoGebra.
-    fi
+    if [ "$PROVEDETAILS" = 2 ]; then
+     RESULT="-" # No answer...?
+     RESULTCLASS="undefined"
+     errortype=0
+     accepted=null
+     grep --silent "The statement has a difficulty of degree" $LOGFILE && \
+      RESULT=`tac $LOGFILE | grep "The statement has a difficulty of degree" | head -1 | cut -f8 -d" " | cut -f1 -d.`
+     if [ "$RESULT" != "-" ]; then
+      if [ "$DIRNAME" = "false" ]; then
+       RESULTCLASS="error" # Pessimistic...
+       accepted=0
+       errortype=1
+       grep --silent "The statement has a difficulty of degree" $LOGFILE || {
+        RESULTCLASS="ok" # No proof is shown, that's fine
+        RESULT=f
+        accepted=1
+        errortype=0
+        # This case seems to be never reached!
+        }
+      else
+       RESULTCLASS="ok" # A number was hopefully obtained
+       accepted=1
+       errortype=0
+      fi # $DIRNAME = "false"
+     fi # $RESULT != "-"
+    fi # $PROVEDETAILS = 2
+   fi # $RESULT is empty or ?
    TIME=`cat $LOGFILE | grep Benchmarking | awk '{s=s+$5; print s}' | tail -1` # collecting all entries
    if [ $DEBUG = 1 ]; then
     cp $REGRESSIONFILE $REGRESSIONFILE-$TEST-$j-$PROVEDETAILS
@@ -341,12 +417,17 @@ for i in `find -name '*.ggb' | sort`; do
    # In this case we assume "timeout" and clean $RESULT (which should have been cleaned up earlier, actually, FIXME):
    RESULT=""
    TIME=timeout
-   errortype=3
-   accepted=0
-   fi
+   if [ "$PROVEDETAILS" = 2 ]; then
+    errortype=0
+    accepted=null
+   else
+    errortype=3
+    accepted=0
+    fi # $PROVEDETAILS = 2
+   fi # $TIME = ""
   echo -n "$RESULT;$TIME;"
   DIRNAMELENGTH=${#DIRNAME}
-  if [ "${RESULT:0:$DIRNAMELENGTH}" != "$DIRNAME" ]; then
+  if [ "$PROVEDETAILS" != 2 -a "${RESULT:0:$DIRNAMELENGTH}" != "$DIRNAME" ]; then
    if [ "$RESULT" = "undefined" -o "$RESULT" = "" -o "$RESULT" = "?" ]; then
     RESULTCLASS="undefined"
     accepted=null
@@ -356,6 +437,12 @@ for i in `find -name '*.ggb' | sort`; do
     errortype=2
     fi
   else
+   if [ "$PROVEDETAILS" = 2 -a "$RESULT" = "-" -a "$DIRNAME" = "false" ]; then
+    RESULTCLASS="ok"
+    accepted=1
+    errortype=0
+    RESULT=f
+    fi
    echo "$TIME" >> $MYDIR/tmp/rinput-$j-$PROVEDETAILS
    VARNAME=$`echo $j`
    VALUE=`eval echo $VARNAME`

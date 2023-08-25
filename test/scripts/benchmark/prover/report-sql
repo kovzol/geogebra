@@ -46,6 +46,7 @@ usage() {
  echo "   -S <name>    run scenario: 'name' can be one of the following: jar-paper, giac-test, ndg"
  echo "   -H <number>  image height: show .ggb thumbnails in the given number of pixels ($IMGHEIGHT)"
  echo "   -D           retrieve the ProveDetails results for all columns"
+ echo "   -F           retrieve the ShowProof results for all columns"
  echo "   -b <number>  use build number instead of the latest one for all columns"
  echo "   -o <file>    set name for output .html file ($HTML)"
  echo "   -T <file>    set name for output .tex file ($TEX)"
@@ -73,7 +74,7 @@ version() {
  exit 0
  }
 
-while getopts "t:H:o:P:T:c:d:b:S:NeDGhv" OPT; do
+while getopts "t:H:o:P:T:c:d:b:S:NeDFGhv" OPT; do
  case $OPT in
   H)
    IMGHEIGHT="$OPTARG"
@@ -123,6 +124,9 @@ while getopts "t:H:o:P:T:c:d:b:S:NeDGhv" OPT; do
    ;;
   D)
    PROVEDETAILS=1
+   ;;
+  F)
+   PROVEDETAILS=2
    ;;
   b)
    BUILD_NUMBER="$OPTARG"
@@ -264,8 +268,12 @@ for c in $MYCOLUMNS; do
  r=`echo $c | cut -s -f2- -d,`
  ndg=0
  echo $r | grep --silent D && ndg=1
+ echo $r | grep --silent F && ndg=2
  if [ $PROVEDETAILS = 1 ]; then
   ndg=1
+  fi
+ if [ $PROVEDETAILS = 2 ]; then
+  ndg=2
   fi
  build_number=$BUILD_NUMBER
  echo $r | grep --silent p && {

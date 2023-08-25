@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Test the desktop version (ShowProof).
+
+set -e
+cd ../../../../desktop
+../gradlew installDist
+cd ../test/scripts/benchmark/prover
+xvfb-run -a -s "-screen 0 1024x768x24" ./runtests-sql -r -p "BotanaGiac Botana" -F -d -s http\\://prover-test.geogebra.org/~kovzol/singularws-dev/
+./report-sql -c "BotanaGiac,F Botana,F"
+google-chrome html/all.html &
