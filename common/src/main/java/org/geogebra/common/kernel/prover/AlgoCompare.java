@@ -485,7 +485,7 @@ public class AlgoCompare extends AlgoElement {
             if (rgResult.contains("ERROR")) {
                 retval = "";
                 debugElapsedTime();
-                outputText.setTextString(retval);
+                // outputText.setTextString(retval); // don't change Giac's output, maybe it's still useful
                 return;
             }
         }

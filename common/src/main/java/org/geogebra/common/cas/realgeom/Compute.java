@@ -69,7 +69,7 @@ public class Compute {
 	}
 
 	private static String rewriteGiac(String formula) {
-		// A typical example:
+		// A typical example (in CNF):
 		// m^2 + m - 1 >= 0 /\ m^2 - m - 1 <= 0 /\ [ m^2 - m - 1 = 0 \/ m^2 + m - 1 = 0 ]
 
 		// appendResponse("LOG: formula=" + formula, Log.VERBOSE);
@@ -450,7 +450,8 @@ public class Compute {
 
 		String result;
 		int expectedLines;
-		code = epcDef() + "(epc [ ex " + vars + " [" + formulas + "]])";;
+		// The output formula must be in CNF:
+		code = epcDef() + "(t-neg (dnf (t-neg (epc [ ex " + vars + " [" + formulas + "]]))))";
 		expectedLines = 4;
 
 		appendResponse("LOG: code=" + code);
@@ -487,6 +488,11 @@ public class Compute {
 		rewrite += " && m>0";
 
 		String real = rewriteGiac(rewrite);
+		if (real.equals("?")) {
+			// There may be an issue with Giac.
+			appendResponse("GIAC ERROR");
+			return "GIAC ERROR";
+		}
 		appendResponse(real);
 
 		return real;
