@@ -88,25 +88,40 @@ public class Compute {
 			// appendResponse("LOG: c=" + c, Log.VERBOSE);
 			String[] disjunctions = c.split(" \\\\/ ");
 			StringBuilder product = new StringBuilder();
+			boolean useProduct = true;
 			for (String d : disjunctions) {
 				// appendResponse("LOG: d=" + d, Log.VERBOSE);
 				if (d.endsWith(" = 0")) {
 					d = d.substring(0, d.length() - 4); // remove = 0
 				}
 				if (d.contains("/=")) { // !=
-					// Giac currently cannot handle inequalities.
+					// Giac currently cannot handle inequations.
 					// So we remove this part and hope for the best.
-					d = "";
+					d = "1";
 				} else {
-					d = "(" + d + ")";
+					if (disjunctions.length > 1 && (
+							d.endsWith(" > 0") || d.endsWith(" >= 0") || d.endsWith(" < 0")
+									|| d.endsWith(" <= 0"))) {
+						// Inequalities cannot be multiplied. We ignore such
+						// possibilites by removing those parts and writing 1 instead.
+						// But this may change the solution to the empty set,
+						// so it is safer to ignore the whole product and keep some
+						// extra solutions.
+						d = "1";
+						useProduct = false;
+					} else {
+						d = "(" + d + ")";
+					}
 				}
 				product.append(d).append("*");
 				// appendResponse("LOG: product=" + product, Log.VERBOSE);
 			}
 			product = new StringBuilder(product.substring(0, product.length() - 1)); // remove last *
 			// appendResponse("LOG: product=" + product, Log.VERBOSE);
-			rewritten.append(product).append(",");
-			// appendResponse("LOG: rewritten=" + rewritten, Log.VERBOSE);
+			if (useProduct) {
+				rewritten.append(product).append(",");
+				// appendResponse("LOG: rewritten=" + rewritten, Log.VERBOSE);
+			}
 		}
 		rewritten = new StringBuilder(rewritten.substring(0, rewritten.length() - 1)); // remove last ,
 
