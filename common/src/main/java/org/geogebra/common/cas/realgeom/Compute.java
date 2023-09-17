@@ -68,7 +68,7 @@ public class Compute {
 		response += message;
 	}
 
-	private static String rewriteGiac(String formula) {
+	private static String rewriteGiac(String formula, Kernel k) {
 		// A typical example (in CNF):
 		// m^2 + m - 1 >= 0 /\ m^2 - m - 1 <= 0 /\ [ m^2 - m - 1 = 0 \/ m^2 + m - 1 = 0 ]
 
@@ -99,19 +99,7 @@ public class Compute {
 					// So we remove this part and hope for the best.
 					d = "1";
 				} else {
-					if (disjunctions.length > 1 && (
-							d.endsWith(" > 0") || d.endsWith(" >= 0") || d.endsWith(" < 0")
-									|| d.endsWith(" <= 0"))) {
-						// Inequalities cannot be multiplied. We ignore such
-						// possibilites by removing those parts and writing 1 instead.
-						// But this may change the solution to the empty set,
-						// so it is safer to ignore the whole product and keep some
-						// extra solutions.
-						d = "1";
-						useProduct = false;
-					} else {
-						d = "(" + d + ")";
-					}
+					d = "(" + d + ")";
 				}
 				product.append(d).append("*");
 				// appendResponse("LOG: product=" + product, Log.VERBOSE);
@@ -148,6 +136,19 @@ public class Compute {
 		}
 
 		giacOutput = giacOutput.replaceAll("√", "sqrt");
+
+		// Remove last digits (according to kernel's precision):
+		int d = k.getPrintDecimals();
+		String regex = "(\\d*)\\.";
+		String replacement = "$1.";
+		for (int i=2; i < d + 2; ++i) {
+			regex += "(\\d)";
+			replacement += "$" + i;
+		}
+		regex += "(\\d+)";
+		giacOutput = giacOutput.replaceAll(regex, replacement);
+		// giacOutput = giacOutput.replaceAll("(\\d*)\\.(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d+)", "$1.$2$3$4$5$6$7$8$9");
+
 		return giacOutput;
 	}
 
@@ -502,7 +503,7 @@ public class Compute {
 		// add missing condition to output
 		rewrite += " && m>0";
 
-		String real = rewriteGiac(rewrite);
+		String real = rewriteGiac(rewrite, kernel);
 		if (real.equals("?")) {
 			// There may be an issue with Giac.
 			appendResponse("GIAC ERROR");
