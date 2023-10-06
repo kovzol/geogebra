@@ -2473,7 +2473,13 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	@Override
 	public String getCaption(StringTemplate tpl) {
 		if (caption == null) {
-			return getLabel(tpl);
+			String l = getLabel(tpl);
+			if (kernel.isLatex()) {
+				if (!l.startsWith("$") && !l.endsWith("$")) {
+					return "$" + l + "$";
+				}
+			}
+			return l;
 		}
 
 		// for speed, check first for a %

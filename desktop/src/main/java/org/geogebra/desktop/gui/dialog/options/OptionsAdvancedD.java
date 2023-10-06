@@ -66,7 +66,7 @@ public class OptionsAdvancedD implements OptionPanelD,
 
 	/** */
 	private JPanel virtualKeyboardPanel, guiFontsizePanel, tooltipPanel,
-			languagePanel, angleUnitPanel, continuityPanel,
+			languagePanel, angleUnitPanel, continuityPanel, latexPanel,
 			usePathAndRegionParametersPanel, rightAnglePanel, coordinatesPanel;
 
 	/**	*/
@@ -87,6 +87,7 @@ public class OptionsAdvancedD implements OptionPanelD,
 	private JRadioButton angleUnitRadioDegree, angleUnitRadioRadian,
 			angleUnitRadioDegreesMinutesSeconds,
 			continuityRadioOn, continuityRadioOff,
+			latexRadioOn, latexRadioOff,
 			usePathAndRegionParametersRadioOn,
 			usePathAndRegionParametersRadioOff, rightAngleRadio1,
 			rightAngleRadio2, rightAngleRadio3, rightAngleRadio4,
@@ -94,6 +95,7 @@ public class OptionsAdvancedD implements OptionPanelD,
 
 	/** */
 	private ButtonGroup angleUnitButtonGroup, continuityButtonGroup,
+			latexButtonGroup,
 			usePathAndRegionParametersButtonGroup, rightAngleButtonGroup,
 			coordinatesButtonGroup;
 
@@ -109,7 +111,7 @@ public class OptionsAdvancedD implements OptionPanelD,
 	 * tooltipTimeouts in MyXMLHandler, plus "-" instead of "0"
 	 */
 	private String[] tooltipTimeouts = new String[] { "1", "3", "5", "10", "20",
-			"30", "60", "-" };
+			"30", "60", "600", "3600", "-" };
 
 	private JPanel wrappedPanel;
 
@@ -144,6 +146,7 @@ public class OptionsAdvancedD implements OptionPanelD,
 		// initPerspectivesPanel();
 		initAngleUnitPanel();
 		initContinuityPanel();
+		initLatexPanel();
 		initUsePathAndRegionParametersPanel();
 		initRightAnglePanel();
 		initCoordinatesPanel();
@@ -161,6 +164,7 @@ public class OptionsAdvancedD implements OptionPanelD,
 		panel.add(guiFontsizePanel);
 		panel.add(tooltipPanel);
 		panel.add(languagePanel);
+		panel.add(latexPanel);
 		// panel.add(perspectivesPanel);
 
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
@@ -343,6 +347,25 @@ public class OptionsAdvancedD implements OptionPanelD,
 	}
 
 	/**
+	 * Initialize the latex panel
+	 */
+	private void initLatexPanel() {
+		latexPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+		latexButtonGroup = new ButtonGroup();
+
+		latexRadioOn = new JRadioButton();
+		latexRadioOn.addActionListener(this);
+		latexPanel.add(latexRadioOn);
+		latexButtonGroup.add(latexRadioOn);
+
+		latexRadioOff = new JRadioButton();
+		latexRadioOff.addActionListener(this);
+		latexPanel.add(latexRadioOff);
+		latexButtonGroup.add(latexRadioOff);
+	}
+
+	/**
 	 * Initialize the use of path/region parameters panel
 	 */
 	private void initUsePathAndRegionParametersPanel() {
@@ -437,6 +460,9 @@ public class OptionsAdvancedD implements OptionPanelD,
 
 		continuityRadioOn.setSelected(app.getKernel().isContinuous());
 		continuityRadioOff.setSelected(!app.getKernel().isContinuous());
+
+		latexRadioOn.setSelected(app.getKernel().isLatex());
+		latexRadioOff.setSelected(!app.getKernel().isLatex());
 
 		usePathAndRegionParametersRadioOn.setSelected(app
 				.getKernel().usePathAndRegionParameters == PathRegionHandling.ON);
@@ -624,6 +650,14 @@ public class OptionsAdvancedD implements OptionPanelD,
 			app.getKernel().setContinuous(false);
 			app.getKernel().updateConstruction(false);
 			app.setUnsaved();
+		} else if (source == latexRadioOn) {
+			app.getKernel().setLatex(true);
+			app.getKernel().updateConstruction(false);
+			app.setUnsaved();
+		} else if (source == latexRadioOff) {
+			app.getKernel().setLatex(false);
+			app.getKernel().updateConstruction(false);
+			app.setUnsaved();
 		} else if (source == usePathAndRegionParametersRadioOn) {
 			app.getKernel()
 					.setUsePathAndRegionParameters(PathRegionHandling.ON);
@@ -782,6 +816,11 @@ public class OptionsAdvancedD implements OptionPanelD,
 				.setBorder(LayoutUtil.titleBorder(loc.getMenu("Continuity")));
 		continuityRadioOn.setText(loc.getMenu("On"));
 		continuityRadioOff.setText(loc.getMenu("Off"));
+
+		latexPanel
+				.setBorder(LayoutUtil.titleBorder(loc.getMenu("AutoLatexCaptions")));
+		latexRadioOn.setText(loc.getMenu("On"));
+		latexRadioOff.setText(loc.getMenu("Off"));
 
 		usePathAndRegionParametersPanel.setBorder(LayoutUtil
 				.titleBorder(loc.getMenu("UsePathAndRegionParameters")));
@@ -995,6 +1034,10 @@ public class OptionsAdvancedD implements OptionPanelD,
 		continuityRadioOn.setFont(font);
 		continuityRadioOff.setFont(font);
 
+		latexPanel.setFont(font);
+		latexRadioOn.setFont(font);
+		latexRadioOff.setFont(font);
+
 		usePathAndRegionParametersPanel.setFont(font);
 		usePathAndRegionParametersRadioOn.setFont(font);
 		usePathAndRegionParametersRadioOff.setFont(font);
@@ -1032,7 +1075,7 @@ public class OptionsAdvancedD implements OptionPanelD,
 
 	/** available tooltip timeouts (will be reused in OptionsAdvanced) */
 	final private static String[] TOOLTIP_TIMEOUTS = new String[] { "1", "3",
-			"5", "10", "20", "30", "60", "0" };
+			"5", "10", "20", "30", "60", "600", "3600", "0" };
 
 	public static String tooltipTimeouts(int i) {
 		return TOOLTIP_TIMEOUTS[i];

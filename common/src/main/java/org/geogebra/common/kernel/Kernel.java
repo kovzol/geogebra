@@ -202,6 +202,8 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 
 	// Continuity on or off, default: false since V3.0
 	private boolean continuous = false;
+	// Latex on or off
+	private boolean latex = false;
 	/** Whether to move point on path together with path */
 	public PathRegionHandling usePathAndRegionParameters = PathRegionHandling.ON;
 	private GeoGebraCasInterface ggbCAS;
@@ -1010,6 +1012,25 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	public void setContinuous(boolean continuous) {
 		this.continuous = continuous;
 	}
+
+	/**
+	 * States whether the captions are shown as LaTeX formulas.
+	 *
+	 * @return whether continuous mode is on
+	 */
+	final public boolean isLatex() {
+		return latex;
+	}
+
+	/**
+	 * Turns latex captions on or off.
+	 *
+	 * @param continuous
+	 *            true if continuous
+	 */	public void setLatex(boolean latex) {
+		this.latex = latex;
+	}
+
 
 	/**
 	 * States whether path/region parameters are used. Also test if point is

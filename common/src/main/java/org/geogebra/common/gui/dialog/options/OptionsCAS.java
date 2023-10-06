@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public final class OptionsCAS {
 	/** available CAS timeout options (will be reused in OptionsCAS) */
-	final private static Integer[] cbTimeoutOptions = { 5, 10, 20, 30, 60 };
+	final private static Integer[] cbTimeoutOptions = { 5, 10, 20, 30, 60, 600, 3600 };
 
 	private OptionsCAS() {
 		// no instances
