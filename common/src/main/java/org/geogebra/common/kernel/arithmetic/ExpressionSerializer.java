@@ -80,9 +80,15 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				sb.append(rightStr);
 				sb.append("))");
 			} else if (stringType.equals(StringType.TARSKI)) {
-			sb.append("(");
+				sb.append("(");
+				sb.append(leftStr);
+				sb.append(" impl ");
+				sb.append(rightStr);
+				sb.append(")");
+			} else if (stringType.equals(StringType.SMTLIB)) {
+			sb.append("(or (not ");
 			sb.append(leftStr);
-			sb.append(" impl ");
+			sb.append(") ");
 			sb.append(rightStr);
 			sb.append(")");
 			} else if (stringType.equals(StringType.LATEX)) {
@@ -121,6 +127,12 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				MathmlTemplate.mathml(sb, "<eq/>", leftStr, rightStr);
 			} else if (stringType.equals(StringType.OGP)) {
 				sb.append("AreEqual[" + leftStr + "," + rightStr + "]");
+			} else if (stringType.equals(StringType.SMTLIB)) {
+				sb.append("(= ");
+				sb.append(leftStr);
+				sb.append(" ");
+				sb.append(rightStr);
+				sb.append(")");
 			} else {
 
 				if (tpl.getStringType().isGiac()) {
@@ -145,6 +157,12 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				MathmlTemplate.mathml(sb, "<neq/>", leftStr, rightStr);
 			} else if (stringType.equals(StringType.GIAC)) {
 				sb.append("(("+leftStr+"<"+rightStr+")||("+leftStr+">"+rightStr+"))");
+			} else if (stringType.equals(StringType.SMTLIB)) {
+				sb.append("(not (= ");
+				sb.append(leftStr);
+				sb.append(" ");
+				sb.append(rightStr);
+				sb.append(") )");
 			} else {
 				tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.notEqualSign());
 			}
@@ -279,12 +297,37 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 					break;
 					}
 				}
+			else if (stringType.equals(StringType.SMTLIB)) {
+				// FIXME
+				if (left.isOperation(Operation.ABS)) {
+					// convert abs(x)<y to "x<y and x>-(y)"
+					leftEval = ((ExpressionNode) left).getLeft(); // x
+					String l = leftEval.toString(StringTemplate.tarskiTemplate);
+					String lstr = "((" + l + "<" + rightStr + ") /\\ (" + l + "> -(" + rightStr + ")))";
+					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
+					break;
+				}
+				if (right.isOperation(Operation.ABS)) {
+					// convert x<abs(y) to "x<y or x<-(y)"
+					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // y
+					String r = rightEval.toString(StringTemplate.tarskiTemplate);
+					String rstr = "((" + leftStr + "<" + r + ") \\/ (" + leftStr + "< -(" + r + ")))";
+					tpl.infixBinary(sb, left, right, operation, "", rstr, "");
+					break;
+				}
+				sb.append("(< " + left + " " + right + ")");
+				break;
+			}
 			tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.lessSign());
 			break;
 
 		case GREATER:
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<gt/>", leftStr, rightStr);
+			} else if (stringType.equals(StringType.SMTLIB)) {
+				// FIXME: add the ABS-code too
+				sb.append("(> " + left + " " + right + ")");
+				break;
 			} else {
 				if (stringType.equals(StringType.TARSKI)) {
 					// convert y>abs(x) to "y>x and -(y)<x"
@@ -312,6 +355,10 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 		case LESS_EQUAL:
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<leq/>", leftStr, rightStr);
+			} else if (stringType.equals(StringType.SMTLIB)) {
+				// FIXME: add the ABS-code too
+				sb.append("(<= " + left + " " + right + ")");
+				break;
 			} else {
 				if (stringType.equals(StringType.TARSKI)) {
 					// convert abs(x)<=y to "x<=y and x>=-(y)"
@@ -340,6 +387,10 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 		case GREATER_EQUAL:
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<qeq/>", leftStr, rightStr);
+			} else if (stringType.equals(StringType.SMTLIB)) {
+				// FIXME: add the ABS-code too
+				sb.append("(>= " + left + " " + right + ")");
+				break;
 			} else {
 				if (stringType.equals(StringType.TARSKI)) {
 					// convert y>=abs(x) to "y>=x and -(y)<=x"

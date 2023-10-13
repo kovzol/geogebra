@@ -570,6 +570,8 @@ public class GeoGebraCAS implements GeoGebraCasInterface {
 				// // do nothing, just refrain
 				// return "\"" + p + "\""; // maybe this is the same as quote(...), TODO: check
 				String p = ((ExpressionNode) (args.get(0))).toString(StringTemplate.tarskiTemplate);
+				String q = ((ExpressionNode) (args.get(0))).toString(StringTemplate.smtlibTemplate);
+				q = "(assert " + q + ")";
 				p = GGBToTarski(p);
 				String command = "(syntax 'geogebra (make-prenex [" + p + "]))";
 				String result = getTarskiGGBOutput(command);

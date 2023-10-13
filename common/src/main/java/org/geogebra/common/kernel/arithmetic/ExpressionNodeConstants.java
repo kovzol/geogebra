@@ -32,11 +32,10 @@ public interface ExpressionNodeConstants {
 		/**
 		 * Tarski
  		 */
-		TARSKI;
-
-		/**
-		 * @return whether this is giac type
+		TARSKI,
+		/** smtlib
 		 */
+		SMTLIB;
 		public boolean isGiac() {
 			return this.equals(StringType.GIAC);
 		}

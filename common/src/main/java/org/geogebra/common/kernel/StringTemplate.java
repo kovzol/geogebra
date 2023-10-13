@@ -286,6 +286,18 @@ public class StringTemplate implements ExpressionNodeConstants {
 		tarskiTemplate.setType(StringType.TARSKI);
 	}
 
+	public static final StringTemplate smtlibTemplate = new StringTemplate(
+			"smtlibTemplate");
+
+	static {
+		smtlibTemplate.internationalizeDigits = false;
+		smtlibTemplate.numeric = false;
+		smtlibTemplate.usePrefix = false;
+		smtlibTemplate.localizeCmds = false;
+		smtlibTemplate.setType(StringType.SMTLIB);
+	}
+
+
 	/**
 	 * XML string type, do not internationalize digits
 	 */
@@ -1297,6 +1309,14 @@ public class StringTemplate implements ExpressionNodeConstants {
 			}
 			break;
 
+		case SMTLIB:
+			sb.append("(+ ");
+			sb.append(leftStr);
+			sb.append(" ");
+			sb.append(rightStr);
+			sb.append(")");
+			break;
+
 		default:
 			// check for 0
 			if (valueForm) {
@@ -1709,6 +1729,14 @@ public class StringTemplate implements ExpressionNodeConstants {
 			}
 			break;
 
+		case SMTLIB:
+			sb.append("(- ");
+			sb.append(leftStr);
+			sb.append(" ");
+			sb.append(rightStr);
+			sb.append(")");
+			break;
+
 		default:
 			if (left instanceof Equation) {
 				appendWithBrackets(sb, leftStr);
@@ -1798,6 +1826,13 @@ public class StringTemplate implements ExpressionNodeConstants {
 			break;
 		case GIAC:
 			appendGiacMultiplication(sb, left, right, leftStr, rightStr, valueForm);
+			break;
+		case SMTLIB:
+			sb.append("(* ");
+			sb.append(leftStr);
+			sb.append(" ");
+			sb.append(rightStr);
+			sb.append(")");
 			break;
 		default:
 			appendMultiplySpecial(sb, leftStr, rightStr, left, loc);
@@ -2247,6 +2282,14 @@ public class StringTemplate implements ExpressionNodeConstants {
 			sb.append(')');
 			break;
 
+		case SMTLIB:
+			sb.append("(/ ");
+			sb.append(leftStr);
+			sb.append(" ");
+			sb.append(rightStr);
+			sb.append(")");
+			break;
+
 		default:
 			if (forEditorParser) {
 				appendWithBrackets(sb, leftStr);
@@ -2311,6 +2354,12 @@ public class StringTemplate implements ExpressionNodeConstants {
 				sb.append("~");
 				appendWithBrackets(sb, leftStr);
 				return sb.toString();
+
+			case SMTLIB:
+				sb.append("(not ");
+				sb.append(leftStr);
+				sb.append(")");
+				break;
 
 			default:
 				sb.append(strNOT);
@@ -2377,6 +2426,10 @@ public class StringTemplate implements ExpressionNodeConstants {
 				sb.append("ex ");
 				break;
 
+			case SMTLIB:
+				sb.append("(exists ((");
+				break;
+
 			default:
 				sb.append(Unicode.EXISTS);
 			}
@@ -2387,6 +2440,9 @@ public class StringTemplate implements ExpressionNodeConstants {
 			switch (stringType) {
 			case TARSKI:
 				sb.append("[");
+				break;
+			case SMTLIB:
+				sb.append(" Real)) ");
 				break;
 			}
 
@@ -2403,6 +2459,9 @@ public class StringTemplate implements ExpressionNodeConstants {
 			switch (stringType) {
 			case TARSKI:
 				sb.append("]");
+				break;
+			case SMTLIB:
+				sb.append(")");
 				break;
 			}
 			if (stringType == StringType.GEOGEBRA || stringType == StringType.GEOGEBRA_XML) {
@@ -2437,6 +2496,9 @@ public class StringTemplate implements ExpressionNodeConstants {
 			case TARSKI:
 				sb.append("all ");
 				break;
+			case SMTLIB:
+				sb.append("(forall ((");
+				break;
 
 			default:
 				sb.append(Unicode.FORALL);
@@ -2448,6 +2510,9 @@ public class StringTemplate implements ExpressionNodeConstants {
 			switch (stringType) {
 			case TARSKI:
 				sb.append("[");
+				break;
+			case SMTLIB:
+				sb.append(" Real)) ");
 				break;
 			}
 
@@ -2466,6 +2531,9 @@ public class StringTemplate implements ExpressionNodeConstants {
 			switch (stringType) {
 			case TARSKI:
 				sb.append("]");
+				break;
+			case SMTLIB:
+				sb.append(")");
 				break;
 			}
 
@@ -2498,6 +2566,12 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 		if (stringType.equals(StringType.CONTENT_MATHML)) {
 			MathmlTemplate.mathml(sb, "<or/>", leftStr, rightStr);
+		} else if (stringType.equals(StringType.SMTLIB)) {
+			sb.append("(or ");
+			sb.append(leftStr);
+			sb.append(" ");
+			sb.append(rightStr);
+			sb.append(")");
 		} else {
 			append(sb, leftStr, left, Operation.OR);
 			sb.append(' ');
@@ -2549,6 +2623,12 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 		if (stringType.equals(StringType.CONTENT_MATHML)) {
 			MathmlTemplate.mathml(sb, "<xor/>", leftStr, rightStr);
+		} else if (stringType.equals(StringType.SMTLIB)) {
+			sb.append("(xor ");
+			sb.append(leftStr);
+			sb.append(" ");
+			sb.append(rightStr);
+			sb.append(")");
 		} else if (stringType.equals(StringType.GIAC)) {
 			// !! to convert number -> boolean
 			// !!a != !!b
@@ -2807,6 +2887,9 @@ public class StringTemplate implements ExpressionNodeConstants {
 				|| stringType.isGiac()) {
 			return andString(left, right, leftStr, rightStr);
 		}
+		if (stringType.equals((StringType.SMTLIB))) {
+			return "(and " + leftStr + " " + rightStr + ")";
+		}
 		if (right.isExpressionNode()) {
 			sb.append(expressionToString(left, valueForm));
 			appendOptionalSpace(sb);
@@ -2879,6 +2962,12 @@ public class StringTemplate implements ExpressionNodeConstants {
 			sb.append(" && ");
 			sb.append(rightStr);
 			sb.append(')');
+		} else if (stringType.equals(StringType.SMTLIB)) {
+			sb.append("(and ");
+			sb.append(leftStr);
+			sb.append(" ");
+			sb.append(rightStr);
+			sb.append(")");
 		} else {
 			append(sb, leftStr, left, Operation.AND);
 
@@ -2895,6 +2984,7 @@ public class StringTemplate implements ExpressionNodeConstants {
 				sb.append("and");
 				break;
 
+			// seems unnecessary (already handled before this)
 			case GIAC:
 				sb.append("&&");
 				break;

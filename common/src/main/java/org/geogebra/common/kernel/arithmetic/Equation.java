@@ -572,6 +572,25 @@ public class Equation extends ValidExpression implements EquationValue {
 	public String toString(StringTemplate tpl, ExpressionNode lhs1) {
 		StringBuilder sb = new StringBuilder();
 
+		if (tpl.equals(StringTemplate.smtlibTemplate)) {
+			sb.append("(= ");
+			// left hand side
+			if (lhs1 != null) {
+				sb.append(lhs1.toString(tpl));
+			} else {
+				sb.append('0');
+			}
+			sb.append(" ");
+			// right hand side
+			if (rhs != null) {
+				sb.append(rhs.toString(tpl));
+			} else {
+				sb.append('0');
+			}
+			sb.append(")");
+			return sb.toString();
+		}
+
 		// left hand side
 		if (lhs1 != null) {
 			sb.append(lhs1.toString(tpl));
