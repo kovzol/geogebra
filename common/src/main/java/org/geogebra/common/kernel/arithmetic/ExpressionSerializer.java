@@ -315,7 +315,7 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 					tpl.infixBinary(sb, left, right, operation, "", rstr, "");
 					break;
 				}
-				sb.append("(< " + left + " " + right + ")");
+				sb.append("(< " + leftStr + " " + rightStr + ")");
 				break;
 			}
 			tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.lessSign());
@@ -326,7 +326,7 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				MathmlTemplate.mathml(sb, "<gt/>", leftStr, rightStr);
 			} else if (stringType.equals(StringType.SMTLIB)) {
 				// FIXME: add the ABS-code too
-				sb.append("(> " + left + " " + right + ")");
+				sb.append("(> " + leftStr + " " + rightStr + ")");
 				break;
 			} else {
 				if (stringType.equals(StringType.TARSKI)) {
@@ -357,7 +357,7 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				MathmlTemplate.mathml(sb, "<leq/>", leftStr, rightStr);
 			} else if (stringType.equals(StringType.SMTLIB)) {
 				// FIXME: add the ABS-code too
-				sb.append("(<= " + left + " " + right + ")");
+				sb.append("(<= " + leftStr + " " + rightStr + ")");
 				break;
 			} else {
 				if (stringType.equals(StringType.TARSKI)) {
@@ -389,7 +389,7 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				MathmlTemplate.mathml(sb, "<qeq/>", leftStr, rightStr);
 			} else if (stringType.equals(StringType.SMTLIB)) {
 				// FIXME: add the ABS-code too
-				sb.append("(>= " + left + " " + right + ")");
+				sb.append("(>= " + leftStr + " " + rightStr + ")");
 				break;
 			} else {
 				if (stringType.equals(StringType.TARSKI)) {

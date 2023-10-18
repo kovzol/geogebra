@@ -3123,6 +3123,24 @@ public class StringTemplate implements ExpressionNodeConstants {
 
 				break;
 
+			case SMTLIB:
+				double indexD = right.evaluateDouble();
+				// convert to multiplications if possible:
+				if (indexD > 1 && DoubleUtil.isInteger(indexD)) {
+					int index = (int) Math.round(indexD);
+					String leftStrTrimmed = leftStr.trim();
+					String retval = "";
+					for (int i = 1; i < index; i++) {
+						retval = retval + "(* ";
+					}
+					retval += leftStr;
+					for (int i = 1; i < index; i++) {
+						retval = retval + " " + leftStr + ")";
+					}
+					return retval;
+				}
+				break; // otherwise unimplemented, FIXME
+
 			case LATEX:
 			case LIBRE_OFFICE:
 			default:
