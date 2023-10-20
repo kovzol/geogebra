@@ -298,20 +298,23 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 					}
 				}
 			else if (stringType.equals(StringType.SMTLIB)) {
-				// FIXME
 				if (left.isOperation(Operation.ABS)) {
 					// convert abs(x)<y to "x<y and x>-(y)"
 					leftEval = ((ExpressionNode) left).getLeft(); // x
-					String l = leftEval.toString(StringTemplate.tarskiTemplate);
-					String lstr = "((" + l + "<" + rightStr + ") /\\ (" + l + "> -(" + rightStr + ")))";
+					// String l = leftEval.toString(StringTemplate.tarskiTemplate);
+					// String lstr = "((" + l + "<" + rightStr + ") /\\ (" + l + "> -(" + rightStr + ")))";
+					String l = leftEval.toString(StringTemplate.smtlibTemplate);
+					String lstr = "(and (< " + l + " " + rightStr + ") (> " + l + " (- 0 " + rightStr + ")))";
 					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
 					break;
 				}
 				if (right.isOperation(Operation.ABS)) {
 					// convert x<abs(y) to "x<y or x<-(y)"
 					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // y
-					String r = rightEval.toString(StringTemplate.tarskiTemplate);
-					String rstr = "((" + leftStr + "<" + r + ") \\/ (" + leftStr + "< -(" + r + ")))";
+					// String r = rightEval.toString(StringTemplate.tarskiTemplate);
+					// String rstr = "((" + leftStr + "<" + r + ") \\/ (" + leftStr + "< -(" + r + ")))";
+					String r = rightEval.toString(StringTemplate.smtlibTemplate);
+					String rstr = "(or (< " + leftStr + " " + r + ") (< " + leftStr + " (- 0 " + r + ")))";
 					tpl.infixBinary(sb, left, right, operation, "", rstr, "");
 					break;
 				}
@@ -325,7 +328,26 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<gt/>", leftStr, rightStr);
 			} else if (stringType.equals(StringType.SMTLIB)) {
-				// FIXME: add the ABS-code too
+				if (right.isOperation(Operation.ABS)) {
+					// convert y>abs(x) to "y>x (x<y) and -(y)<x (x>-(y))"
+					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // x
+					// String r = rightEval.toString(StringTemplate.tarskiTemplate);
+					// String rstr = "((" + leftStr + ">" + r + ") /\\ -(" + leftStr + ")<" + r + ")";
+					String r = rightEval.toString(StringTemplate.smtlibTemplate);
+					String rstr = "(and (< " + leftStr + " " + r + ") (> " + leftStr + " (- 0 " + r + ")))";
+					tpl.infixBinary(sb, left, right, operation, "", rstr, "");
+					break;
+				}
+				if (left.isOperation(Operation.ABS)) {
+					// convert abs(x)>y to "x>y or -(y)<x (x>(-y))"
+					leftEval = ((ExpressionNode) left).getLeft(); // x
+					// String l = leftEval.toString(StringTemplate.tarskiTemplate);
+					// String lstr = "((" + l + ">" + rightStr + ") \\/ -(" + rightStr + ")<" + l + ")";
+					String l = leftEval.toString(StringTemplate.smtlibTemplate);
+					String lstr = "(or (> " + l + " " + rightStr + ") (> " + l + " (- 0 " + rightStr + ")))";
+					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
+					break;
+				}
 				sb.append("(> " + leftStr + " " + rightStr + ")");
 				break;
 			} else {
@@ -356,7 +378,20 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<leq/>", leftStr, rightStr);
 			} else if (stringType.equals(StringType.SMTLIB)) {
-				// FIXME: add the ABS-code too
+				if (left.isOperation(Operation.ABS)) {
+					leftEval = ((ExpressionNode) left).getLeft(); // x
+					String l = leftEval.toString(StringTemplate.smtlibTemplate);
+					String lstr = "(and (<= " + l + " " + rightStr + ") (>= " + l + " (- 0 " + rightStr + ")))";
+					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
+					break;
+				}
+				if (right.isOperation(Operation.ABS)) {
+					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // y
+					String r = rightEval.toString(StringTemplate.smtlibTemplate);
+					String rstr = "(or (<= " + leftStr + " " + r + ") (<= " + leftStr + " (- 0 " + r + ")))";
+					tpl.infixBinary(sb, left, right, operation, "", rstr, "");
+					break;
+				}
 				sb.append("(<= " + leftStr + " " + rightStr + ")");
 				break;
 			} else {
@@ -388,7 +423,20 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<qeq/>", leftStr, rightStr);
 			} else if (stringType.equals(StringType.SMTLIB)) {
-				// FIXME: add the ABS-code too
+				if (right.isOperation(Operation.ABS)) {
+					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // x
+					String r = rightEval.toString(StringTemplate.smtlibTemplate);
+					String rstr = "(and (<= " + leftStr + " " + r + ") (>= " + leftStr + " (- 0 " + r + ")))";
+					tpl.infixBinary(sb, left, right, operation, "", rstr, "");
+					break;
+				}
+				if (left.isOperation(Operation.ABS)) {
+					leftEval = ((ExpressionNode) left).getLeft(); // x
+					String l = leftEval.toString(StringTemplate.smtlibTemplate);
+					String lstr = "(or (>= " + l + " " + rightStr + ") (>= " + l + " (- 0 " + rightStr + ")))";
+					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
+					break;
+				}
 				sb.append("(>= " + leftStr + " " + rightStr + ")");
 				break;
 			} else {
