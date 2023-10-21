@@ -344,7 +344,7 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 					// String l = leftEval.toString(StringTemplate.tarskiTemplate);
 					// String lstr = "((" + l + ">" + rightStr + ") \\/ -(" + rightStr + ")<" + l + ")";
 					String l = leftEval.toString(StringTemplate.smtlibTemplate);
-					String lstr = "(or (> " + l + " " + rightStr + ") (> " + l + " (- 0 " + rightStr + ")))";
+					String lstr = "(or (> " + l + " " + rightStr + ") (>  (- 0 " + l + ") " + rightStr + "))";
 					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
 					break;
 				}
@@ -433,7 +433,7 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				if (left.isOperation(Operation.ABS)) {
 					leftEval = ((ExpressionNode) left).getLeft(); // x
 					String l = leftEval.toString(StringTemplate.smtlibTemplate);
-					String lstr = "(or (>= " + l + " " + rightStr + ") (>= " + l + " (- 0 " + rightStr + ")))";
+					String lstr = "(or (>= " + l + " " + rightStr + ") (>= (- 0 " + l + ") " + rightStr + "))";
 					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
 					break;
 				}
