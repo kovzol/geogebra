@@ -1376,6 +1376,8 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 			isLongInteger = true;
 		}
 		StringType casPrintForm = tpl.getStringType();
+		BigInteger[] l;
+
 		switch (casPrintForm) {
 
 		// to avoid 1/3 = 0
@@ -1429,11 +1431,33 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 			if (isLongInteger) {
 				return Long.toString(rounded);
 			}
-			BigInteger[] l = doubleToRational(x);
+			l = doubleToRational(x);
 			if (l[1].equals(BigInteger.ONE)) {
 				return l[0] + "";
 			}
 			return "((" + l[0] + ")/" + l[1] + ")"; // we assume that the denominator is positive
+		case SMTLIB:
+			if (isLongInteger) {
+				if (rounded >= 0) {
+					return Long.toString(rounded);
+				} else {
+					return "(- 0 " + Long.toString(Math.abs(rounded)) + ")";
+				}
+			}
+			l = doubleToRational(x);
+			if (l[1].equals(BigInteger.ONE)) {
+				{
+					if (l[0].signum() >= 0) {
+						return l[0] + "";
+					} else {
+						return "(- 0 " + l[0].negate() + ")";
+					}
+				}
+			}
+			if (l[0].signum() >= 0) {
+				return "(/ " + l[0] + " " + l[1] + ")"; // we assume that the denominator is positive
+			}
+			return "(/ (- 0 " + l[0].negate() + ") " + l[1] + ")"; // we assume that the denominator is positive
 
 			// number formatting for screen output
 		default:
