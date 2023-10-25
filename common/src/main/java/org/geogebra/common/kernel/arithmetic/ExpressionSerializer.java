@@ -299,22 +299,28 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				}
 			else if (stringType.equals(StringType.SMTLIB)) {
 				if (left.isOperation(Operation.ABS)) {
-					// convert abs(x)<y to "x<y and x>-(y)"
+					// convert abs(x)<y to "x<y and x>-(y)" WRONG
+					// convert abs(x)<y to "x<0 and x>-(y)  or  x>=0 and x<y"
 					leftEval = ((ExpressionNode) left).getLeft(); // x
 					// String l = leftEval.toString(StringTemplate.tarskiTemplate);
 					// String lstr = "((" + l + "<" + rightStr + ") /\\ (" + l + "> -(" + rightStr + ")))";
 					String l = leftEval.toString(StringTemplate.smtlibTemplate);
-					String lstr = "(and (< " + l + " " + rightStr + ") (> " + l + " (- 0 " + rightStr + ")))";
+					// String lstr = "(and (< " + l + " " + rightStr + ") (> " + l + " (- 0 " + rightStr + ")))";
+					String lstr = "(or (and (< " + l + " 0) (> " + l + " (- 0 " + rightStr + "))) " +
+							"(and (>= " + l + " 0) (< " + l + " " + rightStr + ")))";
 					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
 					break;
 				}
 				if (right.isOperation(Operation.ABS)) {
-					// convert x<abs(y) to "x<y or x<-(y)"
+					// convert x<abs(y) to "x<y or x<-(y)" WRONG
+					// convert x<abs(y) to "y<0 and x<-(y)  or  y>=0 and x<y"
 					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // y
 					// String r = rightEval.toString(StringTemplate.tarskiTemplate);
 					// String rstr = "((" + leftStr + "<" + r + ") \\/ (" + leftStr + "< -(" + r + ")))";
 					String r = rightEval.toString(StringTemplate.smtlibTemplate);
-					String rstr = "(or (< " + leftStr + " " + r + ") (< " + leftStr + " (- 0 " + r + ")))";
+					// String rstr = "(or (< " + leftStr + " " + r + ") (< " + leftStr + " (- 0 " + r + ")))";
+					String rstr = "(or (and (< " + r + " 0) (< " + leftStr + " (- 0 " + r + "))) " +
+							"(and (>= " + r + " 0) (< " + leftStr + " " + r + ")))";
 					tpl.infixBinary(sb, left, right, operation, "", rstr, "");
 					break;
 				}
@@ -324,27 +330,35 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 			tpl.infixBinary(sb, left, right, operation, leftStr, rightStr, tpl.lessSign());
 			break;
 
+		// FIXME: All operations with absolute values are incorrect in
+		// the Tarski output. Now they are fixed in the smtlib output,
+		// but for a general algorithm the whole expression tree should be edited.
 		case GREATER:
 			if (stringType.equals(StringType.CONTENT_MATHML)) {
 				MathmlTemplate.mathml(sb, "<gt/>", leftStr, rightStr);
 			} else if (stringType.equals(StringType.SMTLIB)) {
 				if (right.isOperation(Operation.ABS)) {
-					// convert y>abs(x) to "y>x (x<y) and -(y)<x (x>-(y))"
+					// convert y>abs(x) to "y>x (x<y) and -(y)<x (x>-(y))" WRONG
+					// convert x>abs(y) to "y<0 and x>(-y)  or  y>=0 and x>y"
 					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // x
 					// String r = rightEval.toString(StringTemplate.tarskiTemplate);
 					// String rstr = "((" + leftStr + ">" + r + ") /\\ -(" + leftStr + ")<" + r + ")";
 					String r = rightEval.toString(StringTemplate.smtlibTemplate);
-					String rstr = "(and (< " + leftStr + " " + r + ") (> " + leftStr + " (- 0 " + r + ")))";
+					// String rstr = "(and (< " + leftStr + " " + r + ") (> " + leftStr + " (- 0 " + r + ")))";
+					String rstr = "(or (and (< " + r + " 0) (> " + leftStr + " (- 0 " + r + ")))" +
+							" (and (>= " + r + " 0) (> " + leftStr + " " + r + ")))";
 					tpl.infixBinary(sb, left, right, operation, "", rstr, "");
 					break;
 				}
 				if (left.isOperation(Operation.ABS)) {
-					// convert abs(x)>y to "x>y or -(y)<x (x>(-y))"
+					// convert abs(x)>y to "x>y or -(y)<x (x>(-y))" WRONG
+					// convert abs(x)>y to "x<0 and -(x)>y  or  x>=0 and x>y"
 					leftEval = ((ExpressionNode) left).getLeft(); // x
 					// String l = leftEval.toString(StringTemplate.tarskiTemplate);
 					// String lstr = "((" + l + ">" + rightStr + ") \\/ -(" + rightStr + ")<" + l + ")";
 					String l = leftEval.toString(StringTemplate.smtlibTemplate);
-					String lstr = "(or (> " + l + " " + rightStr + ") (>  (- 0 " + l + ") " + rightStr + "))";
+					String lstr = "(or (and (< " + l + " 0) (> (- 0 " + l + ") " + rightStr + ")) " +
+							"(and (>= " + l + " 0) (> " + l + " " + rightStr + ")))";
 					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
 					break;
 				}
@@ -381,14 +395,16 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				if (left.isOperation(Operation.ABS)) {
 					leftEval = ((ExpressionNode) left).getLeft(); // x
 					String l = leftEval.toString(StringTemplate.smtlibTemplate);
-					String lstr = "(and (<= " + l + " " + rightStr + ") (>= " + l + " (- 0 " + rightStr + ")))";
+					String lstr = "(or (and (< " + l + " 0) (>= " + l + " (- 0 " + rightStr + "))) " +
+							"(and (>= " + l + " 0) (<= " + l + " " + rightStr + ")))";
 					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
 					break;
 				}
 				if (right.isOperation(Operation.ABS)) {
 					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // y
 					String r = rightEval.toString(StringTemplate.smtlibTemplate);
-					String rstr = "(or (<= " + leftStr + " " + r + ") (<= " + leftStr + " (- 0 " + r + ")))";
+					String rstr = "(or (and (< " + r + " 0) (<= " + leftStr + " (- 0 " + r + "))) " +
+							"(and (>= " + r + " 0) (<= " + leftStr + " " + r + ")))";
 					tpl.infixBinary(sb, left, right, operation, "", rstr, "");
 					break;
 				}
@@ -426,14 +442,18 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				if (right.isOperation(Operation.ABS)) {
 					ExpressionValue rightEval = ((ExpressionNode) right).getLeft(); // x
 					String r = rightEval.toString(StringTemplate.smtlibTemplate);
-					String rstr = "(and (<= " + leftStr + " " + r + ") (>= " + leftStr + " (- 0 " + r + ")))";
+					// String rstr = "(and (<= " + leftStr + " " + r + ") (>= " + leftStr + " (- 0 " + r + ")))";
+					String rstr = "(or (and (< " + r + " 0) (>= " + leftStr + " (- 0 " + r + ")))" +
+							" (and (>= " + r + " 0) (>= " + leftStr + " " + r + ")))";
 					tpl.infixBinary(sb, left, right, operation, "", rstr, "");
 					break;
 				}
 				if (left.isOperation(Operation.ABS)) {
 					leftEval = ((ExpressionNode) left).getLeft(); // x
 					String l = leftEval.toString(StringTemplate.smtlibTemplate);
-					String lstr = "(or (>= " + l + " " + rightStr + ") (>= (- 0 " + l + ") " + rightStr + "))";
+					// String lstr = "(or (>= " + l + " " + rightStr + ") (>= (- 0 " + l + ") " + rightStr + "))";
+					String lstr = "(or (and (< " + l + " 0) (>= (- 0 " + l + ") " + rightStr + ")) " +
+							"(and (>= " + l + " 0) (>= " + l + " " + rightStr + ")))";
 					tpl.infixBinary(sb, left, right, operation, lstr, "", "");
 					break;
 				}
