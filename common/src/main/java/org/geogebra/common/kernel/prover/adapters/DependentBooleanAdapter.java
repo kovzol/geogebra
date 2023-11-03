@@ -34,6 +34,7 @@ import org.geogebra.common.kernel.geos.GeoDummyVariable;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.geos.GeoPolygon;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.prover.AlgoAreCongruent;
 import org.geogebra.common.kernel.prover.AlgoAreEqual;
@@ -315,7 +316,14 @@ public class DependentBooleanAdapter extends ProverAdapter {
 				&& node.getLeft().isExpressionNode()) {
 			return;
 		}
-		throw new NoSymbolicParametersException(); // unhandled case, e.g. area
+		if (node.getLeft() != null && node.getLeft().isGeoElement()
+				&& node.getLeft() instanceof GeoPolygon) {
+			throw new NoSymbolicParametersException(); // not yet implemented
+		}
+		if (node.getRight() != null && node.getRight().isGeoElement()
+				&& node.getRight() instanceof GeoPolygon) {
+			throw new NoSymbolicParametersException(); // not yet implemented
+		}
 	}
 
 	/**
