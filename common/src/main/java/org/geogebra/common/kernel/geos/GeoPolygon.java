@@ -2503,7 +2503,8 @@ public class GeoPolygon extends GeoElement implements GeoNumberValue,
 			return ((SymbolicParametersBotanaAlgo) algoParent)
 					.getBotanaVars(this);
 		}
-		throw new NoSymbolicParametersException();
+		return null;
+		// Don't throw an exception here. Handle areas differently.
 	}
 
 	@Override
@@ -2513,7 +2514,8 @@ public class GeoPolygon extends GeoElement implements GeoNumberValue,
 			return ((SymbolicParametersBotanaAlgo) algoParent)
 					.getBotanaPolynomials(this);
 		}
-		throw new NoSymbolicParametersException();
+		return null;
+		// Don't throw an exception here. Handle areas differently.
 	}
 
 	@Override

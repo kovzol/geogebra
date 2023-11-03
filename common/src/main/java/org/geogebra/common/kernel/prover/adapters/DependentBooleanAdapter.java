@@ -315,6 +315,7 @@ public class DependentBooleanAdapter extends ProverAdapter {
 				&& node.getLeft().isExpressionNode()) {
 			return;
 		}
+		throw new NoSymbolicParametersException(); // unhandled case, e.g. area
 	}
 
 	/**
