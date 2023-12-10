@@ -72,6 +72,7 @@ public class ExpressionNode extends ValidExpression
 	private boolean forceFunction = false;
 	private boolean forceInequality = false;
 	private boolean forceSurface = false;
+	private String cadProjection = "";
 
 	/** true if this holds text and the text is in LaTeX format */
 	public boolean holdsLaTeXtext = false;
@@ -1217,6 +1218,14 @@ public class ExpressionNode extends ValidExpression
 	 */
 	public void setForceInequality() {
 		forceInequality = true;
+	}
+
+	public String getCadProjection() {
+		return cadProjection;
+	}
+
+	public void setCadProjection(String cp) {
+		cadProjection = cp;
 	}
 
 	/**

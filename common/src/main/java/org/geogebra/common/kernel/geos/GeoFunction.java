@@ -3046,6 +3046,15 @@ public class GeoFunction extends GeoElement implements VarString, Translateable,
 	}
 
 	@Override
+	public String getCadProjection() { return fun.getCadProjection(); }
+
+	@Override
+	public void setCadProjection(String cadProjection) {
+		fun.setCadProjection(cadProjection);
+	}
+
+
+	@Override
 	public void setForceInequality(boolean forceInequality) {
 		if (fun != null) {
 			fun.setForceInequality(forceInequality);

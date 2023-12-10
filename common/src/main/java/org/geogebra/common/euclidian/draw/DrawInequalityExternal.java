@@ -12,6 +12,7 @@ import org.geogebra.common.euclidian.GeneralPathClipped;
 import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.arithmetic.FunctionNVar;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoFunctionNVar;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
@@ -52,7 +53,12 @@ public class DrawInequalityExternal extends Drawable {
 		this.view = view;
 		this.geo = function.toGeoElement();
 		this.function = function;
-
+		String cadProjection = ((GeoFunctionNVar) function).getCadProjection();
+		if (cadProjection != null && cadProjection.equals("x")) {
+			removeCAD = false;
+		} else {
+			removeCAD = true;
+		}
 		update();
 
 	}

@@ -1468,4 +1468,12 @@ public class GeoFunctionNVar extends GeoElement
 			fun.setForceInequality(forceInequality);
 		}
 	}
+
+	@Override
+	public String getCadProjection() { return fun.getCadProjection(); }
+
+	@Override
+	public void setCadProjection(String variable) {
+		fun.setCadProjection(variable);
+	}
 }

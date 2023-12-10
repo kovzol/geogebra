@@ -46,6 +46,10 @@ public interface FunctionalNVar extends Evaluate2Var, VarString {
 
 	boolean isForceInequality();
 
+	void setCadProjection(String cadProjection);
+
+	String getCadProjection();
+
 	/**
 	 * @param label
 	 *            new label

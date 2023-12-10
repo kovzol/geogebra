@@ -30,6 +30,7 @@ import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.kernel.geos.GeoFunctionNVar;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.implicit.GeoImplicitCurve;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
@@ -47,6 +48,7 @@ public class AlgoPlot2D extends AlgoElement implements UsesCAS {
 	private GeoElement outp;
 
 	private FunctionNVar fnv;
+	private String cadProjection = "";
 
 	/**
 	 * @param cons
@@ -55,15 +57,14 @@ public class AlgoPlot2D extends AlgoElement implements UsesCAS {
 	 *            the function to be plotted (via an external plotter)
 	 */
 
-	public AlgoPlot2D(Construction cons, String label, GeoElement function) {
+	public AlgoPlot2D(Construction cons, String label, GeoElement function, String cadProjection) {
 		super(cons);
 
 		this.inp = function;
-
+		this.cadProjection = cadProjection;
 		compute_init();
 		setInputOutput();
 		outp.setLabel(label); // don't forget this -- in that case no GeoElement will be saved
-
 	}
 
 	@Override
@@ -73,7 +74,12 @@ public class AlgoPlot2D extends AlgoElement implements UsesCAS {
 
 	@Override
 	protected void setInputOutput() {
-		input = new GeoElement[1];
+		if (!cadProjection.equals("")) {
+			input = new GeoElement[2];
+			input[1] = new GeoText(cons, cadProjection);
+		} else {
+			input = new GeoElement[1];
+		}
 		input[0] = inp;
 		super.setOutputLength(1);
 		super.setOutput(0, outp);
@@ -87,6 +93,7 @@ public class AlgoPlot2D extends AlgoElement implements UsesCAS {
 			((GeoFunctionNVar) outp).getFunction().setPolynomial(true);
 			// Otherwise it will be still visualized via the built-in method in EuclidianDraw.
 			// Instead, we use DrawInequalityExternal.
+			((GeoFunctionNVar) outp).getFunction().setCadProjection(cadProjection);
 		} else {
 			// Build the output accordingly. We store it as a proper input.
 			fnv = new FunctionNVar(kernel, inp.getDefinition());
@@ -106,6 +113,7 @@ public class AlgoPlot2D extends AlgoElement implements UsesCAS {
 			// Hopefully we handled all possible cases.
 			fnv.setExpression(inp.getDefinition(), fv);
 			fnv.setForceInequality(true);
+			fnv.setCadProjection(cadProjection);
 			fnv.initFunction();
 			outp = new GeoFunctionNVar(cons, fnv, true);
 			// Force this object as an (external) polynomial one.

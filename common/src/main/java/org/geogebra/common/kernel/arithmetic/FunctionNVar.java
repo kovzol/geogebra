@@ -76,6 +76,7 @@ public class FunctionNVar extends ValidExpression
 	private String casEvalStringSymbolic;
 
 	private boolean forceInequality;
+	private String cadProjection;
 
 	public boolean isPolynomial() {
 		return polynomial;
@@ -1566,4 +1567,13 @@ public class FunctionNVar extends ValidExpression
 	public void setForceInequality(boolean forceInequality) {
 		this.forceInequality = forceInequality;
 	}
+
+	@Override
+	public String getCadProjection() { return cadProjection; }
+
+	@Override
+	public void setCadProjection(String variable) {
+		this.cadProjection = variable;
+	}
+
 }

@@ -13,6 +13,7 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.kernel.geos.GeoFunctionNVar;
 import org.geogebra.common.kernel.geos.GeoLine;
+import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.implicit.GeoImplicitCurve;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.main.MyError;
@@ -37,20 +38,29 @@ public class CmdPlot2D extends CommandProcessor {
 		int n = c.getArgumentNumber();
 		GeoElement[] arg;
 		arg = resArgs(c);
+		String cp = ""; // CAD projection: nothing, or "x" ("y" is yet unsupported)
 
 		switch (n) {
 		case 1:
+		case 2:
+			if (n==2) {
+				if  (arg[1] instanceof GeoText && ((GeoText) arg[1]).getText().toString().equals("\"x\"")) {
+					cp = "x";
+				} else {
+					throw new MyError(app.getLocalization(), "UnsupportedSyntax");
+				}
+			}
 			if (arg[0] instanceof GeoFunctionNVar) {
 				GeoFunctionNVar geoFunctionNVar = (GeoFunctionNVar) arg[0];
 				FunctionVariable[] fvars = geoFunctionNVar.getFunctionVariables();
 				if (fvars.length > 2) {
 					throw new MyError(app.getLocalization(), "InvalidEquation");
 				}
-				AlgoPlot2D algo = new AlgoPlot2D(cons, c.getLabel(), (GeoFunctionNVar) arg[0]);
+				AlgoPlot2D algo = new AlgoPlot2D(cons, c.getLabel(), (GeoFunctionNVar) arg[0], cp);
 				return algo.getOutput();
 			} else if (arg[0] instanceof GeoImplicitCurve || arg[0] instanceof GeoLine ||
 					arg[0] instanceof GeoFunction || arg[0] instanceof GeoConic) {
-				AlgoPlot2D algo = new AlgoPlot2D(cons, c.getLabel(), arg[0]);
+				AlgoPlot2D algo = new AlgoPlot2D(cons, c.getLabel(), arg[0], cp);
 				return algo.getOutput();
 			}
 			throw argErr(c, arg[0]);
