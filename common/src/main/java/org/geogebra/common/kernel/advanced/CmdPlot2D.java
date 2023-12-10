@@ -44,10 +44,15 @@ public class CmdPlot2D extends CommandProcessor {
 		case 1:
 		case 2:
 			if (n==2) {
-				if  (arg[1] instanceof GeoText && ((GeoText) arg[1]).getText().toString().equals("\"x\"")) {
-					cp = "x";
+				if  (arg[1] instanceof GeoText) {
+					 String v = ((GeoText) arg[1]).getText().toString();
+					 if (v.equals("\"x\"")) {
+						 cp = "x";
+					 } else if (v.equals("\"y\"")) {
+						 cp = "y";
+					 } else throw new MyError(app.getLocalization(), "BadVariable");
 				} else {
-					throw new MyError(app.getLocalization(), "UnsupportedSyntax");
+					throw new MyError(app.getLocalization(), "MissingVariable");
 				}
 			}
 			if (arg[0] instanceof GeoFunctionNVar) {

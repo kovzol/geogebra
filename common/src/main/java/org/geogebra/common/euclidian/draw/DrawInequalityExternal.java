@@ -44,8 +44,8 @@ public class DrawInequalityExternal extends Drawable {
 	private ArrayList<Double> pointvalues;
 	private double[][] circlevalues;
 	private int lines, circles, height, width;
-	private boolean removeCAD = true; // TODO: Add an option to set this to false
-	// and eventually change the order x/y
+	private boolean removeCAD = true;
+	private String cadProjection;
 
 	private int startTime;
 
@@ -53,8 +53,8 @@ public class DrawInequalityExternal extends Drawable {
 		this.view = view;
 		this.geo = function.toGeoElement();
 		this.function = function;
-		String cadProjection = ((GeoFunctionNVar) function).getCadProjection();
-		if (cadProjection != null && cadProjection.equals("x")) {
+		cadProjection = ((GeoFunctionNVar) function).getCadProjection();
+		if (cadProjection != null && !cadProjection.equals("")) {
 			removeCAD = false;
 		} else {
 			removeCAD = true;
@@ -71,16 +71,23 @@ public class DrawInequalityExternal extends Drawable {
 		}
 
 		// Get bounding box:
-		double xmax = view.getXmax();
-		double xmin = view.getXmin();
-		double ymax = view.getYmax();
-		double ymin = view.getYmin();
-
-		double aspectratio_math = (ymax - ymin) / (xmax - xmin);
-
-		width = view.getWidth();
-		height = view.getHeight();
-
+		double xmin, xmax, ymin, ymax, aspectratio_math;
+		if (cadProjection.equals("y")) {
+			xmax = view.getYmax();
+			xmin = view.getYmin();
+			ymax = view.getXmax();
+			ymin = view.getXmin();
+			height = view.getWidth();
+			width = view.getHeight();
+		} else {
+			xmax = view.getXmax();
+			xmin = view.getXmin();
+			ymax = view.getYmax();
+			ymin = view.getYmin();
+			width = view.getWidth();
+			height = view.getHeight();
+		}
+		aspectratio_math = (ymax - ymin) / (xmax - xmin);
 		double aspectratio_screen = ((double) height) / width;
 		double stretch_factor = aspectratio_screen / aspectratio_math;
 		Log.debug("aspectratio math=" + aspectratio_math + " screen=" + aspectratio_screen
@@ -112,9 +119,13 @@ public class DrawInequalityExternal extends Drawable {
 		if (removeCAD) {
 			removeCADlines = "'(sset true) ";
 		}
+		String ord = "x y";
+		if (cadProjection.equals("y")) {
+			ord = "y x";
+		}
 		String command = "(plot2d [ " + def + extraDef + "] \"" + (int) (height / stretch_factor) + " " + width + " "
 				+ xmin + " " + xmax + " "
-				+ ymin + " " + " " + ymax + " -\" " + removeCADlines + "'(ord (x y))) ";
+				+ ymin + " " + " " + ymax + " -\" " + removeCADlines + "'(ord (" + ord + "))) ";
 		Log.debug(command);
 		startTime = (int) (UtilFactory.getPrototype().getMillisecondTime());
 		String result = function.getApp().tarski.evalCached(command);
@@ -202,11 +213,19 @@ public class DrawInequalityExternal extends Drawable {
 					int cyindex = l.indexOf("cy=");
 					c = l.substring(cxindex + 4, cyindex - 2);
 					double cx = Double.parseDouble(c);
-					circlevalues[circle][1] = cx / 1000 * width; // scaling back
+					if (cadProjection.equals("y")) {
+						circlevalues[circle][2] = width - (cx / 1000 * width); // scaling back
+					} else {
+						circlevalues[circle][1] = cx / 1000 * width; // scaling back
+					}
 					int rindex = l.indexOf("r=");
 					c = l.substring(cyindex + 4, rindex - 2);
 					double cy = Double.parseDouble(c);
-					circlevalues[circle][2] = height - (cy / 1000 * height); // scaling back
+					if (cadProjection.equals("y")) {
+						circlevalues[circle][1] = cy / 1000 * height; // scaling back
+					} else {
+						circlevalues[circle][2] = height - (cy / 1000 * height); // scaling back
+					}
 					circle ++;
 				}
 			}
@@ -253,10 +272,18 @@ public class DrawInequalityExternal extends Drawable {
 				}
 
 
-				double x, y, sx, sy;
-				x = pointvalues.get(i) / 1000 * width; // scaling back
+				double x = -1, y = -1, sx, sy; // x and y will be defined later, just calming Java compiler
+				if (cadProjection.equals("y")) {
+					y = width - pointvalues.get(i) / 1000 * width; // scaling back
+				} else {
+					x = pointvalues.get(i) / 1000 * width; // scaling back
+				}
 				i++;
-				y = height - pointvalues.get(i) / 1000 * height; // scaling back
+				if (cadProjection.equals("y")) {
+					x = pointvalues.get(i) / 1000 * height; // scaling back
+				} else {
+					y = height - pointvalues.get(i) / 1000 * height; // scaling back
+				}
 				i++;
 				sx = x; sy = y;
 
@@ -265,9 +292,18 @@ public class DrawInequalityExternal extends Drawable {
 				gp.moveTo(x, y);
 
 				for (int j = 0; j < N - 1; j++) {
-					double x1 = pointvalues.get(i) / 1000 * width; // scaling back
+					double x1 = -1, y1 = -1; // x1 and y1 will be defined later, just calming Java compiler
+					if (cadProjection.equals("y")) {
+						y1 = width - pointvalues.get(i) / 1000 * width; // scaling back
+					} else {
+						x1 = pointvalues.get(i) / 1000 * width; // scaling back
+					}
 					i++;
-					double y1 = height - pointvalues.get(i) / 1000 * height; // scaling back
+					if (cadProjection.equals("y")) {
+						x1 = pointvalues.get(i) / 1000 * height; // scaling back
+					} else {
+						y1 = height - pointvalues.get(i) / 1000 * height; // scaling back
+					}
 					i++;
 					if (area) {
 						gp.lineTo(x1, y1);
