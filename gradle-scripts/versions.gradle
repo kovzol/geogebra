@@ -18,8 +18,8 @@ ext.junitVersion = '4.13'
 ext.mockitoVersion = '3.2.4'
 ext.hamcrestVersion = '2.2'
 // This is automatically updated when there is a new version of Giac out:
-ext.javaGiacVersion = '69971'
+//ext.javaGiacVersion = '69971'
 // Override this with an own compiled version:
-javaGiacVersion = '20230917'
+ext.javaGiacVersion = '20230917'
 // Please don't change this line since the automatism looks for exact match.
 ext.javaTarskiVersion = '1.37_20231020'
