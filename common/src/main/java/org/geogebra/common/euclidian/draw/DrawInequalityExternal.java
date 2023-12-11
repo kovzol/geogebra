@@ -35,7 +35,7 @@ public class DrawInequalityExternal extends Drawable {
 	private int XLABEL_OFFSET_DEFAULT = -20;
 	private int YLABEL_OFFSET_DEFAULT = -20;
 
-	double EPSILON = 0.00001;
+	double EPSILON = 1; // This "large" number seems to be required. A smaller number can confuse the drawing algorithm below.
 
 	int CIRCLE_RADIUS = 4;
 
@@ -72,7 +72,7 @@ public class DrawInequalityExternal extends Drawable {
 
 		// Get bounding box:
 		double xmin, xmax, ymin, ymax, aspectratio_math;
-		if (cadProjection.equals("y")) {
+		if (cadProjection != null && cadProjection.equals("y")) {
 			xmax = view.getYmax();
 			xmin = view.getYmin();
 			ymax = view.getXmax();
@@ -120,7 +120,7 @@ public class DrawInequalityExternal extends Drawable {
 			removeCADlines = "'(sset true) ";
 		}
 		String ord = "x y";
-		if (cadProjection.equals("y")) {
+		if (cadProjection != null && cadProjection.equals("y")) {
 			ord = "y x";
 		}
 		String command = "(plot2d [ " + def + extraDef + "] \"" + (int) (height / stretch_factor) + " " + width + " "
@@ -213,18 +213,18 @@ public class DrawInequalityExternal extends Drawable {
 					int cyindex = l.indexOf("cy=");
 					c = l.substring(cxindex + 4, cyindex - 2);
 					double cx = Double.parseDouble(c);
-					if (cadProjection.equals("y")) {
-						circlevalues[circle][2] = width - (cx / 1000 * width); // scaling back
+					if (cadProjection != null && cadProjection.equals("y")) {
+						circlevalues[circle][2] = width - (cx * width / 1000.0); // scaling back
 					} else {
-						circlevalues[circle][1] = cx / 1000 * width; // scaling back
+						circlevalues[circle][1] = cx * width / 1000.0; // scaling back
 					}
 					int rindex = l.indexOf("r=");
 					c = l.substring(cyindex + 4, rindex - 2);
 					double cy = Double.parseDouble(c);
-					if (cadProjection.equals("y")) {
-						circlevalues[circle][1] = cy / 1000 * height; // scaling back
+					if (cadProjection != null && cadProjection.equals("y")) {
+						circlevalues[circle][1] = cy * height / 1000.0; // scaling back
 					} else {
-						circlevalues[circle][2] = height - (cy / 1000 * height); // scaling back
+						circlevalues[circle][2] = height - (cy * height / 1000.0); // scaling back
 					}
 					circle ++;
 				}
@@ -273,16 +273,16 @@ public class DrawInequalityExternal extends Drawable {
 
 
 				double x = -1, y = -1, sx, sy; // x and y will be defined later, just calming Java compiler
-				if (cadProjection.equals("y")) {
-					y = width - pointvalues.get(i) / 1000 * width; // scaling back
+				if (cadProjection != null && cadProjection.equals("y")) {
+					y = width - pointvalues.get(i) * width / 1000.0; // scaling back
 				} else {
-					x = pointvalues.get(i) / 1000 * width; // scaling back
+					x = pointvalues.get(i) * width / 1000.0; // scaling back
 				}
 				i++;
-				if (cadProjection.equals("y")) {
-					x = pointvalues.get(i) / 1000 * height; // scaling back
+				if (cadProjection != null && cadProjection.equals("y")) {
+					x = pointvalues.get(i) * height / 1000.0; // scaling back
 				} else {
-					y = height - pointvalues.get(i) / 1000 * height; // scaling back
+					y = height - pointvalues.get(i) * height / 1000.0; // scaling back
 				}
 				i++;
 				sx = x; sy = y;
@@ -293,16 +293,16 @@ public class DrawInequalityExternal extends Drawable {
 
 				for (int j = 0; j < N - 1; j++) {
 					double x1 = -1, y1 = -1; // x1 and y1 will be defined later, just calming Java compiler
-					if (cadProjection.equals("y")) {
-						y1 = width - pointvalues.get(i) / 1000 * width; // scaling back
+					if (cadProjection != null && cadProjection.equals("y")) {
+						y1 = width - pointvalues.get(i) * width / 1000.0; // scaling back
 					} else {
-						x1 = pointvalues.get(i) / 1000 * width; // scaling back
+						x1 = pointvalues.get(i) * width / 1000.0; // scaling back
 					}
 					i++;
-					if (cadProjection.equals("y")) {
-						x1 = pointvalues.get(i) / 1000 * height; // scaling back
+					if (cadProjection != null && cadProjection.equals("y")) {
+						x1 = pointvalues.get(i) * height / 1000.0; // scaling back
 					} else {
-						y1 = height - pointvalues.get(i) / 1000 * height; // scaling back
+						y1 = height - pointvalues.get(i) * height / 1000.0; // scaling back
 					}
 					i++;
 					if (area) {
