@@ -346,8 +346,9 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "      ff:=round(fsolve(ee,ll)*precision)/precision;"
 				+ "      print(ff);"
 				+ "      gg:=1;"
-				+ "      for (ii:=0;ii<=(size(ff)-1);ii:=ii+1) if (((size(lvar(ff[ii])))==0)) {"
+				+ "      for (ii:=0;ii<=(size(ff)-1);ii:=ii+1) if (((size(lvar(ff[ii])))==0)) {" // only the isolated points are taken
 				+ "            gg:=gg*((ll[0]-(ff[ii,0]))^2+(ll[1]-(ff[ii,1]))^2);"
+				+ "            gg:=float2rational(gg);"
 				+ "            print(gg);"
 				+ "          };"
 				// Also, taking the gcd of the elements seems to be important (and copy the discrete points too):
