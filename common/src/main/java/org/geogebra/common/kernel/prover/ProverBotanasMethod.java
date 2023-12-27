@@ -1401,6 +1401,12 @@ public class ProverBotanasMethod {
 					} catch (NoSymbolicParametersException e) {
 						Log.info(geo.getParentAlgorithm()
 								+ " is not fully implemented");
+						Localization loc = geoProver.getConstruction().getApplication()
+								.getLocalization();
+						reasonForUnknown = loc.getPlain("Statement %0 is not fully implemented in the prover.", geo.getDefinitionForInputBar());
+						if (geoProver.getShowproof()) {
+							geoProver.addProofLine(reasonForUnknown);
+						}
 						result = ProofResult.UNKNOWN;
 						if (!(geo.getKernel().isSilentMode()) &&
 								(geoProver.getProverEngine() == ProverEngine.LOCUS_EXPLICIT ||
@@ -1413,7 +1419,6 @@ public class ProverBotanasMethod {
 							rr[0] = new RelationPane.RelationRow();
 							StringBuilder html = new StringBuilder("<html>");
 							rr[0].setInfo(html.toString());
-							Localization loc = cons.getApplication().getLocalization();
 							String problematicCommand = geo.getDefinitionForInputBar();
 
 							String warning = loc.getPlainDefault("AnimatedGIF.ErrorA",

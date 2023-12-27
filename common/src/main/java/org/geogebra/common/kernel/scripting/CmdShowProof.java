@@ -79,8 +79,12 @@ public class CmdShowProof extends CmdScripting {
 				GeoCasCell gcc2 = new GeoCasCell(cons);
 				gcc2.setUseAsText(true);
 				if (output.size() == 0 || (output.size() == 2 && (!((GeoBoolean) output.get(0)).isDefined()))) {
-					if (output.size() == 2) {
-						gcc2.setInput(((GeoText) output.get(1)).getTextString()); // hint
+					if (output.size() == 2) { // There was some info given on the reason why the proof was unsuccessful...
+						String proofs = ((GeoText) output.get(1)).toString();
+						proofs = proofs.substring(1, proofs.length() - 1);
+						String[] proof = proofs.split("\n");
+						String hint = proof[proof.length - 1]; // use only the last piece of information
+						gcc2.setInput(hint); // show hint
 					} else {
 						gcc2.setInput("The statement could not be proven nor disproven.");
 					}
