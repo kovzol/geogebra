@@ -78,8 +78,12 @@ public class CmdShowProof extends CmdScripting {
 				GeoList output = algo.getGeoList();
 				GeoCasCell gcc2 = new GeoCasCell(cons);
 				gcc2.setUseAsText(true);
-				if (output.size() == 0) {
-					gcc2.setInput("The statement could not be proven nor disproven.");
+				if (output.size() == 0 || (output.size() == 2 && (!((GeoBoolean) output.get(0)).isDefined()))) {
+					if (output.size() == 2) {
+						gcc2.setInput(((GeoText) output.get(1)).getTextString()); // hint
+					} else {
+						gcc2.setInput("The statement could not be proven nor disproven.");
+					}
 				} else {
 					boolean proofResult = ((GeoBoolean) output.get(0)).getBoolean();
 					if (proofResult) {

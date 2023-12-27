@@ -269,6 +269,21 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 				}
 
 			}
+		} else {
+			// If there was some hint on possible improvement of problem setting,
+			// then, instead of returning undefined, return a list {undefined, "Explanation..."}.
+			// Only for the ShowProof command.
+			if (!result.equals("") && showproof) {
+				GeoBoolean answer = new GeoBoolean(cons);
+				answer.setUndefinedProverOnly();
+				list.add(answer);
+				GeoText proof = new GeoText(cons);
+				String c = p.getProof();
+				proof.setTextString(c);
+				proof.setLabelVisible(false);
+				proof.setEuclidianVisible(false);
+				list.add(proof);
+			}
 		}
 
 		/*

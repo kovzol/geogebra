@@ -77,8 +77,6 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.himamis.retex.editor.share.util.Unicode;
 
-import jdk.nashorn.internal.runtime.Debug;
-
 /**
  * A prover which uses Francisco Botana's method to prove geometric theorems.
  * 
@@ -381,6 +379,11 @@ public class ProverBotanasMethod {
 		// Positive variables should not be eliminated via GB, so we maintain a list of them.
 		// Such variables are: sqrt2, a, b, c (lengths of sides).
 		private String thesisIneq = null;
+
+		private String reasonForUnknown = "";
+		public String getReasonForUnknown() {
+			return reasonForUnknown;
+		}
 
 		/**
 		 * Number of maximal fix coordinates. -1 if no limit. Sometimes we need
@@ -995,6 +998,13 @@ public class ProverBotanasMethod {
 								.getProverEngine() == ProverEngine.LOCUS_IMPLICIT)) {
 							Log.info(
 									"Statements containing axes or fixed slope lines are unsupported");
+							Localization loc = geoProver.getConstruction().getApplication()
+									.getLocalization();
+							reasonForUnknown = loc.getMenuDefault("AxesFixedSlopeLinesUnsupportedSteps",
+									"Statements containing axes or fixed slope lines are unsupported.");
+							if (geoProver.getShowproof()) {
+								geoProver.addProofLine(reasonForUnknown);
+							}
 							result = ProofResult.UNKNOWN;
 							return;
 						}
@@ -1051,37 +1061,6 @@ public class ProverBotanasMethod {
 								.getBotanaPolynomials(geo);
 
 						AlgoElement algo = geo.getParentAlgorithm();
-						/*
-						 * We used to check if the construction step could be
-						 * reliably translated to an algebraic representation.
-						 * This was the case for linear constructions (parallel,
-						 * perpendicular etc.) but not for quadratic ones
-						 * (intersection of conics etc.). In the latter case the
-						 * equation system might have been solvable even if
-						 * geometrically, "seemingly" the statement was true. To
-						 * avoid such confusing cases, it was better to report
-						 * undefined instead of false.
-						 *
-						 * Now we check the statement's negation as well and it
-						 * is enough to handle those cases.
-						 *
-						 * TODO: This piece of code can be removed on a cleanup.
-						 */
-						if (algo instanceof AlgoAngularBisectorPoints
-								|| algo instanceof AlgoEllipseHyperbolaFociPoint
-								|| (algo instanceof AlgoIntersectConics
-								&& ((AlgoIntersectConics) algo)
-								.existingIntersections() != 1)
-								|| (algo instanceof AlgoIntersectLineConic
-								&& ((AlgoIntersectLineConic) algo)
-								.existingIntersections() != 1)) {
-							// interpretFalseAsUndefined = true;
-							Log.info(algo
-									+ " is not 1-1 algebraic mapping, but FALSE will not be interpreted as UNKNOWN");
-						}
-						/*
-						 * End of reliability check.
-						 */
 
 						/*
 						 * Declare free variables. Now this is done here, not in
