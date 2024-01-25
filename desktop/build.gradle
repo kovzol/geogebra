@@ -97,16 +97,12 @@ dependencies {
 
     runtime "com.jogamp:jogl-all:$joglVersion:natives-linux-amd64",
         "com.jogamp:jogl-all:$joglVersion:natives-linux-armv6hf",
-        "com.jogamp:jogl-all:$joglVersion:natives-windows-i586",
         "com.jogamp:jogl-all:$joglVersion:natives-windows-amd64",
-        "com.jogamp:jogl-all:$joglVersion:natives-macosx-universal",
-        "com.jogamp:jogl-all:$joglVersion:natives-linux-i586"
+        "com.jogamp:jogl-all:$joglVersion:natives-macosx-universal"
     runtime "com.jogamp:gluegen-rt:$joglVersion:natives-linux-amd64",
         "com.jogamp:gluegen-rt:$joglVersion:natives-linux-armv6hf",
-        "com.jogamp:gluegen-rt:$joglVersion:natives-windows-i586",
-        "com.jogamp:gluegen-rt:$joglVersion:natives-windows-amd64", 
-        "com.jogamp:gluegen-rt:$joglVersion:natives-macosx-universal",
-        "com.jogamp:gluegen-rt:$joglVersion:natives-linux-i586"
+        "com.jogamp:gluegen-rt:$joglVersion:natives-windows-amd64",
+        "com.jogamp:gluegen-rt:$joglVersion:natives-macosx-universal"
     /*
     runtime "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-amd64",
         "fr.ujf-grenoble:javagiac:$javaGiacVersion:natives-linux-i586",
@@ -118,13 +114,11 @@ dependencies {
 
     runtime "tk.tarski:javagiac:$javaGiacVersion:natives-linux-amd64",
             "tk.tarski:javagiac:$javaGiacVersion:natives-macosx-universal",
-            "tk.tarski:javagiac:$javaGiacVersion:natives-windows-i586",
             "tk.tarski:javagiac:$javaGiacVersion:natives-windows-amd64",
             "tk.tarski:javagiac:$javaGiacVersion:natives-linux-arm"
 
     runtime "tk.tarski:javatarski:$javaTarskiVersion:natives-linux-amd64",
             "tk.tarski:javatarski:$javaTarskiVersion:natives-windows-amd64",
-            "tk.tarski:javatarski:$javaTarskiVersion:natives-windows-i586",
             "tk.tarski:javatarski:$javaTarskiVersion:natives-macosx-universal",
             "tk.tarski:javatarski:$javaTarskiVersion:natives-linux-arm"
 
