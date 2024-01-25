@@ -43,24 +43,6 @@ public class AlgoEnvelope extends AlgoElement implements UsesCAS {
 	 * 
 	 * @param cons
 	 *            construction
-	 * @param label
-	 *            label
-	 * @param path
-	 *            path
-	 * @param movingPoint
-	 *            moving point
-	 */
-	public AlgoEnvelope(Construction cons, String label, Path path,
-			GeoPoint movingPoint) {
-		this(cons, path, movingPoint);
-		this.geoPoly.setLabel(label);
-	}
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param cons
-	 *            construction
 	 * @param path
 	 *            path
 	 * @param movingPoint
