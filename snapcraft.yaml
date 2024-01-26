@@ -43,7 +43,7 @@ parts:
       rm desktop/build/install/desktop/bin/desktop.bat
       rm desktop/build/install/desktop/lib/*windows*.jar
       rm desktop/build/install/desktop/lib/*macosx*.jar
-      rm desktop/build/install/desktop/lib/*i586*.jar
+      rm desktop/build/install/desktop/lib/*i586*.jar || true
       rm desktop/build/install/desktop/lib/*pxcclr*.jar
       rm desktop/build/install/desktop/lib/*zspace*.jar
       rm desktop/build/install/desktop/lib/*arm*.jar
