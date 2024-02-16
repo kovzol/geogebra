@@ -37,6 +37,7 @@ import org.geogebra.common.kernel.algos.AlgoEllipseHyperbolaFociPoint;
 import org.geogebra.common.kernel.algos.AlgoFractionText;
 import org.geogebra.common.kernel.algos.AlgoIntersectConics;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
+import org.geogebra.common.kernel.algos.AlgoIntersectSingle;
 import org.geogebra.common.kernel.algos.AlgoParabolaPointLine;
 import org.geogebra.common.kernel.algos.AlgoPointInRegion;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
@@ -913,6 +914,22 @@ public class ProverBotanasMethod {
 				if (numerical instanceof GeoSegment
 						|| numerical instanceof GeoConicPart) {
 					// we don't want the equation of the length
+					numerical = null;
+				}
+			}
+
+			// Existence of non-unique predecessors of a possibly numerical object should disallow
+			// using the numerical object, because the automatically trigger the symbolic equations.
+			TreeSet<GeoElement> numPredecessors = numerical.getAllPredecessors();
+			it = numPredecessors.iterator();
+			while (it.hasNext() && numerical != null) {
+				GeoElement geo = it.next();
+				AlgoElement algo = geo.getParentAlgorithm();
+				if (algo instanceof AlgoPolygonRegular || algo instanceof AlgoIntersectLineConic ||
+					algo instanceof AlgoIntersectConics || algo instanceof AlgoIntersectSingle) {
+					// This is incomplete. Regular polygons should be allowed in case n=4.
+					// AlgoIntersectSingle should be allowed if there is indeed one intersection.
+					// FIXME.
 					numerical = null;
 				}
 			}
