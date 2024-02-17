@@ -920,17 +920,21 @@ public class ProverBotanasMethod {
 
 			// Existence of non-unique predecessors of a possibly numerical object should disallow
 			// using the numerical object, because the automatically trigger the symbolic equations.
-			TreeSet<GeoElement> numPredecessors = numerical.getAllPredecessors();
-			it = numPredecessors.iterator();
-			while (it.hasNext() && numerical != null) {
-				GeoElement geo = it.next();
-				AlgoElement algo = geo.getParentAlgorithm();
-				if (algo instanceof AlgoPolygonRegular || algo instanceof AlgoIntersectLineConic ||
-					algo instanceof AlgoIntersectConics || algo instanceof AlgoIntersectSingle) {
-					// This is incomplete. Regular polygons should be allowed in case n=4.
-					// AlgoIntersectSingle should be allowed if there is indeed one intersection.
-					// FIXME.
-					numerical = null;
+			if (numerical != null) {
+				TreeSet<GeoElement> numPredecessors = numerical.getAllPredecessors();
+				it = numPredecessors.iterator();
+				while (it.hasNext() && numerical != null) {
+					GeoElement geo = it.next();
+					AlgoElement algo = geo.getParentAlgorithm();
+					if (algo instanceof AlgoPolygonRegular || algo instanceof AlgoIntersectLineConic
+							||
+							algo instanceof AlgoIntersectConics
+							|| algo instanceof AlgoIntersectSingle) {
+						// This is incomplete. Regular polygons should be allowed in case n=4.
+						// AlgoIntersectSingle should be allowed if there is indeed one intersection.
+						// FIXME.
+						numerical = null;
+					}
 				}
 			}
 
