@@ -881,7 +881,8 @@ public class ProverBotanasMethod {
 			TreeSet<GeoElement> predecessors = new TreeSet<>();
 			TreeSet<GeoElement> allPredecessors = geoStatement
 					.getAllPredecessors();
-			if (geoProver.getProverEngine() == ProverEngine.LOCUS_EXPLICIT) {
+			if (geoProver.getProverEngine() == ProverEngine.LOCUS_EXPLICIT ||
+					geoProver.getProverEngine() == ProverEngine.ENVELOPE) {
 				allPredecessors.add(geoStatement);
 			}
 
@@ -902,7 +903,9 @@ public class ProverBotanasMethod {
 			if (movingPoint != null
 					&& (numAlgo = movingPoint.getParentAlgorithm()) != null
 					&& (geoProver
-					.getProverEngine() != ProverEngine.LOCUS_IMPLICIT)) {
+					.getProverEngine() != ProverEngine.LOCUS_IMPLICIT)
+					&& (geoProver
+					.getProverEngine() != ProverEngine.ENVELOPE)) {
 				numerical = (GeoElement) numAlgo.getInput(0);
 
 				/*
@@ -1016,7 +1019,10 @@ public class ProverBotanasMethod {
 								&& !(geoProver
 								.getProverEngine() == ProverEngine.LOCUS_EXPLICIT
 								|| geoProver
-								.getProverEngine() == ProverEngine.LOCUS_IMPLICIT)) {
+								.getProverEngine() == ProverEngine.LOCUS_IMPLICIT
+								|| geoProver
+								.getProverEngine() == ProverEngine.ENVELOPE
+						)) {
 							Log.info(
 									"Statements containing axes or fixed slope lines are unsupported");
 							Localization loc = geoProver.getConstruction().getApplication()
@@ -1368,8 +1374,10 @@ public class ProverBotanasMethod {
 							}
 							boolean useThisPoly = true;
 							if (algo != null && algo instanceof AlgoPointOnPath
-									&& geoProver
-									.getProverEngine() == ProverEngine.LOCUS_EXPLICIT) {
+									&& (geoProver
+									.getProverEngine() == ProverEngine.LOCUS_EXPLICIT
+										|| geoProver
+									.getProverEngine() == ProverEngine.ENVELOPE)) {
 								/*
 								 * Is this an Envelope command with geo on the
 								 * virtual path? In this case we should not
@@ -1432,7 +1440,9 @@ public class ProverBotanasMethod {
 						if (!(geo.getKernel().isSilentMode()) &&
 								(geoProver.getProverEngine() == ProverEngine.LOCUS_EXPLICIT ||
 										geoProver.getProverEngine()
-												== ProverEngine.LOCUS_IMPLICIT)) {
+												== ProverEngine.LOCUS_IMPLICIT ||
+										geoProver.getProverEngine()
+												== ProverEngine.ENVELOPE)) {
 							Construction cons = geo.getConstruction();
 							RelationPane tablePane =
 									cons.getApplication().getFactory().newRelationPane();
@@ -2435,7 +2445,8 @@ public class ProverBotanasMethod {
 			if (result != null) {
 				return;
 			}
-			if (prover.getProverEngine() == ProverEngine.LOCUS_EXPLICIT) {
+			if (prover.getProverEngine() == ProverEngine.LOCUS_EXPLICIT ||
+					prover.getProverEngine() == ProverEngine.ENVELOPE) {
 				return;
 			}
 			try {
@@ -3137,6 +3148,9 @@ public class ProverBotanasMethod {
 		Prover p = UtilFactory.getPrototype().newProver();
 		p.setProverEngine(implicit ? ProverEngine.LOCUS_IMPLICIT
 				: ProverEngine.LOCUS_EXPLICIT);
+		if (callerAlgo instanceof AlgoEnvelope) {
+			p.setProverEngine(ProverEngine.ENVELOPE);
+		}
 		AlgebraicStatement as = new AlgebraicStatement(tracer, mover, p, false);
 		ProofResult proofresult = as.getResult();
 		if (proofresult == ProofResult.PROCESSING

@@ -81,7 +81,9 @@ public abstract class Prover {
 		/**
 		 * not a theorem prover, but an explicit locus calculator
 		 */
-		LOCUS_EXPLICIT
+		LOCUS_EXPLICIT,
+		/* not a theorem prover, but an envelope calculator */
+		ENVELOPE
 	}
 
 	/**
