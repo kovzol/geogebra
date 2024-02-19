@@ -445,6 +445,10 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "      c:=c+1;"
 				+ "    };; ;"
 				+ "  polys:=flatten(append(polys,keep));"
+				// Finally remove 0 polynomials:
+				+ "  polys:=remove(0,expand(polys));"
+				// This seems to work differently in GeoGebra mode in Giac.
+
 				+ "  vars:=lvar(polys);"
 				+ "  print(\"output: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");"
 				+ "  return(polys);"
