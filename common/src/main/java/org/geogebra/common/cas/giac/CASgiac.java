@@ -402,6 +402,8 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "  keep:=copy(NULL);"
 				+ "  vars:=lvar(polys);"
 				+ "  print(\"input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");"
+				+ "  polys:=sort(polys);" // Make it deterministic. Different orders of the polys
+				// may give completely different computation lengths.
 				+ "  c:=1;"
 				+ "  while(c<(size(lvar(polys)))){"
 				+ "      ii:=0;"
@@ -451,6 +453,7 @@ public abstract class CASgiac implements CASGenericInterface {
 
 				+ "  vars:=lvar(polys);"
 				+ "  print(\"output: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");"
+				// + "  print(polys);"
 				+ "  return(polys);"
 				+ "}")),
 		/**
