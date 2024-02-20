@@ -402,7 +402,7 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "  keep:=copy(NULL);"
 				+ "  vars:=lvar(polys);"
 				+ "  print(\"input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");"
-				+ "  polys:=reverse(sort(polys));" // Make it deterministic. Different orders of the polys
+				+ "  polys:=sort(polys);" // Make it deterministic. Different orders of the polys
 				// may give completely different computation lengths.
 				+ "  polys2:=[0];"
 				+ "  while(polys!=polys2) {" // do the simplification until there is a change,
