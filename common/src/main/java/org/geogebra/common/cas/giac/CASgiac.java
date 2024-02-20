@@ -404,11 +404,16 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "  print(\"input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");"
 				+ "  polys:=sort(polys);" // Make it deterministic. Different orders of the polys
 				// may give completely different computation lengths.
+				+ "  polys2:=[0];"
+				+ "  while(polys!=polys2) {" // do the simplification until there is a change,
+				// start a round (maybe it's unnecessary to compute multiple rounds, check: TODO)
+				+ "  polys2:=polys;"
 				+ "  c:=1;"
 				+ "  while(c<(size(lvar(polys)))){"
 				+ "      ii:=0;"
-				+ "      while(ii<(size(polys)-1)){"
+				+ "      while(ii<(size(polys))){"
 				+ "          degs:=degree(polys[ii],vars);"
+				// + "          print(vars);"
 				// + "          print(c);"
 				// + "          print(ii);"
 				// + "          print(polys[ii]);"
@@ -448,8 +453,10 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "    };; ;"
 				+ "  polys:=flatten(append(polys,keep));"
 				// Finally remove 0 polynomials:
+				// + "  print(polys);"
 				+ "  polys:=remove(0,expand(polys));"
 				// This seems to work differently in GeoGebra mode in Giac.
+				+ "}" // end of one round of simplifications
 
 				+ "  vars:=lvar(polys);"
 				+ "  print(\"output: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");"
