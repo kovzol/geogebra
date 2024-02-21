@@ -181,8 +181,8 @@ public class Compute {
 						"  substs:=\"\";" +
 						"  vars:=lvar(polys);" +
 						"  print(\"Input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");" +
-						"  polys:=sort(polys);" + // Make it deterministic. Different orders of the polys
-						// may give completely different computation lengths.
+						// Do NOT sort the polys. Their order is important: the last one contains m
+						// and it must NOT be eliminated.
 						"  polys2:=[0];" +
 						"  while(polys!=polys2) {" + // do the simplification until there is a change,
 						// start a round (maybe it's unnecessary to compute multiple rounds, check: TODO)
@@ -190,7 +190,7 @@ public class Compute {
 						"  cc:=1;" +
 						"  while(cc<(size(lvar(polys)))){" +
 						"      ii:=0;" +
-						"      while(ii<(size(polys))){" +
+						"      while(ii<(size(polys)-1)){" + // do NOT touch the last poly
 						"          degs:=degree(polys[ii],vars);" +
 						"          if ((sum(degs)=cc) && (isLinear(polys[ii]))) {" +
 						"              pos:=find(1,degs);" +
