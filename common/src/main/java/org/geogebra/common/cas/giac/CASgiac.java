@@ -398,7 +398,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		 * Used internally.
 		 */
 		JACOBI_PREPARE("jacobiPrepare", ggbGiac("jacobiPrepare (polys,excludevars)->"
-				+ "{ local ii,degs,pos,vars,linvar,p,keep,c,sumdegs,degs;"
+				+ "{ local ii,degs,pos,vars,linvar,p,keep,c,sumdegs,degs,polys2;"
 				+ "  keep:=copy(NULL);"
 				+ "  vars:=lvar(polys);"
 				+ "  print(\"input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");"

@@ -176,15 +176,21 @@ public class Compute {
 		return ggbGiac(
 				"delinearize" +
 						" (polys,excludevars)->" +
-						"{ local ii,degs,pos,vars,linvar,p,qvar,pos2,keep,cc,substval,substs;" +
+						"{ local ii,degs,pos,vars,linvar,p,qvar,pos2,keep,cc,substval,substs,polys2;" +
 						"  keep:=[];" +
 						"  substs:=\"\";" +
 						"  vars:=lvar(polys);" +
 						"  print(\"Input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");" +
+						"  polys:=sort(polys);" + // Make it deterministic. Different orders of the polys
+						// may give completely different computation lengths.
+						"  polys2:=[0];" +
+						"  while(polys!=polys2) {" + // do the simplification until there is a change,
+						// start a round (maybe it's unnecessary to compute multiple rounds, check: TODO)
+						"  polys2:=polys;" +
 						"  cc:=1;" +
 						"  while(cc<(size(lvar(polys)))){" +
 						"      ii:=0;" +
-						"      while(ii<(size(polys)-1)){" +
+						"      while(ii<(size(polys))){" +
 						"          degs:=degree(polys[ii],vars);" +
 						"          if ((sum(degs)=cc) && (isLinear(polys[ii]))) {" +
 						"              pos:=find(1,degs);" +
@@ -254,7 +260,19 @@ public class Compute {
 						"      cc:=cc+1;" +
 						//"      print(cc);" +
 						"    };" +
+						"  print(polys);" +
+						"  print(polys2);" +
+						"  }" + // end of one round of simplifications
+						"  print(polys);" +
 						"  polys:=flatten(append(polys,keep));" +
+						"  print(polys);" +
+
+						// Finally remove 0 polynomials:
+						"  polys:=remove(0,expand(polys));" +
+						// "  print(polys);" +
+
+						// "  polys:=list(set(polys));" +
+						// This seems to work differently in GeoGebra mode in Giac.
 						"  print(\"Set after delinearization: \" + polys);" +
 						"  vars:=lvar(polys);" +
 						"  print(\"Delinearization output: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");" +
