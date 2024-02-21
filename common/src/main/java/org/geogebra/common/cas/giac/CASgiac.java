@@ -373,12 +373,10 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "  return(true);"
 				+ "}")),
 		/**
-		 * Decide if a polynomial is linear or not. The way it is done is hacky and incomplete. FIXME.
+		 * Decide if a polynomial is linear or not.
 		 */
 		IS_LINEAR("isLinear", ggbGiac("isLinear(poly)->{"
-				// + "  print(\"isLinear? \" + poly);"
-				+ "  if (((sommet(poly))==\"+\")) return(isLinearSum(poly)); ;"
-				+ "  return(isLinearSum(poly+1234567));"
+				+ "  return(isLinearSum(expand(poly)));"
 				+ "}")),
 		/**
 		 * Help simplifying the input when computing the Jacobian matrix in the
@@ -451,13 +449,13 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "        };; ;"
 				+ "      c:=c+1;"
 				+ "    };; ;"
-				+ "  polys:=flatten(append(polys,keep));"
+				+ "  polys:=expand(polys);"
 				// Finally remove 0 polynomials:
 				// + "  print(polys);"
 				+ "  polys:=remove(0,expand(polys));"
 				// This seems to work differently in GeoGebra mode in Giac.
 				+ "}" // end of one round of simplifications
-
+				+ "  polys:=flatten(append(polys,keep));"
 				+ "  vars:=lvar(polys);"
 				+ "  print(\"output: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");"
 				// + "  print(polys);"

@@ -259,19 +259,13 @@ public class Compute {
 						"      cc:=cc+1;" +
 						//"      print(cc);" +
 						"    };" +
+						"  polys:=expand(polys);" +
+						"  polys:=remove(0,expand(polys));" +
 						"  print(polys);" +
 						"  print(polys2);" +
 						"  }" + // end of one round of simplifications
-						"  print(polys);" +
 						"  polys:=flatten(append(polys,keep));" +
 						"  print(polys);" +
-
-						// Finally remove 0 polynomials:
-						"  polys:=remove(0,expand(polys));" +
-						// "  print(polys);" +
-
-						// "  polys:=list(set(polys));" +
-						// This seems to work differently in GeoGebra mode in Giac.
 						"  print(\"Set after delinearization: \" + polys);" +
 						"  vars:=lvar(polys);" +
 						"  print(\"Delinearization output: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");" +
@@ -294,10 +288,8 @@ public class Compute {
 
 	static String ilDef() {
 		return ggbGiac("isLinear" +
-				" (poly)->{if (((sommet(poly))=\"+\")) {" +
-				"              return(isLinearSum(poly));" +
-				"            };" +
-				"          return(isLinearSum(poly+1234567));" + // FIXME, this is a dirty hack
+				" (poly)->{" +
+				"          return(isLinearSum(expand(poly)));" +
 				"        }");
 	}
 
@@ -389,11 +381,11 @@ public class Compute {
 			if (ineqs2.equals("ERROR")) {
 				return "GIAC ERROR";
 			}
-			ineqs2 = removeHeadTail(ineqs2, 1);
+			ineqs2 = removeHeadTail(ineqs2, 1); // ineqs2 contains the substituted ineqs with auto-substitutions
 		}
 
-		String ineqVars = "";
 		String[] ineqs2Array = ineqs2.split(",");
+		TreeSet<String> ineqVarsTS = new TreeSet<>();
 		if (!ineqs2.equals("")) {
 			for (String ie : ineqs2Array) {
 				String[] disjunctionsArray = ie.split(" \\|\\| ");
@@ -406,16 +398,24 @@ public class Compute {
 						String ieVarsCode = "lvar(lhs(" + ieRewriteEq + "),rhs(" + ieRewriteEq + "))";
 						String ieVars = executeGiac(ieVarsCode);
 						ieVars = removeHeadTail(ieVars, 1);
-						ineqVars += "," + ieVars;
+						String[] ieVarsA = ieVars.split(",");
+						for (String v: ieVarsA) {
+							ineqVarsTS.add(v);
+						}
 					}
 				}
 			}
+		}
+		String ineqVars = "";
+		for (String v: ineqVarsTS) {
+			ineqVars += v + ",";
 		}
 
 		appendResponse("LOG: before substitution, polys=" + polys + ", ineqs=" + ineqs2);
 		String polys2 = executeGiac("subst([" + polys + "],[" + varsubst + "])");
 
 		polys2 = removeHeadTail(polys2, 1); // removing { and } in Mathematica (or [ and ] in Giac)
+		// polys2 contain the equational hypotheses with substitutions
 
 		// Add main equation:
 		polys2 += "," + eq;
@@ -454,7 +454,10 @@ public class Compute {
 		String[] polys2Array = polys2.split(",");
 
 		if (!ineqVars.equals("")) {
-			vars += ineqVars;
+			vars += "," + ineqVars;
+		}
+		if (vars.endsWith(",")) {
+			vars = vars.substring(0,vars.length()-1);
 		}
 
 		// Remove duplicated vars.
@@ -817,7 +820,7 @@ public class Compute {
 				+ "(def epc (lambda (F) (normalize (bin-reduce t-or (map (lambda (G) (if (equal? (t-type G) 6) (process G) G)) (expand F))))))\n";
 		 */
 
-		return "; epcx - version 4.0 2023-03-28 - Chris Brown\n"
+		return "; epcx - version 5.0 2023-04-01 - Chris Brown\n"
 				+ "; This script defines a new Tarski command \"epc\" that provides a better \"black box\"\n"
 				+ "; command for existential quantifier elimination.\n"
 				+ "; Use like: (epc [ex x[x^2 + b x + c = 0]])\n"
@@ -840,12 +843,10 @@ public class Compute {
 				+ "      F\n"
 				+ "      (if (equal? (length (get-free-vars F)) 0)\n"
 				+ "        (qepcad-api-call F t)\n"
-				+ "        ((lambda () ; let hack\n"
-				+ "           (def S (process (exclose F)))\n"
-				+ "           (if (equal? S [false])\n"
+				+ "           (if (equal? (process (exclose F)) [false])\n"
 				+ "             [false]\n"
 				+ "             (qepcad-api-call F t)\n"
-				+ "\t   )))))))\n"
+				+ ")))))\n"
 				+ "\n"
 				+ "; (qepcad-simplify F t) Qepcad simplification\n"
 				+ "(def qepcad-simplify (lambda (F t) (qepcad-api-call F t)))\n"
