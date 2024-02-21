@@ -181,8 +181,7 @@ public class Compute {
 						"  substs:=\"\";" +
 						"  vars:=lvar(polys);" +
 						"  print(\"Input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");" +
-						// Do NOT sort the polys. Their order is important: the last one contains m
-						// and it must NOT be eliminated.
+						"  polys:=sort(polys);" + // be deterministic
 						"  polys2:=[0];" +
 						"  while(polys!=polys2) {" + // do the simplification until there is a change,
 						// start a round (maybe it's unnecessary to compute multiple rounds, check: TODO)
@@ -190,7 +189,7 @@ public class Compute {
 						"  cc:=1;" +
 						"  while(cc<(size(lvar(polys)))){" +
 						"      ii:=0;" +
-						"      while(ii<(size(polys)-1)){" + // do NOT touch the last poly
+						"      while(ii<(size(polys))){" +
 						"          degs:=degree(polys[ii],vars);" +
 						"          if ((sum(degs)=cc) && (isLinear(polys[ii]))) {" +
 						"              pos:=find(1,degs);" +
@@ -424,9 +423,9 @@ public class Compute {
 		String linCode = "[[" + ggInit + "],[" + ilsDef() + "],[" + ilDef() + "],[" + dlDef(true) + "],[" + rmwDef() +
 				"],[" + rdDef() + "],";
 		if (lhs.equals("w1") && rhs.equals("w2")) {
-			linCode += "removeDivisions(removeW12(delinearize([" + polys2 + "],[" + posvariables + ineqVars + ",w1,w2])[0],m,w1,w2))][6]";
+			linCode += "removeDivisions(removeW12(delinearize([" + polys2 + "],[" + posvariables + ineqVars + ",w1,w2,m])[0],m,w1,w2))][6]";
 		} else {
-			linCode += "removeDivisions(delinearize([" + polys2 + "],[" + posvariables + ineqVars + "," + lhs + "," + rhs + "])[0])][6]";
+			linCode += "removeDivisions(delinearize([" + polys2 + "],[" + posvariables + ineqVars + "," + lhs + "," + rhs + ",m])[0])][6]";
 		}
 		appendResponse("LOG: delinearization code=" + linCode);
 		polys2 = executeGiac(linCode);
