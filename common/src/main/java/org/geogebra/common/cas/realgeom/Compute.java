@@ -177,11 +177,12 @@ public class Compute {
 				"delinearize" +
 						" (polys,excludevars)->" +
 						"{ local ii,degs,pos,vars,linvar,p,qvar,pos2,keep,cc,substval,substs,polys2;" +
+						// "  return [polys,\"\"];" + // eventually disable delinarization
 						"  keep:=[];" +
 						"  substs:=\"\";" +
+						"  polys:=sort(polys);" + // be deterministic
 						"  vars:=lvar(polys);" +
 						"  print(\"Input: \"+size(polys)+\" eqs in \"+size(vars)+\" vars\");" +
-						"  polys:=sort(polys);" + // be deterministic
 						"  polys2:=[0];" +
 						"  while(polys!=polys2) {" + // do the simplification until there is a change,
 						// start a round (maybe it's unnecessary to compute multiple rounds, check: TODO)
