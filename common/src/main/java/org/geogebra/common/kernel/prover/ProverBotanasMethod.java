@@ -2965,6 +2965,9 @@ public class ProverBotanasMethod {
 
 	public static void syzygy(AlgebraicStatement as, PPolynomial ndgproduct, TreeMap<PVariable, BigInteger> substitutions,
 			Kernel kernel, boolean transcext, Prover prover) {
+		Localization loc = prover.getConstruction().getKernel().getLocalization();
+		String computationallyDifficult = loc.getMenuDefault("ProofPreparationSeemsDifficult",
+				"The preparation of the proof seems computationally too difficult, sorry.");
 
 		int ndgs = 0;
 		if (!ndgproduct.isOne()) {
@@ -3013,6 +3016,7 @@ public class ProverBotanasMethod {
 					Log.trace("singular -> " + syzygyResult);
 			} catch (Throwable e) {
 				Log.debug("Could not compute syzygy with SingularWS");
+				prover.addProofLine(computationallyDifficult);
 				return;
 			}
 
@@ -3024,6 +3028,7 @@ public class ProverBotanasMethod {
 				s-=ndgs;
 				if (s != se) {
 					Log.debug("Unexpected number of coeffs");
+					prover.addProofLine(computationallyDifficult);
 					return;
 				}
 				for (int i=0; i < s; i++) {
@@ -3046,6 +3051,7 @@ public class ProverBotanasMethod {
 				return;
 			}
 			Log.debug("Could not compute syzygy with SingularWS");
+			prover.addProofLine(computationallyDifficult);
 			return;
 		} else {
 			/*
@@ -3089,6 +3095,7 @@ public class ProverBotanasMethod {
 				syzygyResult = c.evaluateRaw(syzygyProgram);
 			} catch (Throwable e) {
 				Log.error("Problem when computing syzygy");
+				prover.addProofLine(computationallyDifficult);
 			}
 
 			if (syzygyResult != null && !syzygyResult.equals("")) {
@@ -3125,6 +3132,7 @@ public class ProverBotanasMethod {
 				return;
 			}
 			Log.debug("Could not compute syzygy with Giac");
+			prover.addProofLine(computationallyDifficult);
 			return;
 		}
 			}
