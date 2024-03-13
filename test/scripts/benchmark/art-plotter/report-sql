@@ -254,7 +254,7 @@ for t in `sqlite3 sqlite3db "select distinct testcase from tests where build_num
    TEXTCOLOR="black!0"
    ALLGOOD=0
    SCORE[$cn]="-1000000000000000" # -infty
-   FPS=`echo "scale=2; 1000/$TIME" | bc -q | awk '{printf "%5.2f", $0}'`
+   FPS=`echo "scale=2; 1000/$TIME" | bc -q | LC_ALL=C awk '{printf "%5.2f", $0}'`
    fi
   if [ "$ACCEPTED" = "1" ]; then
    VALUE=${CORRECT[$cn]}
@@ -262,7 +262,7 @@ for t in `sqlite3 sqlite3db "select distinct testcase from tests where build_num
    VALUE=$((VALUE+1))
    CORRECT[$cn]=$VALUE
    SCORE[$cn]=$((SCORE+20))
-   FPS=`echo "scale=2; 1000/$TIME" | bc -q | awk '{printf "%5.2f", $0}'` # not elegant (repetition)
+   FPS=`echo "scale=2; 1000/$TIME" | bc -q | LC_ALL=C awk '{printf "%5.2f", $0}'` # not elegant (repetition)
    if [ $TIME -lt 5000 ]; then
     RESULTCLASS=" class=\"o6\"" # >0.2 FPS heavy (very slow)
     CSVRESULT=1
