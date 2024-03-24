@@ -2153,7 +2153,7 @@ public class ProverBotanasMethod {
 			Operation operation = ((AlgoDependentBoolean) algo).getOperation();
 			if (forceRG || operation == LESS || operation == LESS_EQUAL ||
 					operation == GREATER || operation == GREATER_EQUAL) {
-				Log.debug("Inequality");
+				Log.debug("The real geometry engine will be used."); // Don't change that string!
 				try {
 					thesisIneq = c.evaluateRaw(pCode);
 					thesisIneq = thesisIneq.substring(1, thesisIneq.length() - 1); // trim { }
