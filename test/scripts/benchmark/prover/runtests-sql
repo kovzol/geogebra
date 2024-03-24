@@ -384,7 +384,9 @@ for i in `find -name '*.ggb' | sort`; do
      accepted=null
      grep --silent "The statement has a difficulty of degree" $LOGFILE && \
       RESULT=`tac $LOGFILE | grep "The statement has a difficulty of degree" | head -1 | cut -f8 -d" " | cut -f1 -d.`
-     if [ "$RESULT" != "-" ]; then
+     grep --silent "STATEMENT IS TRUE_ON_COMPONENTS" $LOGFILE && \
+      RESULT=top
+     if [ "$RESULT" != "-" -a "$RESULT" != "top" ]; then
       if [ "$DIRNAME" = "false" ]; then
        RESULTCLASS="error" # Pessimistic...
        accepted=0
@@ -401,7 +403,7 @@ for i in `find -name '*.ggb' | sort`; do
        accepted=1
        errortype=0
       fi # $DIRNAME = "false"
-     fi # $RESULT != "-"
+     fi # $RESULT != "-" and $RESULT != "top"
     fi # $PROVEDETAILS = 2
    fi # $RESULT is empty or ?
    TIME=`cat $LOGFILE | grep Benchmarking | awk '{s=s+$5; print s}' | tail -1` # collecting all entries
