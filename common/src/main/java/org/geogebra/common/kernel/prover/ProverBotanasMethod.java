@@ -2741,6 +2741,12 @@ public class ProverBotanasMethod {
 							NDGCondition ndgc = ndgd.detect(poly);
 							if (ndgc == null) {
 								readable = false;
+								// Set ndgproduct to be the whole product
+								// (it may be used later in ShowProof):
+								ndgproduct = new PPolynomial(BigInteger.ONE);
+								for (PPolynomial p : thisNdgSet) {
+									ndgproduct = ndgproduct.multiply(p); // maybe with multiplicity? TODO
+								}
 							} else {
 								/*
 								 * Check if this elimination ideal equals to
