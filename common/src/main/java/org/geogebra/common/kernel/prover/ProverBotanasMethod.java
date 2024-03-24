@@ -2789,6 +2789,21 @@ public class ProverBotanasMethod {
 										 */
 										ndgc.setCondition("AreEqual");
 										ndgc.setReadability(0.5);
+										// Create polynomials for ShowProof accordingly:
+										try {
+											PPolynomial[] polys = new PPolynomial[1];
+											GeoPoint p1 = (GeoPoint) ndgc.getGeos()[0];
+											GeoPoint p2 = (GeoPoint) ndgc.getGeos()[1];
+											PVariable[] p1v = p1.getBotanaVars(p1);
+											PVariable[] p2v = p2.getBotanaVars(p2);
+											polys[0] = PPolynomial.sqrDistance(p1v[0], p1v[1],
+													p2v[0], p2v[1]);
+											// This is actually a sufficient condition, but
+											// not necessary, at least geometrically.
+											ndgc.setPolys(polys);
+										} catch (Throwable ex) {
+											Log.error("Error on getting Botana vars");
+										}
 									}
 								}
 
