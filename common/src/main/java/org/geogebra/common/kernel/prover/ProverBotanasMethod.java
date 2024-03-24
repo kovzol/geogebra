@@ -2145,7 +2145,8 @@ public class ProverBotanasMethod {
 			if (pCode.contains("sqrt") && geoProver.getProverEngine() != ProverEngine.LOCUS_IMPLICIT ) {
 				forceRG = true;
 			}
-			if (!ineqs.isEmpty() && geoProver.getProverEngine() != ProverEngine.LOCUS_IMPLICIT) {
+			if (!ineqs.isEmpty() && geoProver.getProverEngine() != ProverEngine.LOCUS_IMPLICIT
+					&& !geoProver.getShowproof()) { // Only algebraic statements can be used yet.
 				forceRG = true;
 			}
 
