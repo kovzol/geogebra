@@ -643,9 +643,7 @@ public abstract class Prover {
 		AlgoElement algoParent = statement.getParentAlgorithm();
 		if (algoParent == null) {
 			if (statement.getValueForInputBar().equals("true")) {
-				result = ProofResult.TRUE; // Trust in
-				// kernel's
-				// wisdom
+				result = ProofResult.TRUE; // Trust in kernel's wisdom
 			} else if (statement.getValueForInputBar().equals("false")) {
 				result = ProofResult.FALSE; // Trust in kernel's wisdom
 			}
@@ -855,7 +853,7 @@ public abstract class Prover {
 		while (it.hasNext()) {
 			GeoElement geo = it.next();
 			if (geo.isGeoPoint() && geo.getParentAlgorithm() == null) {
-				freePoints.add(geo.getLabelSimple());
+				freePoints.add(getLabel(loc, geo));
 			} else if (!(geo instanceof GeoNumeric)) {
 				if (!ael.contains(geo.getParentAlgorithm())) {
 					String definition =
@@ -872,7 +870,7 @@ public abstract class Prover {
 					if (ae != null && (ae instanceof AlgoPointOnPath
 							|| ae instanceof AlgoPointInRegion)) {
 						textLocalized = loc.getPlain("LetABeAB",
-								geo.getLabelSimple(), definition);
+								getLabel(loc, geo), definition);
 					} else {
 						if (ae != null && ae instanceof AlgoPolygonRegular && !ael.contains(ae)) {
 							ael.add(ae);
@@ -888,11 +886,11 @@ public abstract class Prover {
 							points.deleteCharAt(l - 1);
 							points.deleteCharAt(l - 2);
 							textLocalized = loc.getPlain("LetABeTheRegularBGonVerticesC",
-									geo.getLabelSimple(), ae.getInput(2).toString(),
+									getLabel(loc, geo), ae.getInput(2).toString(),
 									points.toString());
 						} else {
 							textLocalized = loc.getPlain("LetABeTheB",
-									geo.getLabelSimple(), definition);
+									getLabel(loc, geo), definition);
 						}
 					}
 					if (textLocalized != null) {
@@ -904,7 +902,7 @@ public abstract class Prover {
 					String definition =
 							geo.getDefinitionDescription(StringTemplate.defaultTemplate);
 					String textLocalized = loc.getPlain("DenoteTheExpressionAByB",
-							definition, geo.getLabelSimple());
+							definition, getLabel(loc, geo));
 					if (textLocalized != null) {
 						hypotheses.append(textLocalized).append(separator);
 					}
@@ -936,10 +934,21 @@ public abstract class Prover {
 		theoremText.append(hypotheses);
 
 		if (showStatement) {
-			String toProveStr = String.valueOf(statement.getParentAlgorithm());
+			String toProveStr = "true"; // localize
+			if (statement.getParentAlgorithm() != null) {
+				toProveStr = String.valueOf(statement.getParentAlgorithm());
+			}
 			theoremText.append(loc.getPlain("ProveThatA", toProveStr));
 		}
 		return theoremText.toString();
+	}
+
+	static String getLabel(Localization loc, GeoElement geo) {
+		String label = geo.getLabelSimple();
+		if (label == null) {
+			label = loc.getMenuDefault("ANamelessObject", "a nameless object");
+		}
+		return label;
 	}
 
 	/**

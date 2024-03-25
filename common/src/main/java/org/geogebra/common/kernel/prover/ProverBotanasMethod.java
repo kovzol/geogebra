@@ -1430,7 +1430,7 @@ public class ProverBotanasMethod {
 								+ " is not fully implemented");
 						Localization loc = geoProver.getConstruction().getApplication()
 								.getLocalization();
-						reasonForUnknown = loc.getPlain("Statement %0 is not fully implemented in the prover.", geo.getDefinitionForInputBar());
+						reasonForUnknown = loc.getPlain("Command %0 is not fully implemented in the prover.", geo.getDefinitionForInputBar());
 						if (geoProver.getShowproof()) {
 							geoProver.addProofLine(reasonForUnknown);
 						}
@@ -1467,6 +1467,11 @@ public class ProverBotanasMethod {
 					}
 				} else {
 					Log.info(geo.getParentAlgorithm() + " unimplemented");
+					Localization loc = geo.getKernel().getLocalization();
+					String reasonForUnknown = loc.getPlain("Command %0 is not implemented in the prover.", geo.getDefinitionForInputBar());
+					if (geoProver.getShowproof()) {
+						geoProver.addProofLine(reasonForUnknown);
+					}
 					result = ProofResult.UNKNOWN;
 					return;
 				}
@@ -1742,6 +1747,12 @@ public class ProverBotanasMethod {
 			} catch (NoSymbolicParametersException e) {
 				Log.debug(
 						"Unsuccessful run, statement is UNKNOWN at the moment");
+				Localization loc = geoStatement.getKernel().getLocalization();
+				reasonForUnknown = loc.getPlain("Statement %0 is not fully implemented in the prover.",
+						geoStatement.getDefinitionDescription(StringTemplate.defaultTemplate));
+				if (geoProver.getShowproof()) {
+					geoProver.addProofLine(reasonForUnknown);
+				}
 				result = ProofResult.UNKNOWN;
 			}
 
@@ -2185,6 +2196,11 @@ public class ProverBotanasMethod {
 				} catch (Throwable e) {
 					Log.debug(
 							"Unsuccessful run on evaluating the expression, statement is UNKNOWN at the moment");
+					Localization loc = geoStatement.getKernel().getLocalization();
+					reasonForUnknown = loc.getPlain("Statement %0 is not fully implemented in the prover.", geoStatement.getDefinitionForInputBar());
+					if (geoProver.getShowproof()) {
+						geoProver.addProofLine(reasonForUnknown);
+					}
 					result = ProofResult.UNKNOWN;
 					return null;
 				}
@@ -2357,6 +2373,11 @@ public class ProverBotanasMethod {
 			} catch (Throwable e) {
 				Log.debug(
 						"Unsuccessful run on evaluating the expression, statement is UNKNOWN at the moment");
+				Localization loc = geoStatement.getKernel().getLocalization();
+				reasonForUnknown = loc.getPlain("Statement %0 is not fully implemented in the prover.", geoStatement.getDefinitionForInputBar());
+				if (geoProver.getShowproof()) {
+					geoProver.addProofLine(reasonForUnknown);
+				}
 				result = ProofResult.UNKNOWN;
 				return null;
 			}
@@ -2502,6 +2523,11 @@ public class ProverBotanasMethod {
 		if (!(statement
 				.getParentAlgorithm() instanceof SymbolicParametersBotanaAlgoAre)) {
 			Log.info(statement.getParentAlgorithm() + " unimplemented");
+			Localization loc = statement.getKernel().getLocalization();
+			String reasonForUnknown = loc.getPlain("Statement %0 is not implemented in the prover.", statement.getDefinitionForInputBar());
+			if (prover.getShowproof()) {
+				prover.addProofLine(reasonForUnknown);
+			}
 			return ProofResult.UNKNOWN;
 			/*
 			 * If not, let's not spend any time here, but give up immediately.
@@ -2736,6 +2762,13 @@ public class ProverBotanasMethod {
 						if (!poly.isConstant()) {
 							if (as.interpretTrueAsUndefined) {
 								Log.debug("Interpreting TRUE as UNKNOWN");
+								Localization loc = statement.getConstruction().getApplication()
+										.getLocalization();
+								String reasonForUnknown = loc.getMenuDefault("StatementAlgebraicallyTrueGeometricallyAmbiguous",
+										"The statement is algebraically true, but geometrically ambiguous.");
+								if (prover.getShowproof()) {
+									prover.addProofLine(reasonForUnknown);
+								}
 								return ProofResult.UNKNOWN;
 							}
 							ndgproduct = ndgproduct.multiply(poly);
@@ -2974,6 +3007,13 @@ public class ProverBotanasMethod {
 		}
 		if (as.interpretTrueAsUndefined) {
 			Log.debug("Interpreting TRUE as UNKNOWN");
+			Localization loc = statement.getConstruction().getApplication()
+					.getLocalization();
+			String reasonForUnknown = loc.getMenuDefault("StatementAlgebraicallyTrueGeometricallyAmbiguous",
+					"The statement is algebraically true, but geometrically ambiguous.");
+			if (prover.getShowproof()) {
+				prover.addProofLine(reasonForUnknown);
+			}
 			return ProofResult.UNKNOWN;
 		}
 		Log.debug("Statement is GENERALLY TRUE");

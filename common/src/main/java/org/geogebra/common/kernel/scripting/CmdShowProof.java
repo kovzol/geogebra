@@ -115,7 +115,10 @@ public class CmdShowProof extends CmdScripting {
 				if (statementTrue) {
 					String proofs = ((GeoText) output.get(output.size() - 1)).toString();
 					proofs = proofs.substring(1, proofs.length() - 1);
-					if (proofs.contains("proves") && proofs.contains("Contradiction!")) {
+					if (proofs.length() == 0) {
+						proofs = "The statement is trivial.";
+					}
+					else if (proofs.contains("proves") && proofs.contains("Contradiction!")) {
 						proofs = "We prove this by contradiction.\n" + proofs;
 					} else {
 						proofs = "(Currently no full proof can be provided, but just some steps.)\n" +
