@@ -66,13 +66,20 @@ public class CASExport {
 				+ "  list-style: empty-style;\n"
 				+ "  font-family: sans-serif;\n"
 				+ "  background-color: " + numberingBackgroundColor + ";";
-		html += "</style>";
+		html += "</style>\n";
 
 		// In case LaTeX (MathJax) is used, load it:
 		if (useMathJax) {
+			html += "<script type=\"text/x-mathjax-config\">\n"
+					+ "    MathJax.Hub.Config({\n"
+					+ "        \"CommonHTML\": { linebreaks: { automatic: true } },\n"
+					+ "        \"HTML-CSS\": { linebreaks: { automatic: true } },\n"
+					+ "        \"SVG\": { linebreaks: { automatic: true } }\n"
+					+ "    });\n"
+					+ "</script>\n";
 			html += "<script type=\"text/javascript\" async\n"
 					+ "  src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML\">\n"
-					+ "</script>";
+					+ "</script>\n";
 		}
 
 		html += "</head>\n<body>\n";
