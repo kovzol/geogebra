@@ -1,5 +1,6 @@
 package org.geogebra.web.full.gui.menubar;
 
+import org.geogebra.common.export.CASExport;
 import org.geogebra.common.geogebra3D.euclidian3D.printer3D.FormatSTL;
 import org.geogebra.common.main.HTML5Export;
 import org.geogebra.common.plugin.EventType;
@@ -213,6 +214,18 @@ public class ExportMenuW extends AriaMenuBar implements MenuBarI {
 								app.exportCollada(true);
 							}
 						});
+
+				menu.addItem(menuText(app.getLocalization()
+						.getMenuDefault("Download.CASView", "CAS View (.html)")), true, new MenuCommand(app) {
+					@Override
+					public void doExecute() {
+						menu.hide();
+						CASExport casExp = new CASExport(app);
+						String html = casExp.createHtml();
+						// getCopyPaste().copyTextToSystemClipboard(html);
+						app.exportStringToFile("html", html);
+					}
+				});
 			}
 		}
 	}

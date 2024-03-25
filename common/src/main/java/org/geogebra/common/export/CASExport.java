@@ -16,7 +16,7 @@ import org.geogebra.common.main.App;
 import org.geogebra.common.main.Feature;
 import org.geogebra.common.main.Localization;
 
-public abstract class CASExport {
+public class CASExport {
 
 	/**
 	 * Application instance.

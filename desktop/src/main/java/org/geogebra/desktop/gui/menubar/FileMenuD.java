@@ -561,7 +561,7 @@ class FileMenuD extends BaseMenu implements EventRenderable {
 		}
 
 		exportCASHtmlAction = new AbstractAction(loc.getMenuDefault("ExportCASHtml",
-				"Export CAS View to HTML") + " ..." + Unicode.ELLIPSIS, app.getEmptyIcon()) {
+				"Export CAS View to HTML") + Unicode.ELLIPSIS, app.getEmptyIcon()) {
 
 			private static final long serialVersionUID = 1L;
 
