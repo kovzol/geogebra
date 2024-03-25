@@ -382,9 +382,9 @@ for i in `find -name '*.ggb' | sort`; do
      RESULTCLASS="undefined"
      errortype=0
      accepted=null
-     # Classify results (all are unsuccessful but accepted):
      grep --silent "The statement has a difficulty of degree" $LOGFILE && \
       RESULT=`tac $LOGFILE | grep "The statement has a difficulty of degree" | head -1 | cut -f8 -d" " | cut -f1 -d.`
+     # Classify special results (all are unsuccessful but accepted):
      grep --silent "STATEMENT IS TRUE_ON_COMPONENTS" $LOGFILE && \
       RESULT=top
      grep --silent "The real geometry engine will be used." $LOGFILE && \
@@ -395,9 +395,9 @@ for i in `find -name '*.ggb' | sort`; do
       RESULT=niu
      grep --silent "STATEMENT IS UNKNOWN" $LOGFILE && grep --silent "Unsuccessful run" $LOGFILE && \
       RESULT=uru
-     grep --silent "Statement is GENERALLY TRUE" $LOGFILE && grep --silent "Could not compute syzygy" \
+     grep --silent "Statement is GENERALLY TRUE" $LOGFILE && grep --silent "Could not compute syzygy" $LOGFILE && \
       RESULT=tcp
-     grep --silent "Prover timeout" $LOGFILE \
+     grep --silent "Prover timeout" $LOGFILE && \
       RESULT=pt
      # End of classification.
      if [ "$RESULT" != "-" -a "$RESULT" != "top" -a "$RESULT" != "rg" -a "$RESULT" != "tu" \
