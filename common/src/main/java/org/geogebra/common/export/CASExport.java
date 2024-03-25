@@ -11,6 +11,7 @@ import org.geogebra.common.awt.GFont;
 import org.geogebra.common.cas.view.CASView;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Macro;
+import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.geos.GeoCasCell;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Feature;
@@ -157,5 +158,37 @@ public class CASExport {
 		html += "</body>\n";
 		html += "</html>\n";
 		return html;
+	}
+
+	public String createMapleTxt() {
+		String txt = "";
+
+		Construction cons = app.kernel.getConstruction();
+		CASView cv = (CASView) cons.getApplication().getView(VIEW_CAS);
+		int rows = cv.getRowCount();
+
+		// Iterate on all cells:
+		for (int i = 0; i < rows; i++) {
+
+			String input = cv.getCellInput(i);
+
+			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
+
+			if (cell.isUseAsText()) {
+				txt += "# " + input + "\n";
+			} else {
+				if (!cell.isEmpty()) {
+					txt += "> ";
+					String var = cell.getAssignmentVariable();
+					if (var != null) {
+						txt += var + ":=";
+					}
+					String def = cell.getDefinitionDescription(StringTemplate.casCopyTemplate);
+					txt += def + ";\n";
+				}
+			}
+		}
+
+		return txt;
 	}
 }
