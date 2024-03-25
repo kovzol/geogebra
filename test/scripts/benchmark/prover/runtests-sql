@@ -382,13 +382,26 @@ for i in `find -name '*.ggb' | sort`; do
      RESULTCLASS="undefined"
      errortype=0
      accepted=null
+     # Classify results (all are unsuccessful but accepted):
      grep --silent "The statement has a difficulty of degree" $LOGFILE && \
       RESULT=`tac $LOGFILE | grep "The statement has a difficulty of degree" | head -1 | cut -f8 -d" " | cut -f1 -d.`
      grep --silent "STATEMENT IS TRUE_ON_COMPONENTS" $LOGFILE && \
       RESULT=top
-    grep --silent "The real geometry engine will be used." $LOGFILE && \
+     grep --silent "The real geometry engine will be used." $LOGFILE && \
       RESULT=rg
-     if [ "$RESULT" != "-" -a "$RESULT" != "top" -a "$RESULT" != "rg" ]; then
+     grep --silent "Interpreting TRUE as UNKNOWN" $LOGFILE && \
+      RESULT=tu
+     grep --silent "STATEMENT IS UNKNOWN" $LOGFILE && grep --silent "not fully implemented" $LOGFILE && \
+      RESULT=niu
+     grep --silent "STATEMENT IS UNKNOWN" $LOGFILE && grep --silent "Unsuccessful run" $LOGFILE && \
+      RESULT=uru
+     grep --silent "Statement is GENERALLY TRUE" $LOGFILE && grep --silent "Could not compute syzygy" \
+      RESULT=tcp
+     grep --silent "Prover timeout" $LOGFILE \
+      RESULT=pt
+     # End of classification.
+     if [ "$RESULT" != "-" -a "$RESULT" != "top" -a "$RESULT" != "rg" -a "$RESULT" != "tu" \
+      -a "$RESULT" != "niu" -a "$RESULT" != "uru" -a "$RESULT" != "tcp" -a "$RESULT" != "pt" ]; then
       if [ "$DIRNAME" = "false" ]; then
        RESULTCLASS="error" # Pessimistic...
        accepted=0
@@ -405,7 +418,7 @@ for i in `find -name '*.ggb' | sort`; do
        accepted=1
        errortype=0
       fi # $DIRNAME = "false"
-     fi # $RESULT != "-" and $RESULT != "top" and "$RESULT" != "rg"
+     fi # $RESULT != "-" and $RESULT != "top" and "$RESULT" != "rg" and ...
     fi # $PROVEDETAILS = 2
    fi # $RESULT is empty or ?
    TIME=`cat $LOGFILE | grep Benchmarking | awk '{s=s+$5; print s}' | tail -1` # collecting all entries
