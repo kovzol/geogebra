@@ -189,6 +189,7 @@ import org.geogebra.desktop.euclidian.EuclidianViewD;
 import org.geogebra.desktop.euclidian.event.MouseEventD;
 import org.geogebra.desktop.euclidian.event.MouseEventND;
 import org.geogebra.desktop.euclidianND.EuclidianViewInterfaceD;
+import org.geogebra.desktop.export.CASExportD;
 import org.geogebra.desktop.export.GeoGebraTubeExportD;
 import org.geogebra.desktop.export.PrintPreviewD;
 import org.geogebra.desktop.export.pstricks.GeoGebraToAsymptoteD;
@@ -4527,6 +4528,13 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	public void uploadToGeoGebraTube() {
 		GeoGebraTubeExportD ggbtube = new GeoGebraTubeExportD(this);
 		ggbtube.uploadWorksheet(null);
+	}
+
+	public void exportCASHtml() {
+		CASExportD casExp = new CASExportD(this);
+		String html = casExp.createHtml();
+		// getCopyPaste().copyTextToSystemClipboard(html);
+		exportStringToFile("html", html);
 	}
 
 	@Override
