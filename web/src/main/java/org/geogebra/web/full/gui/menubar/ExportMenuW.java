@@ -226,6 +226,17 @@ public class ExportMenuW extends AriaMenuBar implements MenuBarI {
 						app.exportStringToFile("html", html);
 					}
 				});
+
+				menu.addItem(menuText(app.getLocalization()
+						.getMenuDefault("Download.CASViewMaple", "CAS View to Maple (.txt)")), true, new MenuCommand(app) {
+					@Override
+					public void doExecute() {
+						menu.hide();
+						CASExport casExp = new CASExport(app);
+						String txt = casExp.createMapleTxt(true);
+						app.exportStringToFile("txt", txt);
+					}
+				});
 			}
 		}
 	}

@@ -46,7 +46,7 @@ class FileMenuD extends BaseMenu implements EventRenderable {
 			exportGraphicAction, exportAnimationAction, exportPgfAction,
 			exportPSTricksAction, exportAsymptoteAction,
 			exportSTLaction, exportColladaAction, exportColladaHTMLAction,
-			exportCASHtmlAction;
+			exportCASHtmlAction, exportCASMapleAction;
 	/** load from MAT item */
 	JMenuItem loadURLMenuItem;
 	/** share item */
@@ -173,6 +173,7 @@ class FileMenuD extends BaseMenu implements EventRenderable {
 		}
 		submenu.addSeparator();
 		submenu.add(exportCASHtmlAction);
+		submenu.add(exportCASMapleAction);
 		addSeparator();
 
 		mi = add(printEuclidianViewAction);
@@ -571,6 +572,21 @@ class FileMenuD extends BaseMenu implements EventRenderable {
 					app.exportCASHtml();
 				} catch (Exception ex) {
 					Log.debug("CAS Export to HTML not available");
+				}
+			}
+		};
+
+		exportCASMapleAction = new AbstractAction(loc.getMenuDefault("ExportCASMaple",
+				"Export CAS View to Maple") + Unicode.ELLIPSIS, app.getEmptyIcon()) {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					app.exportCASMaple();
+				} catch (Exception ex) {
+					Log.debug("CAS Export to Maple not available");
 				}
 			}
 		};

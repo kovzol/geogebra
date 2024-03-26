@@ -16,6 +16,7 @@ import org.geogebra.common.euclidian.EmbedManager;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
+import org.geogebra.common.export.CASExport;
 import org.geogebra.common.export.pstricks.GeoGebraExport;
 import org.geogebra.common.factories.AwtFactory;
 import org.geogebra.common.factories.CASFactory;
@@ -3369,6 +3370,12 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 	public void copyGraphicsViewToClipboard() {
 		EuclidianViewWInterface ev = (EuclidianViewWInterface) getActiveEuclidianView();
 		copyImageToClipboard(ev.getExportImageDataUrl(3, false, false));
+	}
+
+	public void copyCASMapleToClipboard() {
+		CASExport casExp = new CASExport(this);
+		String txt = casExp.createMapleTxt(false);
+		getCopyPaste().copyTextToSystemClipboard(txt);
 	}
 
 	@Override

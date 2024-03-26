@@ -4533,8 +4533,19 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	public void exportCASHtml() {
 		CASExport casExp = new CASExport(this);
 		String html = casExp.createHtml();
-		// getCopyPaste().copyTextToSystemClipboard(html);
 		exportStringToFile("html", html);
+	}
+
+	public void exportCASMaple() {
+		CASExport casExp = new CASExport(this);
+		String txt = casExp.createMapleTxt(true);
+		exportStringToFile("txt", txt);
+	}
+
+	public void copyCASMapleClipboard() {
+		CASExport casExp = new CASExport(this);
+		String txt = casExp.createMapleTxt(false);
+		getCopyPaste().copyTextToSystemClipboard(txt);
 	}
 
 	@Override

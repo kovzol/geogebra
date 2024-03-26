@@ -26,13 +26,13 @@ public class EditMenuD extends BaseMenu {
 	private AbstractAction deleteAction, invertAction, showhideAction,
 			showhideLabelsAction, propertiesAction, selectAllAction,
 			selectAllAncestorsAction, selectAllDescendantsAction,
-			selectCurrentLayerAction, copyToClipboardAction, copyAction,
+			selectCurrentLayerAction, copyToClipboardAction, copyCASMapleToClipboardAction, copyAction,
 			pasteAction, insertImageFromClipboardAction,
 			insertImageFromFileAction;
 
 	private JMenuItem deleteItem, invertItem, showhideItem, showhideLabelsItem,
 			selectAllItem, selectAllAncestorsItem, selectAllDescendantsItem,
-			selectCurrentLayerItem, copyToClipboardItem, copyItem, pasteItem,
+			selectCurrentLayerItem, copyToClipboardItem, copyCASMapleToClipboardItem, copyItem, pasteItem,
 			clipboardMenu;
 
 	private JSeparator selectionSeparator, deleteSeparator;
@@ -79,6 +79,7 @@ public class EditMenuD extends BaseMenu {
 		copyToClipboardItem = add(copyToClipboardAction);
 		// ctrl-shift-c is also handled in MyKeyListener
 		setMenuShortCutShiftAccelerator(copyToClipboardItem, 'C');
+		copyCASMapleToClipboardItem = add(copyCASMapleToClipboardAction);
 
 		addSeparator();
 
@@ -266,6 +267,19 @@ public class EditMenuD extends BaseMenu {
 			public void actionPerformed(ActionEvent e) {
 				app.setWaitCursor();
 				app.copyGraphicsViewToClipboard();
+				app.setDefaultCursor();
+			}
+		};
+
+		copyCASMapleToClipboardAction = new AbstractAction(
+				loc.getMenu(loc.getMenuDefault("CASMapleToClipboard", "CAS View as Maple to Clipboard")),
+				app.getMenuIcon(GuiResourcesD.MENU_EDIT_COPY)) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				app.setWaitCursor();
+				app.copyCASMapleClipboard();
 				app.setDefaultCursor();
 			}
 		};

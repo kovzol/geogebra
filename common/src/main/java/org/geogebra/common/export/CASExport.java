@@ -160,7 +160,7 @@ public class CASExport {
 		return html;
 	}
 
-	public String createMapleTxt() {
+	public String createMapleTxt(boolean showPrompt) {
 		String txt = "";
 
 		Construction cons = app.kernel.getConstruction();
@@ -178,7 +178,9 @@ public class CASExport {
 				txt += "# " + input + "\n";
 			} else {
 				if (!cell.isEmpty()) {
-					txt += "> ";
+					if (showPrompt) {
+						txt += "> ";
+					}
 					String var = cell.getAssignmentVariable();
 					if (var != null) {
 						txt += var + ":=";

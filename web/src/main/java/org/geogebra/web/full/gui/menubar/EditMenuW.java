@@ -1,5 +1,6 @@
 package org.geogebra.web.full.gui.menubar;
 
+import org.geogebra.common.export.CASExport;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.SelectionManager;
@@ -56,6 +57,7 @@ public class EditMenuW extends Submenu {
 		if (Clipboard.isCopyImageToClipboardAvailable()) {
 			addCopyToClipboard();
 		}
+		addCASMapleToClipboard();
 		addCopy();
 		addPasteItem();
 		addSeparator();
@@ -153,6 +155,24 @@ public class EditMenuW extends Submenu {
 						app.copyGraphicsViewToClipboard();
 						ToolTipManagerW.sharedInstance().showBottomMessage(
 								loc.getMenu("GraphicsViewCopiedToClipboard"),
+								false, app);
+					}
+				});
+	}
+
+	private void addCASMapleToClipboard() {
+		addItem(MainMenu.getMenuBarHtml(
+						MaterialDesignResources.INSTANCE.copy_black(),
+						loc.getMenuDefault("CASMapleToClipboard", "CAS View as Maple to Clipboard")), true,
+				new MenuCommand(getApp()) {
+
+					@Override
+					public void doExecute() {
+						CASExport casExp = new CASExport(app);
+						String txt = casExp.createMapleTxt(false);
+						app.copyCASMapleToClipboard();
+						ToolTipManagerW.sharedInstance().showBottomMessage(
+								loc.getMenuDefault("CASMapleToClipboard", "CAS View as Maple to Clipboard"),
 								false, app);
 					}
 				});
