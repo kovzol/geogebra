@@ -2890,7 +2890,10 @@ public class ProverBotanasMethod {
 					}
 					ndgproduct = ndgproduct.subtract(new PPolynomial(BigInteger.ONE));
 					if (prover.getShowproof()) {
-						prover.addProofLine("ndg:" + ndgproduct + "=0");
+						prover.addProofLine("endg:" + ndgproduct + "=0");
+						ndgproduct = ndgproduct.substitute(substitutions);
+						prover.addProofLine("After substitutions:");
+						prover.addProofLine("sndg:" + ndgproduct + "=0");
 					}
 				}
 			}
@@ -2904,7 +2907,10 @@ public class ProverBotanasMethod {
 					prover.addProofLine("The statement is true under some non-degeneracy conditions (they cannot be expressed in simple geometric terms):");
 					ndgproduct = ndgproduct.multiply(new PPolynomial(new PVariable(statement.getKernel())));
 					ndgproduct = ndgproduct.subtract(new PPolynomial(BigInteger.ONE));
-					prover.addProofLine("ndg:" + ndgproduct + "=0");
+					prover.addProofLine("endg:" + ndgproduct + "=0");
+					ndgproduct = ndgproduct.substitute(substitutions);
+					prover.addProofLine("After substitutions:");
+					prover.addProofLine("sndg:" + ndgproduct + "=0");
 					syzygy(as, ndgproduct, substitutions, statement.getKernel(), proverSettings.transcext, prover);
 				}
 				return ProofResult.TRUE_NDG_UNREADABLE;
@@ -3103,7 +3109,7 @@ public class ProverBotanasMethod {
 				if (ndgs == 1) {
 					s += 1;
 					String c[] = coeffs[s].split("=");
-					sum += "+ndg*(" + c[1] + ")";
+					sum += "+sndg*(" + c[1] + ")";
 				}
 				prover.addProofLine("Now we consider the following expression:");
 				prover.addProofLine(sum);
@@ -3184,7 +3190,7 @@ public class ProverBotanasMethod {
 				}
 				if (ndgs == 1) {
 					s += 1;
-					sum += "+ndg*(" + coeffs[s-1] + ")";
+					sum += "+sndg*(" + coeffs[s-1] + ")";
 				}
 				prover.addProofLine("Now we consider the following expression:");
 				prover.addProofLine(sum);
@@ -3197,7 +3203,7 @@ public class ProverBotanasMethod {
 			prover.addProofLine(computationallyDifficult);
 			return;
 		}
-			}
+	}
 
 
 	/**
