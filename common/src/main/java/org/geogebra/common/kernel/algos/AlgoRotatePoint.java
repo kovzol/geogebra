@@ -202,27 +202,22 @@ public class AlgoRotatePoint extends AlgoTransformation
 
 			if (botanaVars == null) {
 				botanaVars = new PVariable[8];
+				botanaVarsDescr = new String[8];
 				// A' - rotation point
 				botanaVars[0] = new PVariable(kernel);
 				botanaVars[1] = new PVariable(kernel);
-				botanaVarsDescr[0] = "The x value of the rotation point";
-				botanaVarsDescr[1] = "The y value of the rotation point";
 				// A - point around the rotation is processed
 				botanaVars[2] = vA[0];
 				botanaVars[3] = vA[1];
-				botanaVarsDescr[2] = "The x value of point A";
-				botanaVarsDescr[3] = "The y value of point A";
 				// B - point to rotate
 				botanaVars[4] = vB[0];
 				botanaVars[5] = vB[1];
-				botanaVarsDescr[4] = "The x value of the point to be rotated";
-				botanaVarsDescr[5] = "The y value of the point to be rotated";
 				// t1 = sqrt(3)
 				botanaVars[6] = new PVariable(kernel);
-				botanaVarsDescr[6] = "The value of t1";
+				botanaVarsDescr[6] = "Square root of 3";
 				// t2 = sqrt(2)
 				botanaVars[7] = new PVariable(kernel);
-				botanaVarsDescr[7] = "The value of t2";
+				botanaVarsDescr[7] = "Square root of 2";
 			}
 
 			/*

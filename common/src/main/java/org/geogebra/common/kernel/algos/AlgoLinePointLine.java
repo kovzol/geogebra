@@ -242,14 +242,14 @@ public class AlgoLinePointLine extends AlgoElement
 			if (botanaVars == null) {
 				botanaVars = new PVariable[4]; // storing 2 new variables, plus
 												// the coordinates of P
+				botanaVarsDescr = new String[4];
 				botanaVars[0] = new PVariable(kernel); // d1
 				botanaVars[1] = new PVariable(kernel); // d2
 				botanaVars[2] = vP[0];
 				botanaVars[3] = vP[1];
-				botanaVarsDescr[0] = "The value of d1";
-				botanaVarsDescr[1] = "The value of d2";
-				botanaVarsDescr[2] = "The x value of the point";
-				botanaVarsDescr[3] = "The x value of the point";
+				botanaVarsDescr[0] = "The x value of a point on line " + ((GeoLine) l).getLabelSimple();
+				botanaVarsDescr[1] = "The y value of a point on line " + ((GeoLine) l).getLabelSimple();
+				// TODO: Maybe explain this better.
 			}
 			PPolynomial d1 = new PPolynomial(botanaVars[0]);
 			PPolynomial d2 = new PPolynomial(botanaVars[1]);

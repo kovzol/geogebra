@@ -286,18 +286,12 @@ public class AlgoTranslate extends AlgoTransformation
 				// A'
 				botanaVars[0] = new PVariable(kernel);
 				botanaVars[1] = new PVariable(kernel);
-				botanaVarsDescr[0] = "The x value of A'";
-				botanaVarsDescr[1] = "The y value of A'";
 				// P
 				botanaVars[2] = vP[0];
 				botanaVars[3] = vP[1];
-				botanaVarsDescr[2] = "The x value of P";
-				botanaVarsDescr[3] = "The y value of P";
 				// v
 				botanaVars[4] = vv[0];
 				botanaVars[5] = vv[1];
-				botanaVarsDescr[0] = "The x value of v";
-				botanaVarsDescr[1] = "The y value of v";
 			}
 
 			botanaPolynomials = new PPolynomial[2];

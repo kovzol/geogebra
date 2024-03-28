@@ -112,6 +112,7 @@ public class AlgoAreaPoints extends AlgoElement
 		GeoPointND[] points = getPoints();
 		if (botanaVars == null) {
 			botanaVars = new PVariable[points.length * 2];
+			botanaVarsDescr = new String[points.length * 2];
 			for (int i = 0; i < points.length; i++) {
 				PVariable[] currentPointBotanavars = ((GeoPoint) points[i])
 						.getBotanaVars(points[i]);
@@ -119,6 +120,7 @@ public class AlgoAreaPoints extends AlgoElement
 				botanaVarsDescr[2 * i] = "The x value of point " + i + 1 + " of the polygon";
 				botanaVars[2 * i + 1] = currentPointBotanavars[1];
 				botanaVarsDescr[2 * i + 1] = "The y value of point " + i + 1 + " of the polygon";
+				// TODO: The descriptions seem unused. Check.
 			}
 		}
 		return botanaVars;

@@ -292,18 +292,12 @@ public class AlgoVector extends AlgoElement
 				// vector u
 				botanaVars[0] = new PVariable(kernel);
 				botanaVars[1] = new PVariable(kernel);
-				botanaVarsDescr[0] = "The x-component of the vector";
-				botanaVarsDescr[1] = "The y-component of the vector";
 				// P
 				botanaVars[2] = vP[0];
 				botanaVars[3] = vP[1];
-				botanaVarsDescr[2] = "The x value of point " + A.getLabelSimple();
-				botanaVarsDescr[3] = "The y value of point " + A.getLabelSimple();
 				// Q
 				botanaVars[4] = vQ[0];
 				botanaVars[5] = vQ[1];
-				botanaVarsDescr[4] = "The x value of point " + B.getLabelSimple();
-				botanaVarsDescr[5] = "The y value of point " + B.getLabelSimple();
 			}
 
 			botanaPolynomials = new PPolynomial[2];

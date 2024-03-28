@@ -170,26 +170,19 @@ public class AlgoEllipseHyperbolaFociPoint
 				}
 				if (botanaVars == null) {
 					botanaVars = new PVariable[8];
+					botanaVarsDescr = new String[8];
 					// P - point of ellipse
 					botanaVars[0] = new PVariable(kernel);
 					botanaVars[1] = new PVariable(kernel);
-					botanaVarsDescr[0] = "The x value of point P";
-					botanaVarsDescr[1] = "The y value of point P";
 					// A - focus point
 					botanaVars[2] = vA[0];
 					botanaVars[3] = vA[1];
-					botanaVarsDescr[2] = "The x value of the first focus";
-					botanaVarsDescr[3] = "The y value of the first focus";
 					// B - focus point
 					botanaVars[4] = vB[0];
 					botanaVars[5] = vB[1];
-					botanaVarsDescr[4] = "The x value of the second focus";
-					botanaVarsDescr[5] = "The y value of the second focus";
 					// C - point on ellipse
 					botanaVars[6] = vC[0];
 					botanaVars[7] = vC[1];
-					botanaVarsDescr[0] = "The x value of point C";
-					botanaVarsDescr[1] = "The y value of point C";
 				}
 
 				/*

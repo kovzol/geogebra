@@ -261,10 +261,7 @@ public class AlgoLineBisectorSegment extends AlgoElement
 				botanaVars[1] = new PVariable(kernel);
 				botanaVars[2] = new PVariable(kernel);
 				botanaVars[3] = new PVariable(kernel);
-				botanaVarsDescr[0] = "The x value of point " + v[0];
-				botanaVarsDescr[1] = "The y value of point " + v[0];
-				botanaVarsDescr[2] = "The x value of point " + v[1];
-				botanaVarsDescr[3] = "The y value of point " + v[1];
+				// TODO: Create descriptions.
 			}
 
 			botanaPolynomials = SymbolicParameters

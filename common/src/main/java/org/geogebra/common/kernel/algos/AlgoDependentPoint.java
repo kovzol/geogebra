@@ -162,8 +162,6 @@ public class AlgoDependentPoint extends AlgoElement
 			botanaVars = new PVariable[2];
 			botanaVars[0] = new PVariable(kernel);
 			botanaVars[1] = new PVariable(kernel);
-			botanaVarsDescr[0] = "the x value of the point";
-			botanaVarsDescr[1] = "the y value of the point";
 
 			GeoElement left = (GeoElement) P.getDefinition().getLeft();
 			GeoElement right = (GeoElement) P.getDefinition().getRight();
