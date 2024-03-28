@@ -158,19 +158,14 @@ public class AlgoEllipseHyperbolaFociPoint
 						// A - center
 						botanaVars[0] = vA[0];
 						botanaVars[1] = vA[1];
-						botanaVarsDescr[0] = "The x value of the center";
-						botanaVarsDescr[1] = "The y value of the center";
 						// C - point on the circle
 						botanaVars[2] = vC[0];
 						botanaVars[3] = vC[1];
-						botanaVarsDescr[2] = "The x value of the point on the circle";
-						botanaVarsDescr[3] = "The y value of the point on the circle";
-					}
+
 					return botanaPolynomials;
 				}
 				if (botanaVars == null) {
 					botanaVars = new PVariable[8];
-					botanaVarsDescr = new String[8];
 					// P - point of ellipse
 					botanaVars[0] = new PVariable(kernel);
 					botanaVars[1] = new PVariable(kernel);
@@ -1399,32 +1394,20 @@ public class AlgoEllipseHyperbolaFociPoint
 					// P - point of hyperbola
 					botanaVars[0] = new PVariable(kernel);
 					botanaVars[1] = new PVariable(kernel);
-					botanaVarsDescr[0] = "The x value of the point on the hyperbola";
-					botanaVarsDescr[1] = "The y value of the point on the hyperbola";
 					// auxiliary variables
 					botanaVars[2] = new PVariable(kernel);
 					botanaVars[3] = new PVariable(kernel);
 					botanaVars[4] = new PVariable(kernel);
 					botanaVars[5] = new PVariable(kernel);
-					botanaVarsDescr[2] = "Auxiliary variable 1";
-					botanaVarsDescr[3] = "Auxiliary variable 2";
-					botanaVarsDescr[4] = "Auxiliary variable 3";
-					botanaVarsDescr[5] = "Auxiliary variable 4";
 					// A
 					botanaVars[6] = vA[0];
 					botanaVars[7] = vA[1];
-					botanaVarsDescr[6] = "The x value of point " + vA[0].toString();
-					botanaVarsDescr[7] = "The y value of point " + vA[1].toString();
 					// B
 					botanaVars[8] = vB[0];
 					botanaVars[9] = vB[1];
-					botanaVarsDescr[8] = "The x value of point " + vB[0].toString();
-					botanaVarsDescr[9] = "The y value of point " + vB[1].toString();
 					// C
 					botanaVars[10] = vC[0];
 					botanaVars[11] = vC[1];
-					botanaVarsDescr[10] = "The x value of point " + vC[0].toString();
-					botanaVarsDescr[11] = "The y value of point " + vC[1].toString();
 				}
 
 				botanaPolynomials = new PPolynomial[5];
