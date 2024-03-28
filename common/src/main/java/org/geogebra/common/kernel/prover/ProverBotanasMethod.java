@@ -1110,34 +1110,6 @@ public class ProverBotanasMethod {
 									freeVariables.add(geoVariable);
 									Log.debug(geoVariable + " is free");
 								}
-							} else { // These variables are not free, so we may want descriptions:
-								try {
-									String[] descriptions = ((SymbolicParametersBotanaAlgo) geo)
-											.getBotanaVarsDescr(geo);
-									// Describe objects that have non-trivial descriptions:
-									if (geoProver.getShowproof()) {
-										int descriptiveLines = 0;
-										for (int i = 0; i < descriptions.length; i++) {
-											if (descriptions[i] != null) {
-												descriptiveLines++;
-											}
-										}
-										if (descriptiveLines > 0 ) {
-											geoProver.addProofLine(
-													"Object " + geo.getLabelSimple()
-															+ " introduces the following extra variables:");
-											for (int i = 0; i < descriptions.length; i++) {
-												if (descriptions[i] != null) {
-													geoProver.addProofLine(
-															geoVariables[i].getName() + ": "
-																	+ descriptions[i]);
-												}
-											}
-										}
-									}
-								} catch (Throwable e) {
-									Log.debug("Problem when obtaining descriptions for " + geo);
-								}
 							}
 						}
 
@@ -1438,6 +1410,34 @@ public class ProverBotanasMethod {
 								}
 							}
 							if (useThisPoly) {
+								try { // Show detailed descriptions of variables first...
+									String[] descriptions = ((SymbolicParametersBotanaAlgo) geo)
+											.getBotanaVarsDescr(geo);
+									// Describe objects that have non-trivial descriptions:
+									if (geoProver.getShowproof()) {
+										int descriptiveLines = 0;
+										for (int i = 0; i < descriptions.length; i++) {
+											if (descriptions[i] != null) {
+												descriptiveLines++;
+											}
+										}
+										if (descriptiveLines > 0 ) {
+											geoProver.addProofLine(
+													"Object " + geo.getLabelSimple()
+															+ " introduces the following extra variables:");
+											for (int i = 0; i < descriptions.length; i++) {
+												if (descriptions[i] != null) {
+													geoProver.addProofLine(
+															geoVariables[i].getName() + ": "
+																	+ descriptions[i]);
+												}
+											}
+										}
+									}
+								} catch (Throwable e) {
+									Log.debug("Problem when obtaining descriptions for " + geo);
+								}
+
 								Log.debug("Hypotheses:");
 								addGeoPolys(geo, geoPolynomials);
 								/*
@@ -2741,6 +2741,13 @@ public class ProverBotanasMethod {
 											return ProofResult.TRUE_ON_COMPONENTS;
 										}
 										if (!investigateNonGeometricMaximalIndependentSet) {
+											Localization loc = statement.getConstruction().getApplication()
+													.getLocalization();
+											String reasonForUnknown = loc.getMenuDefault("CannotDecideAlgebraicDifficulties",
+													"Sorry, the program cannot decide due to algebraic difficulties.");
+											if (prover.getShowproof()) {
+												prover.addProofLine(reasonForUnknown);
+											}
 											return ProofResult.UNKNOWN;
 										}
 										/* Check again if the statement is generally
@@ -3009,6 +3016,13 @@ public class ProverBotanasMethod {
 						return ProofResult.TRUE_ON_COMPONENTS;
 					}
 					if (!investigateNonGeometricMaximalIndependentSet) {
+						Localization loc = statement.getConstruction().getApplication()
+								.getLocalization();
+						String reasonForUnknown = loc.getMenuDefault("CannotDecideAlgebraicDifficulties",
+								"Sorry, the program cannot decide due to algebraic difficulties.");
+						if (prover.getShowproof()) {
+							prover.addProofLine(reasonForUnknown);
+						}
 						return ProofResult.UNKNOWN;
 					}
 					/*

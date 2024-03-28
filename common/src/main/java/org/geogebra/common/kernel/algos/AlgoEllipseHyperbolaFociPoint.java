@@ -161,6 +161,7 @@ public class AlgoEllipseHyperbolaFociPoint
 						// C - point on the circle
 						botanaVars[2] = vC[0];
 						botanaVars[3] = vC[1];
+					}
 
 					return botanaPolynomials;
 				}

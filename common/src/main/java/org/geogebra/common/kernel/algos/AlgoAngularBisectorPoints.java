@@ -294,18 +294,20 @@ public class AlgoAngularBisectorPoints extends AlgoElement
 				botanaVars[0] = new PVariable(kernel);
 				botanaVars[1] = new PVariable(kernel);
 				botanaVarsDescr = new String[6];
-				botanaVarsDescr[0] = "The x value of the midpoint of the rhombus (which the angular bisector will pass through)";
-				botanaVarsDescr[1] = "The y value of the midpoint of the rhombus (which the angular bisector will pass through)";
+				botanaVarsDescr[0] = "The x value of the midpoint of the rhombus (which the angular bisector "
+						+ geo.getLabelSimple() + " will pass through)";
+				botanaVarsDescr[1] = "The y value of the midpoint of the rhombus (which the angular bisector "
+						+ geo.getLabelSimple() + " will pass through)";
 				// C, that is, the vertex of the angle.
 				botanaVars[2] = vC[0];
 				botanaVars[3] = vC[1];
-				botanaVarsDescr[2] = "The x value of the vertex of the angle";
-				botanaVarsDescr[3] = "The y value of the vertex of the angle";
 				// S, a helper point.
 				botanaVars[4] = new PVariable(kernel);
 				botanaVars[5] = new PVariable(kernel);
-				botanaVarsDescr[4] = "The x value of the helper point";
-				botanaVarsDescr[5] = "The y value of the helper point";
+				botanaVarsDescr[4] = "The x value of the helper point that is mirror of ("
+						+ vA[0] + "," + vA[1] + ") about (" + botanaVars[0] + "," + botanaVars[1] + ")";
+				botanaVarsDescr[5] = "The y value of the helper point that is mirror of ("
+						+ vA[0] + "," + vA[1] + ") about (" + botanaVars[0] + "," + botanaVars[1] + ")";
 			}
 
 			botanaPolynomials = new PPolynomial[4];

@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
+import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.ProverSettings;
 import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.debug.Log;
@@ -65,6 +66,13 @@ public class ProverD extends Prover {
 					* 1000L)
 					&& t.isAlive()) {
 				Log.debug("Prover timeout");
+				Localization loc = statement.getConstruction().getApplication()
+						.getLocalization();
+				String reasonForUnknown = loc.getMenuDefault("ProverTimeout",
+						"The prover subsystem has timed out, sorry.");
+				if (getShowproof()) {
+					addProofLine(reasonForUnknown);
+				}
 				t.interrupt();
 				// t.join(); //
 				// http://docs.oracle.com/javase/tutorial/essential/concurrency/simple.html
