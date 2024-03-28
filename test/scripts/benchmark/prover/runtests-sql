@@ -399,9 +399,12 @@ for i in `find -name '*.ggb' | sort`; do
       RESULT=tcp
      grep --silent "Prover timeout" $LOGFILE && \
       RESULT=pt
+     grep --silent "STATEMENT IS UNKNOWN" $LOGFILE && grep --silent "Statement is NOT GENERALLY TRUE" $LOGFILE && \
+      RESULT=ngtu
      # End of classification.
      if [ "$RESULT" != "-" -a "$RESULT" != "top" -a "$RESULT" != "rg" -a "$RESULT" != "tu" \
-      -a "$RESULT" != "niu" -a "$RESULT" != "uru" -a "$RESULT" != "tcp" -a "$RESULT" != "pt" ]; then
+      -a "$RESULT" != "niu" -a "$RESULT" != "uru" -a "$RESULT" != "tcp" -a "$RESULT" != "pt" \
+      -a "$RESULT" != "ngtu" ]; then
       if [ "$DIRNAME" = "false" ]; then
        RESULTCLASS="error" # Pessimistic...
        accepted=0
