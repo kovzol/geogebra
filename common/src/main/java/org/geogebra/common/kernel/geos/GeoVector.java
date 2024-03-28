@@ -86,6 +86,7 @@ final public class GeoVector extends GeoVec3D implements Path, VectorValue,
 	private StringBuilder sbBuildValueString = new StringBuilder(50);
 	private StringBuilder sb;
 	private @CheckForNull VectorToMatrix converter;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * Creates new GeoVector
@@ -1036,6 +1037,15 @@ final public class GeoVector extends GeoVec3D implements Path, VectorValue,
 		if (algoParent instanceof SymbolicParametersBotanaAlgo) {
 			return ((SymbolicParametersBotanaAlgo) algoParent)
 					.getBotanaVars(this);
+		}
+		return null;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		if (algoParent instanceof SymbolicParametersBotanaAlgo) {
+			return ((SymbolicParametersBotanaAlgo) algoParent)
+					.getBotanaVarsDescr(this);
 		}
 		return null;
 	}

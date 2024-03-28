@@ -67,6 +67,7 @@ public class AlgoMirror extends AlgoTransformation implements
 
 	private GeoPoint transformedPoint;
 	private MirrorAdapter mirrorBotana;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * Creates new "mirror at point" algo
@@ -483,6 +484,11 @@ public class AlgoMirror extends AlgoTransformation implements
 			mirrorBotana = new MirrorAdapter();
 		}
 		return mirrorBotana.getBotanaVars();
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return mirrorBotana.getBotanaVarsDescr();
 	}
 
 	@Override

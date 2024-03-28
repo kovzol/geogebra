@@ -35,6 +35,7 @@ public class AlgoAreaPoints extends AlgoElement
 	protected GeoNumeric area; // output
 
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * @param cons
@@ -115,10 +116,15 @@ public class AlgoAreaPoints extends AlgoElement
 				PVariable[] currentPointBotanavars = ((GeoPoint) points[i])
 						.getBotanaVars(points[i]);
 				botanaVars[2 * i] = currentPointBotanavars[0];
+				botanaVarsDescr[2 * i] = "The x value of point " + i + 1 + " of the polygon";
 				botanaVars[2 * i + 1] = currentPointBotanavars[1];
+				botanaVarsDescr[2 * i + 1] = "The y value of point " + i + 1 + " of the polygon";
 			}
 		}
 		return botanaVars;
+	}
+	public String[] getBotanaVarsDescr(GeoElementND geo) {
+		return botanaVarsDescr;
 	}
 
 	@Override

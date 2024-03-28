@@ -57,6 +57,7 @@ public class GeoConic extends GeoConicND implements ConicMirrorable,
 	private int tableColumn = -1;
 	private boolean pointsVisible = true;
 	private GeoFunction asFunction;
+	private String[] botanaVarsDescr;
 
 	/*
 	 * ( A[0] A[3] A[4] ) matrix = ( A[3] A[1] A[5] ) ( A[4] A[5] A[2] )
@@ -543,6 +544,15 @@ public class GeoConic extends GeoConicND implements ConicMirrorable,
 		if (algoParent instanceof SymbolicParametersBotanaAlgo) {
 			return ((SymbolicParametersBotanaAlgo) algoParent)
 					.getBotanaVars(this);
+		}
+		return null;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		if (algoParent instanceof SymbolicParametersBotanaAlgo) {
+			return ((SymbolicParametersBotanaAlgo) algoParent)
+					.getBotanaVarsDescr(this);
 		}
 		return null;
 	}

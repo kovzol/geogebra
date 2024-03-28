@@ -37,18 +37,36 @@ public class MirrorAdapter extends ProverAdapter {
 				if (inGeoVars != null && mirrorLineVars != null) {
 					if (botanaVars == null) {
 						botanaVars = new PVariable[8];
+						botanaVarsDescr = new String[8];
 						// P' - mirror of P
 						botanaVars[0] = new PVariable(geo.getKernel());
 						botanaVars[1] = new PVariable(geo.getKernel());
+						botanaVarsDescr[0] = "x value of mirror image of (" + inGeoVars[0] +
+								"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
+						botanaVarsDescr[1] = "y value of mirror image of (" + inGeoVars[0] +
+								"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
 						// Q' - mirror of Q
 						botanaVars[2] = new PVariable(geo.getKernel());
 						botanaVars[3] = new PVariable(geo.getKernel());
+						botanaVarsDescr[2] = "x value of mirror image of (" + inGeoVars[2] +
+								"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
+						botanaVarsDescr[3] = "y value of mirror image of (" + inGeoVars[2] +
+								"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
 						// V1 - auxiliary point
 						botanaVars[4] = new PVariable(geo.getKernel());
 						botanaVars[5] = new PVariable(geo.getKernel());
+						botanaVarsDescr[4] = "x value of orthogonal projection of (" + inGeoVars[0] +
+								"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
+						botanaVarsDescr[5] = "y value of orthogonal projection of (" + inGeoVars[0] +
+								"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
+
 						// V2 - auxiliary point
 						botanaVars[6] = new PVariable(geo.getKernel());
 						botanaVars[7] = new PVariable(geo.getKernel());
+						botanaVarsDescr[6] = "x value of orthogonal projection of (" + inGeoVars[2] +
+								"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
+						botanaVarsDescr[7] = "y value of orthogonal projection of (" + inGeoVars[2] +
+								"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
 					}
 
 					botanaPolynomials = new PPolynomial[8];
@@ -124,15 +142,20 @@ public class MirrorAdapter extends ProverAdapter {
 
 					if (botanaVars == null) {
 						botanaVars = new PVariable[6];
-						// C'
+						botanaVarsDescr = new String[6];
+						// C' (mirror image of C about AB)
 						botanaVars[0] = new PVariable(geo.getKernel());
 						botanaVars[1] = new PVariable(geo.getKernel());
-						// V
+						// V (intersection of CC' and AB)
 						botanaVars[2] = new PVariable(geo.getKernel());
 						botanaVars[3] = new PVariable(geo.getKernel());
-						// N
+						botanaVarsDescr[2] = "x value of orthogonal projection of " + P.getLabelSimple() + " on " + l.getLabelSimple();
+						botanaVarsDescr[3] = "y value of orthogonal projection of " + P.getLabelSimple() + " on " + l.getLabelSimple();
+						// N (another point on CC' to describe orthogonality by rotation)
 						botanaVars[4] = new PVariable(geo.getKernel());
 						botanaVars[5] = new PVariable(geo.getKernel());
+						botanaVarsDescr[4] = "x value of rotation of a vector on " + l.getLabelSimple() + " by 90 degrees about " + P.getLabelSimple();
+						botanaVarsDescr[5] = "y value of rotation of a vector on " + l.getLabelSimple() + " by 90 degrees about " + P.getLabelSimple();
 					}
 
 					botanaPolynomials = new PPolynomial[6];
@@ -169,7 +192,7 @@ public class MirrorAdapter extends ProverAdapter {
 					PPolynomial n1 = new PPolynomial(botanaVars[4]);
 					PPolynomial n2 = new PPolynomial(botanaVars[5]);
 
-					// CV orthogonal AB
+					// CN orthogonal AB
 					botanaPolynomials[3] = b1.subtract(a1).add(c2).subtract(n2);
 					botanaPolynomials[4] = c1.subtract(b2).add(a2).subtract(n1);
 
@@ -190,25 +213,54 @@ public class MirrorAdapter extends ProverAdapter {
 
 					if (botanaVars == null) {
 						botanaVars = new PVariable[12];
+						botanaVarsDescr = new String[12];
 						// A' - mirror of center
 						botanaVars[0] = new PVariable(geo.getKernel());
 						botanaVars[1] = new PVariable(geo.getKernel());
+						botanaVarsDescr[0] = "x value of mirror image of center of "
+								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
+						botanaVarsDescr[1] = "y value of mirror image of a circumpoint of "
+								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
 						// B' - mirror of point on circle
 						botanaVars[2] = new PVariable(geo.getKernel());
 						botanaVars[3] = new PVariable(geo.getKernel());
+						botanaVarsDescr[2] = "x value of mirror image of a circumpoint of "
+								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
+						botanaVarsDescr[3] = "y value of mirror image of a circumpoint of "
+								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
 						// V - midpoint of center and mirror of center
 						botanaVars[4] = new PVariable(geo.getKernel());
 						botanaVars[5] = new PVariable(geo.getKernel());
+						botanaVarsDescr[4] = "x value of orthogonal projection of center of "
+								+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
+						botanaVarsDescr[5] = "y value of orthogonal projection of center of "
+								+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
 						// T - midpoint of point on circle and mirror of point
 						// on circle
 						botanaVars[6] = new PVariable(geo.getKernel());
 						botanaVars[7] = new PVariable(geo.getKernel());
+						botanaVarsDescr[6] = "x value of orthogonal projection of circumpoint of "
+								+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
+						botanaVarsDescr[7] = "y value of orthogonal projection of circumpoint of "
+								+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
 						// N1 - AN1 orthogonal CD
 						botanaVars[8] = new PVariable(geo.getKernel());
 						botanaVars[9] = new PVariable(geo.getKernel());
+						botanaVarsDescr[8] = "x value of rotation of a vector on "
+								+ mirrorLine.getLabelSimple() + " by 90 degrees about center of "
+								+ inGeo.getLabelSimple();
+						botanaVarsDescr[9] = "y value of rotation of a vector on "
+								+ mirrorLine.getLabelSimple() + " by 90 degrees about center of "
+								+ inGeo.getLabelSimple();
 						// N2 - BN2 orthogonal CD
 						botanaVars[10] = new PVariable(geo.getKernel());
 						botanaVars[11] = new PVariable(geo.getKernel());
+						botanaVarsDescr[10] = "x value of rotation of a vector on "
+								+ mirrorLine.getLabelSimple() + " by 90 degrees about circumpoint of "
+								+ inGeo.getLabelSimple();
+						botanaVarsDescr[11] = "x value of rotation of a vector on "
+								+ mirrorLine.getLabelSimple() + " by 90 degrees about circumpoint of "
+								+ inGeo.getLabelSimple();
 					}
 
 					botanaPolynomials = new PPolynomial[12];
@@ -275,8 +327,8 @@ public class MirrorAdapter extends ProverAdapter {
 							.subtract(n2_1);
 
 					// B', T, N2 collinear
-					botanaPolynomials[11] = PPolynomial.collinear(botanaVars[1],
-							botanaVars[2], botanaVars[6], botanaVars[7],
+					botanaPolynomials[11] = PPolynomial.collinear(botanaVars[2],
+							botanaVars[3], botanaVars[6], botanaVars[7],
 							botanaVars[10], botanaVars[11]);
 
 					return botanaPolynomials;

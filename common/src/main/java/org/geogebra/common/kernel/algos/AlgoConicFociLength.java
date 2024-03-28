@@ -40,6 +40,7 @@ import org.geogebra.common.kernel.prover.polynomial.PVariable;
 public abstract class AlgoConicFociLength extends AlgoConicFociLengthND
 		implements SymbolicParametersBotanaAlgo {
 	private BotanaEllipseHyperbolaLength botanaParams;
+	private String[] botanaVarsDescr;
 
 	protected AlgoConicFociLength(Construction cons, String label, GeoPointND A, GeoPointND B,
 			GeoNumberValue a) {
@@ -81,7 +82,10 @@ public abstract class AlgoConicFociLength extends AlgoConicFociLengthND
 		}
 		return botanaParams.getBotanaVars();
 	}
-
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) {
+		return botanaVarsDescr;
+	}
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {

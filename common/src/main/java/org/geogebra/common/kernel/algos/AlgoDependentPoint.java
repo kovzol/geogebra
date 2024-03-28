@@ -43,6 +43,7 @@ public class AlgoDependentPoint extends AlgoElement
 	private GeoPoint P; // output
 
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 	private PPolynomial[] botanaPolynomials;
 
 	private GeoVec2D temp;
@@ -150,12 +151,19 @@ public class AlgoDependentPoint extends AlgoElement
 	}
 
 	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
+	}
+
+	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 		if (botanaVars == null) {
 			botanaVars = new PVariable[2];
 			botanaVars[0] = new PVariable(kernel);
 			botanaVars[1] = new PVariable(kernel);
+			botanaVarsDescr[0] = "the x value of the point";
+			botanaVarsDescr[1] = "the y value of the point";
 
 			GeoElement left = (GeoElement) P.getDefinition().getLeft();
 			GeoElement right = (GeoElement) P.getDefinition().getRight();

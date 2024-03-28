@@ -42,6 +42,7 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 
 	private HashMap<GeoElementND, PPolynomial[]> botanaPolynomials;
 	private HashMap<GeoElementND, PVariable[]> botanaVars;
+	private HashMap<GeoElementND, String[]> botanaVarsDescr;
 
 	public AlgoTangentPoint(Construction cons, String[] labels, GeoPointND P,
 			GeoConicND c) {
@@ -162,6 +163,11 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 	}
 
 	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr.get(geo);
+	}
+
+	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 
@@ -176,6 +182,7 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 		}
 		if (botanaVars == null) {
 			botanaVars = new HashMap<>();
+			botanaVarsDescr = new HashMap<>();
 		}
 
 		// source for tangent point of conics:
@@ -222,6 +229,8 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 			// tangent point is not on the circle
 
 			PVariable[] botanaVarsThis = new PVariable[6];
+			String[] botanaVarsDescrThis = new String[6];
+
 			if (getBotanaVars(geo) == null) {
 
 				// T - tangent point of circle
@@ -233,7 +242,12 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 				// M - midpoint of OE
 				botanaVarsThis[4] = new PVariable(kernel);
 				botanaVarsThis[5] = new PVariable(kernel);
+				botanaVarsDescrThis[4] = "The x value of midpoint of (" + vcircle[0] + ","
+					+ vcircle[1] + ") and (" + vPoint[0] + "," + vPoint[1] + ")";
+				botanaVarsDescrThis[5] = "The y value of midpoint of (" + vcircle[0] + ","
+						+ vcircle[1] + ") and (" + vPoint[0] + "," + vPoint[1] + ")";
 				botanaVars.put(geo, botanaVarsThis);
+				botanaVarsDescr.put(geo, botanaVarsDescrThis);
 			} else {
 				botanaVarsThis = getBotanaVars(geo);
 			}

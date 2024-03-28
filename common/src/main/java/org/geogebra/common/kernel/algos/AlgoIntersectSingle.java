@@ -37,6 +37,7 @@ public class AlgoIntersectSingle extends AlgoIntersect implements
 
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * Creates algo for single intersection close to given point
@@ -308,6 +309,11 @@ public class AlgoIntersectSingle extends AlgoIntersect implements
 	@Override
 	public PVariable[] getBotanaVars(GeoElementND geo) {
 		return botanaVars;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

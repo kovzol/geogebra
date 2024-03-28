@@ -95,7 +95,10 @@ public class AlgoCircleTwoPoints extends AlgoSphereNDTwoPoints
 		}
 		return botanaParams.getBotanaVars(getP(), getM());
 	}
-
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) {
+		return botanaParams.getBotanaVarsDescr();
+	}
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {

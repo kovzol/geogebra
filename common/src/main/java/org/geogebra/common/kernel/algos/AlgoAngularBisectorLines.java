@@ -65,6 +65,7 @@ public class AlgoAngularBisectorLines extends AlgoElement
 
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * Creates new AlgoAngularBisectorLines
@@ -332,6 +333,9 @@ public class AlgoAngularBisectorLines extends AlgoElement
 	public PVariable[] getBotanaVars(GeoElementND geo) {
 		return botanaVars;
 	}
+	public String[] getBotanaVarsDescr(GeoElementND geo) {
+		return botanaVarsDescr;
+	}
 
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
@@ -441,17 +445,32 @@ public class AlgoAngularBisectorLines extends AlgoElement
 					// M, the midpoint of the rhombus
 					botanaVars[0] = new PVariable(kernel);
 					botanaVars[1] = new PVariable(kernel);
+					botanaVarsDescr = new String[10];
+					botanaVarsDescr[0] = "The x value of the midpoint of the rhombus (which the angular bisector "
+							+ geo.getLabelSimple() + " will pass through)";
+					botanaVarsDescr[1] = "The y value of the midpoint of the rhombus (which the angular bisector "
+							+ geo.getLabelSimple() + " will pass through)";
 					// C, that is, the vertex of the angle.
 					botanaVars[2] = vC[0];
 					botanaVars[3] = vC[1];
+					// botanaVarsDescr[2] = "The x value of the intersection of the two lines";
+					// botanaVarsDescr[3] = "The y value of the intersection of the two lines";
 					// S, a helper point.
 					botanaVars[4] = new PVariable(kernel);
 					botanaVars[5] = new PVariable(kernel);
+					botanaVarsDescr[4] = "The x value of the helper point that is mirror of ("
+						+ vA[0] + "," + vA[1] + ") about (" + botanaVars[0] + "," + botanaVars[1] + ")";
+					botanaVarsDescr[5] = "The y value of the helper point that is mirror of ("
+							+ vA[0] + "," + vA[1] + ") about (" + botanaVars[0] + "," + botanaVars[1] + ")";
 					// Save vA and vB for further use:
 					botanaVars[6] = vA[0];
 					botanaVars[7] = vA[1];
+					// botanaVarsDescr[6] = "The x value of point A";
+					// botanaVarsDescr[7] = "The y value of point A";
 					botanaVars[8] = vB[0];
-					botanaVars[9] = vC[1];
+					botanaVars[9] = vB[1];
+					// botanaVarsDescr[8] = "The x value of point B";
+					// botanaVarsDescr[9] = "The y value of point B";
 				}
 
 				botanaPolynomials = new PPolynomial[polysNeeded];

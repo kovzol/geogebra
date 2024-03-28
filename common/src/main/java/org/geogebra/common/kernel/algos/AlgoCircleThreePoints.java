@@ -72,8 +72,6 @@ public class AlgoCircleThreePoints extends AlgoElement
 	private double maxDet;
 	private int casenr;
 	private BotanaCircleThreePoints botanaParams;
-
-
 	public AlgoCircleThreePoints(Construction cons, String label, GeoPointND A, GeoPointND B,
 			GeoPointND C) {
 		this(cons, A, B, C);
@@ -343,7 +341,10 @@ public class AlgoCircleThreePoints extends AlgoElement
 		}
 		return botanaParams.getBotanaVars();
 	}
-
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) {
+		return botanaParams.getBotanaVarsDescr();
+	}
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {

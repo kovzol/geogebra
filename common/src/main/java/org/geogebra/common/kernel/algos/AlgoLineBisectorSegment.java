@@ -41,6 +41,7 @@ public class AlgoLineBisectorSegment extends AlgoElement
 	private PPolynomial[] polynomials;
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/** Creates new AlgoLineBisector */
 	public AlgoLineBisectorSegment(Construction cons, String label,
@@ -232,6 +233,11 @@ public class AlgoLineBisectorSegment extends AlgoElement
 		return botanaVars;
 	}
 
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
+	}
+
 	/*
 	 * This is mostly the same as in AlgoLineBisector.java. TODO: maybe
 	 * commonize. (non-Javadoc)
@@ -255,6 +261,10 @@ public class AlgoLineBisectorSegment extends AlgoElement
 				botanaVars[1] = new PVariable(kernel);
 				botanaVars[2] = new PVariable(kernel);
 				botanaVars[3] = new PVariable(kernel);
+				botanaVarsDescr[0] = "The x value of point " + v[0];
+				botanaVarsDescr[1] = "The y value of point " + v[0];
+				botanaVarsDescr[2] = "The x value of point " + v[1];
+				botanaVarsDescr[3] = "The y value of point " + v[1];
 			}
 
 			botanaPolynomials = SymbolicParameters

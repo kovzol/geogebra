@@ -37,6 +37,7 @@ public class AlgoPointInRegion extends AlgoElement implements SymbolicParameters
 
 	private PPolynomial[] polynomials;
     private PVariable[] botanaVars;
+	private String [] botanaVarsDescr;
 
 	/**
 	 * @param cons
@@ -143,7 +144,14 @@ public class AlgoPointInRegion extends AlgoElement implements SymbolicParameters
 		botanaVars = new PVariable[2];
 		botanaVars[0] = new PVariable(kernel);
 		botanaVars[1] = new PVariable(kernel);
+		botanaVarsDescr[0] = "x value of the point";
+		botanaVarsDescr[1] = "y value of the point";
 		return botanaVars;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

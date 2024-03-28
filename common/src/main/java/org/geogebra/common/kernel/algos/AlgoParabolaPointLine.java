@@ -40,6 +40,7 @@ public class AlgoParabolaPointLine extends AlgoParabolaPointLineND
 
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	public AlgoParabolaPointLine(Construction cons, String label, GeoPointND F,
 			GeoLineND l) {
@@ -67,6 +68,11 @@ public class AlgoParabolaPointLine extends AlgoParabolaPointLineND
 	}
 
 	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
+	}
+
+	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 
@@ -83,6 +89,7 @@ public class AlgoParabolaPointLine extends AlgoParabolaPointLineND
 
 			if (botanaVars == null) {
 				botanaVars = new PVariable[10];
+				botanaVarsDescr = new String[10];
 				// P
 				botanaVars[0] = new PVariable(kernel);
 				botanaVars[1] = new PVariable(kernel);

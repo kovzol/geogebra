@@ -54,7 +54,7 @@ public class AlgoOrthoLinePointLine extends AlgoElement
 	private PPolynomial[] polynomials;
 	private OrthoLinePointLineAdapter proverAdapter;
 	private double[] normal = new double[3];
-
+	private String[] botanaVarsDescr;
 	/**
 	 * Creates new AlgoOrthoLinePointLine.
 	 * 
@@ -226,6 +226,11 @@ public class AlgoOrthoLinePointLine extends AlgoElement
 			proverAdapter = new OrthoLinePointLineAdapter();
 		}
 		return proverAdapter.getBotanaVars();
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return proverAdapter.getBotanaVarsDescr();
 	}
 
 	@Override

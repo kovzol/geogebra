@@ -164,6 +164,11 @@ public class AlgoConicPartCircle extends AlgoConicPart implements
 	}
 
 	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) {
+		return botanaParams.getBotanaVarsDescr();
+	}
+
+	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 		// It's OK to return null here since no constraint must be set:

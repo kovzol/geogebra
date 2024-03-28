@@ -41,6 +41,7 @@ public class AlgoIncircleCenter extends AlgoElement implements SymbolicParameter
 	private GeoPointND A;
 	private GeoPointND B;
 	private GeoPointND C;
+	private String[] botanaVarsDescr;
 
 	private GeoConicND circle;
 	private GeoPointND incenter; // output
@@ -147,6 +148,11 @@ public class AlgoIncircleCenter extends AlgoElement implements SymbolicParameter
 			botanaParams = new BotanaIncircle();
 		}
 		return botanaParams.getBotanaVars();
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

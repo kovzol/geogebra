@@ -93,6 +93,7 @@ public class AlgoIntersectConics extends AlgoIntersect implements SymbolicParame
 	private SystemOfEquationsSolver sysSolver;
 
 	private IntersectConicsAdapter proverAdapter;
+	private String[] botanaVarsDescr;
 
 	@Override
 	public Commands getClassName() {
@@ -1460,6 +1461,11 @@ public class AlgoIntersectConics extends AlgoIntersect implements SymbolicParame
 	@Override
 	public PVariable[] getBotanaVars(GeoElementND geo) {
 		return getProverAdapter().getBotanaVars(geo);
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

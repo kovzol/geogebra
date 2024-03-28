@@ -55,6 +55,7 @@ public class AlgoJoinPointsSegment extends AlgoElement
 	private GeoPolygon poly; // for polygons
 
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 	private PPolynomial[] polynomials;
 
 	/**
@@ -262,6 +263,11 @@ public class AlgoJoinPointsSegment extends AlgoElement
 			botanaVars = SymbolicParameters.addBotanaVarsJoinPoints(input);
 		}
 		return botanaVars;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

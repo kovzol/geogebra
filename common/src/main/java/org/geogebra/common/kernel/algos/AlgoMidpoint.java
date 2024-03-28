@@ -43,6 +43,7 @@ public class AlgoMidpoint extends AlgoMidpointND
 	private PPolynomial[] polynomials;
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * @param cons
@@ -174,6 +175,11 @@ public class AlgoMidpoint extends AlgoMidpointND
 	}
 
 	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
+	}
+
+	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 		if (botanaPolynomials != null) {
@@ -191,6 +197,7 @@ public class AlgoMidpoint extends AlgoMidpointND
 			botanaVars = new PVariable[2];
 			botanaVars[0] = new PVariable(kernel);
 			botanaVars[1] = new PVariable(kernel);
+			botanaVarsDescr = new String[2]; // TODO: Remove, no description is required in this algo.
 		}
 
 		botanaPolynomials = SymbolicParameters.botanaPolynomialsMidpoint(P, Q,

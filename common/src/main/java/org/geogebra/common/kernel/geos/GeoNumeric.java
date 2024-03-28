@@ -69,6 +69,7 @@ public class GeoNumeric extends GeoElement
 		HasSymbolicMode, AnimationExportSlider, Evaluate2Var {
 
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/** eg boxplot */
 	public static final int DEFAULT_THICKNESS = 2;
@@ -1762,12 +1763,19 @@ public class GeoNumeric extends GeoElement
 			if (botanaVars == null) {
 				botanaVars = new PVariable[1];
 				botanaVars[0] = new PVariable(kernel); // ,true
-				Log.debug("Variable " + geo.getLabelSimple() + "("
+				botanaVarsDescr = new String[1];
+				// botanaVarsDescr[0] = "a numeric value"; // TODO: check if this is ever used
+				Log.debug("Variable " + geo.getLabelSimple() + " ("
 						+ botanaVars[0] + ")");
 			}
 		}
 
 		return botanaVars;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

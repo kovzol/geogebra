@@ -108,6 +108,7 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 	private PVariable variableCoordinate1 = null;
 	private PVariable variableCoordinate2 = null;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	// list of Locateables (GeoElements) that this point is start point of
 	// if this point is removed, the Locateables have to be notified
@@ -2695,6 +2696,7 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 				botanaVars = new PVariable[2];
 				botanaVars[0] = new PVariable(kernel); // ,true
 				botanaVars[1] = new PVariable(kernel); // ,true
+
 				Log.trace("Free point " + geo.getLabelSimple() + "("
 						+ botanaVars[0] + "," + botanaVars[1] + ")");
 			}
@@ -2702,6 +2704,15 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 		}
 		Log.debug("There is no implementation yet for " + algoParent);
 		throw new NoSymbolicParametersException();
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		if (algoParent instanceof SymbolicParametersBotanaAlgo) {
+			return ((SymbolicParametersBotanaAlgo) algoParent)
+					.getBotanaVarsDescr(this);
+		}
+		return botanaVarsDescr;
 	}
 
 	@Override

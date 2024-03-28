@@ -43,6 +43,7 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 		AlgoCirclePointRadiusInterface, SymbolicParametersBotanaAlgo {
 
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 	private PPolynomial[] botanaPolynomials;
 
 	/**
@@ -103,7 +104,10 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 	public PVariable[] getBotanaVars(GeoElementND geo) {
 		return botanaVars;
 	}
-
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) {
+		return botanaVarsDescr;
+	}
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
@@ -138,12 +142,15 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 			if (botanaVars == null) {
 				PVariable[] centerBotanaVars = P.getBotanaVars(P);
 				botanaVars = new PVariable[4];
+				botanaVarsDescr = new String[4];
 				// center P
 				botanaVars[0] = centerBotanaVars[0];
 				botanaVars[1] = centerBotanaVars[1];
 				// point C on the circle
 				botanaVars[2] = new PVariable(kernel);
 				botanaVars[3] = new PVariable(kernel);
+				botanaVarsDescr[2] = "The x value of a circumpoint of " + geo.getLabelSimple();
+				botanaVarsDescr[3] = "The y value of a circumpoint of " + geo.getLabelSimple();
 			}
 			GeoPoint A = s.getStartPoint();
 			GeoPoint B = s.getEndPoint();
@@ -173,12 +180,16 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 		if (botanaVars == null) {
 			PVariable[] centerBotanaVars = P.getBotanaVars(P);
 			botanaVars = new PVariable[4];
+			botanaVarsDescr = new String[4];
 			// center
 			botanaVars[0] = centerBotanaVars[0];
 			botanaVars[1] = centerBotanaVars[1];
 			// point on circle
 			botanaVars[2] = new PVariable(kernel);
 			botanaVars[3] = new PVariable(kernel);
+			botanaVarsDescr[2] = "The x value of a helper circumpoint such that "
+					+ P.getLabelSimple() + " is moved right by " + num.getDefinitionDescription(StringTemplate.defaultTemplate) + " units";
+			botanaVarsDescr[3] = "The y value of " + P.getLabelSimple();
 			// radius
 			// botanaVars[4] = new PVariable(kernel);
 		}

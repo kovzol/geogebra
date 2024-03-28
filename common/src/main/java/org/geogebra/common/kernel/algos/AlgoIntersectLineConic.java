@@ -96,6 +96,7 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 
 	// not initializing this is important for performance
 	private static double[] xyz = new double[3];
+	private String[] botanaVarsDescr;
 
 	@Override
 	public Commands getClassName() {
@@ -804,6 +805,11 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 	@Override
 	public PVariable[] getBotanaVars(GeoElementND geo) {
 		return botanaVars.get(geo);
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

@@ -53,6 +53,8 @@ public class AlgoAngularBisectorPoints extends AlgoElement
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
 
+	private String[] botanaVarsDescr;
+
 	/**
 	 * Creates new AlgoLineBisector
 	 * 
@@ -260,7 +262,9 @@ public class AlgoAngularBisectorPoints extends AlgoElement
 	public PVariable[] getBotanaVars(GeoElementND geo) {
 		return botanaVars;
 	}
-
+	public String[] getBotanaVarsDescr(GeoElementND geo) {
+		return botanaVarsDescr;
+	}
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
@@ -289,12 +293,19 @@ public class AlgoAngularBisectorPoints extends AlgoElement
 				// M, the midpoint of the rhombus
 				botanaVars[0] = new PVariable(kernel);
 				botanaVars[1] = new PVariable(kernel);
+				botanaVarsDescr = new String[6];
+				botanaVarsDescr[0] = "The x value of the midpoint of the rhombus (which the angular bisector will pass through)";
+				botanaVarsDescr[1] = "The y value of the midpoint of the rhombus (which the angular bisector will pass through)";
 				// C, that is, the vertex of the angle.
 				botanaVars[2] = vC[0];
 				botanaVars[3] = vC[1];
+				botanaVarsDescr[2] = "The x value of the vertex of the angle";
+				botanaVarsDescr[3] = "The y value of the vertex of the angle";
 				// S, a helper point.
 				botanaVars[4] = new PVariable(kernel);
 				botanaVars[5] = new PVariable(kernel);
+				botanaVarsDescr[4] = "The x value of the helper point";
+				botanaVarsDescr[5] = "The y value of the helper point";
 			}
 
 			botanaPolynomials = new PPolynomial[4];

@@ -104,6 +104,7 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 	private static final String[] vars = { "x", "y" };
 
 	private PVariable[] botanaVars; // only for an axis or a fixed slope line
+	private String[] botanaVarsDescr;
 	private PathParameter tempPP;
 
 	private StringBuilder sbToString;
@@ -1665,6 +1666,15 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 			return botanaVars;
 		}
 		return null;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		if (algoParent instanceof SymbolicParametersBotanaAlgo) {
+			return ((SymbolicParametersBotanaAlgo) algoParent)
+					.getBotanaVarsDescr(this);
+		}
+		return botanaVarsDescr;
 	}
 
 	@Override

@@ -1110,6 +1110,34 @@ public class ProverBotanasMethod {
 									freeVariables.add(geoVariable);
 									Log.debug(geoVariable + " is free");
 								}
+							} else { // These variables are not free, so we may want descriptions:
+								try {
+									String[] descriptions = ((SymbolicParametersBotanaAlgo) geo)
+											.getBotanaVarsDescr(geo);
+									// Describe objects that have non-trivial descriptions:
+									if (geoProver.getShowproof()) {
+										int descriptiveLines = 0;
+										for (int i = 0; i < descriptions.length; i++) {
+											if (descriptions[i] != null) {
+												descriptiveLines++;
+											}
+										}
+										if (descriptiveLines > 0 ) {
+											geoProver.addProofLine(
+													"Object " + geo.getLabelSimple()
+															+ " introduces the following extra variables:");
+											for (int i = 0; i < descriptions.length; i++) {
+												if (descriptions[i] != null) {
+													geoProver.addProofLine(
+															geoVariables[i].getName() + ": "
+																	+ descriptions[i]);
+												}
+											}
+										}
+									}
+								} catch (Throwable e) {
+									Log.debug("Problem when obtaining descriptions for " + geo);
+								}
 							}
 						}
 

@@ -20,9 +20,12 @@ public class BotanaCircleThreePoints extends ProverAdapter {
 
 		if (botanaVars == null) {
 			botanaVars = new PVariable[4];
+			botanaVarsDescr = new String[4];
 			// Virtual center:
 			botanaVars[0] = new PVariable(input[0].getKernel());
 			botanaVars[1] = new PVariable(input[0].getKernel());
+			botanaVarsDescr[0] = "x value of circle's center"; // TODO: find out which circle...
+			botanaVarsDescr[1] = "y value of circle's center";
 			// Point on the circle:
 			botanaVars[2] = circle1vars[0];
 			botanaVars[3] = circle1vars[1];

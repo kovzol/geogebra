@@ -43,6 +43,7 @@ public class AlgoJoinPointsRay extends AlgoElement
 	private GeoRay ray; // output
 
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/** Creates new AlgoJoinPoints */
 	public AlgoJoinPointsRay(Construction cons, String label, GeoPoint P,
@@ -132,6 +133,11 @@ public class AlgoJoinPointsRay extends AlgoElement
 		}
 		botanaVars = SymbolicParameters.addBotanaVarsJoinPoints(input);
 		return botanaVars;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

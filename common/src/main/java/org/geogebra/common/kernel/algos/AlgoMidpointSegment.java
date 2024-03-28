@@ -51,6 +51,7 @@ public class AlgoMidpointSegment extends AlgoElement
 	private PPolynomial[] polynomials;
 	private PVariable[] botanaVars;
 	private PPolynomial[] botanaPolynomials;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * Creates new AlgoMidpointSegment
@@ -227,6 +228,11 @@ public class AlgoMidpointSegment extends AlgoElement
 	}
 
 	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
+	}
+
+	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 		if (botanaPolynomials != null) {
@@ -241,6 +247,7 @@ public class AlgoMidpointSegment extends AlgoElement
 			botanaVars = new PVariable[2];
 			botanaVars[0] = new PVariable(kernel);
 			botanaVars[1] = new PVariable(kernel);
+			botanaVarsDescr = new String[2];
 		}
 
 		botanaPolynomials = SymbolicParameters.botanaPolynomialsMidpoint(P, Q,

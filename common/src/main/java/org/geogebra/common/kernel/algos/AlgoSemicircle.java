@@ -41,6 +41,7 @@ public class AlgoSemicircle extends AlgoElement
 
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * Creates new semicircle algoritm
@@ -198,6 +199,11 @@ public class AlgoSemicircle extends AlgoElement
 	}
 
 	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
+	}
+
+	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 		if (botanaPolynomials != null) {
@@ -216,9 +222,13 @@ public class AlgoSemicircle extends AlgoElement
 			// Center:
 			botanaVars[0] = centerVars[0];
 			botanaVars[1] = centerVars[1];
+			botanaVarsDescr[0] = "the x value of the center";
+			botanaVarsDescr[1] = "the y value of the center";
 			// Point on the circle:
 			botanaVars[2] = circle1vars[0];
 			botanaVars[3] = circle1vars[1];
+			botanaVarsDescr[2] = "the x value of the point on the circle";
+			botanaVarsDescr[3] = "the y value of the point on the circle";
 
 			botanaPolynomials = SymbolicParameters.botanaPolynomialsMidpoint(A,
 					B, centerVars);

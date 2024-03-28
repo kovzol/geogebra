@@ -123,6 +123,7 @@ public class GeoPolygon extends GeoElement implements GeoNumberValue,
 	private boolean showLineProperties = true;
 	private boolean fillable = true;
 	private boolean traceable = true;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * common constructor for 2D.
@@ -2503,8 +2504,16 @@ public class GeoPolygon extends GeoElement implements GeoNumberValue,
 			return ((SymbolicParametersBotanaAlgo) algoParent)
 					.getBotanaVars(this);
 		}
+		return null; // Here maybe an exception should be thrown...?
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		if (algoParent instanceof SymbolicParametersBotanaAlgo) {
+			return ((SymbolicParametersBotanaAlgo) algoParent)
+					.getBotanaVarsDescr(this);
+		}
 		return null;
-		// Don't throw an exception here. Handle areas differently.
 	}
 
 	@Override
@@ -2514,8 +2523,7 @@ public class GeoPolygon extends GeoElement implements GeoNumberValue,
 			return ((SymbolicParametersBotanaAlgo) algoParent)
 					.getBotanaPolynomials(this);
 		}
-		return null;
-		// Don't throw an exception here. Handle areas differently.
+		return null; // Here maybe an exception should be thrown...?
 	}
 
 	@Override

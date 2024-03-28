@@ -40,6 +40,7 @@ public class AlgoDynamicCoordinates extends AlgoElement
 	protected GeoPointND P; // input
 	protected GeoPointND M; // output
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * @param cons
@@ -133,6 +134,11 @@ public class AlgoDynamicCoordinates extends AlgoElement
 		botanaVars[0] = new PVariable(kernel); // ,true
 		botanaVars[1] = new PVariable(kernel); // ,true
 		return botanaVars;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

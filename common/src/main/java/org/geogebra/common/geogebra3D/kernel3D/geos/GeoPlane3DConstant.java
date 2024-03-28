@@ -20,6 +20,7 @@ public class GeoPlane3DConstant extends GeoPlane3D
 	/** xYo plane */
 	public static final int XOY_PLANE = 1;
 	private boolean gridVisible;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * construct the plane xOy, ...
@@ -103,6 +104,11 @@ public class GeoPlane3DConstant extends GeoPlane3D
 			throws NoSymbolicParametersException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

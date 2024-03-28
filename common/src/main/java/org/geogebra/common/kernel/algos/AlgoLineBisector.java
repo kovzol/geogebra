@@ -42,6 +42,7 @@ public class AlgoLineBisector extends AlgoElement
 	private PPolynomial[] polynomials;
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/** Creates new AlgoLineBisector */
 	public AlgoLineBisector(Construction cons, String label, GeoPoint A,
@@ -226,6 +227,11 @@ public class AlgoLineBisector extends AlgoElement
 	}
 
 	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
+	}
+
+	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 
@@ -242,6 +248,15 @@ public class AlgoLineBisector extends AlgoElement
 				botanaVars[1] = new PVariable(kernel);
 				botanaVars[2] = new PVariable(kernel);
 				botanaVars[3] = new PVariable(kernel);
+				botanaVarsDescr = new String[4];
+				botanaVarsDescr[0] = "The x value of midpoint of " + A.getLabelSimple() + B.getLabelSimple();
+				botanaVarsDescr[1] = "The y value of midpoint of " + A.getLabelSimple() + B.getLabelSimple();
+				botanaVarsDescr[2] = "The x value of rotation of point " + A.getLabelSimple()
+						+ " around the midpoint of " + A.getLabelSimple() + B.getLabelSimple()
+						+ " by 90 degrees";
+				botanaVarsDescr[3] = "The x value of rotation of point " + A.getLabelSimple()
+						+ " around the midpoint of " + A.getLabelSimple() + B.getLabelSimple()
+						+ " by 90 degrees";
 			}
 
 			botanaPolynomials = SymbolicParameters

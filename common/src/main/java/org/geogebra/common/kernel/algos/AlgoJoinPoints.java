@@ -50,6 +50,7 @@ public class AlgoJoinPoints extends AlgoElement
 	private GeoLine g; // output
 	private PPolynomial[] polynomials;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/** Creates new AlgoJoinPoints */
 	public AlgoJoinPoints(Construction cons, String label, GeoPoint P,
@@ -219,6 +220,11 @@ public class AlgoJoinPoints extends AlgoElement
 		}
 		botanaVars = SymbolicParameters.addBotanaVarsJoinPoints(input);
 		return botanaVars;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

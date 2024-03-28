@@ -25,6 +25,10 @@ public interface SymbolicParametersBotanaAlgo {
 	public PVariable[] getBotanaVars(GeoElementND geo)
 			throws NoSymbolicParametersException;
 
+	public String[] getBotanaVarsDescr(GeoElementND geo)
+			throws NoSymbolicParametersException;
+
+
 	/**
 	 * Calculates the polynomials of an object for the Botana method
 	 * 

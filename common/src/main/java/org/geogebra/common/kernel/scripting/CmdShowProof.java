@@ -156,7 +156,7 @@ public class CmdShowProof extends CmdScripting {
 							if (step.contains("free point")) {
 								gcc3.setFontColor(GColor.ORANGE);
 							}
-							if (step.contains("dependent point")) {
+							if (step.contains("dependent point") || step.startsWith("v")) {
 								gcc3.setFontColor(GColor.DARK_CYAN);
 							}
 							if (step.contains("degener") || step.startsWith(Unicode.BULLET + "")) {

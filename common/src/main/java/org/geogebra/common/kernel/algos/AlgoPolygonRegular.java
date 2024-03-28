@@ -46,6 +46,7 @@ public class AlgoPolygonRegular extends AlgoPolygonRegularND
 
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * Creates a new regular polygon algorithm
@@ -155,11 +156,17 @@ public class AlgoPolygonRegular extends AlgoPolygonRegularND
 	}
 
 	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
+	}
+
+	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
-		if (botanaPolynomials != null) {
-			return botanaPolynomials;
-		}
+		// Cache is forbidden since the number of sides can be changed.
+		// if (botanaPolynomials != null) {
+		//   return botanaPolynomials;
+		// }
 
 		PVariable[] varsA;
 		PVariable[] varsB;
@@ -195,6 +202,7 @@ public class AlgoPolygonRegular extends AlgoPolygonRegularND
 			botanaVars[1] = varsC[1];
 			botanaVars[2] = varsD[0];
 			botanaVars[3] = varsD[1];
+			botanaVarsDescr = new String[4]; // TODO: Remove.
 			return botanaPolynomials;
 		}
 
@@ -234,6 +242,7 @@ public class AlgoPolygonRegular extends AlgoPolygonRegularND
 			PPolynomial xp = new PPolynomial(x);
 			PPolynomial yp = new PPolynomial(y);
 			botanaVars = new PVariable[(sides - 2) * 2];
+			botanaVarsDescr = new String[(sides - 2) * 2]; // TODO: Remove.
 			botanaPolynomials = new PPolynomial[(sides - 2) * 2 + 2];
 			botanaPolynomials[0] = botanaMinpoly;
 			// x^2+y^2=1

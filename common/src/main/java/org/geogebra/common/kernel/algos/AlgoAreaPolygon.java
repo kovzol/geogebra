@@ -42,6 +42,7 @@ public class AlgoAreaPolygon extends AlgoElement
 	private GeoNumeric area; // output
 
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * @param cons
@@ -104,14 +105,21 @@ public class AlgoAreaPolygon extends AlgoElement
 		GeoPointND[] pointsOfPolygon = polygon.getPoints();
 		if (botanaVars == null) {
 			botanaVars = new PVariable[pointsOfPolygon.length * 2];
+			botanaVarsDescr = new String[pointsOfPolygon.length * 2];
 			for (int i = 0; i < pointsOfPolygon.length; i++) {
 				PVariable[] currentPointBotanavars = ((GeoPoint) pointsOfPolygon[i])
 						.getBotanaVars(pointsOfPolygon[i]);
 				botanaVars[2 * i] = currentPointBotanavars[0];
+				botanaVarsDescr[2 * i] = "The x value of point " + i + 1 + " of the polygon";
 				botanaVars[2 * i + 1] = currentPointBotanavars[1];
+				botanaVarsDescr[2 * i + 1] = "The y value of point " + i + 1 + " of the polygon";
 			}
 		}
 		return botanaVars;
+	}
+
+	public String[] getBotanaVarsDescr(GeoElementND geo) {
+		return botanaVarsDescr;
 	}
 
 	@Override

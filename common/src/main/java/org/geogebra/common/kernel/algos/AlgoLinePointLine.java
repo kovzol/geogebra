@@ -53,6 +53,7 @@ public class AlgoLinePointLine extends AlgoElement
 	private PPolynomial[] polynomials;
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/** Creates new AlgoLinePointLine */
 	public AlgoLinePointLine(Construction cons, String label, GeoPoint P,
@@ -217,6 +218,11 @@ public class AlgoLinePointLine extends AlgoElement
 	}
 
 	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
+	}
+
+	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 
@@ -240,6 +246,10 @@ public class AlgoLinePointLine extends AlgoElement
 				botanaVars[1] = new PVariable(kernel); // d2
 				botanaVars[2] = vP[0];
 				botanaVars[3] = vP[1];
+				botanaVarsDescr[0] = "The value of d1";
+				botanaVarsDescr[1] = "The value of d2";
+				botanaVarsDescr[2] = "The x value of the point";
+				botanaVarsDescr[3] = "The x value of the point";
 			}
 			PPolynomial d1 = new PPolynomial(botanaVars[0]);
 			PPolynomial d2 = new PPolynomial(botanaVars[1]);

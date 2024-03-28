@@ -43,6 +43,7 @@ public class AlgoDistancePoints extends AlgoElement
 	private GeoNumeric dist; // output
 
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	/**
 	 * @param cons
@@ -116,6 +117,11 @@ public class AlgoDistancePoints extends AlgoElement
 	}
 
 	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
+	}
+
+	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 
@@ -133,7 +139,6 @@ public class AlgoDistancePoints extends AlgoElement
 				botanaVars[1] = vP1[1];
 				botanaVars[2] = vP2[0];
 				botanaVars[3] = vP2[1];
-
 			}
 
 			return null;

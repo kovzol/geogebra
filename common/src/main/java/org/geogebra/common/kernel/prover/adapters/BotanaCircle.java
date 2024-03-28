@@ -8,6 +8,7 @@ import org.geogebra.common.kernel.prover.polynomial.PVariable;
 
 public class BotanaCircle {
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	public PVariable[] getBotanaVars(GeoElementND P, GeoElementND M)
 			throws NoSymbolicParametersException {
@@ -42,6 +43,10 @@ public class BotanaCircle {
 		botanaVars[1] = new PVariable(kernel);
 		botanaVars[2] = new PVariable(kernel);
 		botanaVars[3] = new PVariable(kernel);
+	}
+
+	public String[] getBotanaVarsDescr() {
+		return botanaVarsDescr;
 	}
 
 }

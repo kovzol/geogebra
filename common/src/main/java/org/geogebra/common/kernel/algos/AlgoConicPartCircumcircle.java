@@ -29,6 +29,7 @@ public class AlgoConicPartCircumcircle extends AlgoConicPartCircumcircleND
 		implements SymbolicParametersBotanaAlgo {
 
 	private BotanaCircleThreePoints botanaParams;
+	private String[] botanaVarsDescr;
 
 	public AlgoConicPartCircumcircle(Construction cons, String label,
 			GeoPoint A, GeoPoint B, GeoPoint C, int type) {
@@ -86,6 +87,11 @@ public class AlgoConicPartCircumcircle extends AlgoConicPartCircumcircleND
 			botanaParams = new BotanaCircleThreePoints();
 		}
 		return botanaParams.getBotanaVars();
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override

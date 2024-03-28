@@ -63,6 +63,7 @@ public class AlgoConicFivePoints extends AlgoElement
 
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 
 	protected void setInputPoints() {
 		input = P;
@@ -325,7 +326,10 @@ public class AlgoConicFivePoints extends AlgoElement
 	public PVariable[] getBotanaVars(GeoElementND geo) {
 		return botanaVars;
 	}
-
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) {
+		return botanaVarsDescr;
+	}
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
@@ -345,13 +349,21 @@ public class AlgoConicFivePoints extends AlgoElement
 			}
 		}
 		PVariable x = botanaVars[0];
+		botanaVarsDescr[0] = "The x-value";
 		PVariable y = botanaVars[1];
+		botanaVarsDescr[1] = "The y-value";
 		PVariable a = botanaVars[2];
+		botanaVarsDescr[2] = "The coefficient of x^2 in the equation of the conic";
 		PVariable b = botanaVars[3];
+		botanaVarsDescr[3] = "The coefficient of y^2 in the equation of the conic";
 		PVariable c = botanaVars[4];
+		botanaVarsDescr[4] = "The coefficient of xy in the equation of the conic";
 		PVariable d = botanaVars[5];
+		botanaVarsDescr[5] = "The coefficient of x in the equation of the conic";
 		PVariable e = botanaVars[6];
+		botanaVarsDescr[6] = "The coefficient of y in the equation of the conic";
 		PVariable f = botanaVars[7];
+		botanaVarsDescr[7] = "The constant in the equation of the conic";
 		botanaPolynomials = new PPolynomial[6];
 		/* one for the curve and 5 for the constraints */
 		PPolynomial xp = new PPolynomial(x);

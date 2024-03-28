@@ -55,6 +55,7 @@ public class AlgoDilate extends AlgoTransformation
 	private GeoElement rgeo;
 
 	private PVariable[] botanaVars;
+	private String[] botanaVarsDescr;
 	private PPolynomial[] botanaPolynomials;
 
 	/**
@@ -213,6 +214,11 @@ public class AlgoDilate extends AlgoTransformation
 	@Override
 	public PVariable[] getBotanaVars(GeoElementND geo) throws NoSymbolicParametersException {
 		return botanaVars;
+	}
+
+	@Override
+	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
+		return botanaVarsDescr;
 	}
 
 	@Override
