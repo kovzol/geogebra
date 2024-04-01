@@ -46,7 +46,7 @@ public class CASExport {
 	public String createHtml() {
 		String html = "<!DOCTYPE html>\n"
 				+ "<html>\n"
-				+ "<head>\n";
+				+ "<head>\n<meta charset=\"UTF-8\">\n";
 
 		html += "<title>" + loc.getMenuDefault("CASView", "CAS View") + "</title>\n";
 
