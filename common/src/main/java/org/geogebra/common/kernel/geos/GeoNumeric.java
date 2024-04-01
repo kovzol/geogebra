@@ -2096,4 +2096,10 @@ public class GeoNumeric extends GeoElement
 	public String toLaTeXString(boolean symbolic, boolean symbolicContext, StringTemplate tpl) {
 		return toLaTeXString(symbolic || symbolicContext, tpl);
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+	}
 }

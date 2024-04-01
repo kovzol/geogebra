@@ -502,4 +502,11 @@ public class AlgoAngularBisectorLines extends AlgoElement
 		throw new NoSymbolicParametersException();
 
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
 }

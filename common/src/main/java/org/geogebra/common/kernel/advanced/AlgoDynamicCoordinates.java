@@ -151,4 +151,11 @@ public class AlgoDynamicCoordinates extends AlgoElement
 		 * .getBotanaPolynomials(P); return botanaPolynomials;
 		 */
 	}
+
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+	}
 }

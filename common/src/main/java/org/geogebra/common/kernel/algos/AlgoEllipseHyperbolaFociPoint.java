@@ -1449,4 +1449,11 @@ public class AlgoEllipseHyperbolaFociPoint
 		}
 	}
 
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

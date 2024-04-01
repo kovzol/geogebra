@@ -49,4 +49,10 @@ public class BotanaCircleThreePoints extends ProverAdapter {
 		return botanaPolynomials;
 	}
 
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

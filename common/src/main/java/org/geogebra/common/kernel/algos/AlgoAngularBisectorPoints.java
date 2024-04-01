@@ -52,7 +52,6 @@ public class AlgoAngularBisectorPoints extends AlgoElement
 
 	private PPolynomial[] botanaPolynomials;
 	private PVariable[] botanaVars;
-
 	private String[] botanaVarsDescr;
 
 	/**
@@ -333,4 +332,12 @@ public class AlgoAngularBisectorPoints extends AlgoElement
 		throw new NoSymbolicParametersException();
 
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

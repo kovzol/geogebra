@@ -771,4 +771,10 @@ public class GeoConic extends GeoConicND implements ConicMirrorable,
 		}
 		return true;
 	}
+
+	@Override
+	public void reset() {
+		botanaVarsDescr = null;
+	}
+
 }

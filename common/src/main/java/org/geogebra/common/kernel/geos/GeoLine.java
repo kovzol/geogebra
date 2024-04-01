@@ -2022,4 +2022,10 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 	public boolean hasSpecialEditor() {
 		return false;
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+	}
 }

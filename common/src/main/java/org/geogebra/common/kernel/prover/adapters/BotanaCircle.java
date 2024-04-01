@@ -49,4 +49,9 @@ public class BotanaCircle {
 		return botanaVarsDescr;
 	}
 
+public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+	}
+
 }

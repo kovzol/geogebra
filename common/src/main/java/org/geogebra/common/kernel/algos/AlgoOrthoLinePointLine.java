@@ -54,7 +54,6 @@ public class AlgoOrthoLinePointLine extends AlgoElement
 	private PPolynomial[] polynomials;
 	private OrthoLinePointLineAdapter proverAdapter;
 	private double[] normal = new double[3];
-	private String[] botanaVarsDescr;
 	/**
 	 * Creates new AlgoOrthoLinePointLine.
 	 * 
@@ -266,6 +265,11 @@ public class AlgoOrthoLinePointLine extends AlgoElement
 		return getLoc().getPlainDefault("LineThroughAPerpendicularToB",
 				"Line through %0 perpendicular to %1",
 				P.getLabel(tpl), ((GeoElement) l).getLabel(tpl));
+	}
+
+	@Override
+	public void reset() {
+		proverAdapter.reset();
 	}
 
 }

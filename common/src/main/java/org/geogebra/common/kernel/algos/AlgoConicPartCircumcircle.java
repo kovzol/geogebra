@@ -117,4 +117,8 @@ public class AlgoConicPartCircumcircle extends AlgoConicPartCircumcircleND
 		super.computeSinglePoint();
 	}
 
+	@Override
+	public void reset() {
+		botanaParams.reset();
+	}
 }

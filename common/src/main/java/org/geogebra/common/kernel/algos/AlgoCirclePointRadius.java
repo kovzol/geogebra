@@ -255,4 +255,12 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 		return botanaPolynomials;
 
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

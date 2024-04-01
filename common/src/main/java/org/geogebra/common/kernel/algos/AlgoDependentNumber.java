@@ -49,7 +49,6 @@ public class AlgoDependentNumber extends AlgoElement
 
 	private DependentNumberAdapter proverAdapter;
 
-	private String[] botanaVarsDescr;
 
 	/**
 	 * Creates new AlgoDependentNumber
@@ -217,7 +216,7 @@ public class AlgoDependentNumber extends AlgoElement
 
 	@Override
 	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
-		return botanaVarsDescr;
+		return proverAdapter.getBotanaVarsDescr();
 	}
 
 	/**
@@ -264,6 +263,12 @@ public class AlgoDependentNumber extends AlgoElement
 	 */
 	public boolean isRewriteFormula() {
 		return rewriteFormula;
+	}
+
+
+	@Override
+	public void reset() {
+		proverAdapter.reset();
 	}
 
 }

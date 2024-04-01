@@ -72,4 +72,10 @@ public class BotanaIncircle extends ProverAdapter {
 		throw new NoSymbolicParametersException();
 
 	}
+
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
 }

@@ -348,4 +348,10 @@ public class AlgoJoinPointsSegment extends AlgoElement
 		return poly.getParentAlgorithm().getFreeInputPoints();
 	}
 
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+	}
+
 }

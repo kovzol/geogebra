@@ -2926,4 +2926,11 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 		updateCoordsFrom2D(false);
 		pp.t = param;
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+	}
+
 }

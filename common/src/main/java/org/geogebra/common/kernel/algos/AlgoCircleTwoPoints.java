@@ -132,4 +132,11 @@ public class AlgoCircleTwoPoints extends AlgoSphereNDTwoPoints
 				"Circle through %0 with center %1",
 				getP().getLabel(tpl), getM().getLabel(tpl));
 	}
+
+	@Override
+	public void reset() {
+		if (botanaParams != null) {
+			botanaParams.reset();
+		}
+	}
 }

@@ -122,4 +122,11 @@ public class BotanaEllipseHyperbolaLength extends ProverAdapter {
 		return botanaPolynomials;
 
 	}
+
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

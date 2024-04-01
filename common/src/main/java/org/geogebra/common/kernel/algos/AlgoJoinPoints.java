@@ -235,4 +235,10 @@ public class AlgoJoinPoints extends AlgoElement
 		return null;
 	}
 
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+	}
+
 }

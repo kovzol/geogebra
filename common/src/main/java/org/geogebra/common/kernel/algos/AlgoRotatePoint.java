@@ -406,4 +406,12 @@ public class AlgoRotatePoint extends AlgoTransformation
 		}
 		throw new NoSymbolicParametersException();
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

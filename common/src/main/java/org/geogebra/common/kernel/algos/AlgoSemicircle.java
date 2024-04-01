@@ -234,4 +234,12 @@ public class AlgoSemicircle extends AlgoElement
 		// this should not happen:
 		throw new NoSymbolicParametersException();
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

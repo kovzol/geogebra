@@ -1503,4 +1503,10 @@ public class AlgoIntersectConics extends AlgoIntersect implements SymbolicParame
 		}
 		return null;
 	}
+
+	@Override
+	public void reset() {
+		botanaVarsDescr = null;
+	}
+
 }

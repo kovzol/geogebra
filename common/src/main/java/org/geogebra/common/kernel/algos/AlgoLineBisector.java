@@ -294,4 +294,12 @@ public class AlgoLineBisector extends AlgoElement
 				"Perpendicular Bisector of %0",
 				A.getLabel(tpl) + B.getLabel(tpl));
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

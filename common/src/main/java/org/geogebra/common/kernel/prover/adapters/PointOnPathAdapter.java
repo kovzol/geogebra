@@ -146,4 +146,10 @@ public class PointOnPathAdapter extends ProverAdapter {
 		botanaVars[1] = new PVariable(kernel);
 	}
 
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

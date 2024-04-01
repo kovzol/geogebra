@@ -355,4 +355,12 @@ public class AlgoCircleThreePoints extends AlgoElement
 		return botanaParams.getPolynomials(getInput());
 	}
 
+
+	@Override
+	public void reset() {
+		if (botanaParams != null) {
+			botanaParams.reset();
+		}
+	}
+
 }

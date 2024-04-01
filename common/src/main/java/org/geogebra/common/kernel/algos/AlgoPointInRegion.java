@@ -159,4 +159,11 @@ public class AlgoPointInRegion extends AlgoElement implements SymbolicParameters
 			throws NoSymbolicParametersException {
 		return null;
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+	}
+
 }

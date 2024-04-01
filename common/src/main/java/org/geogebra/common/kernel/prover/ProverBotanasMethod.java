@@ -886,6 +886,24 @@ public class ProverBotanasMethod {
 				allPredecessors.add(geoStatement);
 			}
 
+			/* If a new proof is to be computed, all pre-computed objects
+			 * must be reset first. This is important, because some algos may point
+			 * to newly created variables (e.g. regular polygons may have new number of vertices)
+			 * but the algos use them (e.g. intersection of two diagonals) require new variables
+			 * as well.
+			 */
+			if (geoProver.getShowproof() || true) { // This is a waste of resources. TODO.
+				for (GeoElement ge : allPredecessors) {
+					if (ge instanceof SymbolicParametersBotanaAlgo) {
+						((SymbolicParametersBotanaAlgo) ge).reset();
+					}
+					AlgoElement algo = ge.getParentAlgorithm(); // maybe this is not required
+					if (algo != null && algo instanceof SymbolicParametersBotanaAlgo) {
+						((SymbolicParametersBotanaAlgo) algo).reset();
+					}
+				}
+			}
+
 			Iterator<GeoElement> it;
 			/*
 			 * The algo of the moving point will be computed numerically after

@@ -206,4 +206,11 @@ public class AlgoMidpoint extends AlgoMidpointND
 
 	}
 
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

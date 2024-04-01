@@ -553,4 +553,11 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 		// TODO: implement the remaining cases
 	}
 
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

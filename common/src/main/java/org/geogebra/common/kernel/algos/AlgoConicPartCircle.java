@@ -199,4 +199,11 @@ public class AlgoConicPartCircle extends AlgoConicPart implements
 		return getInputMaybeXOYPlane(i);
 	}
 
+	@Override
+	public void reset() {
+		if (botanaParams != null) {
+			botanaParams.reset();
+		}
+	}
+
 }

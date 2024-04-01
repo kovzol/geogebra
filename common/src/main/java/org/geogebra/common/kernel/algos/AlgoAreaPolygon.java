@@ -128,4 +128,10 @@ public class AlgoAreaPolygon extends AlgoElement
 		return null;
 	}
 
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+	}
+
 }

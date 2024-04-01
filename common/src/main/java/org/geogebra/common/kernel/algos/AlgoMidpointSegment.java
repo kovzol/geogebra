@@ -256,4 +256,11 @@ public class AlgoMidpointSegment extends AlgoElement
 
 	}
 
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

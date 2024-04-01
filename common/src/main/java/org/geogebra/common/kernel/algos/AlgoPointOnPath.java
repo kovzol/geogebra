@@ -48,7 +48,6 @@ public class AlgoPointOnPath extends AlgoElement
 	private PPolynomial[] polynomials;
 	private PVariable variable;
 	private PointOnPathAdapter proverAdapter;
-	private String[] botanaVarsDescr;
 
 	/**
 	 * @param cons
@@ -354,7 +353,14 @@ public class AlgoPointOnPath extends AlgoElement
 
 	@Override
 	public String[] getBotanaVarsDescr(GeoElementND geo) throws NoSymbolicParametersException {
-		return botanaVarsDescr;
+		return proverAdapter.getBotanaVarsDescr();
+	}
+
+	@Override
+	public void reset() {
+		if (proverAdapter != null) {
+			proverAdapter.reset();
+		}
 	}
 
 }

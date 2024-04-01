@@ -1017,4 +1017,11 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 		return 0;
 	}
 
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

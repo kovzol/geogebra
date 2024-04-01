@@ -67,7 +67,6 @@ public class AlgoMirror extends AlgoTransformation implements
 
 	private GeoPoint transformedPoint;
 	private MirrorAdapter mirrorBotana;
-	private String[] botanaVarsDescr;
 
 	/**
 	 * Creates new "mirror at point" algo
@@ -501,4 +500,10 @@ public class AlgoMirror extends AlgoTransformation implements
 				mirrorPoint, mirrorConic);
 	}
 
+	@Override
+	public void reset() {
+		if (mirrorBotana != null) {
+			mirrorBotana.reset();
+		}
+	}
 }

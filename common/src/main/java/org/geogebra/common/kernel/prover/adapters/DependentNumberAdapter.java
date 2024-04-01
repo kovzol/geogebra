@@ -535,4 +535,10 @@ public class DependentNumberAdapter extends ProverAdapter {
 		botanaVars = vars;
 	}
 
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

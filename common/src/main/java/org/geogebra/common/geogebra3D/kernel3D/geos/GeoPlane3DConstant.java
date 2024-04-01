@@ -157,4 +157,10 @@ public class GeoPlane3DConstant extends GeoPlane3D
 		return true;
 	}
 
+
+	@Override
+	public void reset() {
+		botanaVarsDescr = null;
+	}
+
 }

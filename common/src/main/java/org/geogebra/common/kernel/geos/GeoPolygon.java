@@ -2820,4 +2820,9 @@ public class GeoPolygon extends GeoElement implements GeoNumberValue,
 		}
 		setInitLabelsCalled(false);
 	}
+
+	@Override
+	public void reset() {
+		botanaVarsDescr = null;
+	}
 }

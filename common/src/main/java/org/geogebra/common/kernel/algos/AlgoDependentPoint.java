@@ -213,4 +213,12 @@ public class AlgoDependentPoint extends AlgoElement
 
 		return botanaPolynomials;
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+		botanaPolynomials = null;
+	}
+
 }

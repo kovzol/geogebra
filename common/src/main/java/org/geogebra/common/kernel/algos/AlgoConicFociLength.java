@@ -112,4 +112,12 @@ public abstract class AlgoConicFociLength extends AlgoConicFociLengthND
 				A.getLabel(tpl), B.getLabel(tpl),
 				a.toGeoElement().getLabel(tpl));
 	}
+
+
+	@Override
+	public void reset() {
+		if (botanaParams != null) {
+			botanaParams.reset();
+		}
+	}
 }

@@ -145,4 +145,10 @@ public class AlgoJoinPointsRay extends AlgoElement
 			throws NoSymbolicParametersException {
 		return null;
 	}
+
+	@Override
+	public void reset() {
+		botanaVars = null;
+		botanaVarsDescr = null;
+	}
 }

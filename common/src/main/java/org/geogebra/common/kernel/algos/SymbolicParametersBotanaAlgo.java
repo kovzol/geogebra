@@ -10,20 +10,31 @@ import org.geogebra.common.kernel.prover.polynomial.PVariable;
  * method. Based on Simon's SymbolicParametersAlgo.java.
  * 
  * @author Zoltan Kovacs
+ * @author Jonathan H. Yu
  */
 public interface SymbolicParametersBotanaAlgo {
 
 	/**
-	 * Calculates the free variables of an object for the Botana method
+	 * Calculates the variables of an object for the Botana method
 	 * 
 	 * @param geo
 	 *            The corresponding GeoElement
-	 * @return array of the free variables
+	 * @return array of the variables
 	 * @throws NoSymbolicParametersException
 	 *             if it is not possible to obtain suitable polynomials
 	 */
 	public PVariable[] getBotanaVars(GeoElementND geo)
 			throws NoSymbolicParametersException;
+
+	/**
+	 * Gives the description of variables of an object for the Botana method
+	 *
+	 * @param geo
+	 *            The corresponding GeoElement
+	 * @return array of descriptions, null if it should already be defined
+	 * @throws NoSymbolicParametersException
+	 *             if it is not possible to obtain suitable polynomials
+	 */
 
 	public String[] getBotanaVarsDescr(GeoElementND geo)
 			throws NoSymbolicParametersException;
@@ -40,4 +51,9 @@ public interface SymbolicParametersBotanaAlgo {
 	 */
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException;
+
+	/**
+	 * Deletes all entries computed already by the prover
+	 */
+	public void reset();
 }
