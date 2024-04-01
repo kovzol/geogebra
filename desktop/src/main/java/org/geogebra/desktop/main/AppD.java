@@ -3956,6 +3956,15 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 														// = meta
 		// click
 
+		// It seems that newer versions of Java detect the button number properly,
+		// so such a difficult method as above is no longer required.
+		// It is, in addition, seemingly incorrect with some Java versions used by
+		// GeoGebra Discovery. TODO: Discuss this with the GeoGebra Team.
+		// Thanks for Noah Dana-Picard for reporting this problem.
+		if (e.getButton() == 3) {
+			ret = true;
+		}
+
 		// debug("ret = " + ret);
 		return ret;
 		// return e.isMetaDown();
