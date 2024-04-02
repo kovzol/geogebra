@@ -149,8 +149,8 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 				// point C on the circle
 				botanaVars[2] = new PVariable(kernel);
 				botanaVars[3] = new PVariable(kernel);
-				botanaVarsDescr[2] = "The x value of a circumpoint of " + geo.getLabelSimple();
-				botanaVarsDescr[3] = "The y value of a circumpoint of " + geo.getLabelSimple();
+				botanaVarsDescr[2] = "The x value of a point of " + geo.getLabelSimple();
+				botanaVarsDescr[3] = "The y value of a point of " + geo.getLabelSimple();
 			}
 			GeoPoint A = s.getStartPoint();
 			GeoPoint B = s.getEndPoint();
@@ -187,7 +187,7 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 			// point on circle
 			botanaVars[2] = new PVariable(kernel);
 			botanaVars[3] = new PVariable(kernel);
-			botanaVarsDescr[2] = "The x value of a helper circumpoint such that "
+			botanaVarsDescr[2] = "The x value of a helper point of the circle such that "
 					+ P.getLabelSimple() + " is moved right by " + num.getDefinitionDescription(StringTemplate.defaultTemplate) + " units";
 			botanaVarsDescr[3] = "The y value of " + P.getLabelSimple();
 			// radius

@@ -219,14 +219,14 @@ public class MirrorAdapter extends ProverAdapter {
 						botanaVars[1] = new PVariable(geo.getKernel());
 						botanaVarsDescr[0] = "x value of mirror image of center of "
 								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
-						botanaVarsDescr[1] = "y value of mirror image of a circumpoint of "
+						botanaVarsDescr[1] = "y value of mirror image of center of "
 								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
 						// B' - mirror of point on circle
 						botanaVars[2] = new PVariable(geo.getKernel());
 						botanaVars[3] = new PVariable(geo.getKernel());
-						botanaVarsDescr[2] = "x value of mirror image of a circumpoint of "
+						botanaVarsDescr[2] = "x value of mirror image of a point of "
 								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
-						botanaVarsDescr[3] = "y value of mirror image of a circumpoint of "
+						botanaVarsDescr[3] = "y value of mirror image of a point of "
 								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
 						// V - midpoint of center and mirror of center
 						botanaVars[4] = new PVariable(geo.getKernel());
@@ -239,9 +239,9 @@ public class MirrorAdapter extends ProverAdapter {
 						// on circle
 						botanaVars[6] = new PVariable(geo.getKernel());
 						botanaVars[7] = new PVariable(geo.getKernel());
-						botanaVarsDescr[6] = "x value of orthogonal projection of circumpoint of "
+						botanaVarsDescr[6] = "x value of orthogonal projection of a point of "
 								+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
-						botanaVarsDescr[7] = "y value of orthogonal projection of circumpoint of "
+						botanaVarsDescr[7] = "y value of orthogonal projection of a point of "
 								+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
 						// N1 - AN1 orthogonal CD
 						botanaVars[8] = new PVariable(geo.getKernel());
@@ -256,10 +256,10 @@ public class MirrorAdapter extends ProverAdapter {
 						botanaVars[10] = new PVariable(geo.getKernel());
 						botanaVars[11] = new PVariable(geo.getKernel());
 						botanaVarsDescr[10] = "x value of rotation of a vector on "
-								+ mirrorLine.getLabelSimple() + " by 90 degrees about circumpoint of "
+								+ mirrorLine.getLabelSimple() + " by 90 degrees about a point of "
 								+ inGeo.getLabelSimple();
 						botanaVarsDescr[11] = "x value of rotation of a vector on "
-								+ mirrorLine.getLabelSimple() + " by 90 degrees about circumpoint of "
+								+ mirrorLine.getLabelSimple() + " by 90 degrees about a point of "
 								+ inGeo.getLabelSimple();
 					}
 
