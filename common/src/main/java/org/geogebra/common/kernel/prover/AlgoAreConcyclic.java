@@ -346,9 +346,12 @@ public class AlgoAreConcyclic extends AlgoElement
 	@Override
 	public PPolynomial[][] getBotanaPolynomials()
 			throws NoSymbolicParametersException {
+		/* Don't use caching, the polynomials can contain old values.
 		if (botanaPolynomials != null) {
 			return botanaPolynomials;
 		}
+		 */
+
 		if (inputPoint1 != null && inputPoint2 != null && inputPoint3 != null
 				&& inputPoint4 != null) {
 			PVariable[] coords1 = inputPoint1.getBotanaVars(inputPoint1);

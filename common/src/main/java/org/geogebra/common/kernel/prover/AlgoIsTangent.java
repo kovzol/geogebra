@@ -116,9 +116,11 @@ public class AlgoIsTangent extends AlgoElement
 	@Override
 	public PPolynomial[][] getBotanaPolynomials()
 			throws NoSymbolicParametersException {
-        if (botanaPolynomials != null) {
-            return botanaPolynomials;
-        }
+		/* Don't use caching, the polynomials can contain old values.
+		if (botanaPolynomials != null) {
+			return botanaPolynomials;
+		}
+		 */
 
 		GeoLine l = inputElement1;
 		GeoConic c = inputElement2;

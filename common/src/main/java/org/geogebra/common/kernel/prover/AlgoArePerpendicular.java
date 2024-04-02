@@ -178,9 +178,12 @@ public class AlgoArePerpendicular extends AlgoElement
 	@Override
 	public PPolynomial[][] getBotanaPolynomials()
 			throws NoSymbolicParametersException {
+		/* Don't use caching, the polynomial can contain old values.
 		if (botanaPolynomials != null) {
 			return botanaPolynomials;
 		}
+		 */
+
 		if (inputLine1 != null && inputLine2 != null) {
 			PVariable[] v1 = ((SymbolicParametersBotanaAlgo) inputLine1)
 					.getBotanaVars(inputLine1); // (a1,a2,b1,b2)

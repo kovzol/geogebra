@@ -171,7 +171,9 @@ public class AlgoIncircle extends AlgoElement implements SymbolicParametersBotan
 
 	@Override
 	public void reset() {
-		botanaParams.reset();
+		if (botanaParams != null) {
+			botanaParams.reset();
+		}
 	}
 
 }

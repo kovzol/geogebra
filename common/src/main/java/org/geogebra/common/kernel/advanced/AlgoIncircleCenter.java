@@ -172,7 +172,9 @@ public class AlgoIncircleCenter extends AlgoElement implements SymbolicParameter
 
 	@Override
 	public void reset() {
-		botanaParams.reset();
+		if (botanaParams != null) {
+			botanaParams.reset();
+		}
 	}
 
 }

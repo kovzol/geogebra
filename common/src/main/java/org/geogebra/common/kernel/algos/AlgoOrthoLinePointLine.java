@@ -269,7 +269,9 @@ public class AlgoOrthoLinePointLine extends AlgoElement
 
 	@Override
 	public void reset() {
-		proverAdapter.reset();
+		if (proverAdapter != null) {
+			proverAdapter.reset();
+		}
 	}
 
 }

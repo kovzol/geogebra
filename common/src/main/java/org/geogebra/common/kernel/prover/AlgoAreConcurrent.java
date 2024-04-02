@@ -221,9 +221,11 @@ public class AlgoAreConcurrent extends AlgoElement
 	@Override
 	public PPolynomial[][] getBotanaPolynomials()
 			throws NoSymbolicParametersException {
+		/* Don't use caching, the polynomials can contain old values.
 		if (botanaPolynomials != null) {
 			return botanaPolynomials;
 		}
+		 */
 
 		if (inputLine1 != null && inputLine2 != null && inputLine3 != null) {
 

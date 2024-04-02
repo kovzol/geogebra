@@ -119,6 +119,8 @@ public class AlgoConicPartCircumcircle extends AlgoConicPartCircumcircleND
 
 	@Override
 	public void reset() {
-		botanaParams.reset();
+		if (botanaParams != null) {
+			botanaParams.reset();
+		}
 	}
 }
