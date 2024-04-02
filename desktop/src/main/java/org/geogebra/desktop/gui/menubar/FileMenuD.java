@@ -46,7 +46,7 @@ class FileMenuD extends BaseMenu implements EventRenderable {
 			exportGraphicAction, exportAnimationAction, exportPgfAction,
 			exportPSTricksAction, exportAsymptoteAction,
 			exportSTLaction, exportColladaAction, exportColladaHTMLAction,
-			exportCASHtmlAction, exportCASMapleAction;
+			exportCASHtmlAction, exportCASMapleAction, exportCASMathematicaAction, exportCASGiacAction;
 	/** load from MAT item */
 	JMenuItem loadURLMenuItem;
 	/** share item */
@@ -174,6 +174,8 @@ class FileMenuD extends BaseMenu implements EventRenderable {
 		submenu.addSeparator();
 		submenu.add(exportCASHtmlAction);
 		submenu.add(exportCASMapleAction);
+		submenu.add(exportCASMathematicaAction);
+		submenu.add(exportCASGiacAction);
 		addSeparator();
 
 		mi = add(printEuclidianViewAction);
@@ -590,6 +592,38 @@ class FileMenuD extends BaseMenu implements EventRenderable {
 				}
 			}
 		};
+
+		exportCASMathematicaAction = new AbstractAction(loc.getMenuDefault("ExportCASMathematica",
+				"Export CAS View to Mathematica") + Unicode.ELLIPSIS, app.getEmptyIcon()) {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					app.exportCASMathematica();
+				} catch (Exception ex) {
+					Log.debug("CAS Export to Mathematica not available");
+				}
+			}
+		};
+
+		exportCASGiacAction = new AbstractAction(loc.getMenuDefault("ExportCASGiac",
+				"Export CAS View to Giac") + Unicode.ELLIPSIS, app.getEmptyIcon()) {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					app.exportCASGiac();
+				} catch (Exception ex) {
+					Log.debug("CAS Export to Giac not available");
+				}
+			}
+		};
+
+
 	}
 
 	@Override

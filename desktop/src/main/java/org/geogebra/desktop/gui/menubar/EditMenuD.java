@@ -26,14 +26,16 @@ public class EditMenuD extends BaseMenu {
 	private AbstractAction deleteAction, invertAction, showhideAction,
 			showhideLabelsAction, propertiesAction, selectAllAction,
 			selectAllAncestorsAction, selectAllDescendantsAction,
-			selectCurrentLayerAction, copyToClipboardAction, copyCASMapleToClipboardAction, copyAction,
-			pasteAction, insertImageFromClipboardAction,
+			selectCurrentLayerAction, copyToClipboardAction, copyCASMapleToClipboardAction,
+			copyCASMathematicaToClipboardAction, copyCASGiacToClipboardAction,
+			copyAction,	pasteAction, insertImageFromClipboardAction,
 			insertImageFromFileAction;
 
 	private JMenuItem deleteItem, invertItem, showhideItem, showhideLabelsItem,
 			selectAllItem, selectAllAncestorsItem, selectAllDescendantsItem,
-			selectCurrentLayerItem, copyToClipboardItem, copyCASMapleToClipboardItem, copyItem, pasteItem,
-			clipboardMenu;
+			selectCurrentLayerItem, copyToClipboardItem, copyCASMapleToClipboardItem,
+			copyCASMathematicaToClipboardItem, copyCASGiacToClipboardItem,
+			copyItem, pasteItem, clipboardMenu;
 
 	private JSeparator selectionSeparator, deleteSeparator;
 
@@ -80,6 +82,8 @@ public class EditMenuD extends BaseMenu {
 		// ctrl-shift-c is also handled in MyKeyListener
 		setMenuShortCutShiftAccelerator(copyToClipboardItem, 'C');
 		copyCASMapleToClipboardItem = add(copyCASMapleToClipboardAction);
+		copyCASMathematicaToClipboardItem = add(copyCASMathematicaToClipboardAction);
+		copyCASGiacToClipboardItem = add(copyCASGiacToClipboardAction);
 
 		addSeparator();
 
@@ -280,6 +284,32 @@ public class EditMenuD extends BaseMenu {
 			public void actionPerformed(ActionEvent e) {
 				app.setWaitCursor();
 				app.copyCASMapleClipboard();
+				app.setDefaultCursor();
+			}
+		};
+
+		copyCASMathematicaToClipboardAction = new AbstractAction(
+				loc.getMenu(loc.getMenuDefault("CASMathematicaToClipboard", "CAS View as Mathematica to Clipboard")),
+				app.getMenuIcon(GuiResourcesD.MENU_EDIT_COPY)) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				app.setWaitCursor();
+				app.copyCASMathematicaClipboard();
+				app.setDefaultCursor();
+			}
+		};
+
+		copyCASGiacToClipboardAction = new AbstractAction(
+				loc.getMenu(loc.getMenuDefault("CASGiacToClipboard", "CAS View as Giac to Clipboard")),
+				app.getMenuIcon(GuiResourcesD.MENU_EDIT_COPY)) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				app.setWaitCursor();
+				app.copyCASGiacClipboard();
 				app.setDefaultCursor();
 			}
 		};

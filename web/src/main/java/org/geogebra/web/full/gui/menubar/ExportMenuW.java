@@ -237,6 +237,28 @@ public class ExportMenuW extends AriaMenuBar implements MenuBarI {
 						app.exportStringToFile("txt", txt);
 					}
 				});
+
+				menu.addItem(menuText(app.getLocalization()
+						.getMenuDefault("Download.CASViewMathematica", "CAS View to Mathematica (.txt)")), true, new MenuCommand(app) {
+					@Override
+					public void doExecute() {
+						menu.hide();
+						CASExport casExp = new CASExport(app);
+						String txt = casExp.createMathematicaTxt();
+						app.exportStringToFile("txt", txt);
+					}
+				});
+
+				menu.addItem(menuText(app.getLocalization()
+						.getMenuDefault("Download.CASViewGiac", "CAS View to Giac (.txt)")), true, new MenuCommand(app) {
+					@Override
+					public void doExecute() {
+						menu.hide();
+						CASExport casExp = new CASExport(app);
+						String txt = casExp.createGiacTxt();
+						app.exportStringToFile("txt", txt);
+					}
+				});
 			}
 		}
 	}

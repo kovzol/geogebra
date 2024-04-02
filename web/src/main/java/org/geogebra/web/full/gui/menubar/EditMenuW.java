@@ -178,6 +178,42 @@ public class EditMenuW extends Submenu {
 				});
 	}
 
+	private void addCASMathematicaToClipboard() {
+		addItem(MainMenu.getMenuBarHtml(
+						MaterialDesignResources.INSTANCE.copy_black(),
+						loc.getMenuDefault("CASMathematicaToClipboard", "CAS View as Mathematica to Clipboard")), true,
+				new MenuCommand(getApp()) {
+
+					@Override
+					public void doExecute() {
+						CASExport casExp = new CASExport(app);
+						String txt = casExp.createMathematicaTxt();
+						app.copyCASMathematicaToClipboard();
+						ToolTipManagerW.sharedInstance().showBottomMessage(
+								loc.getMenuDefault("CASMathematicaToClipboard", "CAS View as Mathematica to Clipboard"),
+								false, app);
+					}
+				});
+	}
+
+	private void addCASGiacToClipboard() {
+		addItem(MainMenu.getMenuBarHtml(
+						MaterialDesignResources.INSTANCE.copy_black(),
+						loc.getMenuDefault("CASGiacToClipboard", "CAS View as Giac to Clipboard")), true,
+				new MenuCommand(getApp()) {
+
+					@Override
+					public void doExecute() {
+						CASExport casExp = new CASExport(app);
+						String txt = casExp.createGiacTxt();
+						app.copyCASGiacToClipboard();
+						ToolTipManagerW.sharedInstance().showBottomMessage(
+								loc.getMenuDefault("CASGiacToClipboard", "CAS View as Giac to Clipboard"),
+								false, app);
+					}
+				});
+	}
+
 	private void addSelectAllItem() {
 		// select all menu
 		addItem(MainMenu.getMenuBarHtml(

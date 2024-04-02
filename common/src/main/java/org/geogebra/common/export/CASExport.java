@@ -17,6 +17,8 @@ import org.geogebra.common.main.App;
 import org.geogebra.common.main.Feature;
 import org.geogebra.common.main.Localization;
 
+import com.himamis.retex.editor.share.util.Unicode;
+
 public class CASExport {
 
 	/**
@@ -193,4 +195,73 @@ public class CASExport {
 
 		return txt;
 	}
+
+	public String createGiacTxt() {
+		// ";" are not compulsory in Giac code, so they could be omitted.
+
+		String txt = "caseval(\"init geogebra\");\n";
+
+		Construction cons = app.kernel.getConstruction();
+		CASView cv = (CASView) cons.getApplication().getView(VIEW_CAS);
+		int rows = cv.getRowCount();
+
+		// Iterate on all cells:
+		for (int i = 0; i < rows; i++) {
+
+			String input = cv.getCellInput(i);
+
+			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
+
+			if (cell.isUseAsText()) {
+				txt += "comment(\"" + input + "\");\n";
+			} else {
+				if (!cell.isEmpty()) {
+					String var = cell.getAssignmentVariable();
+					if (var != null) {
+						txt += var + ":=";
+					}
+					String def = cell.getDefinitionDescription(StringTemplate.casCopyTemplate);
+					txt += def + ";\n";
+				}
+			}
+		}
+
+		return txt;
+	}
+
+	public String createMathematicaTxt() {
+		String txt = "";
+
+		Construction cons = app.kernel.getConstruction();
+		CASView cv = (CASView) cons.getApplication().getView(VIEW_CAS);
+		int rows = cv.getRowCount();
+
+		// Iterate on all cells:
+		for (int i = 0; i < rows; i++) {
+
+			String input = cv.getCellInput(i);
+
+			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
+
+			if (cell.isUseAsText()) {
+				input = input.replace(Unicode.BULLET + "", "-");
+				txt += "(* " + input + " *)\n";
+			} else {
+				if (!cell.isEmpty()) {
+					String var = cell.getAssignmentVariable();
+					if (var != null) {
+						txt += var + ":=";
+					}
+					String def = cell.getDefinitionDescription(StringTemplate.casCopyTemplate);
+					// TODO: There should be a full StringTemplate written, instead of this:
+					def = def.replace("=", "==");
+					txt += def + ";\n";
+				}
+			}
+		}
+
+		return txt;
+	}
+
+
 }

@@ -4551,9 +4551,33 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		exportStringToFile("txt", txt);
 	}
 
+	public void exportCASMathematica() {
+		CASExport casExp = new CASExport(this);
+		String txt = casExp.createMathematicaTxt();
+		exportStringToFile("txt", txt);
+	}
+
+	public void exportCASGiac() {
+		CASExport casExp = new CASExport(this);
+		String txt = casExp.createGiacTxt();
+		exportStringToFile("txt", txt);
+	}
+
 	public void copyCASMapleClipboard() {
 		CASExport casExp = new CASExport(this);
 		String txt = casExp.createMapleTxt(false);
+		getCopyPaste().copyTextToSystemClipboard(txt);
+	}
+
+	public void copyCASMathematicaClipboard() {
+		CASExport casExp = new CASExport(this);
+		String txt = casExp.createMathematicaTxt();
+		getCopyPaste().copyTextToSystemClipboard(txt);
+	}
+
+	public void copyCASGiacClipboard() {
+		CASExport casExp = new CASExport(this);
+		String txt = casExp.createGiacTxt();
 		getCopyPaste().copyTextToSystemClipboard(txt);
 	}
 

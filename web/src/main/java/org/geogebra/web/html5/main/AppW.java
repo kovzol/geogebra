@@ -3378,6 +3378,19 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 		getCopyPaste().copyTextToSystemClipboard(txt);
 	}
 
+	public void copyCASMathematicaToClipboard() {
+		CASExport casExp = new CASExport(this);
+		String txt = casExp.createMathematicaTxt();
+		getCopyPaste().copyTextToSystemClipboard(txt);
+	}
+
+	public void copyCASGiacToClipboard() {
+		CASExport casExp = new CASExport(this);
+		String txt = casExp.createGiacTxt();
+		getCopyPaste().copyTextToSystemClipboard(txt);
+	}
+
+
 	@Override
 	public void copyImageToClipboard(String dataURI) {
 		if (!Clipboard.isCopyImageToClipboardAvailable()) {
