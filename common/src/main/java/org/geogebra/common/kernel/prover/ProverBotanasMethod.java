@@ -1732,6 +1732,9 @@ public class ProverBotanasMethod {
 				}
 				PPolynomial spoly = new PPolynomial(BigInteger.ONE);
 				PVariable z = new PVariable(geoStatement.getKernel());
+				if (geoProver.getShowproof()) {
+					geoProver.addProofLine(z.getName() + ": dummy variable to express negation");
+				}
 				/*
 				 * It is OK to use the same variable for each factor since it is
 				 * enough to find one counterexample only for one of the theses.
