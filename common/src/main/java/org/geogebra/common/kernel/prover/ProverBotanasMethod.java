@@ -88,31 +88,6 @@ import com.himamis.retex.editor.share.util.Unicode;
 
 public class ProverBotanasMethod {
 
-	private static Map<List<PVariable>, GeoElement> botanaVarsInv;
-
-	/**
-	 * Inverse mapping of botanaVars for a given statement.
-	 *
-	 * @param statement the input statement
-	 * @throws NoSymbolicParametersException if implementation is missing
-	 */
-	static void updateBotanaVarsInv(GeoElement statement)
-			throws NoSymbolicParametersException {
-		if (botanaVarsInv == null) {
-			botanaVarsInv = new HashMap<>();
-		}
-		for (GeoElement geo : statement.getAllPredecessors()) {
-			if (!(geo instanceof GeoNumeric)) {
-				PVariable[] vars = ((SymbolicParametersBotanaAlgo) geo)
-						.getBotanaVars(geo);
-				if (vars != null) {
-					List<PVariable> varsList = Arrays.asList(vars);
-					botanaVarsInv.put(varsList, geo);
-				}
-			}
-		}
-	}
-
 	/**
 	 * Compute free points in a statement.
 	 *
@@ -2513,13 +2488,6 @@ public class ProverBotanasMethod {
 			}
 			if (prover.getProverEngine() == ProverEngine.LOCUS_EXPLICIT ||
 					prover.getProverEngine() == ProverEngine.ENVELOPE) {
-				return;
-			}
-			try {
-				updateBotanaVarsInv(statement);
-			} catch (NoSymbolicParametersException e) {
-				Log.debug("Botana vars cannot be inverted");
-				result = ProofResult.UNKNOWN;
 				return;
 			}
 			setThesis();
