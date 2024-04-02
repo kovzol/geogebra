@@ -219,9 +219,12 @@ public class AlgoSemicircle extends AlgoElement
 			centerVars[1] = new PVariable(kernel);
 
 			botanaVars = new PVariable[4];
+			botanaVarsDescr = new String[4];
 			// Center:
 			botanaVars[0] = centerVars[0];
 			botanaVars[1] = centerVars[1];
+			botanaVarsDescr[0] = "x value of center of " + geo.getLabelSimple();
+			botanaVarsDescr[1] = "y value of center of " + geo.getLabelSimple();
 			// Point on the circle:
 			botanaVars[2] = circle1vars[0];
 			botanaVars[3] = circle1vars[1];
