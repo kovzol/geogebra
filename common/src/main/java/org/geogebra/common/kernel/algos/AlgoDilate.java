@@ -225,7 +225,7 @@ public class AlgoDilate extends AlgoTransformation
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 		GeoNumeric num = null;
-		boolean cachable = true;
+		boolean cachable = false; // Unfortunately, this must be disabled. :-(
 		if (this.r instanceof GeoNumeric) {
 			num = (GeoNumeric) this.getInput(1);
 			if (num != null && num.isNumberValue() && num.isDrawable()) {
