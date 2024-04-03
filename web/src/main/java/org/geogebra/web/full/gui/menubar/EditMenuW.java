@@ -58,6 +58,8 @@ public class EditMenuW extends Submenu {
 			addCopyToClipboard();
 		}
 		addCASMapleToClipboard();
+		addCASMathematicaToClipboard();
+		addCASGiacToClipboard();
 		addCopy();
 		addPasteItem();
 		addSeparator();
