@@ -86,25 +86,25 @@ public class CmdShowProof extends CmdScripting {
 						String hint = proof[proof.length - 1]; // use only the last piece of information
 						gcc2.setInput(hint); // show hint
 					} else {
-						gcc2.setInput("The statement could not be proven nor disproven.");
+						gcc2.setInput(loc.getMenuDefault("ProofUnknown", "The statement could not be proven nor disproven."));
 					}
 				} else {
 					boolean proofResult = ((GeoBoolean) output.get(0)).getBoolean();
 					if (proofResult) {
 						statementTrue = true;
 						if (output.size() == 2) {
-							gcc2.setInput("The statement is always true.");
+							gcc2.setInput(loc.getMenuDefault("AlwaysTrue", "The statement is always true."));
 						} else {
 							if (output.get(2).toString().equals("\"c\"")) {
-								gcc2.setInput("The statement is true on parts, false on parts.");
+								gcc2.setInput(loc.getMenuDefault("TrueOnParts", "The statement is true on parts, false on parts."));
 								statementTrue = false; // Unimplemented. TODO.
 							} else {
-								gcc2.setInput(
-										"The statement is true under some non-degeneracy conditions (see below).");
+								gcc2.setInput(loc.getMenuDefault("TrueUnderNondegeneracyConditions",
+										"The statement is true under some non-degeneracy conditions (see below)."));
 							}
 						}
 					} else {
-						gcc2.setInput("The statement is false.");
+						gcc2.setInput(loc.getMenuDefault("StatementFalse", "The statement is false."));
 					}
 				}
 				gcc2.setFontColor(GColor.RED);
@@ -116,14 +116,20 @@ public class CmdShowProof extends CmdScripting {
 					String proofs = ((GeoText) output.get(output.size() - 1)).toString();
 					proofs = proofs.substring(1, proofs.length() - 1);
 					if (proofs.length() == 0) {
-						proofs = "The statement is trivial.";
+						proofs = loc.getMenuDefault("StatementTrivial", "The statement is trivial.");
 					}
 					else if (proofs.contains("proves") && proofs.contains("Contradiction!")) {
-						proofs = "We prove this by contradiction.\n" + proofs;
+						proofs = loc.getMenuDefault("ProveByContradiction", "We prove this by contradiction.")
+								+ "\n" + proofs;
 					} else {
-						proofs = "(Currently no full proof can be provided, but just some steps.)\n" +
-								"(In the background, all steps are checked, but a full presentation is not yet implemented.)\n" +
-								"(Please try a newer version of GeoGebra Discovery if possible.)\n" + proofs;
+						proofs = "(" + loc.getMenuDefault("NoFullProof",
+								"Currently no full proof can be provided, but just some steps.")
+										+ ")\n" +
+								"(" + loc.getMenuDefault("NoFullPresentation",
+										"In the background, all steps are checked, but a full presentation is not yet implemented.")
+										+ ")\n" +
+								"(" + loc.getMenuDefault("TryNewerVersion", "Please try a newer version of GeoGebra Discovery if possible.")
+										+")\n" + proofs;
 					}
 					String[] proof = proofs.split("\n");
 					int steps = proof.length;

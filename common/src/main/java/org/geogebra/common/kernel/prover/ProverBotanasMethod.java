@@ -1040,10 +1040,11 @@ public class ProverBotanasMethod {
 									StringTemplate.noLocalDefault)
 									+ " */");
 							if (geoProver.getShowproof()) {
-								geoProver.addProofLine("Considering definition " +
+								Localization loc = geo.getKernel().getLocalization();
+								geoProver.addProofLine(loc.getPlain("ConsideringDefinitionA",
 										geo.getLabelSimple() + " = "
 										+ geo.getDefinition(
-										StringTemplate.noLocalDefault) + ":");
+										StringTemplate.noLocalDefault)));
 							}
 						} else {
 							String description = geo
@@ -1068,9 +1069,10 @@ public class ProverBotanasMethod {
 									Log.debug("// Free point "
 											+ geo.getLabelSimple() + "(" + v[0]
 											+ "," + v[1] + ")");
+									Localization loc = geo.getKernel().getLocalization();
 									if (geoProver.getShowproof()) {
-										geoProver.addProofLine("Let free point " + geo.getLabelSimple() +
-												" be denoted by (" + v[0] + "," + v[1] + ").");
+										geoProver.addProofLine(loc.getPlain("LetFreePointADenotedByB",
+												geo.getLabelSimple(), "(" + v[0] + "," + v[1] + ")"));
 									}
 								}
 							}
@@ -1137,7 +1139,7 @@ public class ProverBotanasMethod {
 									.getLocalization();
 							if (geoProver.getShowproof()) {
 								geoProver.addProofLine(loc.getPlain(
-										"Only the first free point can be fixed, because %0 is on linear path %1.",
+										"OnlyFirstFixedBecauseAOnB",
 										geo.getLabelSimple(), algo.input[0].getLabelSimple()));
 							}
 							maxFixcoords = 2;
@@ -1357,8 +1359,10 @@ public class ProverBotanasMethod {
 										+ geo.getLabelSimple() + "(" + v[0]
 										+ "," + v[1] + ")");
 								if (geoProver.getShowproof()) {
-									geoProver.addProofLine("Let dependent point " + geo.getLabelSimple() +
-											" be denoted by (" + v[0] + "," + v[1] + ").");
+									Localization loc = geo.getKernel().getLocalization();
+									geoProver.addProofLine(loc.getPlain("LetDependentPointADenotedByB",
+											geo.getLabelSimple(),
+											"(" + v[0] + "," + v[1] + ")"));
 								}
 								if (proverSettings.captionAlgebra) {
 									String color = "cyan";
@@ -1415,6 +1419,7 @@ public class ProverBotanasMethod {
 											.getBotanaVarsDescr(geo);
 									// Describe objects that have non-trivial descriptions:
 									if (geoProver.getShowproof()) {
+										Localization loc = geo.getKernel().getLocalization();
 										int descriptiveLines = 0;
 										for (int i = 0; i < descriptions.length; i++) {
 											if (descriptions[i] != null) {
@@ -1422,9 +1427,8 @@ public class ProverBotanasMethod {
 											}
 										}
 										if (descriptiveLines > 0 ) {
-											geoProver.addProofLine(
-													"Object " + geo.getLabelSimple()
-															+ " introduces the following extra variables:");
+											geoProver.addProofLine(loc.getPlain("ObjectAIntroduces",
+													geo.getLabelSimple()));
 											for (int i = 0; i < descriptions.length; i++) {
 												if (descriptions[i] != null) {
 													geoProver.addProofLine(
@@ -1458,7 +1462,7 @@ public class ProverBotanasMethod {
 								+ " is not fully implemented");
 						Localization loc = geoProver.getConstruction().getApplication()
 								.getLocalization();
-						reasonForUnknown = loc.getPlain("Command %0 is not fully implemented in the prover.", geo.getDefinitionForInputBar());
+						reasonForUnknown = loc.getPlain("CommandANotFullyImplemented", geo.getDefinitionForInputBar());
 						if (geoProver.getShowproof()) {
 							geoProver.addProofLine(reasonForUnknown);
 						}
@@ -1496,7 +1500,7 @@ public class ProverBotanasMethod {
 				} else {
 					Log.info(geo.getParentAlgorithm() + " unimplemented");
 					Localization loc = geo.getKernel().getLocalization();
-					String reasonForUnknown = loc.getPlain("Command %0 is not implemented in the prover.", geo.getDefinitionForInputBar());
+					String reasonForUnknown = loc.getPlain("CommandANotImplemented", geo.getDefinitionForInputBar());
 					if (geoProver.getShowproof()) {
 						geoProver.addProofLine(reasonForUnknown);
 					}
@@ -1578,10 +1582,6 @@ public class ProverBotanasMethod {
 					PPolynomial[] botanaPolynomials = new PPolynomial[1];
 					botanaPolynomials[0] = botanaPolynomial;
 					addGeoPolys(movingPoint, botanaPolynomials);
-					if (geoProver.getShowproof()) {
-						geoProver.addProofLine("Adding object numerically:");
-						geoProver.addProofLine(botanaPolynomial.toString() + "=0");
-					}
 					// Maybe to be removed:
 					if (proverSettings.captionAlgebra) {
 						numerical.addCaptionBotanaPolynomial(
@@ -1704,7 +1704,9 @@ public class ProverBotanasMethod {
 				ProverSettings proverSettings = ProverSettings.get();
 				Log.debug("Thesis equations (non-denied ones):");
 				if (geoProver.getShowproof()) {
-					geoProver.addProofLine("Thesis equations (non-denied ones):");
+					Localization loc = geoProver.getConstruction().getKernel().getLocalization();
+					geoProver.addProofLine(loc.getMenuDefault("ThesisEqsNonDenied",
+							"Thesis equations (non-denied ones):"));
 				}
 				for (PPolynomial[] statement : statements) {
 					for (int j = 0; j < statement.length - minus; ++j) {
@@ -1735,12 +1737,16 @@ public class ProverBotanasMethod {
 				Log.debug(
 						"Thesis reductio ad absurdum (denied statement), product of factors:");
 				if (geoProver.getShowproof()) {
-					geoProver.addProofLine("Thesis reductio ad absurdum (denied statement):");
+					Localization loc = geoProver.getConstruction().getKernel().getLocalization();
+					geoProver.addProofLine(loc.getMenuDefault("ThesisEqDenied",
+							"Thesis reductio ad absurdum (denied statement):"));
 				}
 				PPolynomial spoly = new PPolynomial(BigInteger.ONE);
 				PVariable z = new PVariable(geoStatement.getKernel());
 				if (geoProver.getShowproof()) {
-					geoProver.addProofLine(z.getName() + ": dummy variable to express negation");
+					Localization loc = geoProver.getConstruction().getKernel().getLocalization();
+					geoProver.addProofLine(z.getName() + ": "
+							+ loc.getMenuDefault("DummyVarNeg", "dummy variable to express negation"));
 				}
 				/*
 				 * It is OK to use the same variable for each factor since it is
@@ -1779,7 +1785,7 @@ public class ProverBotanasMethod {
 				Log.debug(
 						"Unsuccessful run, statement is UNKNOWN at the moment");
 				Localization loc = geoStatement.getKernel().getLocalization();
-				reasonForUnknown = loc.getPlain("Statement %0 is not fully implemented in the prover.",
+				reasonForUnknown = loc.getPlain("StatementANotFullyImplemented",
 						geoStatement.getDefinitionDescription(StringTemplate.defaultTemplate));
 				if (geoProver.getShowproof()) {
 					geoProver.addProofLine(reasonForUnknown);
@@ -2228,7 +2234,8 @@ public class ProverBotanasMethod {
 					Log.debug(
 							"Unsuccessful run on evaluating the expression, statement is UNKNOWN at the moment");
 					Localization loc = geoStatement.getKernel().getLocalization();
-					reasonForUnknown = loc.getPlain("Statement %0 is not fully implemented in the prover.", geoStatement.getDefinitionForInputBar());
+					reasonForUnknown = loc.getPlain("StatementANotFullyImplemented",
+							geoStatement.getDefinitionForInputBar());
 					if (geoProver.getShowproof()) {
 						geoProver.addProofLine(reasonForUnknown);
 					}
@@ -2410,7 +2417,8 @@ public class ProverBotanasMethod {
 			} catch (Throwable e) {
 				Log.debug(
 						"Unsuccessful run on evaluating the expression, statement is UNKNOWN at the moment");
-				reasonForUnknown = loc.getPlain("Statement %0 is not fully implemented in the prover.", geoStatement.getDefinitionForInputBar());
+				reasonForUnknown = loc.getPlain("StatementANotFullyImplemented",
+						geoStatement.getDefinitionForInputBar());
 				if (geoProver.getShowproof()) {
 					geoProver.addProofLine(reasonForUnknown);
 				}
@@ -2553,7 +2561,7 @@ public class ProverBotanasMethod {
 				.getParentAlgorithm() instanceof SymbolicParametersBotanaAlgoAre)) {
 			Log.info(statement.getParentAlgorithm() + " unimplemented");
 			Localization loc = statement.getKernel().getLocalization();
-			String reasonForUnknown = loc.getPlain("Statement %0 is not implemented in the prover.", statement.getDefinitionForInputBar());
+			String reasonForUnknown = loc.getPlain("StatementANotImplemented", statement.getDefinitionForInputBar());
 			if (prover.getShowproof()) {
 				prover.addProofLine(reasonForUnknown);
 			}
@@ -2607,7 +2615,9 @@ public class ProverBotanasMethod {
 			}
 			Log.debug("substitutions: " + substitutions);
 			if (prover.getShowproof()) {
-				prover.addProofLine("Without loss of generality, some coordinates can be fixed:");
+				Localization loc = prover.getConstruction().getKernel().getLocalization();
+				prover.addProofLine(loc.getMenuDefault("WlogCoordinates",
+						"Without loss of generality, some coordinates can be fixed:"));
 				// Do it in reversed order (which is the natural order here).
 				Iterator<PVariable> it = substitutions.keySet().iterator();
 				String substs = "}";
@@ -2906,7 +2916,8 @@ public class ProverBotanasMethod {
 				if (found && bestNdgSet.size() > 0) {
 					Localization loc = prover.getConstruction().getApplication().getLocalization();
 					if (prover.getShowproof()) {
-						prover.addProofLine("The statement can be suspected to be true under some non-degeneracy conditions:");
+						prover.addProofLine(loc.getMenuDefault("StatementTrueNdg",
+								"The statement can be suspected to be true under some non-degeneracy conditions:"));
 					}
 					ndgproduct = new PPolynomial(new PVariable(statement.getKernel()));
 					for (NDGCondition aBestNdgSet : bestNdgSet) {
@@ -2928,7 +2939,7 @@ public class ProverBotanasMethod {
 					if (prover.getShowproof()) {
 						prover.addProofLine("endg:" + ndgproduct + "=0");
 						ndgproduct = ndgproduct.substitute(substitutions);
-						prover.addProofLine("After substitutions:");
+						prover.addProofLine(loc.getMenuDefault("AfterSubs", "After substitutions:"));
 						prover.addProofLine("sndg:" + ndgproduct + "=0");
 					}
 				}
@@ -2940,7 +2951,9 @@ public class ProverBotanasMethod {
 			if (!found) {
 				Log.debug("Statement is TRUE but NDGs are UNREADABLE");
 				if (prover.getShowproof()) {
-					prover.addProofLine("The statement is true under some non-degeneracy conditions (they cannot be expressed in simple geometric terms):");
+					Localization loc = prover.getConstruction().getApplication().getLocalization();
+					prover.addProofLine(loc.getMenuDefault("StatementTrueNdgUnreadable",
+							"The statement is true under some non-degeneracy conditions (they cannot be expressed in simple geometric terms):"));
 					ndgproduct = ndgproduct.multiply(new PPolynomial(new PVariable(statement.getKernel())));
 					ndgproduct = ndgproduct.subtract(new PPolynomial(BigInteger.ONE));
 					prover.addProofLine("endg:" + ndgproduct + "=0");
@@ -3089,7 +3102,7 @@ public class ProverBotanasMethod {
 			polys[polys.length - 1] = ndgproduct;
 		}
 		int se = 1;
-		prover.addProofLine("All hypotheses and the negated thesis after substitutions:");
+		prover.addProofLine(loc.getMenuDefault("AllHyposNegThesis", "All hypotheses and the negated thesis after substitutions:"));
 		for (PPolynomial p : as.getPolynomials()) {
 			prover.addProofLine("s" + se + ":" + p.substitute(substitutions).toString() + "=0");
 			se += 1;
@@ -3154,11 +3167,12 @@ public class ProverBotanasMethod {
 					String c[] = coeffs[s].split("=");
 					sum += "+sndg*(" + c[1] + ")";
 				}
-				prover.addProofLine("Now we consider the following expression:");
+				prover.addProofLine(loc.getMenuDefault("NowConsider", "Now we consider the following expression:"));
 				prover.addProofLine(sum);
-				prover.addProofLine("Contradiction! This proves the original statement.");
+				prover.addProofLine(loc.getMenuDefault("ContradictionThisProves",
+						"Contradiction! This proves the original statement."));
 				String deg = coeffs[s+1];
-				prover.addProofLine("The statement has a difficulty of degree " + deg + ".");
+				prover.addProofLine(loc.getPlain("DifficultyA", deg));
 				return;
 			}
 			Log.debug("Could not compute syzygy with SingularWS");
@@ -3235,11 +3249,11 @@ public class ProverBotanasMethod {
 					s += 1;
 					sum += "+sndg*(" + coeffs[s-1] + ")";
 				}
-				prover.addProofLine("Now we consider the following expression:");
+				prover.addProofLine(loc.getMenuDefault("NowConsider", "Now we consider the following expression:"));
 				prover.addProofLine(sum);
-				prover.addProofLine("Contradiction! This proves the original statement.");
+				prover.addProofLine(loc.getMenuDefault("ContradictionThisProves", "Contradiction! This proves the original statement."));
 				String deg = syzygyResult.substring(endOfCoeffs+2,syzygyResult.length()-1);
-				prover.addProofLine("The statement has a difficulty of degree " + deg + ".");
+				prover.addProofLine(loc.getPlain("DifficultyA", deg));
 				return;
 			}
 			Log.debug("Could not compute syzygy with Giac");

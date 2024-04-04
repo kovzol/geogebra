@@ -858,12 +858,14 @@ public abstract class Prover {
 				if (!ael.contains(geo.getParentAlgorithm())) {
 					String definition =
 							geo.getDefinitionDescription(StringTemplate.defaultTemplate);
-					// Make the first letter lowercase. TODO: Check if this is OK for all locales.
 					if (definition == null || definition.equals("")) {
 						definition = geo.toString(); // handle e.g. xAxis: y = 0, TODO: improve this.
 					}
-					definition = (definition.substring(0, 1)).toLowerCase(Locale.ROOT)
-							+ definition.substring(1);
+					// Make the first letter lowercase. TODO: Check if this is OK for all locales.
+					if (!loc.isReverseNameDescriptionLanguage()) {
+						definition = (definition.substring(0, 1)).toLowerCase(Locale.ROOT)
+								+ definition.substring(1);
+					}
 					definition = definition.replace("Bisector", "bisector");
 					String textLocalized = null;
 					AlgoElement ae = geo.getParentAlgorithm();
