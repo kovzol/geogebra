@@ -1133,6 +1133,13 @@ public class ProverBotanasMethod {
 						 */
 						if (algo instanceof AlgoPointOnPath
 								&& algo.input[0] instanceof GeoLine) {
+							Localization loc = geoProver.getConstruction().getApplication()
+									.getLocalization();
+							if (geoProver.getShowproof()) {
+								geoProver.addProofLine(loc.getPlain(
+										"Only the first free point can be fixed, because %0 is on linear path %1.",
+										geo.getLabelSimple(), algo.input[0].getLabelSimple()));
+							}
 							maxFixcoords = 2;
 						}
 
@@ -2234,6 +2241,12 @@ public class ProverBotanasMethod {
 			 * Disallow fixing the second point. This is crucial, otherwise false theorems
 			 * like Segment[A,B]==1 will be proven.
 			 */
+			Localization loc = geoProver.getConstruction().getApplication()
+					.getLocalization();
+			if (geoProver.getShowproof()) {
+				geoProver.addProofLine(loc.getMenuDefault("OnlyFirstFreePointFixedExpression",
+						"Only the first free point can be fixed, because the thesis is an expression."));
+			}
 			maxFixcoords = 2;
 			// We set this here and not before.
 			// Otherwise the inequalities will be too difficult to solve.
@@ -2397,7 +2410,6 @@ public class ProverBotanasMethod {
 			} catch (Throwable e) {
 				Log.debug(
 						"Unsuccessful run on evaluating the expression, statement is UNKNOWN at the moment");
-				Localization loc = geoStatement.getKernel().getLocalization();
 				reasonForUnknown = loc.getPlain("Statement %0 is not fully implemented in the prover.", geoStatement.getDefinitionForInputBar());
 				if (geoProver.getShowproof()) {
 					geoProver.addProofLine(reasonForUnknown);
