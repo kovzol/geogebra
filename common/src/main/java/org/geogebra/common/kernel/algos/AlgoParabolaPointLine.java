@@ -107,7 +107,7 @@ public class AlgoParabolaPointLine extends AlgoParabolaPointLineND
 				botanaVars[9] = vF[1];
 				Log.trace("Parabola " + geo.getLabelSimple() + "("
 						+ botanaVars[0] + "," + botanaVars[1]
-						+ ") implicitly introduces feet point (" + botanaVars[2]
+						+ ") implicitly introduces foot point (" + botanaVars[2]
 						+ "," + botanaVars[3] + ") on directrix "
 						+ l1.getLabelSimple());
 			}

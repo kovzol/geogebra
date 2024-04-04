@@ -28,12 +28,12 @@ public class OrthoLinePointLineAdapter extends ProverAdapter {
 				botanaVars[3] = vP[1];
 				Log.trace("Orthogonal line at " + P.getLabelSimple() + " to "
 						+ l.getLabelSimple()
-						+ " implicitly introduces feet point (" + botanaVars[0]
+						+ " implicitly introduces foot point (" + botanaVars[0]
 						+ "," + botanaVars[1] + ")");
 				botanaVarsDescr = new String[4];
-				botanaVarsDescr[0] = "The x value of an implicitly introduced feet point for orthogonal line at "
+				botanaVarsDescr[0] = "The x value of an implicitly introduced foot point for orthogonal line at "
 				+ P.getLabelSimple() + " to " + l.getLabelSimple();
-				botanaVarsDescr[1] = "The y value of an implicitly introduced feet point for orthogonal line at "
+				botanaVarsDescr[1] = "The y value of an implicitly introduced foot point for orthogonal line at "
 						+ P.getLabelSimple() + " to " + l.getLabelSimple();
 			}
 
