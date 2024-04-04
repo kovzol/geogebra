@@ -3184,9 +3184,9 @@ public class ProverBotanasMethod {
 			syzygyProgram += "[v:=[" + vars + "]],";
 			syzygyProgram += "[G,M:=gbasis(I1,v,coeffs)],";
 			syzygyProgram += "[Q:=greduce(1,G,v,quo)],";
-			syzygyProgram += "[A:=Q[1]*M],";
+			syzygyProgram += "[A:=Q[1]*eval(M,1)],";
 			syzygyProgram += "[d:=-1],";
-			syzygyProgram += "[for ii from 0 to size(A)-1 do D:=total_degree(A[ii],lname(A[ii])); if(D>d) begin d:=D; end; od],[A,d]][8]";
+			syzygyProgram += "[for ii from 0 to size(eval(A,1))-1 do D:=total_degree(eval(A,1)[ii],lname(eval(A,1)[ii])); if(D>d) begin d:=D; end; od],[eval(A,1),d]][8]";
 
 			GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
 			CASGenericInterface c = cas.getCurrentCAS();
