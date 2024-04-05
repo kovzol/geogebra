@@ -2254,7 +2254,7 @@ public class ProverBotanasMethod {
 			Localization loc = geoProver.getConstruction().getApplication()
 					.getLocalization();
 			if (geoProver.getShowproof()) {
-				geoProver.addProofLine(loc.getMenuDefault("OnlyFirstFreePointFixedExpression",
+				geoProver.addProofLine(loc.getMenuDefault("OnlyFirstFixedExpression",
 						"Only the first free point can be fixed, because the thesis is an expression."));
 			}
 			maxFixcoords = 2;

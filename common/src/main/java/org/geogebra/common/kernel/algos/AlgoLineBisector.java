@@ -254,7 +254,7 @@ public class AlgoLineBisector extends AlgoElement
 				botanaVarsDescr[2] = "The x value of rotation of point " + A.getLabelSimple()
 						+ " around the midpoint of " + A.getLabelSimple() + B.getLabelSimple()
 						+ " by 90 degrees";
-				botanaVarsDescr[3] = "The x value of rotation of point " + A.getLabelSimple()
+				botanaVarsDescr[3] = "The y value of rotation of point " + A.getLabelSimple()
 						+ " around the midpoint of " + A.getLabelSimple() + B.getLabelSimple()
 						+ " by 90 degrees";
 			}
