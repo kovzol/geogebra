@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
+import org.geogebra.common.kernel.scripting.CmdShowProof;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.ProverSettings;
 import org.geogebra.common.util.Prover;
@@ -71,7 +72,7 @@ public class ProverD extends Prover {
 				String reasonForUnknown = loc.getMenuDefault("ProverTimeout",
 						"The prover subsystem has timed out, sorry.");
 				if (getShowproof()) {
-					addProofLine(reasonForUnknown);
+					addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 				}
 				t.interrupt();
 				// t.join(); //

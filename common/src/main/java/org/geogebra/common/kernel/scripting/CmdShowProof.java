@@ -24,11 +24,17 @@ import org.geogebra.common.util.debug.Log;
 
 import com.himamis.retex.editor.share.util.Unicode;
 
-
-/**
- * ToolImage
- */
 public class CmdShowProof extends CmdScripting {
+
+	public static char FREE_VARIABLES = 'f';
+	public static char DEPENDENT_VARIABLES = 'd';
+	public static char TEXT = 't';
+	public static char EQUATION = 'e';
+	public static char PROBLEM = 'p';
+	public static char NDG = 'n';
+	public static char CONTRADICTION = 'c';
+	public static char OTHER = ' ';
+
 	/**
 	 * Create new command processor
 	 *
@@ -115,10 +121,11 @@ public class CmdShowProof extends CmdScripting {
 				if (statementTrue) {
 					String proofs = ((GeoText) output.get(output.size() - 1)).toString();
 					proofs = proofs.substring(1, proofs.length() - 1);
+					String[] proof = proofs.split("\n");
 					if (proofs.length() == 0) {
 						proofs = loc.getMenuDefault("StatementTrivial", "The statement is trivial.");
 					}
-					else if (proofs.contains("proves") && proofs.contains("Contradiction!")) {
+					else if (contradictionFound(proof)) {
 						proofs = loc.getMenuDefault("ProveByContradiction", "We prove this by contradiction.")
 								+ "\n" + proofs;
 					} else {
@@ -131,10 +138,12 @@ public class CmdShowProof extends CmdScripting {
 								"(" + loc.getMenuDefault("TryNewerVersion", "Please try a newer version of GeoGebra Discovery if possible.")
 										+")\n" + proofs;
 					}
-					String[] proof = proofs.split("\n");
+
 					int steps = proof.length;
 					for (int s = 0; s < steps; s++) {
 						String step = proof[s];
+						char type = proof[s].charAt(0);
+						step = step.substring(1); // remove the type (1st character)
 						boolean showstep = true;
 						if (s < steps - 1) {
 							String nextstep = proof[s + 1];
@@ -159,16 +168,16 @@ public class CmdShowProof extends CmdScripting {
 								gcc3.setUseAsText(true);
 							}
 							gcc3.setInput(step);
-							if (step.contains("Let free point")) {
+							if (type == FREE_VARIABLES) {
 								gcc3.setFontColor(GColor.ORANGE);
 							}
-							if (step.contains("dependent point") || step.startsWith("v")) {
+							if (type == DEPENDENT_VARIABLES || step.startsWith("v")) {
 								gcc3.setFontColor(GColor.DARK_CYAN);
 							}
-							if (step.contains("degener") || step.startsWith(Unicode.BULLET + "")) {
+							if (type == NDG) {
 								gcc3.setFontColor(GColor.MAGENTA);
 							}
-							if (step.contains("proves")) {
+							if (type == CONTRADICTION) {
 								gcc3.setFontColor(GColor.RED);
 								gcc3.setFontStyle(GFont.BOLD);
 							}
@@ -195,4 +204,14 @@ public class CmdShowProof extends CmdScripting {
 
 		}
 	}
+
+	boolean contradictionFound(String[] proof) {
+		for (String p : proof) {
+			if (p.startsWith(CONTRADICTION + "")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

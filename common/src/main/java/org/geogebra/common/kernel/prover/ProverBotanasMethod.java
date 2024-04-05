@@ -62,6 +62,7 @@ import org.geogebra.common.kernel.matrix.Coords;
 import org.geogebra.common.kernel.prover.adapters.DependentNumberAdapter;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.kernel.scripting.CmdShowProof;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.ProverSettings;
 import org.geogebra.common.main.SingularWSSettings;
@@ -564,7 +565,7 @@ public class ProverBotanasMethod {
 			Log.debug("Adding poly #" + (size) + ": " + p.toTeX());
 			if (geoProver.getShowproof()) {
 				// geoProver.addProofLine("e" + size + ":=" + p.toTeX());
-				geoProver.addProofLine("e" + size + ":=" + p + "=0");
+				geoProver.addProofLine(CmdShowProof.EQUATION, "e" + size + ":=" + p + "=0");
 			}
 			return true;
 		}
@@ -578,7 +579,7 @@ public class ProverBotanasMethod {
 			int size = ineqs.size();
 			Log.debug("Adding ineq #" + (size) + ": " + ie);
 			if (geoProver.getShowproof()) {
-				geoProver.addProofLine("i" + size + ":=" + ie);
+				geoProver.addProofLine(CmdShowProof.EQUATION, "i" + size + ":=" + ie);
 			}
 			return true;
 		}
@@ -592,7 +593,7 @@ public class ProverBotanasMethod {
 			int size = posVars.size();
 			Log.debug("Adding posVar #" + (size) + ": " + v);
 			if (geoProver.getShowproof()) {
-				geoProver.addProofLine("p" + size + ":=" + v + ">=0");
+				geoProver.addProofLine(CmdShowProof.EQUATION, "p" + size + ":=" + v + ">=0");
 			}
 			return true;
 		}
@@ -618,7 +619,7 @@ public class ProverBotanasMethod {
 			int size = extPolys.size();
 			Log.debug("Adding external poly #" + (size) + ": " + p);
 			if (geoProver.getShowproof()) {
-				geoProver.addProofLine("q" + size + ":=" + p + "=0");
+				geoProver.addProofLine(CmdShowProof.EQUATION, "q" + size + ":=" + p + "=0");
 			}
 			return true;
 		}
@@ -1021,7 +1022,7 @@ public class ProverBotanasMethod {
 							reasonForUnknown = loc.getMenuDefault("AxesFixedSlopeLinesUnsupportedSteps",
 									"Statements containing axes or fixed slope lines are unsupported.");
 							if (geoProver.getShowproof()) {
-								geoProver.addProofLine(reasonForUnknown);
+								geoProver.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 							}
 							result = ProofResult.UNKNOWN;
 							return;
@@ -1071,7 +1072,7 @@ public class ProverBotanasMethod {
 											+ "," + v[1] + ")");
 									Localization loc = geo.getKernel().getLocalization();
 									if (geoProver.getShowproof()) {
-										geoProver.addProofLine(loc.getPlain("LetFreePointADenotedByB",
+										geoProver.addProofLine(CmdShowProof.FREE_VARIABLES, loc.getPlain("LetFreePointADenotedByB",
 												geo.getLabelSimple(), "(" + v[0] + "," + v[1] + ")"));
 									}
 								}
@@ -1360,7 +1361,7 @@ public class ProverBotanasMethod {
 										+ "," + v[1] + ")");
 								if (geoProver.getShowproof()) {
 									Localization loc = geo.getKernel().getLocalization();
-									geoProver.addProofLine(loc.getPlain("LetDependentPointADenotedByB",
+									geoProver.addProofLine(CmdShowProof.DEPENDENT_VARIABLES, loc.getPlain("LetDependentPointADenotedByB",
 											geo.getLabelSimple(),
 											"(" + v[0] + "," + v[1] + ")"));
 								}
@@ -1431,7 +1432,7 @@ public class ProverBotanasMethod {
 													geo.getLabelSimple()));
 											for (int i = 0; i < descriptions.length; i++) {
 												if (descriptions[i] != null) {
-													geoProver.addProofLine(
+													geoProver.addProofLine(CmdShowProof.EQUATION,
 															geoVariables[i].getName() + ": "
 																	+ descriptions[i]);
 												}
@@ -1464,7 +1465,7 @@ public class ProverBotanasMethod {
 								.getLocalization();
 						reasonForUnknown = loc.getPlain("CommandANotFullyImplemented", geo.getDefinitionForInputBar());
 						if (geoProver.getShowproof()) {
-							geoProver.addProofLine(reasonForUnknown);
+							geoProver.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 						}
 						result = ProofResult.UNKNOWN;
 						if (!(geo.getKernel().isSilentMode()) &&
@@ -1502,7 +1503,7 @@ public class ProverBotanasMethod {
 					Localization loc = geo.getKernel().getLocalization();
 					String reasonForUnknown = loc.getPlain("CommandANotImplemented", geo.getDefinitionForInputBar());
 					if (geoProver.getShowproof()) {
-						geoProver.addProofLine(reasonForUnknown);
+						geoProver.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 					}
 					result = ProofResult.UNKNOWN;
 					return;
@@ -1745,7 +1746,7 @@ public class ProverBotanasMethod {
 				PVariable z = new PVariable(geoStatement.getKernel());
 				if (geoProver.getShowproof()) {
 					Localization loc = geoProver.getConstruction().getKernel().getLocalization();
-					geoProver.addProofLine(z.getName() + ": "
+					geoProver.addProofLine(CmdShowProof.EQUATION, z.getName() + ": "
 							+ loc.getMenuDefault("DummyVarNeg", "dummy variable to express negation"));
 				}
 				/*
@@ -1788,7 +1789,7 @@ public class ProverBotanasMethod {
 				reasonForUnknown = loc.getPlain("StatementANotFullyImplemented",
 						geoStatement.getDefinitionDescription(StringTemplate.defaultTemplate));
 				if (geoProver.getShowproof()) {
-					geoProver.addProofLine(reasonForUnknown);
+					geoProver.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 				}
 				result = ProofResult.UNKNOWN;
 			}
@@ -1818,7 +1819,9 @@ public class ProverBotanasMethod {
 				return null;
 			}
 			if (geoProver.getShowproof()) {
-				geoProver.addProofLine("Forcing non-collinearity for certain point triplets:");
+				Localization loc = geoProver.getConstruction().getKernel().getLocalization();
+				geoProver.addProofLine(loc.getMenuDefault("ForcingNonCollinearity",
+						"Forcing non-collinearity for certain point triplets:"));
 			}
 			for (PPolynomial ndp : nonDegPolys) {
 				addPolynomial(ndp);
@@ -1948,7 +1951,7 @@ public class ProverBotanasMethod {
 
 			if (geoProver.getShowproof()) {
 				geoProver.addProofLine("Thesis inequality:");
-				geoProver.addProofLine("ti:=" + thesisIneq);
+				geoProver.addProofLine(CmdShowProof.EQUATION, "ti:=" + thesisIneq);
 			}
 
 			String rgCommand = "euclideansolver";
@@ -2237,7 +2240,7 @@ public class ProverBotanasMethod {
 					reasonForUnknown = loc.getPlain("StatementANotFullyImplemented",
 							geoStatement.getDefinitionForInputBar());
 					if (geoProver.getShowproof()) {
-						geoProver.addProofLine(reasonForUnknown);
+						geoProver.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 					}
 					result = ProofResult.UNKNOWN;
 					return null;
@@ -2420,7 +2423,7 @@ public class ProverBotanasMethod {
 				reasonForUnknown = loc.getPlain("StatementANotFullyImplemented",
 						geoStatement.getDefinitionForInputBar());
 				if (geoProver.getShowproof()) {
-					geoProver.addProofLine(reasonForUnknown);
+					geoProver.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 				}
 				result = ProofResult.UNKNOWN;
 				return null;
@@ -2563,7 +2566,7 @@ public class ProverBotanasMethod {
 			Localization loc = statement.getKernel().getLocalization();
 			String reasonForUnknown = loc.getPlain("StatementANotImplemented", statement.getDefinitionForInputBar());
 			if (prover.getShowproof()) {
-				prover.addProofLine(reasonForUnknown);
+				prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 			}
 			return ProofResult.UNKNOWN;
 			/*
@@ -2630,7 +2633,7 @@ public class ProverBotanasMethod {
 					substs =  entry + "=" + val + substs;
 				}
 				substs = "{" + substs;
-				prover.addProofLine(substs);
+				prover.addProofLine(CmdShowProof.EQUATION, substs);
 			}
 		}
 
@@ -2757,7 +2760,7 @@ public class ProverBotanasMethod {
 											String reasonForUnknown = loc.getMenuDefault("CannotDecideAlgebraicDifficulties",
 													"Sorry, the program cannot decide due to algebraic difficulties.");
 											if (prover.getShowproof()) {
-												prover.addProofLine(reasonForUnknown);
+												prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 											}
 											return ProofResult.UNKNOWN;
 										}
@@ -2813,7 +2816,7 @@ public class ProverBotanasMethod {
 								String reasonForUnknown = loc.getMenuDefault("StatementAlgebraicallyTrueGeometricallyAmbiguous",
 										"The statement is algebraically true, but geometrically ambiguous.");
 								if (prover.getShowproof()) {
-									prover.addProofLine(reasonForUnknown);
+									prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 								}
 								return ProofResult.UNKNOWN;
 							}
@@ -2916,7 +2919,7 @@ public class ProverBotanasMethod {
 				if (found && bestNdgSet.size() > 0) {
 					Localization loc = prover.getConstruction().getApplication().getLocalization();
 					if (prover.getShowproof()) {
-						prover.addProofLine(loc.getMenuDefault("StatementTrueNdg",
+						prover.addProofLine(CmdShowProof.NDG, loc.getMenuDefault("StatementTrueNdg",
 								"The statement can be suspected to be true under some non-degeneracy conditions:"));
 					}
 					ndgproduct = new PPolynomial(new PVariable(statement.getKernel()));
@@ -2931,16 +2934,16 @@ public class ProverBotanasMethod {
 								aBestNdgSet.rewrite(prover.getConstruction(), false);
 								String explanation = aBestNdgSet.explain(loc).toString();
 								explanation = explanation.replaceAll("<[^>]*>", "");
-								prover.addProofLine(Unicode.BULLET + " " + explanation);
+								prover.addProofLine(CmdShowProof.NDG, Unicode.BULLET + " " + explanation);
 							}
 						}
 					}
 					ndgproduct = ndgproduct.subtract(new PPolynomial(BigInteger.ONE));
 					if (prover.getShowproof()) {
-						prover.addProofLine("endg:" + ndgproduct + "=0");
+						prover.addProofLine(CmdShowProof.EQUATION, "endg:" + ndgproduct + "=0");
 						ndgproduct = ndgproduct.substitute(substitutions);
 						prover.addProofLine(loc.getMenuDefault("AfterSubs", "After substitutions:"));
-						prover.addProofLine("sndg:" + ndgproduct + "=0");
+						prover.addProofLine(CmdShowProof.EQUATION, "sndg:" + ndgproduct + "=0");
 					}
 				}
 			}
@@ -2952,14 +2955,14 @@ public class ProverBotanasMethod {
 				Log.debug("Statement is TRUE but NDGs are UNREADABLE");
 				if (prover.getShowproof()) {
 					Localization loc = prover.getConstruction().getApplication().getLocalization();
-					prover.addProofLine(loc.getMenuDefault("StatementTrueNdgUnreadable",
+					prover.addProofLine(CmdShowProof.NDG, loc.getMenuDefault("StatementTrueNdgUnreadable",
 							"The statement is true under some non-degeneracy conditions (they cannot be expressed in simple geometric terms):"));
 					ndgproduct = ndgproduct.multiply(new PPolynomial(new PVariable(statement.getKernel())));
 					ndgproduct = ndgproduct.subtract(new PPolynomial(BigInteger.ONE));
-					prover.addProofLine("endg:" + ndgproduct + "=0");
+					prover.addProofLine(CmdShowProof.EQUATION, "endg:" + ndgproduct + "=0");
 					ndgproduct = ndgproduct.substitute(substitutions);
 					prover.addProofLine("After substitutions:");
-					prover.addProofLine("sndg:" + ndgproduct + "=0");
+					prover.addProofLine(CmdShowProof.EQUATION, "sndg:" + ndgproduct + "=0");
 					syzygy(as, ndgproduct, substitutions, statement.getKernel(), proverSettings.transcext, prover);
 				}
 				return ProofResult.TRUE_NDG_UNREADABLE;
@@ -3035,7 +3038,7 @@ public class ProverBotanasMethod {
 						String reasonForUnknown = loc.getMenuDefault("CannotDecideAlgebraicDifficulties",
 								"Sorry, the program cannot decide due to algebraic difficulties.");
 						if (prover.getShowproof()) {
-							prover.addProofLine(reasonForUnknown);
+							prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 						}
 						return ProofResult.UNKNOWN;
 					}
@@ -3074,7 +3077,7 @@ public class ProverBotanasMethod {
 			String reasonForUnknown = loc.getMenuDefault("StatementAlgebraicallyTrueGeometricallyAmbiguous",
 					"The statement is algebraically true, but geometrically ambiguous.");
 			if (prover.getShowproof()) {
-				prover.addProofLine(reasonForUnknown);
+				prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
 			}
 			return ProofResult.UNKNOWN;
 		}
@@ -3104,7 +3107,7 @@ public class ProverBotanasMethod {
 		int se = 1;
 		prover.addProofLine(loc.getMenuDefault("AllHyposNegThesis", "All hypotheses and the negated thesis after substitutions:"));
 		for (PPolynomial p : as.getPolynomials()) {
-			prover.addProofLine("s" + se + ":" + p.substitute(substitutions).toString() + "=0");
+			prover.addProofLine(CmdShowProof.EQUATION, "s" + se + ":" + p.substitute(substitutions).toString() + "=0");
 			se += 1;
 		}
 		se--;
@@ -3140,7 +3143,7 @@ public class ProverBotanasMethod {
 					Log.trace("singular -> " + syzygyResult);
 			} catch (Throwable e) {
 				Log.debug("Could not compute syzygy with SingularWS");
-				prover.addProofLine(computationallyDifficult);
+				prover.addProofLine(CmdShowProof.PROBLEM, computationallyDifficult);
 				return;
 			}
 
@@ -3152,7 +3155,7 @@ public class ProverBotanasMethod {
 				s-=ndgs;
 				if (s != se) {
 					Log.debug("Unexpected number of coeffs");
-					prover.addProofLine(computationallyDifficult);
+					prover.addProofLine(CmdShowProof.PROBLEM, computationallyDifficult);
 					return;
 				}
 				for (int i=0; i < s; i++) {
@@ -3168,15 +3171,15 @@ public class ProverBotanasMethod {
 					sum += "+sndg*(" + c[1] + ")";
 				}
 				prover.addProofLine(loc.getMenuDefault("NowConsider", "Now we consider the following expression:"));
-				prover.addProofLine(sum);
-				prover.addProofLine(loc.getMenuDefault("ContradictionThisProves",
+				prover.addProofLine(CmdShowProof.EQUATION, sum);
+				prover.addProofLine(CmdShowProof.CONTRADICTION, loc.getMenuDefault("ContradictionThisProves",
 						"Contradiction! This proves the original statement."));
 				String deg = coeffs[s+1];
 				prover.addProofLine(loc.getPlain("DifficultyA", deg));
 				return;
 			}
 			Log.debug("Could not compute syzygy with SingularWS");
-			prover.addProofLine(computationallyDifficult);
+			prover.addProofLine(CmdShowProof.PROBLEM, computationallyDifficult);
 			return;
 		} else {
 			/*
@@ -3220,7 +3223,7 @@ public class ProverBotanasMethod {
 				syzygyResult = c.evaluateRaw(syzygyProgram);
 			} catch (Throwable e) {
 				Log.error("Problem when computing syzygy");
-				prover.addProofLine(computationallyDifficult);
+				prover.addProofLine(CmdShowProof.PROBLEM, computationallyDifficult);
 			}
 
 			if (syzygyResult != null && !syzygyResult.equals("")) {
@@ -3250,14 +3253,14 @@ public class ProverBotanasMethod {
 					sum += "+sndg*(" + coeffs[s-1] + ")";
 				}
 				prover.addProofLine(loc.getMenuDefault("NowConsider", "Now we consider the following expression:"));
-				prover.addProofLine(sum);
-				prover.addProofLine(loc.getMenuDefault("ContradictionThisProves", "Contradiction! This proves the original statement."));
+				prover.addProofLine(CmdShowProof.EQUATION, sum);
+				prover.addProofLine(CmdShowProof.CONTRADICTION, loc.getMenuDefault("ContradictionThisProves", "Contradiction! This proves the original statement."));
 				String deg = syzygyResult.substring(endOfCoeffs+2,syzygyResult.length()-1);
 				prover.addProofLine(loc.getPlain("DifficultyA", deg));
 				return;
 			}
 			Log.debug("Could not compute syzygy with Giac");
-			prover.addProofLine(computationallyDifficult);
+			prover.addProofLine(CmdShowProof.PROBLEM, computationallyDifficult);
 			return;
 		}
 	}

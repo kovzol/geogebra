@@ -28,6 +28,7 @@ import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
 import org.geogebra.common.kernel.prover.ProverBotanasMethod;
 import org.geogebra.common.kernel.prover.ProverPureSymbolicMethod;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
+import org.geogebra.common.kernel.scripting.CmdShowProof;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.util.debug.Log;
@@ -169,8 +170,12 @@ public abstract class Prover {
 		return proof;
 	}
 
+	public void addProofLine(char type, String line) {
+		proof += type + line + "\n";
+	}
+
 	public void addProofLine(String line) {
-		proof += line + "\n";
+		proof += CmdShowProof.TEXT + line + "\n";
 	}
 
 	/**
