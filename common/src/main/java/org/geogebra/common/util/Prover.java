@@ -867,7 +867,7 @@ public abstract class Prover {
 						definition = geo.toString(); // handle e.g. xAxis: y = 0, TODO: improve this.
 					}
 					// Make the first letter lowercase. TODO: Check if this is OK for all locales.
-					if (!loc.isReverseNameDescriptionLanguage()) {
+					if (!loc.isReverseNameDescriptionLanguage() && !loc.getLocaleStr().startsWith("de")) {
 						definition = (definition.substring(0, 1)).toLowerCase(Locale.ROOT)
 								+ definition.substring(1);
 					}
