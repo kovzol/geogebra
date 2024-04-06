@@ -1045,7 +1045,7 @@ public class ProverBotanasMethod {
 								geoProver.addProofLine(loc.getPlain("ConsideringDefinitionA",
 										geo.getLabelSimple() + " = "
 										+ geo.getDefinition(
-										StringTemplate.noLocalDefault)));
+										StringTemplate.defaultTemplate)));
 							}
 						} else {
 							String description = geo

@@ -101,9 +101,8 @@ public class CASExport {
 				html += "<li>";
 			}
 
-			String input = cv.getCellInput(i);
-
 			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
+			String input = cell.getInput(StringTemplate.defaultTemplate);
 			GColor color = cell.getFontColor();
 			String colorString = color.toString();
 
@@ -172,9 +171,8 @@ public class CASExport {
 		// Iterate on all cells:
 		for (int i = 0; i < rows; i++) {
 
-			String input = cv.getCellInput(i);
-
 			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
+			String input = cell.getInput(StringTemplate.defaultTemplate);
 
 			if (cell.isUseAsText()) {
 				txt += "# " + input + "\n";
@@ -208,9 +206,8 @@ public class CASExport {
 		// Iterate on all cells:
 		for (int i = 0; i < rows; i++) {
 
-			String input = cv.getCellInput(i);
-
 			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
+			String input = cell.getInput(StringTemplate.defaultTemplate);
 
 			if (cell.isUseAsText()) {
 				txt += "comment(\"" + input + "\");\n";
@@ -239,9 +236,8 @@ public class CASExport {
 		// Iterate on all cells:
 		for (int i = 0; i < rows; i++) {
 
-			String input = cv.getCellInput(i);
-
 			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
+			String input = cell.getInput(StringTemplate.defaultTemplate);
 
 			if (cell.isUseAsText()) {
 				input = input.replace(Unicode.BULLET + "", "-");
@@ -262,6 +258,5 @@ public class CASExport {
 
 		return txt;
 	}
-
 
 }
