@@ -123,22 +123,23 @@ public class CmdShowProof extends CmdScripting {
 					proofs = proofs.substring(1, proofs.length() - 1);
 					String[] proof = proofs.split("\n");
 					if (proofs.length() == 0) {
-						proofs = loc.getMenuDefault("StatementTrivial", "The statement is trivial.");
+						proofs = TEXT + loc.getMenuDefault("StatementTrivial", "The statement is trivial.");
 					}
 					else if (contradictionFound(proof)) {
-						proofs = loc.getMenuDefault("ProveByContradiction", "We prove this by contradiction.")
+						proofs = TEXT + loc.getMenuDefault("ProveByContradiction", "We prove this by contradiction.")
 								+ "\n" + proofs;
 					} else {
-						proofs = "(" + loc.getMenuDefault("NoFullProof",
+						proofs = PROBLEM + loc.getMenuDefault("NoFullProof",
 								"Currently no full proof can be provided, but just some steps.")
-										+ ")\n" +
-								"(" + loc.getMenuDefault("NoFullPresentation",
+										+ "\n" +
+								PROBLEM + loc.getMenuDefault("NoFullPresentation",
 										"In the background, all steps are checked, but a full presentation is not yet implemented.")
-										+ ")\n" +
-								"(" + loc.getMenuDefault("TryNewerVersion", "Please try a newer version of GeoGebra Discovery if possible.")
-										+")\n" + proofs;
+										+ "\n" +
+								PROBLEM + loc.getMenuDefault("TryNewerVersion", "Please try a newer version of GeoGebra Discovery if possible.")
+										+"\n" + proofs;
 					}
 
+					proof = proofs.split("\n"); // recompute, maybe there are some infos added
 					int steps = proof.length;
 					for (int s = 0; s < steps; s++) {
 						String step = proof[s];
@@ -181,9 +182,8 @@ public class CmdShowProof extends CmdScripting {
 								gcc3.setFontColor(GColor.RED);
 								gcc3.setFontStyle(GFont.BOLD);
 							}
-							if (step.startsWith("(") && step.endsWith(")")) {
+							if (type == PROBLEM) {
 								gcc3.setFontStyle(GFont.ITALIC);
-								gcc3.setInput(step.substring(1, step.length()-1));
 							}
 							gcc3.computeOutput();
 							gcc3.update();
