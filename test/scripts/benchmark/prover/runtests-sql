@@ -395,15 +395,17 @@ for i in `find -name '*.ggb' | sort`; do
       RESULT=niu
      grep --silent "STATEMENT IS UNKNOWN" $LOGFILE && grep --silent "Unsuccessful run" $LOGFILE && \
       RESULT=uru
-     grep --silent "Statement is GENERALLY TRUE" $LOGFILE && grep --silent "Could not compute syzygy" $LOGFILE && \
-      RESULT=tcp
-     grep --silent "Prover timeout" $LOGFILE && \
-      RESULT=pt
      grep --silent "STATEMENT IS UNKNOWN" $LOGFILE && grep --silent "Statement is NOT GENERALLY TRUE" $LOGFILE && \
       RESULT=ngtu
+     # If no classification is possible, this is most probably a timeout:
+     if [ "$RESULT" = "-" ]; then
+      RESULT=to
+      grep --silent "Statement is GENERALLY TRUE" $LOGFILE && \
+       RESULT=tto # or possibly a true statement without ShowProof
+      fi
      # End of classification.
      if [ "$RESULT" != "-" -a "$RESULT" != "top" -a "$RESULT" != "rg" -a "$RESULT" != "tu" \
-      -a "$RESULT" != "niu" -a "$RESULT" != "uru" -a "$RESULT" != "tcp" -a "$RESULT" != "pt" \
+      -a "$RESULT" != "niu" -a "$RESULT" != "uru" -a "$RESULT" != "to" -a "$RESULT" != "tto" \
       -a "$RESULT" != "ngtu" ]; then
       if [ "$DIRNAME" = "false" ]; then
        RESULTCLASS="error" # Pessimistic...

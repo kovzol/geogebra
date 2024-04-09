@@ -1,0 +1,36 @@
+<h2>Introduction</h2>
+
+The following table shows benchmarking results of various tests for the available prover engines in GeoGebra
+for the <b>ShowProof</b> command:
+
+<ul>
+<li>Column "Engine 2" refers to <a href="http://ggb1.idm.jku.at/~kovzol/papers/Botana-Kovacs-Weitzhofer-20120326.pdf">the Groebner basis method
+via SingularWS (also known as Botana's method)</a> programmed by Kovacs.
+<li>Column "Engine 2, Giac" refers to <a href="http://ggb1.idm.jku.at/~kovzol/talks/ricam3/Parisse-Kovacs.pdf">the
+Groebner basis method via the Giac computer algebra tool</a> (instead of SingularWS) programmed by Parisse and Kovacs.
+</ul>
+
+Explanation of the used colors:
+
+<ul>
+<li>Green means that the test returns a correct yes/no answer. Intensity of green
+means speed (the lighter the slower). Numbers are in milliseconds.
+<li>Pink means that GeoGebra returns the wrong answer.
+<li>Yellow means the output is not conclusive, thus using this method
+GeoGebra shows "undefined", i.e. there is no error here.
+<li>The Result column provides some extra information about the result, such as
+    "f" when the statement was false on purpose, or the polynomial degree of
+    difficulty when the computation finishes. In addition: "top" means
+    that the statement is true on parts and currently no proof can be showed,
+    "uru" means unsuccessful run with unknown result, "tu" means that the true algebraic
+    result should geometrically be interpreted as unknown, "niu" means that some
+    required steps are not implemented, "ngtu" means that the statement is not
+    generally true and no further information could be found, "to" means timeout,
+    "tto" means a true statement with timeout when computing the presentable proof,
+    "rg" means that the statement requires real geometry for further investigation.
+</ul>
+
+<p>The Speed column shows the timing in milliseconds.</p>
+
+The <a href="https://github.com/kovzol/geogebra/tree/master/test/scripts/benchmark/prover/tests">test
+    cases</a> are also available for download in GeoGebra's .ggb format from the GeoGebra online source code directly.
