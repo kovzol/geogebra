@@ -25,6 +25,7 @@ import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 
 /**
  * Semicircle defined by two points A and B (start and end point).
@@ -223,8 +224,11 @@ public class AlgoSemicircle extends AlgoElement
 			// Center:
 			botanaVars[0] = centerVars[0];
 			botanaVars[1] = centerVars[1];
-			botanaVarsDescr[0] = "x value of center of " + geo.getLabelSimple();
-			botanaVarsDescr[1] = "y value of center of " + geo.getLabelSimple();
+			// botanaVarsDescr[0] = "x value of center of " + geo.getLabelSimple();
+			// botanaVarsDescr[1] = "y value of center of " + geo.getLabelSimple();
+			setBotanaVarsDescr(0, "x", geo);
+			setBotanaVarsDescr(1, "y", geo);
+
 			// Point on the circle:
 			botanaVars[2] = circle1vars[0];
 			botanaVars[3] = circle1vars[1];
@@ -243,6 +247,12 @@ public class AlgoSemicircle extends AlgoElement
 		botanaVars = null;
 		botanaVarsDescr = null;
 		botanaPolynomials = null;
+	}
+
+	void setBotanaVarsDescr(int pos, String coord, GeoElementND geo) {
+		Localization loc = geo.getKernel().getLocalization();
+		botanaVarsDescr[pos] = getLoc().getPlainDefault("AValueOfCenterOfB",
+				"%0 value of center of %1", coord, geo.getLabelSimple());
 	}
 
 }

@@ -29,6 +29,7 @@ import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 
 public class AlgoLineBisector extends AlgoElement
 		implements SymbolicParametersAlgo, SymbolicParametersBotanaAlgo {
@@ -249,14 +250,19 @@ public class AlgoLineBisector extends AlgoElement
 				botanaVars[2] = new PVariable(kernel);
 				botanaVars[3] = new PVariable(kernel);
 				botanaVarsDescr = new String[4];
-				botanaVarsDescr[0] = "The x value of midpoint of " + A.getLabelSimple() + B.getLabelSimple();
-				botanaVarsDescr[1] = "The y value of midpoint of " + A.getLabelSimple() + B.getLabelSimple();
-				botanaVarsDescr[2] = "The x value of rotation of point " + A.getLabelSimple()
-						+ " around the midpoint of " + A.getLabelSimple() + B.getLabelSimple()
-						+ " by 90 degrees";
-				botanaVarsDescr[3] = "The y value of rotation of point " + A.getLabelSimple()
-						+ " around the midpoint of " + A.getLabelSimple() + B.getLabelSimple()
-						+ " by 90 degrees";
+				// botanaVarsDescr[0] = "The x value of midpoint of " + A.getLabelSimple() + B.getLabelSimple();
+				// botanaVarsDescr[1] = "The y value of midpoint of " + A.getLabelSimple() + B.getLabelSimple();
+				setBotanaVarsDescr1(0, "x");
+				setBotanaVarsDescr1(1, "y");
+
+				// botanaVarsDescr[2] = "The x value of rotation of point " + A.getLabelSimple()
+				//		+ " around the midpoint of " + A.getLabelSimple() + B.getLabelSimple()
+				//		+ " by 90 degrees";
+				// botanaVarsDescr[3] = "The y value of rotation of point " + A.getLabelSimple()
+				//		+ " around the midpoint of " + A.getLabelSimple() + B.getLabelSimple()
+				//		+ " by 90 degrees";
+				setBotanaVarsDescr2(2, "x");
+				setBotanaVarsDescr2(3, "y");
 			}
 
 			botanaPolynomials = SymbolicParameters
@@ -300,6 +306,19 @@ public class AlgoLineBisector extends AlgoElement
 		botanaVars = null;
 		botanaVarsDescr = null;
 		botanaPolynomials = null;
+	}
+
+	void setBotanaVarsDescr1(int pos, String coord) {
+		Localization loc = A.kernel.getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfMidpointOfB",
+				"%0 value of midpoint of %1",
+				coord, A.getLabelSimple() + B.getLabelSimple());
+	}
+	void setBotanaVarsDescr2(int pos, String coord) {
+		Localization loc = A.kernel.getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfRotationOfPointBAroundTheMidpointOfCByDDegrees",
+				"%0 value of rotation of point %1 around the midpoint of %2 by %3 degrees",
+				coord, A.getLabelSimple(), A.getLabelSimple() + B.getLabelSimple(), "90");
 	}
 
 }

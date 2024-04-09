@@ -25,6 +25,7 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoConic;
+import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
@@ -34,6 +35,7 @@ import org.geogebra.common.kernel.kernelND.GeoQuadricND;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 
 /**
  * 
@@ -149,8 +151,10 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 				// point C on the circle
 				botanaVars[2] = new PVariable(kernel);
 				botanaVars[3] = new PVariable(kernel);
-				botanaVarsDescr[2] = "The x value of a point of " + geo.getLabelSimple();
-				botanaVarsDescr[3] = "The y value of a point of " + geo.getLabelSimple();
+				// botanaVarsDescr[2] = "The x value of a point of " + geo.getLabelSimple();
+				// botanaVarsDescr[3] = "The y value of a point of " + geo.getLabelSimple();
+				setBotanaVarsDescr1(2, "x", geo);
+				setBotanaVarsDescr1(3, "y", geo);
 			}
 			GeoPoint A = s.getStartPoint();
 			GeoPoint B = s.getEndPoint();
@@ -261,6 +265,12 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 		botanaVars = null;
 		botanaVarsDescr = null;
 		botanaPolynomials = null;
+	}
+
+	void setBotanaVarsDescr1(int pos, String coord, GeoElementND geo) {
+		Localization loc = geo.getKernel().getLocalization();
+		botanaVarsDescr[pos] = getLoc().getPlainDefault("AValueOfAPointOfB",
+				"%0 value of a point of %1",coord, geo.getLabelSimple());
 	}
 
 }

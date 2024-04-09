@@ -6,6 +6,7 @@ import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.debug.Log;
 
 public class OrthoLinePointLineAdapter extends ProverAdapter {
@@ -31,10 +32,12 @@ public class OrthoLinePointLineAdapter extends ProverAdapter {
 						+ " implicitly introduces foot point (" + botanaVars[0]
 						+ "," + botanaVars[1] + ")");
 				botanaVarsDescr = new String[4];
-				botanaVarsDescr[0] = "The x value of an implicitly introduced foot point for orthogonal line at "
-				+ P.getLabelSimple() + " to " + l.getLabelSimple();
-				botanaVarsDescr[1] = "The y value of an implicitly introduced foot point for orthogonal line at "
-						+ P.getLabelSimple() + " to " + l.getLabelSimple();
+				// botanaVarsDescr[0] = "The x value of an implicitly introduced foot point for orthogonal line at "
+				// + P.getLabelSimple() + " to " + l.getLabelSimple();
+				// botanaVarsDescr[1] = "The y value of an implicitly introduced foot point for orthogonal line at "
+				// 		+ P.getLabelSimple() + " to " + l.getLabelSimple();
+				setBotanaVarsDescr(0, "x", P, l);
+				setBotanaVarsDescr(1, "y", P, l);
 			}
 
 			botanaPolynomials = new PPolynomial[2];
@@ -62,6 +65,13 @@ public class OrthoLinePointLineAdapter extends ProverAdapter {
 		botanaVars = null;
 		botanaVarsDescr = null;
 		botanaPolynomials = null;
+	}
+
+	void setBotanaVarsDescr(int pos, String coord, GeoPoint P, GeoLine l) {
+		Localization loc = P.kernel.getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfAnImplicitlyIntroducedFootPointForOrthogonalLineAtBToC",
+				"%0 value of an implicitly introduced foot point for orthogonal line at %1 to %2",
+				coord, P.getLabelSimple(), l.getLabelSimple());
 	}
 
 }
