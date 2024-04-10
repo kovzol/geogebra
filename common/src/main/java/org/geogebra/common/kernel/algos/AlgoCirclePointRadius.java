@@ -216,6 +216,9 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 		 * polynomials since the variables are set after the polys are set.
 		 */
 		PVariable[] radiusBotanaVars = num.getBotanaVars(num);
+		if (radiusBotanaVars == null) {
+			throw new NoSymbolicParametersException(); // maybe unimplemented
+		}
 		int k = 0;
 		// r^2
 		// PPolynomial sqrR = PPolynomial.sqr(new PPolynomial(radiusBotanaVars[0]));

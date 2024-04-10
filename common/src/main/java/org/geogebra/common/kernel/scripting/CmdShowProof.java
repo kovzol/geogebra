@@ -92,7 +92,7 @@ public class CmdShowProof extends CmdScripting {
 						String proofs = ((GeoText) output.get(1)).toString();
 						proofs = proofs.substring(1, proofs.length() - 1);
 						String[] proof = proofs.split("\n");
-						String hint = proof[proof.length - 1]; // use only the last piece of information
+						String hint = proof[proof.length - 1].substring(1); // use only the last piece of information
 						gcc2.setInput(hint); // show hint
 					} else {
 						gcc2.setInput(loc.getMenuDefault("ProofUnknown", "The statement could not be proven nor disproven."));
