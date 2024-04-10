@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.List;
@@ -1729,6 +1730,23 @@ public class ProverBotanasMethod {
 					return;
 				}
 
+				if (geoProver.getShowproof()) {
+					Localization loc = geoProver.getConstruction().getKernel().getLocalization();
+					geoProver.addProofLine(loc.getPlainDefault("ThesisAInAlgebraicForm",
+							"Thesis: %0, in algebraic form:",
+							String.valueOf(geoStatement.getParentAlgorithm())));
+					int i = 1;
+					for (PPolynomial[] statement : statements) {
+						PPolynomial factor = (statement[statement.length - 1]);
+						if (i>1) {
+							geoProver.addProofLine(CmdShowProof.TEXT, loc.getMenu("And").toLowerCase(
+									Locale.ROOT));
+						}
+						geoProver.addProofLine(CmdShowProof.EQUATION, "T" + i + ":=" + factor + "=0");
+						i++;
+					}
+
+				}
 				/*
 				 * Rabinowitsch trick for the last polynomials of the theses of
 				 * the statement. Here we use that NOT (A and B and C) == (NOT
@@ -1759,15 +1777,24 @@ public class ProverBotanasMethod {
 				 * do.
 				 */
 				thesisFactors = new PPolynomial[statements.length];
+				String T = "";
 				int i = 0;
 				for (PPolynomial[] statement : statements) {
 					PPolynomial factor = (statement[statement.length - 1]);
 					thesisFactors[i] = factor;
 					Log.debug("(" + factor + ")*" + z + "-1");
+					if (i>0) {
+						T += "*";
+					}
+					T += "(T" + (i+1) + "*" + z + "-1)";
 					factor = factor.multiply(new PPolynomial(z))
 							.subtract(new PPolynomial(BigInteger.ONE));
 					spoly = spoly.multiply(factor);
 					i++;
+				}
+				if (geoProver.getShowproof()) {
+					Localization loc = geoProver.getConstruction().getKernel().getLocalization();
+					geoProver.addProofLine(CmdShowProof.EQUATION, T + "=0");
 				}
 				/*
 				 * We store the geoStatement -> product mapping. Later we should

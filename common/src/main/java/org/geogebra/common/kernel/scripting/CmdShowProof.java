@@ -58,7 +58,10 @@ public class CmdShowProof extends CmdScripting {
 
 				if (!app.showView(App.VIEW_CAS)) {
 					// ...getRowCount gives 1 if the CAS View is closed. FIXME.
-					throw new MyError(loc, "Please open the CAS View first.");
+					String err = loc.getMenuDefault("PleaseOpenTheCASViewFirst",
+							"Please open the CAS View first.");
+					throw new MyError(loc, err);
+
 				}
 
 				kernel.storeUndoInfo();
@@ -162,7 +165,9 @@ public class CmdShowProof extends CmdScripting {
 									String var = step.substring(0, index);
 									if (cons.getAllLabels().contains(var)) {
 										kernel.undo();
-										throw new MyError(loc, "Variable " + var + " is already defined. Please remove it first.");
+										String err = loc.getPlainDefault("VariableAIsAlreadyDefinedPleaseRemoveItFirst",
+												"Variable %0 is already defined. Please remove it first.", var);
+										throw new MyError(loc, err);
 									}
 								}
 							} else {

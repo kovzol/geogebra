@@ -241,6 +241,12 @@ public class CASExport {
 
 			if (cell.isUseAsText()) {
 				input = input.replace(Unicode.BULLET + "", "-");
+				input = input.replace(Unicode.IS_ELEMENT_OF + "", " element of ");
+				input = input.replace(Unicode.PARALLEL + "", " || ");
+				input = input.replace(Unicode.PERPENDICULAR + "", " _|_ ");
+				input = input.replace(Unicode.QUESTEQ + "", " == ");
+				// TODO: There may be other characters to replace, maybe another method can
+				// simplify this...
 				txt += "(* " + input + " *)\n";
 			} else {
 				if (!cell.isEmpty()) {
