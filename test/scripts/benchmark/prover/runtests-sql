@@ -397,8 +397,8 @@ for i in `find -name '*.ggb' | sort`; do
       RESULT=uru
      grep --silent "STATEMENT IS UNKNOWN" $LOGFILE && grep --silent "Statement is NOT GENERALLY TRUE" $LOGFILE && \
       RESULT=ngtu
-     grep --silent "Exception" $LOGFILE && \
-      RESULT=exc
+     grep --silent "NullPointerException" $LOGFILE && \
+      RESULT=npe
      # If no classification is possible, this is most probably a timeout:
      if [ "$RESULT" = "-" -a "$DIRNAME" = "true" ]; then
       RESULT=to
