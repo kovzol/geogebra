@@ -390,7 +390,7 @@ for i in `find -name '*.ggb' | sort`; do
      grep --silent "The real geometry engine will be used." $LOGFILE && \
       RESULT=rg
      grep --silent "Interpreting TRUE as UNKNOWN" $LOGFILE && \
-      RESULT=tu
+      RESULT=tw
      grep --silent "STATEMENT IS UNKNOWN" $LOGFILE && grep --silent "not fully implemented" $LOGFILE && \
       RESULT=niu
      grep --silent "STATEMENT IS UNKNOWN" $LOGFILE && grep --silent "Unsuccessful run" $LOGFILE && \
@@ -399,15 +399,15 @@ for i in `find -name '*.ggb' | sort`; do
       RESULT=ngtu
      grep --silent "NullPointerException" $LOGFILE && \
       RESULT=npe
-     # If no classification is possible, this is most probably a timeout:
+     # No classification is possible...
      if [ "$RESULT" = "-" -a "$DIRNAME" = "true" ]; then
-      RESULT=to
+      RESULT=u
       grep --silent "Statement is GENERALLY TRUE" $LOGFILE && \
-       RESULT=tto # or possibly a true statement without ShowProof
+       RESULT=tto # possibly a true statement without ShowProof
       fi
      # End of classification.
-     if [ "$RESULT" != "-" -a "$RESULT" != "top" -a "$RESULT" != "rg" -a "$RESULT" != "tu" \
-      -a "$RESULT" != "niu" -a "$RESULT" != "uru" -a "$RESULT" != "to" -a "$RESULT" != "tto" \
+     if [ "$RESULT" != "-" -a "$RESULT" != "top" -a "$RESULT" != "rg" -a "$RESULT" != "tw" \
+      -a "$RESULT" != "niu" -a "$RESULT" != "uru" -a "$RESULT" != "u" -a "$RESULT" != "tto" \
       -a "$RESULT" != "ngtu" -a "$RESULT" != "exc" ]; then
       if [ "$DIRNAME" = "false" ]; then
        RESULTCLASS="error" # Pessimistic...
