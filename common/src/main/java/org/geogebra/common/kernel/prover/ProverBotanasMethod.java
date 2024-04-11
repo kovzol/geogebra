@@ -3097,7 +3097,7 @@ public class ProverBotanasMethod {
 			substCommand = "I1:=subst(I0,[" + substParams + "])";
 			syzygyProgram = "[[I0:=[" + polys1 + "]],[";
 			syzygyProgram += substCommand + "],";
-			syzygyProgram += "[v:=revlist([" + vars + "])],";
+			syzygyProgram += "[v:=[" + vars + "]],";
 			syzygyProgram += "[G,M:=gbasis(I1,v,coeffs)],";
 			syzygyProgram += "[Q:=greduce(1,G,v,quo)],";
 			syzygyProgram += "[A:=Q[1]*eval(M,1)],";
