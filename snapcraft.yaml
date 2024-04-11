@@ -1,7 +1,7 @@
 name: geogebra-discovery
 architectures:
   - build-on: amd64
-base: core18
+base: core22
 version: '5.0.641.0'
 summary: An experimental version of GeoGebra
 description: |
@@ -17,7 +17,7 @@ confinement: strict
 apps:
   geogebra-discovery:
     extensions:
-      - gnome-3-28
+      - gnome
     command: bin/bash $SNAP/bin/desktop
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-amd64
@@ -34,20 +34,11 @@ apps:
 parts:
   geogebra-discovery:
     source: https://github.com/kovzol/geogebra.git
-    plugin: gradle
+    build-packages: [default-jdk]
+    plugin: dump
     source-type: git
-    gradle-options: [':desktop:installDist']
-    gradle-output-dir: desktop/build/libs
     override-build: |
-      snapcraftctl build
-      rm desktop/build/install/desktop/bin/desktop.bat
-      rm desktop/build/install/desktop/lib/*windows*.jar
-      rm desktop/build/install/desktop/lib/*macosx*.jar
-      rm desktop/build/install/desktop/lib/*i586*.jar || true
-      rm desktop/build/install/desktop/lib/*pxcclr*.jar
-      rm desktop/build/install/desktop/lib/*zspace*.jar
-      rm desktop/build/install/desktop/lib/*arm*.jar
-      cp -a desktop/build/install/desktop/* $SNAPCRAFT_PART_INSTALL
+      ./gradlew -Djava.net.useSystemProxies=true :desktop:installDist && rm -f desktop/build/install/desktop/bin/desktop.bat desktop/build/install/desktop/lib/*windows*.jar desktop/build/install/desktop/lib/*macosx*.jar rm desktop/build/install/desktop/lib/*i586*.jar desktop/build/install/desktop/lib/*pxcclr*.jar desktop/build/install/desktop/lib/*zspace*.jar  desktop/build/install/desktop/lib/*arm*.jar && cp -a desktop/build/install/desktop/* $SNAPCRAFT_PART_INSTALL
     stage-packages:
       - bash
       - libfreetype6
