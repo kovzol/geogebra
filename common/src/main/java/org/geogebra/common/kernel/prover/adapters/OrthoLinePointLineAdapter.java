@@ -29,7 +29,7 @@ public class OrthoLinePointLineAdapter extends ProverAdapter {
 				botanaVars[3] = vP[1];
 				Log.trace("Orthogonal line at " + P.getLabelSimple() + " to "
 						+ l.getLabelSimple()
-						+ " implicitly introduces foot point (" + botanaVars[0]
+						+ " implicitly introduces second point (" + botanaVars[0]
 						+ "," + botanaVars[1] + ")");
 				botanaVarsDescr = new String[4];
 				// botanaVarsDescr[0] = "The x value of an implicitly introduced foot point for orthogonal line at "
@@ -69,8 +69,8 @@ public class OrthoLinePointLineAdapter extends ProverAdapter {
 
 	void setBotanaVarsDescr(int pos, String coord, GeoPoint P, GeoLine l) {
 		Localization loc = P.kernel.getLocalization();
-		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfAnImplicitlyIntroducedFootPointForOrthogonalLineAtBToC",
-				"%0 value of an implicitly introduced foot point for orthogonal line at %1 to %2",
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfAnImplicitlyIntroducedSecondPointForOrthogonalLineAtBToC",
+				"%0 value of an implicitly introduced second point for orthogonal line at %1 to %2",
 				coord, P.getLabelSimple(), l.getLabelSimple());
 	}
 
