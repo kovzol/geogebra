@@ -410,8 +410,8 @@ public class RelationPaneD implements RelationPane, ActionListener {
 		@Override
 		protected void fireEditingStopped() {
 			/*
-			 * FIXME: In some cases this throws an exception. No idea how to fix
-			 * it.
+			 * FIXME: In some cases this throws an exception, most probably because
+			 * an exception occurs somewhere (most probably inside the prover).
 			 */
 			try {
 				super.fireEditingStopped();

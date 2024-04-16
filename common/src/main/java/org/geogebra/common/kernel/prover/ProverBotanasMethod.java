@@ -853,8 +853,15 @@ public class ProverBotanasMethod {
 		}
 
 		private void setHypotheses(GeoElement movingPoint) {
-			Localization loc = geoProver.getConstruction().getApplication()
-					.getLocalization();
+			Localization loc = null;
+			if (geoProver.getConstruction() != null) {
+				loc = geoProver.getConstruction().getApplication().getLocalization();
+			} else if (geoStatement.getConstruction() != null) {
+				loc = geoStatement.getConstruction().getApplication().getLocalization();
+			} else if (movingPoint != null) {
+				loc = movingPoint.getConstruction().getApplication().getLocalization();
+			}
+
 			polynomials = new ArrayList<>();
 
 			TreeSet<GeoElement> predecessors = new TreeSet<>();
@@ -1600,8 +1607,13 @@ public class ProverBotanasMethod {
 		}
 
 		private void setThesis() {
-			Localization loc = geoProver.getConstruction().getKernel().getLocalization();
-			try {
+			Localization loc = null;
+			if (geoProver.getConstruction() != null) {
+				loc = geoProver.getConstruction().getKernel().getLocalization();
+			} else if (geoStatement.getConstruction() != null) {
+				loc = geoStatement.getConstruction().getKernel().getLocalization();
+			}
+				try {
 				interpretTrueAsUndefined = false;
 				/*
 				 * The sets of statement polynomials. The last equation of each
@@ -1822,7 +1834,13 @@ public class ProverBotanasMethod {
 		}
 
 		public StringBuilder getRGParameters() {
-			Localization loc = geoProver.getConstruction().getKernel().getLocalization();
+			Localization loc = null;
+			if (geoProver.getConstruction() != null) {
+				loc = geoProver.getConstruction().getKernel().getLocalization();
+			}
+			else if (geoStatement.getConstruction() != null) {
+				loc = geoStatement.getConstruction().getKernel().getLocalization();
+			}
 			RealGeomWebService realgeomWS = geoStatement.getConstruction().getApplication().getRealGeomWS();
 
 			/* Force some non-degeneracies. */
