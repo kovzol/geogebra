@@ -19,6 +19,7 @@ import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.prover.AlgoProve;
 import org.geogebra.common.kernel.prover.AlgoProveDetails;
 import org.geogebra.common.main.App;
+import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.MyError;
 import org.geogebra.common.util.debug.Log;
 
@@ -69,7 +70,13 @@ public class CmdShowProof extends CmdScripting {
 				int rows;
 				rows = cv.getConsoleTable().getRowCount();
 
+				percent = 10;
+				updatePercentInfo();
+
 				AlgoProveDetails algo = new AlgoProveDetails(cons, arg[0], false, false, true);
+
+				percent = 50;
+				updatePercentInfo();
 				String statementText = algo.statementText(arg[0]);
 
 				String[] statementTexts = statementText.split("\n");
@@ -82,6 +89,9 @@ public class CmdShowProof extends CmdScripting {
 					gcc1.update();
 					cons.setCasCellRow(gcc1, rows++);
 				}
+
+				percent = 60;
+				updatePercentInfo();
 
 				boolean statementTrue = false;
 				GeoList output = algo.getGeoList();
@@ -167,6 +177,8 @@ public class CmdShowProof extends CmdScripting {
 										kernel.undo();
 										String err = loc.getPlainDefault("VariableAIsAlreadyDefinedPleaseRemoveItFirst",
 												"Variable %0 is already defined. Please remove it first.", var);
+										percent = 100;
+										updatePercentInfo();
 										throw new MyError(loc, err);
 									}
 								}
@@ -199,6 +211,9 @@ public class CmdShowProof extends CmdScripting {
 
 				cons.updateConstruction(false);
 
+				percent = 100;
+				updatePercentInfo();
+
 				algo.remove();
 				return null;
 			}
@@ -217,6 +232,20 @@ public class CmdShowProof extends CmdScripting {
 			}
 		}
 		return false;
+	}
+
+	double percent = 0.0;
+
+	private void updatePercentInfo() {
+		Localization loc = cons.getApplication().getLocalization();
+		String inProgress = loc.getMenuDefault("InProgress",
+				"In progress");
+		if (percent < 100) {
+			cons.getApplication().getGuiManager().updateFrameTitle(inProgress+ " ("
+					+ ((int) percent) + "%)");
+		} else {
+			cons.getApplication().getGuiManager().updateFrameTitle(null);
+		}
 	}
 
 }
