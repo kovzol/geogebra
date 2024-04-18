@@ -7,6 +7,7 @@ import org.geogebra.common.awt.GFont;
 import org.geogebra.common.cas.view.CASTable;
 import org.geogebra.common.cas.view.CASView;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.View;
 import org.geogebra.common.kernel.arithmetic.BooleanValue;
 import org.geogebra.common.kernel.arithmetic.Command;
@@ -154,6 +155,7 @@ public class CmdShowProof extends CmdScripting {
 
 					proof = proofs.split("\n"); // recompute, maybe there are some infos added
 					int steps = proof.length;
+					boolean contradictionChecked = false;
 					for (int s = 0; s < steps; s++) {
 						String step = proof[s];
 						char type = proof[s].charAt(0);
@@ -196,6 +198,18 @@ public class CmdShowProof extends CmdScripting {
 								gcc3.setFontColor(GColor.MAGENTA);
 							}
 							if (type == CONTRADICTION) {
+								if (!contradictionChecked) {
+									String comment = loc.getMenuDefault("GeoGebraCannotCheck",
+											"GeoGebra cannot check that this is equivalent to 1=0,"
+													+ " but it can be calculated in another computer algebra system.");
+									GeoCasCell gcc4 = new GeoCasCell(cons);
+									gcc4.setInput(comment);
+									gcc4.setUseAsText(true);
+									gcc4.setFontStyle(GFont.ITALIC); // it's a problem
+									gcc4.computeOutput();
+									gcc4.update();
+									cons.setCasCellRow(gcc4, rows++);
+								}
 								gcc3.setFontColor(GColor.RED);
 								gcc3.setFontStyle(GFont.BOLD);
 							}
@@ -204,6 +218,10 @@ public class CmdShowProof extends CmdScripting {
 							}
 							gcc3.computeOutput();
 							gcc3.update();
+							String casOutput = gcc3.getOutput(StringTemplate.algebraTemplate);
+							if (casOutput.equals("1 = 0")) {
+								contradictionChecked = true;
+							}
 							cons.setCasCellRow(gcc3, rows++);
 						}
 					}
