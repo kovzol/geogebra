@@ -39,6 +39,7 @@ import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 
 /**
  *
@@ -247,8 +248,10 @@ public class AlgoLinePointLine extends AlgoElement
 				botanaVars[1] = new PVariable(kernel); // d2
 				botanaVars[2] = vP[0];
 				botanaVars[3] = vP[1];
-				botanaVarsDescr[0] = "The x value of a point on line " + ((GeoLine) l).getLabelSimple();
-				botanaVarsDescr[1] = "The y value of a point on line " + ((GeoLine) l).getLabelSimple();
+				// botanaVarsDescr[0] = "The x value of a point on line " + ((GeoLine) l).getLabelSimple();
+				// botanaVarsDescr[1] = "The y value of a point on line " + ((GeoLine) l).getLabelSimple();
+				setBotanaVarsDescr(0, "x", (GeoLine) l);
+				setBotanaVarsDescr(1, "y", (GeoLine) l);
 				// TODO: Maybe explain this better.
 			}
 			PPolynomial d1 = new PPolynomial(botanaVars[0]);
@@ -269,6 +272,12 @@ public class AlgoLinePointLine extends AlgoElement
 		botanaVars = null;
 		botanaVarsDescr = null;
 		botanaPolynomials = null;
+	}
+
+	void setBotanaVarsDescr(int pos, String coord, GeoElementND geo) {
+		Localization loc = geo.getKernel().getLocalization();
+		botanaVarsDescr[pos] = getLoc().getPlainDefault("AValueOfAPointOfB",
+				"%0 value of a point of %1",coord, geo.getLabelSimple());
 	}
 
 }
