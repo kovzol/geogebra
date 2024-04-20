@@ -37,6 +37,8 @@ public class CmdShowProof extends CmdScripting {
 	public static char CONTRADICTION = 'c';
 	public static char OTHER = ' ';
 
+	private int MAX_INPUT_LENGTH = 5000;
+
 	/**
 	 * Create new command processor
 	 *
@@ -187,7 +189,15 @@ public class CmdShowProof extends CmdScripting {
 							} else {
 								gcc3.setUseAsText(true);
 							}
-							gcc3.setInput(step);
+							if (step.length() > MAX_INPUT_LENGTH) {
+								String stepPartial = step.substring(0, MAX_INPUT_LENGTH) + "...";
+								gcc3.setUseAsText(true);
+								gcc3.setInput(stepPartial);
+								gcc3.setFullInput(step);
+								type = PROBLEM;
+							} else {
+								gcc3.setInput(step);
+							}
 							if (type == FREE_VARIABLES) {
 								gcc3.setFontColor(GColor.ORANGE);
 							}

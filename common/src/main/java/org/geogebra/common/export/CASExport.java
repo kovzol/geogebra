@@ -102,7 +102,13 @@ public class CASExport {
 			}
 
 			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
-			String input = cell.getInput(StringTemplate.defaultTemplate);
+			String input;
+			String fullInput = cell.getFullInput();
+			if (fullInput != null) {
+				input = fullInput;
+			} else {
+				input = cell.getInput(StringTemplate.defaultTemplate);
+			}
 			GColor color = cell.getFontColor();
 			String colorString = color.toString();
 
@@ -113,7 +119,7 @@ public class CASExport {
 				if ((cell.getFontStyle() & GFont.BOLD) == GFont.BOLD) {
 					html += "<b>";
 				}
-				if ((cell.getFontStyle() & GFont.ITALIC) == GFont.ITALIC) {
+				if ((cell.getFontStyle() & GFont.ITALIC) == GFont.ITALIC && fullInput == null) {
 					html += "<i>";
 				}
 				if ((cell.getFontStyle() & GFont.UNDERLINE) == GFont.UNDERLINE) {
@@ -136,7 +142,7 @@ public class CASExport {
 			html += "</div>\n";
 
 			// If there is an output formula, put it in the output:
-			if (!cell.isUseAsText()) {
+			if (!cell.isUseAsText() || fullInput != null) {
 				String output = "";
 				if (useMathJax) {
 					String latexOutput = cell.getLaTeXOutput(false);
@@ -172,12 +178,23 @@ public class CASExport {
 		for (int i = 0; i < rows; i++) {
 
 			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
-			String input = cell.getInput(StringTemplate.defaultTemplate);
+			String input;
+			String fullInput = cell.getFullInput();
+			if (fullInput != null) {
+				input = fullInput;
+			} else {
+				input = cell.getInput(StringTemplate.defaultTemplate);
+			}
 
-			if (cell.isUseAsText()) {
+			if (cell.isUseAsText() && fullInput == null) {
 				txt += "# " + input + "\n";
 			} else {
-				if (!cell.isEmpty()) {
+				if (fullInput != null) {
+					if (showPrompt) {
+						txt += "> ";
+					}
+					txt += input + "\n";
+				} else if (!cell.isEmpty()) {
 					if (showPrompt) {
 						txt += "> ";
 					}
@@ -207,12 +224,20 @@ public class CASExport {
 		for (int i = 0; i < rows; i++) {
 
 			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
-			String input = cell.getInput(StringTemplate.defaultTemplate);
+			String input;
+			String fullInput = cell.getFullInput();
+			if (fullInput != null) {
+				input = fullInput;
+			} else {
+				input = cell.getInput(StringTemplate.defaultTemplate);
+			}
 
-			if (cell.isUseAsText()) {
+			if (cell.isUseAsText() && fullInput == null) {
 				txt += "comment(\"" + input + "\");\n";
 			} else {
-				if (!cell.isEmpty()) {
+				if (fullInput != null) {
+					txt += input + ";\n";
+				} else if (!cell.isEmpty()) {
 					String var = cell.getAssignmentVariable();
 					if (var != null) {
 						txt += var + ":=";
@@ -237,9 +262,15 @@ public class CASExport {
 		for (int i = 0; i < rows; i++) {
 
 			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
-			String input = cell.getInput(StringTemplate.defaultTemplate);
+			String input;
+			String fullInput = cell.getFullInput();
+			if (fullInput != null) {
+				input = fullInput;
+			} else {
+				input = cell.getInput(StringTemplate.defaultTemplate);
+			}
 
-			if (cell.isUseAsText()) {
+			if (cell.isUseAsText() && fullInput == null) {
 				input = input.replace(Unicode.BULLET + "", "-");
 				input = input.replace(Unicode.IS_ELEMENT_OF + "", " element of ");
 				input = input.replace(Unicode.PARALLEL + "", " || ");
@@ -249,7 +280,11 @@ public class CASExport {
 				// simplify this...
 				txt += "(* " + input + " *)\n";
 			} else {
-				if (!cell.isEmpty()) {
+				if (fullInput != null) {
+					// TODO: There should be a full StringTemplate written, instead of this:
+					input = input.replace("=", "==");
+					txt += input + ";\n";
+				} else if (!cell.isEmpty()) {
 					String var = cell.getAssignmentVariable();
 					if (var != null) {
 						txt += var + ":=";

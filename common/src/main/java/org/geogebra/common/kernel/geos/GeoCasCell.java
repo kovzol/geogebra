@@ -150,6 +150,8 @@ public class GeoCasCell extends GeoElement
 
 	private String tooltip;
 
+	private String fullInput = null; // for too long inputs, to allow exports to be full
+
 	/**
 	 * Creates new CAS cell
 	 * 
@@ -3782,6 +3784,14 @@ public class GeoCasCell extends GeoElement
 	private boolean hasSymbolicConstant() {
 		Command cmd = expandedEvalVE.getTopLevelCommand();
 		return cmd != null && "IntegralSymbolic".equals(cmd.getName());
+	}
+
+	public void setFullInput(String text) {
+		fullInput = text;
+	}
+
+	public String getFullInput() {
+		return fullInput;
 	}
 
 }
