@@ -27,7 +27,7 @@ public class EditMenuD extends BaseMenu {
 			showhideLabelsAction, propertiesAction, selectAllAction,
 			selectAllAncestorsAction, selectAllDescendantsAction,
 			selectCurrentLayerAction, copyToClipboardAction, copyCASMapleToClipboardAction,
-			copyCASMathematicaToClipboardAction, copyCASGiacToClipboardAction,
+			copyCASMathematicaToClipboardAction, copyCASGiacToClipboardAction, clearCASViewAction,
 			copyAction,	pasteAction, insertImageFromClipboardAction,
 			insertImageFromFileAction;
 
@@ -35,6 +35,7 @@ public class EditMenuD extends BaseMenu {
 			selectAllItem, selectAllAncestorsItem, selectAllDescendantsItem,
 			selectCurrentLayerItem, copyToClipboardItem, copyCASMapleToClipboardItem,
 			copyCASMathematicaToClipboardItem, copyCASGiacToClipboardItem,
+			clearCASViewItem,
 			copyItem, pasteItem, clipboardMenu;
 
 	private JSeparator selectionSeparator, deleteSeparator;
@@ -84,6 +85,7 @@ public class EditMenuD extends BaseMenu {
 		copyCASMapleToClipboardItem = add(copyCASMapleToClipboardAction);
 		copyCASMathematicaToClipboardItem = add(copyCASMathematicaToClipboardAction);
 		copyCASGiacToClipboardItem = add(copyCASGiacToClipboardAction);
+		clearCASViewItem = add(clearCASViewAction);
 
 		addSeparator();
 
@@ -310,6 +312,19 @@ public class EditMenuD extends BaseMenu {
 			public void actionPerformed(ActionEvent e) {
 				app.setWaitCursor();
 				app.copyCASGiacClipboard();
+				app.setDefaultCursor();
+			}
+		};
+
+		clearCASViewAction = new AbstractAction(
+				loc.getMenu(loc.getMenuDefault("ClearCASView", "Clear CAS View")),
+				app.getMenuIcon(GuiResourcesD.DELETE_SMALL)) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				app.setWaitCursor();
+				app.clearCASView();
 				app.setDefaultCursor();
 			}
 		};

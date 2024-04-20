@@ -115,6 +115,7 @@ import org.geogebra.common.GeoGebraConstants.Platform;
 import org.geogebra.common.awt.GDimension;
 import org.geogebra.common.awt.GFont;
 import org.geogebra.common.awt.MyImage;
+import org.geogebra.common.cas.view.CASView;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianCursor;
@@ -4579,6 +4580,12 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		CASExport casExp = new CASExport(this);
 		String txt = casExp.createGiacTxt();
 		getCopyPaste().copyTextToSystemClipboard(txt);
+	}
+
+	public void clearCASView() {
+		Construction cons = kernel.getConstruction();
+		CASView cv = (CASView) cons.getApplication().getView(VIEW_CAS);
+		cv.deleteRows();
 	}
 
 	@Override

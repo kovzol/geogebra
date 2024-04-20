@@ -4,6 +4,7 @@ import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.gui.Editing;
 import org.geogebra.common.gui.SetLabels;
+import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.ModeSetter;
 import org.geogebra.common.kernel.StringTemplate;
@@ -236,6 +237,37 @@ public abstract class CASView implements Editing, SetLabels {
 		if (getConsoleTable().hasEditor()) {
 			getConsoleTable().getEditor().clearInputText();
 		}
+	}
+
+	public void deleteRows() {
+		CASTable table = getConsoleTable();
+		// Try to remove all corresponding GeoCasCells.
+		// Do this with beginning from last and finishing with the first row.
+		int rows = getRowCount();
+		for (int i = rows - 1; i > 0; i--) {
+			GeoCasCell c = table.getGeoCasCell(i);
+			if (c != null) {
+				c.remove();
+			} else {
+				Log.error("Row " + i + " cannot be removed");
+			}
+		}
+		// Remove all other cells if they still exist...
+		Construction c = kernel.getConstruction();
+		for (GeoElement ge : c.getGeoSetConstructionOrder()) {
+			if (ge instanceof GeoCasCell) {
+				ge.remove();
+				Log.error("Cell " + ge + " removed");
+			}
+		}
+		GeoCasCell c0 = table.getGeoCasCell(0);
+		if (c0 != null) {
+			c0.setInput(""); // really delete first row's content
+			c0.setUseAsText(false); // normal cell, not a text
+			c0.update();
+			Log.error("Removed first row's content");
+		}
+		// FIXME. The CAS View is buggy and should be rewritten from scratch.
 	}
 
 	/**

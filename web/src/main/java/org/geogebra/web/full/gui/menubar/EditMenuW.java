@@ -60,6 +60,7 @@ public class EditMenuW extends Submenu {
 		addCASMapleToClipboard();
 		addCASMathematicaToClipboard();
 		addCASGiacToClipboard();
+		addClearCASView();
 		addCopy();
 		addPasteItem();
 		addSeparator();
@@ -211,6 +212,21 @@ public class EditMenuW extends Submenu {
 						app.copyCASGiacToClipboard();
 						ToolTipManagerW.sharedInstance().showBottomMessage(
 								loc.getMenuDefault("CASGiacToClipboard", "CAS View as Giac to Clipboard"),
+								false, app);
+					}
+				});
+	}
+
+	private void addClearCASView() {
+		addItem(MainMenu.getMenuBarHtml(
+						MaterialDesignResources.INSTANCE.delete_black(),
+						loc.getMenuDefault("ClearCASView", "Clear CAS View")), true,
+				new MenuCommand(getApp()) {
+				@Override
+					public void doExecute() {
+						app.clearCASView();
+						ToolTipManagerW.sharedInstance().showBottomMessage(
+								loc.getMenuDefault("ClearCASView", "Clear CAS View"),
 								false, app);
 					}
 				});

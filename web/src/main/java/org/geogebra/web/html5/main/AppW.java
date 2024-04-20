@@ -11,6 +11,7 @@ import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GDimension;
 import org.geogebra.common.awt.GFont;
 import org.geogebra.common.awt.MyImage;
+import org.geogebra.common.cas.view.CASView;
 import org.geogebra.common.euclidian.DrawEquation;
 import org.geogebra.common.euclidian.EmbedManager;
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -3390,6 +3391,11 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 		getCopyPaste().copyTextToSystemClipboard(txt);
 	}
 
+	public void clearCASView() {
+		Construction cons = kernel.getConstruction();
+		CASView cv = (CASView) cons.getApplication().getView(VIEW_CAS);
+		cv.deleteRows();
+	}
 
 	@Override
 	public void copyImageToClipboard(String dataURI) {
