@@ -734,6 +734,8 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 	private static void handleHelpVersionArgs(CommandLineArguments args) {
 
+		System.out.println("GeoGebra Discovery " + GeoGebraConstants.DISCOVERY_VERSION);
+
 		System.out.println("GeoGebra " + GeoGebraConstants.VERSION_STRING + " "
 				+ GeoGebraConstants.BUILD_DATE + " Java " + getJavaVersion()
 				+ "\n");
