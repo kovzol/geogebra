@@ -1439,7 +1439,7 @@ public class ProverBotanasMethod {
 													geo.getLabelSimple()));
 											for (int i = 0; i < descriptions.length; i++) {
 												if (descriptions[i] != null) {
-													geoProver.addProofLine(CmdShowProof.EQUATION,
+													geoProver.addProofLine(CmdShowProof.EXTRA_VARIABLES,
 															geoVariables[i].getName() + ": "
 																	+ descriptions[i]);
 												}
@@ -1769,7 +1769,7 @@ public class ProverBotanasMethod {
 				PPolynomial spoly = new PPolynomial(BigInteger.ONE);
 				PVariable z = new PVariable(geoStatement.getKernel());
 				if (geoProver.getShowproof()) {
-					geoProver.addProofLine(CmdShowProof.EQUATION, z.getName() + ": "
+					geoProver.addProofLine(CmdShowProof.EXTRA_VARIABLES, z.getName() + ": "
 							+ loc.getMenuDefault("DummyVarNeg", "dummy variable to express negation"));
 				}
 				/*
@@ -2652,7 +2652,7 @@ public class ProverBotanasMethod {
 			}
 			Log.debug("substitutions: " + substitutions);
 			if (prover.getShowproof()) {
-				prover.addProofLine(loc.getMenuDefault("WlogCoordinates",
+				prover.addProofLine(CmdShowProof.SPECIALIZATION, loc.getMenuDefault("WlogCoordinates",
 						"Without loss of generality, some coordinates can be fixed:"));
 				// Do it in reversed order (which is the natural order here).
 				Iterator<PVariable> it = substitutions.keySet().iterator();

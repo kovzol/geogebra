@@ -30,12 +30,14 @@ public class CmdShowProof extends CmdScripting {
 
 	public static char FREE_VARIABLES = 'f';
 	public static char DEPENDENT_VARIABLES = 'd';
+	public static char EXTRA_VARIABLES = 'x';
 	public static char ALMOST_FREE_VARIABLES = 'a';
 	public static char TEXT = 't';
 	public static char EQUATION = 'e';
 	public static char PROBLEM = 'p';
 	public static char NDG = 'n';
 	public static char CONTRADICTION = 'c';
+	public static char SPECIALIZATION = 's';
 	public static char OTHER = ' ';
 
 	private int MAX_INPUT_LENGTH = 5000;
@@ -173,7 +175,7 @@ public class CmdShowProof extends CmdScripting {
 						}
 						if (showstep) {
 							GeoCasCell gcc3 = new GeoCasCell(cons);
-							if (step.endsWith("0") || step.endsWith("}") || step.startsWith("s")) {
+							if (type == EQUATION) {
 								gcc3.setUseAsText(false); // this is a formula or a list or a syzygy
 								if (step.contains(":")) {
 									int index = step.indexOf(":");
@@ -202,11 +204,17 @@ public class CmdShowProof extends CmdScripting {
 							if (type == FREE_VARIABLES) {
 								gcc3.setFontColor(GColor.ORANGE);
 							}
-							if (type == DEPENDENT_VARIABLES || step.startsWith("v")) {
+							if (type == DEPENDENT_VARIABLES) {
 								gcc3.setFontColor(GColor.DARK_CYAN);
 							}
 							if (type == ALMOST_FREE_VARIABLES) {
-								gcc3.setFontColor(GColor.DARK_GREEN)	;
+								gcc3.setFontColor(GColor.DARK_GREEN);
+							}
+							if (type == EXTRA_VARIABLES) {
+								gcc3.setFontColor(GColor.DARK_GRAY);
+							}
+							if (type == SPECIALIZATION) {
+								gcc3.setFontColor(GColor.ORANGE);
 							}
 							if (type == NDG) {
 								gcc3.setFontColor(GColor.MAGENTA);
