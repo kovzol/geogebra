@@ -1746,8 +1746,8 @@ public class ProverBotanasMethod {
 					for (PPolynomial[] statement : statements) {
 						PPolynomial factor = (statement[statement.length - 1]);
 						if (i>1) {
-							geoProver.addProofLine(CmdShowProof.TEXT, loc.getMenu("And").toLowerCase(
-									Locale.ROOT));
+							geoProver.addProofLine(CmdShowProof.TEXT,
+									loc.getMenu("Symbol.And").toLowerCase());
 						}
 						geoProver.addProofLine(CmdShowProof.EQUATION, "T" + i + ":=" + factor + "=0");
 						i++;
