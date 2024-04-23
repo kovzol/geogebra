@@ -250,6 +250,7 @@ public class CmdShowProof extends CmdScripting {
 				}
 
 				cons.updateConstruction(false);
+				kernel.updateConstruction();
 
 				percent = 100;
 				updatePercentInfo();
