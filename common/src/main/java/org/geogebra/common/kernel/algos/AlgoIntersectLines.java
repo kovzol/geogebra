@@ -203,9 +203,6 @@ public class AlgoIntersectLines extends AlgoIntersectAbstract
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		if ((g instanceof GeoSegment) || (h instanceof GeoSegment)) {
 			throw new NoSymbolicParametersException();
 		}

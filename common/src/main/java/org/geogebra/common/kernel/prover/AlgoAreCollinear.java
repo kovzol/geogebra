@@ -156,10 +156,6 @@ public class AlgoAreCollinear extends AlgoElement
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
-
 		if (getInputPoint1() != null && getInputPoint2() != null
 				&& getInputPoint3() != null) {
 			PPolynomial[] coords1 = getInputPoint1().getPolynomials();

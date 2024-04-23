@@ -192,9 +192,6 @@ public class AlgoLineBisectorSegment extends AlgoElement
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		GeoPoint A = (GeoPoint) s.getStartPointAsGeoElement();
 		GeoPoint B = (GeoPoint) s.getEndPointAsGeoElement();
 		// TODO: Common code with AlgoLineBisector.java, maybe commonize.

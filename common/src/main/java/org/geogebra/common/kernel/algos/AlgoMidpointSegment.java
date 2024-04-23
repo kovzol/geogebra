@@ -207,9 +207,6 @@ public class AlgoMidpointSegment extends AlgoElement
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		if (P != null && Q != null) {
 			PPolynomial[] pP = P.getPolynomials();
 			PPolynomial[] pQ = Q.getPolynomials();

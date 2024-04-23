@@ -718,13 +718,16 @@ public abstract class Prover {
 		Log.debug("Using " + currentEngine);
 		ndgConditions = new TreeSet<>(); // reset
 		if (currentEngine == ProverEngine.BOTANAS_PROVER) {
+			construction.getKernel().getApplication().resetVariableNumbering();
 			ProverBotanasMethod pbm = new ProverBotanasMethod();
 			result = override(pbm.prove(this));
 			return;
 		} else if (currentEngine == ProverEngine.RECIOS_PROVER) {
+			construction.getKernel().getApplication().resetVariableNumbering();
 			result = override(getReciosProver().prove(this));
 			return;
 		} else if (currentEngine == ProverEngine.PURE_SYMBOLIC_PROVER) {
+			construction.getKernel().getApplication().resetVariableNumbering();
 			result = override(ProverPureSymbolicMethod.prove(this));
 			return;
 		} else if (currentEngine == ProverEngine.OPENGEOPROVER_WU

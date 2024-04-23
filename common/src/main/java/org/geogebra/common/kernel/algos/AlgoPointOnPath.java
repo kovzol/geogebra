@@ -308,9 +308,6 @@ public class AlgoPointOnPath extends AlgoElement
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		if (input[0] instanceof GeoSegment) {
 			throw new NoSymbolicParametersException();
 		}

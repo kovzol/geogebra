@@ -323,9 +323,6 @@ public class AlgoJoinPointsSegment extends AlgoElement
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		if (P != null && Q != null) {
 			PPolynomial[] coords1 = P.getPolynomials();
 			PPolynomial[] coords2 = Q.getPolynomials();

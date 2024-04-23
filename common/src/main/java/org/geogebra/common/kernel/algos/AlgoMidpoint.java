@@ -152,9 +152,6 @@ public class AlgoMidpoint extends AlgoMidpointND
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		GeoPoint P = getP();
 		GeoPoint Q = getQ();
 		if (P != null && Q != null) {

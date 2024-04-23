@@ -210,10 +210,6 @@ public class AlgoAreCongruent extends AlgoElement
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		Log.debug(polynomials);
-		if (polynomials != null) {
-			return polynomials;
-		}
 		if ((inputElement1 instanceof GeoSegment)
 				|| (inputElement2 instanceof GeoSegment)) {
 			throw new NoSymbolicParametersException();

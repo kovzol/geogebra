@@ -203,9 +203,6 @@ public class AlgoOrthoLinePointLine extends AlgoElement
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		if (P != null && l instanceof GeoLine) {
 			PPolynomial[] pP = P.getPolynomials();
 			PPolynomial[] pL = ((GeoLine) l).getPolynomials();

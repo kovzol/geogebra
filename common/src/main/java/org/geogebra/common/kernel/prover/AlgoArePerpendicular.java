@@ -158,9 +158,11 @@ public class AlgoArePerpendicular extends AlgoElement
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
 		Log.debug(polynomials);
-		if (polynomials != null) {
+		/* if (polynomials != null) {
 			return polynomials;
 		}
+		 // Disallow caching to enable variable reset.
+		 */
 		if (inputLine1 != null && inputLine2 != null) {
 			PPolynomial[] coords1 = ((SymbolicParametersAlgo) input[0])
 					.getPolynomials();

@@ -4809,6 +4809,10 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 		return nextVariableID++;
 	}
 
+	public void resetVariableNumbering() {
+		nextVariableID = 1;
+	}
+
 	/**
 	 * Create a tool collection factory for this app.
 	 *

@@ -189,9 +189,6 @@ public class AlgoAreConcurrent extends AlgoElement
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		if ((inputLine1 instanceof GeoSegment)
 				|| (inputLine2 instanceof GeoSegment)
 				|| (inputLine3 instanceof GeoSegment)) {

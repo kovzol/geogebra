@@ -301,9 +301,6 @@ public class AlgoAreConcyclic extends AlgoElement
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		if (inputPoint1 != null && inputPoint2 != null && inputPoint3 != null
 				&& inputPoint4 != null) {
 			PPolynomial[] coords1 = inputPoint1.getPolynomials();

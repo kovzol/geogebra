@@ -231,9 +231,6 @@ public class AlgoTranslate extends AlgoTransformation
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		if (inGeo instanceof GeoPoint && v instanceof GeoVector) {
 			PPolynomial[] coords1 = ((SymbolicParametersAlgo) inGeo)
 					.getPolynomials();

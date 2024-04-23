@@ -189,9 +189,6 @@ public class AlgoLineBisector extends AlgoElement
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		if (A != null && B != null) {
 			PPolynomial[] coords1 = A.getPolynomials();
 			PPolynomial[] coords2 = B.getPolynomials();

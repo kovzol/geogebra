@@ -241,9 +241,6 @@ public class AlgoVector extends AlgoElement
 
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
-		if (polynomials != null) {
-			return polynomials;
-		}
 		if (P != null && Q != null && P instanceof SymbolicParametersAlgo
 				&& Q instanceof SymbolicParametersAlgo) {
 			PPolynomial[] coords1 = ((SymbolicParametersAlgo) P)
