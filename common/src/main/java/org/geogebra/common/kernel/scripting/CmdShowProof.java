@@ -115,7 +115,7 @@ public class CmdShowProof extends CmdScripting {
 					if (proofResult) {
 						statementTrue = true;
 						if (output.size() == 2) {
-							gcc2.setInput(loc.getMenuDefault("AlwaysTrue", "The statement is always true."));
+							gcc2.setInput(loc.getMenuDefault("StatementAlwaysTrue", "The statement is always true."));
 						} else {
 							if (output.get(2).toString().equals("\"c\"")) {
 								gcc2.setInput(loc.getMenuDefault("TrueOnParts", "The statement is true on parts, false on parts."));
