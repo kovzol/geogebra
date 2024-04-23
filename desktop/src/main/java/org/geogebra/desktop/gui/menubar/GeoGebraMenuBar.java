@@ -516,8 +516,8 @@ public class GeoGebraMenuBar extends JMenuBar implements EventRenderable {
 
 		CASGenericInterface c = app.getKernel().getGeoGebraCAS().getCurrentCAS();
 		try {
-			String giacVersion = c.evaluateRaw("version()");
-			sb.append("<br>" + giacVersion);
+			String[] giacVersion = c.evaluateRaw("version()").split(",");
+			sb.append(" " + (giacVersion[0].split(" "))[1]);
 		} catch (Throwable t) {
 			// do nothing
 		}
