@@ -443,7 +443,7 @@ public class ProverBotanasMethod {
 			geoPolys.put(geo, ps);
 			for (PPolynomial p : ps) {
 				if (addPolynomial(p)) {
-					if (ProverSettings.get().captionAlgebra) {
+					if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 						geo.addCaptionBotanaPolynomial(p.toTeX());
 					}
 				}
@@ -1035,7 +1035,7 @@ public class ProverBotanasMethod {
 							result = ProofResult.UNKNOWN;
 							return;
 						}
-						if (proverSettings.captionAlgebra) {
+						if (proverSettings.captionAlgebra || geoProver.getShowproof()) {
 							geo.setCaption(null);
 						}
 						String command = geo
@@ -1069,7 +1069,7 @@ public class ProverBotanasMethod {
 								PVariable[] v;
 								v = ((SymbolicParametersBotanaAlgo) geo)
 										.getBotanaVars(geo);
-								if (proverSettings.captionAlgebra) {
+								if (proverSettings.captionAlgebra || geoProver.getShowproof()) {
 									geo.setCaptionBotanaVars("(" + v[0].toTeX()
 											+ "," + v[1].toTeX() + ")", "yellow");
 								}
@@ -1172,7 +1172,7 @@ public class ProverBotanasMethod {
 									.subtract(new PPolynomial(geoVariablesB[1]));
 							PPolynomial lhs = a1mp1.multiply(p1mb1).add(a2mp2.multiply(p2mb2));
 							if (addIneq(lhs.toString() + ">=0")) {
-								if (ProverSettings.get().captionAlgebra) {
+								if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 									geo.addCaptionBotanaPolynomial(
 											lhs.toTeX().replace("=", "\\geq"));
 								}
@@ -1194,7 +1194,7 @@ public class ProverBotanasMethod {
 							String all_pos = "((" + d1 + ">0)AND" + "(" + d2 + ">0)AND" + "(" + d3 + ">0))";
 							String all_neg = "((" + d1 + "<0)AND" + "(" + d2 + "<0)AND" + "(" + d3 + "<0))";
 							if (addIneq(all_pos + "OR" + all_neg)) {
-								if (ProverSettings.get().captionAlgebra) {
+								if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 									geo.addCaptionBotanaPolynomial(p1.toTeX().replace("=", ">") +
 										"\\land " + p2.toTeX().replace("=", ">") +
 										"\\land " + p3.toTeX().replace("=", ">") +
@@ -1227,7 +1227,7 @@ public class ProverBotanasMethod {
 										"((" + d1 + "<0)AND" + "(" + d2 + "<0)AND" + "(" + d3
 												+ "<0))";
 								if (addIneq(all_pos + "OR" + all_neg)) {
-									if (ProverSettings.get().captionAlgebra) {
+									if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 										geo.addCaptionBotanaPolynomial(
 												p1.toTeX().replace("=", ">") +
 														"\\land " + p2.toTeX().replace("=", ">") +
@@ -1255,7 +1255,7 @@ public class ProverBotanasMethod {
 							PPolynomial p = p1.multiply(p2);
 							String d = p.toString() + ">0";
 							if (addIneq(d)) {
-								if (ProverSettings.get().captionAlgebra) {
+								if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 									geo.addCaptionBotanaPolynomial(p.toTeX()
 											.replace("=", ">"));
 								}
@@ -1287,7 +1287,7 @@ public class ProverBotanasMethod {
 							PPolynomial p = p1.multiply(p2);
 							String d = p.toString() + ">0";
 							if (addIneq(d)) {
-								if (ProverSettings.get().captionAlgebra) {
+								if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 									geo.addCaptionBotanaPolynomial(p.toTeX()
 											.replace("=", ">"));
 								}
@@ -1307,7 +1307,7 @@ public class ProverBotanasMethod {
 								PPolynomial p = tripletSign(A, B, C);
 								String d = p.toString() + ">0";
 								if (addIneq(d)) {
-									if (ProverSettings.get().captionAlgebra) {
+									if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 										geo.addCaptionBotanaPolynomial(p.toTeX().replace("=", ">"));
 									}
 								}
@@ -1317,7 +1317,7 @@ public class ProverBotanasMethod {
 									PPolynomial p = tripletSignRotated(A, B, C);
 									String e = p.toString() + ">0";
 									if (addIneq(e)) {
-										if (ProverSettings.get().captionAlgebra) {
+										if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 											geo.addCaptionBotanaPolynomial(
 													p.toTeX().replace("=", ">"));
 										}
@@ -1340,7 +1340,7 @@ public class ProverBotanasMethod {
 									try {
 										String e = c.evaluateRaw(strForGiac);
 										if (addIneq(e)) {
-											if (ProverSettings.get().captionAlgebra) {
+											if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 												geo.addCaptionBotanaPolynomial(e.replaceAll("v(\\d*)", "v_{$1}").
 														replaceAll("\\(", "").
 														replaceAll("\\)",""));
@@ -1364,11 +1364,16 @@ public class ProverBotanasMethod {
 										+ geo.getLabelSimple() + "(" + v[0]
 										+ "," + v[1] + ")");
 								if (geoProver.getShowproof()) {
-									geoProver.addProofLine(CmdShowProof.DEPENDENT_VARIABLES, loc.getPlain("LetDependentPointADenotedByB",
+									char proofLineColor = CmdShowProof.DEPENDENT_VARIABLES;
+									if (algo instanceof AlgoPointOnPath) {
+										proofLineColor = CmdShowProof.ALMOST_FREE_VARIABLES;
+										// Seems to be given lowercased to avoid NPE. FIXME.
+									}
+									geoProver.addProofLine(proofLineColor, loc.getPlain("LetDependentPointADenotedByB",
 											geo.getLabelSimple(),
 											"(" + v[0] + "," + v[1] + ")"));
 								}
-								if (proverSettings.captionAlgebra) {
+								if (proverSettings.captionAlgebra || geoProver.getShowproof()) {
 									String color = "cyan";
 									if (algo instanceof AlgoPointOnPath) {
 										color = "greenyellow";
@@ -1583,7 +1588,7 @@ public class ProverBotanasMethod {
 					botanaPolynomials[0] = botanaPolynomial;
 					addGeoPolys(movingPoint, botanaPolynomials);
 					// Maybe to be removed:
-					if (proverSettings.captionAlgebra) {
+					if (proverSettings.captionAlgebra || geoProver.getShowproof()) {
 						numerical.addCaptionBotanaPolynomial(
 								botanaPolynomial.toTeX());
 					}
@@ -1717,7 +1722,7 @@ public class ProverBotanasMethod {
 					for (int j = 0; j < statement.length - minus; ++j) {
 						/* Note: the geo is not stored */
 						if (addPolynomial(statement[j])) {
-							if (proverSettings.captionAlgebra) {
+							if (proverSettings.captionAlgebra || geoProver.getShowproof()) {
 								geoStatement.addCaptionBotanaPolynomial(
 										statement[j].toTeX());
 							}
@@ -1866,7 +1871,7 @@ public class ProverBotanasMethod {
 					((AlgoDependentBoolean) algo).getProverAdapter().getExtraPolys();
 			PVariable[] extraVars =
 					((AlgoDependentBoolean) algo).getProverAdapter().getBotanaVars();
-			if (ProverSettings.get().captionAlgebra) {
+			if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 				ArrayList<Map.Entry<GeoSegment, PPolynomial>> segmentBotanaPolys =
 						((AlgoDependentBoolean) algo).getProverAdapter().getSegmentBotanaPolys();
 				Iterator<Map.Entry<GeoSegment, PPolynomial>> it = segmentBotanaPolys.iterator();
@@ -1874,7 +1879,7 @@ public class ProverBotanasMethod {
 					Map.Entry<GeoSegment, PPolynomial> entry = it.next();
 					GeoSegment s = entry.getKey();
 					PPolynomial p = entry.getValue();
-					if (ProverSettings.get().captionAlgebra) {
+					if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 						s.addCaptionBotanaPolynomial(s.getLabelTextOrHTML() + ":" + p.toTeX());
 					}
 				}
@@ -2423,7 +2428,7 @@ public class ProverBotanasMethod {
 						statements[0][index] = p;
 						index++;
 					}
-					if (ProverSettings.get().captionAlgebra) {
+					if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 						ArrayList<Map.Entry<GeoSegment, PPolynomial>> segmentBotanaPolys =
 								((AlgoDependentBoolean) algo).getProverAdapter().getSegmentBotanaPolys();
 						Iterator<Map.Entry<GeoSegment, PPolynomial>> it = segmentBotanaPolys.iterator();
@@ -2431,7 +2436,7 @@ public class ProverBotanasMethod {
 							Map.Entry<GeoSegment, PPolynomial> entry = it.next();
 							GeoSegment s = entry.getKey();
 							PPolynomial p = entry.getValue();
-							if (ProverSettings.get().captionAlgebra) {
+							if (ProverSettings.get().captionAlgebra || geoProver.getShowproof()) {
 								s.addCaptionBotanaPolynomial(
 										s.getLabelTextOrHTML() + ":" + p.toTeX());
 							}

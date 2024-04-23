@@ -30,6 +30,7 @@ public class CmdShowProof extends CmdScripting {
 
 	public static char FREE_VARIABLES = 'f';
 	public static char DEPENDENT_VARIABLES = 'd';
+	public static char ALMOST_FREE_VARIABLES = 'a';
 	public static char TEXT = 't';
 	public static char EQUATION = 'e';
 	public static char PROBLEM = 'p';
@@ -203,6 +204,9 @@ public class CmdShowProof extends CmdScripting {
 							}
 							if (type == DEPENDENT_VARIABLES || step.startsWith("v")) {
 								gcc3.setFontColor(GColor.DARK_CYAN);
+							}
+							if (type == ALMOST_FREE_VARIABLES) {
+								gcc3.setFontColor(GColor.DARK_GREEN)	;
 							}
 							if (type == NDG) {
 								gcc3.setFontColor(GColor.MAGENTA);
