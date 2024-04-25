@@ -216,7 +216,12 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 							s = ndgc.explain(getLoc());
 						}
 						if (s == null || !relTool) {
-							s = sb(ndgc.toString(getLoc()));
+							String cond = ndgc.toString(getLoc());
+							if (!relTool) {
+								// Remove HTML codes
+								cond = cond.replaceAll("<[^>]*>", "");
+							}
+							s = sb(cond);
 							if (relTool) {
 								s.insert(0, getLoc().getMenu("not") + " ");
 							}

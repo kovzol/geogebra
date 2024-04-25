@@ -84,6 +84,7 @@ public class NDGDetector {
 		 * Maybe this condition was already detected, or marked as unreadable.
 		 * By using the lookup table, we don't have to do heavy computations
 		 * twice.
+		 * TODO: Is this cached also if the vaiables are new? Check!
 		 */
 		NDGCondition ndgc = null;
 		String keyString = p.substitute(substitutions).toString();

@@ -3923,7 +3923,13 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 		sb.append("<b><font color=\"#");
 		sb.append(StringUtil.toHexString(colorAdapter));
 		sb.append("\">");
-		sb.append(indicesToHTML(formatedLabel, false));
+		String label = indicesToHTML(formatedLabel, false);
+		// Change Greek characters from &#945; ... to their UTF-8 variants:
+		for (char i = 945; i <= 969; i++) {
+			String c = "&#" + Integer.valueOf(i) + ";";
+			label = label.replaceAll(c, String.valueOf(i));
+		}
+		sb.append(label);
 		sb.append("</font></b>");
 		return sb.toString();
 	}

@@ -1667,8 +1667,19 @@ public class ProverBotanasMethod {
 					if (algo.input[0] instanceof GeoAngle
 							&& algo.input[1] instanceof GeoAngle) {
 						NDGCondition ndgc = new NDGCondition();
-						ndgc.setCondition(algo.input[0].getLabelSimple() + " + " +
-								algo.input[1].getLabelSimple() + " = 180" + Unicode.DEGREE_CHAR);
+						ndgc.setCondition(algo.input[0].getColoredLabel() + " + " +
+								algo.input[1].getColoredLabel() + " = 180" + Unicode.DEGREE_CHAR);
+
+						/* Similar code with creating the underlying objects...
+						Kernel kernel = geoStatement.getKernel();
+						ExpressionNode lhs1 = new ExpressionNode(kernel, algo.input[0]);
+						ExpressionNode lhs2 = new ExpressionNode(kernel, algo.input[1]);
+						ExpressionNode lhs = new ExpressionNode(kernel, lhs1, Operation.PLUS, lhs2);
+						ExpressionNode rhs = new ExpressionNode(kernel, Math.PI);
+						Equation eq = new Equation(kernel, lhs, rhs);
+						ndgc.setCondition(eq.toString(StringTemplate.algebraTemplate));
+						 */
+
 						geoProver.addNDGcondition(ndgc);
 					}
 				}
@@ -1691,8 +1702,8 @@ public class ProverBotanasMethod {
 						if ((algo.input[0] instanceof GeoAngle
 								&& algo.input[1] instanceof GeoAngle)) {
 							NDGCondition ndgc = new NDGCondition();
-							ndgc.setCondition(algo.input[0].getLabelSimple() + " + " +
-									algo.input[1].getLabelSimple() + " = 180" + Unicode.DEGREE_CHAR);
+							ndgc.setCondition(algo.input[0].getColoredLabel() + " + " +
+									algo.input[1].getColoredLabel() + " = 180" + Unicode.DEGREE_CHAR);
 							geoProver.addNDGcondition(ndgc);
 						}
 					}

@@ -300,8 +300,11 @@ public abstract class Prover {
 				s = sb(RelationNumerical.congruentSegmentString(
 						getGeos()[0], getGeos()[1],
 						false, loc));
-			} else if (condition.contains("=")) {
-				s = sb(condition.replace("=", Unicode.NOTEQUAL + ""));
+			} else if (condition.contains(" = ")) { // This is a hack!
+				// The condition string may contain HTML codes like color=... which
+				// includes an equation sign. We hope that " = " is present only if
+				// we added this inside the prover as an essential condition!
+				s = sb(condition.replace(" = ", " " + Unicode.NOTEQUAL + " "));
 			}
 			else {
 				s = sb(loc.getPlain("Not") + " " + condition);
