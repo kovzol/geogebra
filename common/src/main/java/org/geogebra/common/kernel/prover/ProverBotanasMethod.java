@@ -2781,6 +2781,15 @@ public class ProverBotanasMethod {
 											as, substitutions, naivDim)) {
 										Log.debug(
 												"Statement is NOT GENERALLY FALSE");
+										if (as.interpretTrueAsUndefined) {
+											Log.debug("Interpreting TRUE as UNKNOWN");
+											String reasonForUnknown = loc.getMenuDefault("WeakeningTrue",
+													"A weakening of the statement is true.");
+											if (prover.getShowproof()) {
+												prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
+											}
+											return ProofResult.UNKNOWN;
+										}
 										return ProofResult.TRUE_ON_COMPONENTS;
 									}
 									if (!investigateNonGeometricMaximalIndependentSet) {
@@ -2811,6 +2820,16 @@ public class ProverBotanasMethod {
 											if (poly.isZero()) {
 												Log.debug(
 														"Statement is NOT GENERALLY FALSE");
+												if (as.interpretTrueAsUndefined) {
+													Log.debug("Interpreting TRUE as UNKNOWN");
+													String reasonForUnknown = loc.getMenuDefault("WeakeningTrue",
+															"A weakening of the statement is true.");
+													if (prover.getShowproof()) {
+														prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
+													}
+													return ProofResult.UNKNOWN;
+												}
+
 												return ProofResult.TRUE_ON_COMPONENTS;
 											}
 										}
@@ -2836,15 +2855,6 @@ public class ProverBotanasMethod {
 					 * generally true with some NDGs.
 					 */
 					if (!poly.isConstant()) {
-						if (as.interpretTrueAsUndefined) {
-							Log.debug("Interpreting TRUE as UNKNOWN");
-							String reasonForUnknown = loc.getMenuDefault("WeakeningTrue",
-									"A weakening of the statement is true.");
-							if (prover.getShowproof()) {
-								prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
-							}
-							return ProofResult.UNKNOWN;
-						}
 						ndgproduct = ndgproduct.multiply(poly);
 						NDGCondition ndgc = ndgd.detect(poly);
 						if (ndgc == null) {
@@ -2988,10 +2998,30 @@ public class ProverBotanasMethod {
 				prover.addProofLine(CmdShowProof.EQUATION, "sndg:" + ndgproduct + "=0");
 				syzygy(as, ndgproduct, substitutions, statement.getKernel(), proverSettings.transcext, prover);
 			}
+			if (as.interpretTrueAsUndefined) {
+				Log.debug("Interpreting TRUE as UNKNOWN");
+				String reasonForUnknown = loc.getMenuDefault("WeakeningTrue",
+						"A weakening of the statement is true.");
+				if (prover.getShowproof()) {
+					prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
+				}
+				return ProofResult.UNKNOWN;
+			}
+
 			return ProofResult.TRUE_NDG_UNREADABLE;
 
 		}
 		Log.debug("Statement is GENERALLY TRUE");
+		if (as.interpretTrueAsUndefined) {
+			Log.debug("Interpreting TRUE as UNKNOWN");
+			String reasonForUnknown = loc.getMenuDefault("WeakeningTrue",
+					"A weakening of the statement is true.");
+			if (prover.getShowproof()) {
+				prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
+			}
+			return ProofResult.UNKNOWN;
+		}
+
 		if (prover.getShowproof()) {
 			// We compute the syzygy. TODO: Do this for the other cases as well.
 			syzygy(as, ndgproduct, substitutions, statement.getKernel(), proverSettings.transcext, prover);
