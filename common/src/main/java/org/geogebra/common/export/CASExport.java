@@ -276,6 +276,7 @@ public class CASExport {
 				input = input.replace(Unicode.PARALLEL + "", " || ");
 				input = input.replace(Unicode.PERPENDICULAR + "", " _|_ ");
 				input = input.replace(Unicode.QUESTEQ + "", " == ");
+				input = input.replace(Unicode.NOTEQUAL + "", " != ");
 				// TODO: There may be other characters to replace, maybe another method can
 				// simplify this...
 				txt += "(* " + input + " *)\n";

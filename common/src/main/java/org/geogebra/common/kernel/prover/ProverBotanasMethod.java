@@ -333,14 +333,6 @@ public class ProverBotanasMethod {
 		 * e.g. for vertical or horizontal lines.
 		 */
 		Set<PVariable> almostFreeVariables = new TreeSet<>();
-		/**
-		 * Should the "false" result be interpreted as undefined?
-		 */
-		boolean interpretFalseAsUndefined = false;
-		/**
-		 * Should the "true" result be interpreted as undefined?
-		 */
-		boolean interpretTrueAsUndefined = false;
 
 		private boolean disallowFixSecondPoint = false;
 
@@ -1619,7 +1611,6 @@ public class ProverBotanasMethod {
 				loc = geoStatement.getConstruction().getKernel().getLocalization();
 			}
 				try {
-				interpretTrueAsUndefined = false;
 				/*
 				 * The sets of statement polynomials. The last equation of each
 				 * set will be negated.
@@ -1675,9 +1666,10 @@ public class ProverBotanasMethod {
 				if (algo instanceof AlgoAreCongruent) {
 					if (algo.input[0] instanceof GeoAngle
 							&& algo.input[1] instanceof GeoAngle) {
-						interpretTrueAsUndefined = true;
-						// FIXME: this should be removed, and an essential
-						// condition added
+						NDGCondition ndgc = new NDGCondition();
+						ndgc.setCondition(algo.input[0].getLabelSimple() + " + " +
+								algo.input[1].getLabelSimple() + " = 180" + Unicode.DEGREE_CHAR);
+						geoProver.addNDGcondition(ndgc);
 					}
 				}
 				if (algo instanceof AlgoDependentBoolean) {
@@ -1688,19 +1680,20 @@ public class ProverBotanasMethod {
 								&& (((GeoConic) algo.input[0]).isEllipse()
 								|| ((GeoConic) algo.input[0])
 								.isHyperbola())) {
-							interpretTrueAsUndefined = true;
+							// FIXME: Add essential conditions.
 						} else if (algo.input[1] instanceof GeoConic
 								&& (((GeoConic) algo.input[1]).isEllipse()
 								|| ((GeoConic) algo.input[1])
 								.isHyperbola())) {
-							interpretTrueAsUndefined = true;
+							// FIXME: Add essential conditions.
 						}
 					} else if (operation == EQUAL_BOOLEAN) {
 						if ((algo.input[0] instanceof GeoAngle
 								&& algo.input[1] instanceof GeoAngle)) {
-							interpretTrueAsUndefined = true;
-							// FIXME: this should be removed, and an essential
-							// condition added
+							NDGCondition ndgc = new NDGCondition();
+							ndgc.setCondition(algo.input[0].getLabelSimple() + " + " +
+									algo.input[1].getLabelSimple() + " = 180" + Unicode.DEGREE_CHAR);
+							geoProver.addNDGcondition(ndgc);
 						}
 					}
 				}
@@ -2781,15 +2774,6 @@ public class ProverBotanasMethod {
 											as, substitutions, naivDim)) {
 										Log.debug(
 												"Statement is NOT GENERALLY FALSE");
-										if (as.interpretTrueAsUndefined) {
-											Log.debug("Interpreting TRUE as UNKNOWN");
-											String reasonForUnknown = loc.getMenuDefault("WeakeningTrue",
-													"A weakening of the statement is true.");
-											if (prover.getShowproof()) {
-												prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
-											}
-											return ProofResult.UNKNOWN;
-										}
 										return ProofResult.TRUE_ON_COMPONENTS;
 									}
 									if (!investigateNonGeometricMaximalIndependentSet) {
@@ -2820,16 +2804,6 @@ public class ProverBotanasMethod {
 											if (poly.isZero()) {
 												Log.debug(
 														"Statement is NOT GENERALLY FALSE");
-												if (as.interpretTrueAsUndefined) {
-													Log.debug("Interpreting TRUE as UNKNOWN");
-													String reasonForUnknown = loc.getMenuDefault("WeakeningTrue",
-															"A weakening of the statement is true.");
-													if (prover.getShowproof()) {
-														prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
-													}
-													return ProofResult.UNKNOWN;
-												}
-
 												return ProofResult.TRUE_ON_COMPONENTS;
 											}
 										}
@@ -2843,10 +2817,6 @@ public class ProverBotanasMethod {
 						 * false.
 						 */
 
-						if (as.interpretFalseAsUndefined) {
-							Log.debug("Interpreting FALSE as UNKNOWN");
-							return ProofResult.UNKNOWN;
-						}
 						return ProofResult.FALSE;
 					}
 
@@ -2996,31 +2966,14 @@ public class ProverBotanasMethod {
 				ndgproduct = ndgproduct.substitute(substitutions);
 				prover.addProofLine("After substitutions:");
 				prover.addProofLine(CmdShowProof.EQUATION, "sndg:" + ndgproduct + "=0");
+				addEssentialConditions(prover);
 				syzygy(as, ndgproduct, substitutions, statement.getKernel(), proverSettings.transcext, prover);
 			}
-			if (as.interpretTrueAsUndefined) {
-				Log.debug("Interpreting TRUE as UNKNOWN");
-				String reasonForUnknown = loc.getMenuDefault("WeakeningTrue",
-						"A weakening of the statement is true.");
-				if (prover.getShowproof()) {
-					prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
-				}
-				return ProofResult.UNKNOWN;
-			}
-
 			return ProofResult.TRUE_NDG_UNREADABLE;
 
 		}
 		Log.debug("Statement is GENERALLY TRUE");
-		if (as.interpretTrueAsUndefined) {
-			Log.debug("Interpreting TRUE as UNKNOWN");
-			String reasonForUnknown = loc.getMenuDefault("WeakeningTrue",
-					"A weakening of the statement is true.");
-			if (prover.getShowproof()) {
-				prover.addProofLine(CmdShowProof.PROBLEM, reasonForUnknown);
-			}
-			return ProofResult.UNKNOWN;
-		}
+		addEssentialConditions(prover);
 
 		if (prover.getShowproof()) {
 			// We compute the syzygy. TODO: Do this for the other cases as well.
@@ -3028,6 +2981,20 @@ public class ProverBotanasMethod {
 
 		}
 		return ProofResult.TRUE;
+	}
+
+	private static void addEssentialConditions(Prover prover) {
+		Localization loc = null;
+		loc = prover.getConstruction().getApplication().getLocalization();
+		prover.addProofLine(CmdShowProof.NDG, loc.getMenuDefault("StatementRequiresEssentialConditions",
+				"The statement requires some essential conditions:"));
+		for (NDGCondition ndg : prover.getNDGConditions()) {
+			if (ndg.getPolys() == null) {
+				String explanation = ndg.explain(loc).toString();
+				explanation = explanation.replaceAll("<[^>]*>", "");
+				prover.addProofLine(CmdShowProof.NDG, Unicode.BULLET + " " + explanation);
+			}
+		}
 	}
 
 	public static void syzygy(AlgebraicStatement as, PPolynomial ndgproduct, TreeMap<PVariable, BigInteger> substitutions,

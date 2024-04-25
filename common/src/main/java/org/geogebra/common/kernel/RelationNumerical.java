@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import org.geogebra.common.kernel.RelationNumerical.Report.RelationCommand;
 import org.geogebra.common.kernel.algos.AlgoIntersectConics;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
+import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -357,6 +358,8 @@ public class RelationNumerical {
 			return relation((GeoLine) b, (GeoConic) a);
 		} else if (a instanceof GeoLine && b instanceof GeoConic) {
 			return relation((GeoLine) a, (GeoConic) b);
+		} else if (a instanceof GeoAngle && b instanceof GeoAngle) {
+			return relation((GeoAngle) a, (GeoAngle) b);
 		} else if (a instanceof GeoNumberValue && b instanceof GeoNumberValue) {
 			return relation((GeoNumberValue) a, (GeoNumberValue) b);
 		} else if (a instanceof GeoList && b instanceof GeoList) {
@@ -768,6 +771,13 @@ public class RelationNumerical {
 		String str = equalityString(a, b, bool); // This was equalityStringExact
 													// originally.
 		register(bool, null, str); // No symbolically supported.
+		return reports;
+	}
+
+	final private Set<Report> relation(GeoAngle a, GeoAngle b) {
+		Boolean bool = a.isEqual(b);
+		String str = equalityString(a, b, bool);
+		register(bool, RelationCommand.AreCongruent, str);
 		return reports;
 	}
 

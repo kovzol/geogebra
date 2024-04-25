@@ -300,10 +300,14 @@ public abstract class Prover {
 				s = sb(RelationNumerical.congruentSegmentString(
 						getGeos()[0], getGeos()[1],
 						false, loc));
+			} else if (condition.contains("=")) {
+				s = sb(condition.replace("=", Unicode.NOTEQUAL + ""));
+			}
+			else {
+				s = sb(loc.getPlain("Not") + " " + condition);
 			}
 			return s;
 		}
-
 
 		/**
 		 * Should this condition be used in the Discover command?
