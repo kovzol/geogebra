@@ -351,5 +351,11 @@ public class AlgoIntersectSingle extends AlgoIntersect implements
 		botanaVars = null;
 		botanaVarsDescr = null;
 		botanaPolynomials = null;
+		if (algo instanceof AlgoIntersectLineConic) {
+			((AlgoIntersectLineConic) algo).reset();
+		}
+		if (algo instanceof AlgoIntersectConics) {
+			((AlgoIntersectConics) algo).reset();
+		}
 	}
 }

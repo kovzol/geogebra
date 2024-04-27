@@ -136,6 +136,7 @@ public class AlgoLocusEquation extends AlgoElement implements UsesCAS {
 
 		efficientInputFingerprint = fingerprint(efficientInput);
 		myPrecision = kernel.precision();
+		kernel.getApplication().resetVariableNumbering();
 	}
 
 	/**
