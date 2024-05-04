@@ -670,6 +670,13 @@ public class Compute {
 				appendIneqs(s);
 				String[] substitution = s.split("=");
 				vars += "," + substitution[0];
+				// It is possible that the rhs contains a variable too (not just a constant):
+				String rhsCode = "lvar(" + substitution[1] + ")";
+				String rhsVars = executeGiac(rhsCode); // it returns a list
+				rhsVars = removeHeadTail(rhsVars, 1); // trim { and }
+				if (!rhsVars.equals("")) { // if there are variables in the rhs, add them to vars
+					vars += "," + rhsVars;
+				}
 			}
 		}
 
