@@ -85,7 +85,7 @@ public class CASExport {
 					+ "</script>\n";
 		}
 
-		html += "</head>\n<body>\n";
+		html += "</head>\n<body style=\"background-color: " + numberingBackgroundColor + "\">\n";
 
 		Construction cons = app.kernel.getConstruction();
 		CASView cv = (CASView) cons.getApplication().getView(VIEW_CAS);
