@@ -247,6 +247,35 @@ public class StringUtil extends com.himamis.retex.editor.share.input.Character {
 		return sb.toString();
 	}
 
+	/*
+	 * Prepare a string to be used as HTML code: if it contains
+	 * non-ASCII characters, they are converted to "&#...;".
+	 */
+	final public static String fixForHTML(String str) {
+		if (str == null) {
+			return null;
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		// convert every single character and append it to sb
+		int len = str.length();
+		for (int i = 0; i < len; i++) {
+			char c = str.charAt(i);
+			int code = c;
+
+			// standard characters have code 32 to 126, also include characters below it
+			if ((code >= 0 && code <= 126)) {
+				sb.append(c);
+			} else {
+				sb.append("&#");
+				sb.append(code);
+				sb.append(';');
+				}
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Converts the given unicode string to a string where special characters
 	 * are converted to <code>&#encoding;</code> sequences . The resulting

@@ -6,6 +6,7 @@ import org.geogebra.common.main.HTML5Export;
 import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.common.util.FileExtensions;
+import org.geogebra.common.util.StringUtil;
 import org.geogebra.web.full.gui.dialog.ExportImageDialog;
 import org.geogebra.web.html5.Browser;
 import org.geogebra.web.html5.euclidian.EuclidianViewWInterface;
@@ -222,7 +223,7 @@ public class ExportMenuW extends AriaMenuBar implements MenuBarI {
 						menu.hide();
 						CASExport casExp = new CASExport(app);
 						String html = casExp.createHtml();
-						// getCopyPaste().copyTextToSystemClipboard(html);
+						html = StringUtil.fixForHTML(html);
 						app.exportStringToFile("html", html);
 					}
 				});
