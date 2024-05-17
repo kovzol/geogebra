@@ -74,6 +74,10 @@ public class GeoGebra {
 			setDefaults(screenDPI, screenX, screenY);
 		}
 
+		if (AppD.MAC_OS) {
+			System.setProperty("apple.awt.application.name", "GeoGebra Discovery");
+		}
+
 		boolean showSplash = true;
 		if (!args.getBooleanValue("showSplash", true)) {
 			showSplash = false;

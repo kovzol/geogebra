@@ -263,7 +263,7 @@ public class GeoGebraFrame extends JFrame
 	}
 
 	String getPreferredTitle() {
-		return app.getCurrentFile() == null ? "GeoGebra Classic 5"
+		return app.getCurrentFile() == null ? "GeoGebra Discovery 5"
 				: app.getCurrentFile().getName();
 	}
 
