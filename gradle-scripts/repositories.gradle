@@ -21,24 +21,18 @@ allprojects {
             mavenCentral()
             jcenter()
             google()
-            maven { url 'http://dev.geogebra.org/maven2' }
+            maven { url 'https://dev.geogebra.org/maven2' }
+            maven { url 'https://prover-test.geogebra.org/students/maven2/' }
         }
     }
 
     repositories {
-        maven { url 'http://dev.geogebra.org/maven2' }
+        maven { url 'https://dev.geogebra.org/maven2' }
+        maven { url 'https://prover-test.geogebra.org/students/maven2/' }
         mavenCentral()
         jcenter()
         google()
         maven { url 'http://repo.vertispan.com/gwt-snapshot' }
-
-        maven {
-            url "https://maven.pkg.github.com/kovzol/giac-1"
-            credentials {
-                username "kovzol"
-                password "ghp" + "_" + "At4osn2AkMKk10tiFCcc" + "YiMiGtZxDz3zFKmV" // read-only access
-            }
-        }
 
         def github = ivy { url 'https://github.com/'
               patternLayout {
