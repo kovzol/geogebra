@@ -306,7 +306,7 @@ public abstract class Localization {
 		String rettext = "";
 		int rettextlen = 0;
 		String thisChar;
-		String ignoredChars = "_{}";
+		String ignoredChars = "_{}()[]";
 
 		while ((rettextlen < length) && (pos > 0)) {
 			thisChar = text.substring(pos - 1, pos);
