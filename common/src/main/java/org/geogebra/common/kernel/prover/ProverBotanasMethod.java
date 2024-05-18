@@ -2977,14 +2977,14 @@ public class ProverBotanasMethod {
 				ndgproduct = ndgproduct.substitute(substitutions);
 				prover.addProofLine("After substitutions:");
 				prover.addProofLine(CmdShowProof.EQUATION, "sndg:" + ndgproduct + "=0");
-				addEssentialConditions(prover);
+				addConditions(prover);
 				syzygy(as, ndgproduct, substitutions, statement.getKernel(), proverSettings.transcext, prover);
 			}
 			return ProofResult.TRUE_NDG_UNREADABLE;
 
 		}
 		Log.debug("Statement is GENERALLY TRUE");
-		addEssentialConditions(prover);
+		addConditions(prover);
 
 		if (prover.getShowproof()) {
 			// We compute the syzygy. TODO: Do this for the other cases as well.
@@ -2994,11 +2994,11 @@ public class ProverBotanasMethod {
 		return ProofResult.TRUE;
 	}
 
-	private static void addEssentialConditions(Prover prover) {
+	private static void addConditions(Prover prover) {
 		Localization loc = null;
 		loc = prover.getConstruction().getApplication().getLocalization();
-		prover.addProofLine(CmdShowProof.NDG, loc.getMenuDefault("StatementRequiresEssentialConditions",
-				"The statement requires some essential conditions:"));
+		prover.addProofLine(CmdShowProof.NDG, loc.getMenuDefault("StatementRequiresConditions",
+				"The statement requires some conditions:"));
 		for (NDGCondition ndg : prover.getNDGConditions()) {
 			if (ndg.getPolys() == null) {
 				String explanation = ndg.explain(loc).toString();
