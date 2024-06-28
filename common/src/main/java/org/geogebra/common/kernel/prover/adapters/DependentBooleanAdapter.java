@@ -219,12 +219,18 @@ public class DependentBooleanAdapter extends ProverAdapter {
 				// get GeoNumeric from construction with given label
 				GeoNumeric geo = (GeoNumeric) cons.geoTableVarLookup(varStr);
 				// get substitute formula of GeoNumeric
-				ExpressionNode replExp = ((AlgoDependentNumber) geo
-						.getParentAlgorithm()).getExpression();
-				GeoNumericReplacer repl = GeoNumericReplacer.getReplacer(geo,
-						replExp, kernel);
-				// replace GeoNumeric with formula expression
-				rootCopy.traverse(repl);
+				if (geo.getParentAlgorithm() instanceof AlgoDependentNumber) {
+					ExpressionNode replExp = ((AlgoDependentNumber) geo
+							.getParentAlgorithm()).getExpression();
+					GeoNumericReplacer repl = GeoNumericReplacer.getReplacer(geo,
+							replExp, kernel);
+					// replace GeoNumeric with formula expression
+					rootCopy.traverse(repl);
+				} else {
+					// unimplemented
+					throw new NoSymbolicParametersException();
+				}
+
 			}
 			// traverse substituted expression to collect segments
 			traverseExpression(rootCopy, kernel);
