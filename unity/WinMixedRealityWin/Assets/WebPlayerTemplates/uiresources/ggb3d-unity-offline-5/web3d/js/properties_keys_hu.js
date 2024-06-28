@@ -2037,7 +2037,7 @@ __GGB__keysVar["hu"].menu = {
     "Light": "F\xe9nyer\u0151ss\xe9g",
     "Lightness": "Megvil\xe1g\xedt\xe1s",
     "Line": "Egyenes",
-    "LineAB": "Line %0, %1",
+    "LineAB": "%0, %1 egyenes",
     "LineBisector": "Szakaszfelez\u0151",
     "LineBisector.Help": "K\xe9t pont vagy egy szakasz",
     "LineBisectorAB": "%0, %1 szakafelez\u0151 mer\u0151legese",

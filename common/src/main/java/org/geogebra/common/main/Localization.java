@@ -265,7 +265,17 @@ public abstract class Localization {
 					if (match < text.length() - 5) {
 						char checked = Character
 								.toLowerCase(text.charAt(match + 5));
-						String consonants = "bcdfghjklmnpqrstvwx2346789";
+						// It's possible that the first character is a parenthesis.
+						// Then, get the next character instead.
+						if (checked == '[' || checked == '(') {
+							checked = Character
+									.toLowerCase(text.charAt(match + 6));
+						}
+						// String consonants = "bcdfghjklmnpqrstvwx2346789";
+						// In fact, "f", "l", "m", "n", "x" are pronounced
+						// like "ef", "el", "em", "en", "ix", so they
+						// need to be handled normally.
+						String consonants = "bcdghjkpqtvw2346789";
 						int match2 = consonants.indexOf(checked);
 						String first = text.substring(0, match + 1);
 						String last = text.substring(match + 4);
