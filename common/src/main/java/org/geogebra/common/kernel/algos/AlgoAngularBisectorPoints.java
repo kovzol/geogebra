@@ -31,6 +31,7 @@ import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.MyMath;
 
 /**
@@ -293,20 +294,16 @@ public class AlgoAngularBisectorPoints extends AlgoElement
 				botanaVars[0] = new PVariable(kernel);
 				botanaVars[1] = new PVariable(kernel);
 				botanaVarsDescr = new String[6];
-				botanaVarsDescr[0] = "The x value of the midpoint of the rhombus (which the angular bisector "
-						+ geo.getLabelSimple() + " will pass through)";
-				botanaVarsDescr[1] = "The y value of the midpoint of the rhombus (which the angular bisector "
-						+ geo.getLabelSimple() + " will pass through)";
+				setBotanaVarsDescr1(0, "x", geo);
+				setBotanaVarsDescr1(1, "y", geo);
 				// C, that is, the vertex of the angle.
 				botanaVars[2] = vC[0];
 				botanaVars[3] = vC[1];
 				// S, a helper point.
 				botanaVars[4] = new PVariable(kernel);
 				botanaVars[5] = new PVariable(kernel);
-				botanaVarsDescr[4] = "The x value of the helper point that is mirror of ("
-						+ vA[0] + "," + vA[1] + ") about (" + botanaVars[0] + "," + botanaVars[1] + ")";
-				botanaVarsDescr[5] = "The y value of the helper point that is mirror of ("
-						+ vA[0] + "," + vA[1] + ") about (" + botanaVars[0] + "," + botanaVars[1] + ")";
+				setBotanaVarsDescr2(4, "x", vA[0], vA[1], botanaVars[0], botanaVars[1]);
+				setBotanaVarsDescr2(5, "y", vA[0], vA[1], botanaVars[0], botanaVars[1]);
 			}
 
 			botanaPolynomials = new PPolynomial[4];
@@ -331,6 +328,22 @@ public class AlgoAngularBisectorPoints extends AlgoElement
 		}
 		throw new NoSymbolicParametersException();
 
+	}
+
+	// Verbatim copy from AlogAngularBisectorLines, FIXME: unify
+	void setBotanaVarsDescr1(int pos, String coord, GeoElementND geo) {
+		Localization loc = g.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfMidpointOfRhombusAngularBisectorB",
+				"%0 value of midpoint of the rhombus (which the angular bisector %1 will pass through)",
+				coord, geo.getLabelSimple());
+	}
+
+	// Verbatim copy from AlogAngularBisectorLines, FIXME: unify
+	void setBotanaVarsDescr2(int pos, String coord, PVariable v1, PVariable v2, PVariable v3, PVariable v4) {
+		Localization loc = g.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfHelperPointMirrorBCAboutDE",
+				"%0 value of the helper point that is a mirror of (%1,%2) about (%3,%4)",
+				coord, v1.toString(), v2.toString(), v3.toString(), v4.toString());
 	}
 
 	@Override

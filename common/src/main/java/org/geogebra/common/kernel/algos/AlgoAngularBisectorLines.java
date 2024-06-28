@@ -32,6 +32,7 @@ import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.MyMath;
 
 /**
@@ -446,31 +447,34 @@ public class AlgoAngularBisectorLines extends AlgoElement
 					botanaVars[0] = new PVariable(kernel);
 					botanaVars[1] = new PVariable(kernel);
 					botanaVarsDescr = new String[10];
+					/*
 					botanaVarsDescr[0] = "The x value of the midpoint of the rhombus (which the angular bisector "
 							+ geo.getLabelSimple() + " will pass through)";
 					botanaVarsDescr[1] = "The y value of the midpoint of the rhombus (which the angular bisector "
 							+ geo.getLabelSimple() + " will pass through)";
+					 */
+					setBotanaVarsDescr1(0, "x", geo);
+					setBotanaVarsDescr1(1, "y", geo);
 					// C, that is, the vertex of the angle.
 					botanaVars[2] = vC[0];
 					botanaVars[3] = vC[1];
-					// botanaVarsDescr[2] = "The x value of the intersection of the two lines";
-					// botanaVarsDescr[3] = "The y value of the intersection of the two lines";
 					// S, a helper point.
 					botanaVars[4] = new PVariable(kernel);
 					botanaVars[5] = new PVariable(kernel);
+					/*
 					botanaVarsDescr[4] = "The x value of the helper point that is mirror of ("
 						+ vA[0] + "," + vA[1] + ") about (" + botanaVars[0] + "," + botanaVars[1] + ")";
 					botanaVarsDescr[5] = "The y value of the helper point that is mirror of ("
 							+ vA[0] + "," + vA[1] + ") about (" + botanaVars[0] + "," + botanaVars[1] + ")";
+					 */
+					setBotanaVarsDescr2(4, "x", vA[0], vA[1], botanaVars[0], botanaVars[1]);
+					setBotanaVarsDescr2(5, "y", vA[0], vA[1], botanaVars[0], botanaVars[1]);
+
 					// Save vA and vB for further use:
 					botanaVars[6] = vA[0];
 					botanaVars[7] = vA[1];
-					// botanaVarsDescr[6] = "The x value of point A";
-					// botanaVarsDescr[7] = "The y value of point A";
 					botanaVars[8] = vB[0];
 					botanaVars[9] = vB[1];
-					// botanaVarsDescr[8] = "The x value of point B";
-					// botanaVarsDescr[9] = "The y value of point B";
 				}
 
 				botanaPolynomials = new PPolynomial[polysNeeded];
@@ -501,6 +505,20 @@ public class AlgoAngularBisectorLines extends AlgoElement
 		}
 		throw new NoSymbolicParametersException();
 
+	}
+
+	void setBotanaVarsDescr1(int pos, String coord, GeoElementND geo) {
+		Localization loc = g.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfMidpointOfRhombusAngularBisectorB",
+				"%0 value of midpoint of the rhombus (which the angular bisector %1 will pass through)",
+				coord, geo.getLabelSimple());
+	}
+
+	void setBotanaVarsDescr2(int pos, String coord, PVariable v1, PVariable v2, PVariable v3, PVariable v4) {
+		Localization loc = g.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfHelperPointMirrorBCAboutDE",
+				"%0 value of the helper point that is a mirror of (%1,%2) about (%3,%4)",
+				coord, v1.toString(), v2.toString(), v3.toString(), v4.toString());
 	}
 
 	@Override
