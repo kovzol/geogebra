@@ -17,6 +17,8 @@ the Free Software Foundation.
  */
 package org.geogebra.desktop.main;
 
+import static org.geogebra.desktop.gui.GuiManagerD.removeExtension;
+
 import java.awt.AWTKeyStroke;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -96,6 +98,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -5341,13 +5344,58 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	public void exportStringToFile(String ext, String content) {
 		try {
 			StringBuilder fileName = new StringBuilder();
-			fileName.append("test.");
-			fileName.append(ext);
-			BufferedWriter objBufferedWriter = new BufferedWriter(
-					new OutputStreamWriter(new FileOutputStream(fileName.toString()), "UTF-8"));
-			Log.debug("Export to " + fileName);
-			objBufferedWriter.write(content);
-			objBufferedWriter.close();
+
+
+			if (this.getCurrentFile() != null) {
+				String thisFileName = removeExtension(this.getCurrentFile()).getName();
+				fileName.append(thisFileName);
+			} else {
+				fileName.append("geogebra-export");
+			}
+			fileName.append("." + ext);
+
+			JFrame parentFrame = new JFrame();
+
+			UIManager.put("OptionPane.yesButtonText", loc.getMenu("Overwrite"));
+			UIManager.put("OptionPane.noButtonText", loc.getMenu("DontOverwrite"));
+			UIManager.put("OptionPane.cancelButtonText", loc.getMenu("Cancel"));
+
+			JFileChooser fileChooser = new JFileChooser() {
+				@Override
+				public void approveSelection(){
+					File f = getSelectedFile();
+					if(f.exists() && getDialogType() == SAVE_DIALOG){
+						int result = JOptionPane.showConfirmDialog(this,
+								loc.getMenu("OverwriteFile"),loc.getMenu("Question"),
+								JOptionPane.YES_NO_CANCEL_OPTION);
+						switch(result){
+						case JOptionPane.YES_OPTION:
+							super.approveSelection();
+							return;
+						case JOptionPane.NO_OPTION:
+							return;
+						case JOptionPane.CLOSED_OPTION:
+							return;
+						case JOptionPane.CANCEL_OPTION:
+							cancelSelection();
+							return;
+						}
+					}
+					super.approveSelection();
+				}
+			};
+			fileChooser.setDialogTitle(loc.getMenu("Export"));
+			fileChooser.setSelectedFile(new File(fileName.toString()));
+			int userSelection = fileChooser.showSaveDialog(parentFrame);
+			if (userSelection == JFileChooser.APPROVE_OPTION) {
+				File fileToSave = fileChooser.getSelectedFile();
+				BufferedWriter objBufferedWriter = new BufferedWriter(
+						new OutputStreamWriter(new FileOutputStream(fileToSave),
+								"UTF-8"));
+				Log.debug("Export to " + fileName);
+				objBufferedWriter.write(content);
+				objBufferedWriter.close();
+			}
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
