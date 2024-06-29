@@ -108,6 +108,7 @@ public class CASExport {
 				input = fullInput;
 			} else {
 				input = cell.getInput(StringTemplate.defaultTemplate);
+				input = input.replace("<", "&gt;");
 			}
 			GColor color = cell.getFontColor();
 			String colorString = color.toString();
