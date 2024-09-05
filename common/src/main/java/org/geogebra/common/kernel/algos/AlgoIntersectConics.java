@@ -1506,6 +1506,9 @@ public class AlgoIntersectConics extends AlgoIntersect implements SymbolicParame
 
 	@Override
 	public void reset() {
+		if (proverAdapter != null) {
+			proverAdapter.reset();
+		}
 		botanaVarsDescr = null;
 	}
 

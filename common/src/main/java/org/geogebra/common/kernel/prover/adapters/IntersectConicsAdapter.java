@@ -265,4 +265,9 @@ public class IntersectConicsAdapter {
 	public PVariable[] getBotanaVars(GeoElementND geo) {
 		return botanaVars.get(geo);
 	}
+
+	public void reset() {
+		botanaVars = null;
+		botanaPolynomials = null;
+	}
 }
