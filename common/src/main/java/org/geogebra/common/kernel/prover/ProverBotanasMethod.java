@@ -1419,7 +1419,7 @@ public class ProverBotanasMethod {
 									String[] descriptions = ((SymbolicParametersBotanaAlgo) geo)
 											.getBotanaVarsDescr(geo);
 									// Describe objects that have non-trivial descriptions:
-									if (geoProver.getShowproof()) {
+									if (geoProver.getShowproof() && descriptions != null) {
 										int descriptiveLines = 0;
 										for (int i = 0; i < descriptions.length; i++) {
 											if (descriptions[i] != null) {
