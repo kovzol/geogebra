@@ -70,18 +70,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	 */
 	public AlgoProveDetails(Construction cons, GeoElement root,
 			boolean relationTool, boolean discovery, boolean showproof) {
-		super(cons);
-		this.root = root;
-		this.relTool = relationTool;
-		this.discovery = discovery;
-		this.showproof = showproof;
-
-		list = new GeoList(cons);
-		setInputOutput(); // for AlgoElement
-
-		// compute value of dependent number
-		initialCompute();
-		compute();
+		this(cons, root, relationTool, discovery, showproof, false);
 	}
 
 	/**
