@@ -49,6 +49,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	private boolean relTool = false;
 	private boolean discovery = false;
 	private boolean showproof = false;
+	private boolean captionalgebra = false;
 	private String inputFingerprint;
 
 	/**
@@ -74,6 +75,41 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 		this.relTool = relationTool;
 		this.discovery = discovery;
 		this.showproof = showproof;
+
+		list = new GeoList(cons);
+		setInputOutput(); // for AlgoElement
+
+		// compute value of dependent number
+		initialCompute();
+		compute();
+	}
+
+	/**
+	 * Proves the given statement and gives some details in a list.
+	 *
+	 * @param cons
+	 *            The construction
+	 * @param root
+	 *            Input statement
+	 * @param relationTool
+	 *            true if output should be given for Relation Tool (which is
+	 *            more readable)
+	 * @param discovery
+	 *            true if output should be given for Discover (where we don't need
+	 *            fancy new objects---they are maintained by Discover)
+	 * @param showproof
+	 *            true if the proof steps must be shown
+	 * @param captionalgebra
+	 *            true if the Graphics View should be updated with algebraic explanations
+	 */
+	public AlgoProveDetails(Construction cons, GeoElement root,
+			boolean relationTool, boolean discovery, boolean showproof, boolean captionalgebra) {
+		super(cons);
+		this.root = root;
+		this.relTool = relationTool;
+		this.discovery = discovery;
+		this.showproof = showproof;
+		this.captionalgebra = captionalgebra;
 
 		list = new GeoList(cons);
 		setInputOutput(); // for AlgoElement
@@ -157,6 +193,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 		// Compute extra NDG's:
 		p.setReturnExtraNDGs(true);
 		p.setShowproof(showproof);
+		p.setCaptionalgebra(captionalgebra);
 
 		// Adding benchmarking:
 		double startTime = UtilFactory.getPrototype().getMillisecondTime();

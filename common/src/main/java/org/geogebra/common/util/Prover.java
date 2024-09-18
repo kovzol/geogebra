@@ -156,6 +156,7 @@ public abstract class Prover {
 	private List<ProverEngine> proveAutoOrder;
 	private List<ProverEngine> proveDetailsAutoOrder;
 	private boolean showproof = false;
+	private boolean captionalgebra = false;
 	private String proof = "";
 
 	public boolean getShowproof() {
@@ -164,6 +165,14 @@ public abstract class Prover {
 
 	public void setShowproof(boolean set) {
 		showproof = set;
+	}
+
+	public boolean getCaptionalgebra() {
+		return captionalgebra;
+	}
+
+	public void setCaptionalgebra(boolean set) {
+		captionalgebra = set;
 	}
 
 	public String getProof() {
