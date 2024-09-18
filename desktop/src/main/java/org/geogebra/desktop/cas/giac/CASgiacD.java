@@ -98,7 +98,11 @@ public class CASgiacD extends CASgiacJre {
 	final protected void stopThread(Thread thread) {
 		// thread.interrupt() doesn't seem to stop it, so add this for
 		// good measure:
-		thread.stop();
+		try {
+			thread.stop();
+		} catch (Exception e) {
+			Log.debug("thread.stop is deprecated and maybe de-implemented");
+		}
 	}
 
 	@Override

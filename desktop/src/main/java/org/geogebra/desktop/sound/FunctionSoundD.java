@@ -111,7 +111,11 @@ public final class FunctionSoundD extends FunctionSound
 
 		if (doPause) {
 			setMin(getT());
-			soundThread.stopSound();
+			try {
+				soundThread.stopSound();
+			} catch (Exception e) {
+				Log.debug("thread.stop is deprecated and maybe de-implemented");
+			}
 		} else {
 			playFunction(getF(), getMin(), getMax(), getSampleRate(),
 					getBitDepth());
