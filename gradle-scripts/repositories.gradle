@@ -22,13 +22,13 @@ allprojects {
             jcenter()
             google()
             maven { url 'https://dev.geogebra.org/maven2' }
-            maven { url 'https://prover-test.geogebra.org/students/maven2/' }
+            maven { url 'https://prover-test.risc.jku.at/students/maven2/' }
         }
     }
 
     repositories {
         maven { url 'https://dev.geogebra.org/maven2' }
-        maven { url 'https://prover-test.geogebra.org/students/maven2/' }
+        maven { url 'https://prover-test.risc.jku.at/students/maven2/' }
         mavenCentral()
         jcenter()
         google()
