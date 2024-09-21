@@ -249,7 +249,7 @@ for i in `find -name '*.ggb' | sort`; do
   mkdir -p $TMPDIR
   unzip $i -d $TMPDIR >/dev/null 2>&1
   # Remove Prove command but save its input for ShowProof first:
-  SP_INPUT=`cat $TMPDIR/geogebra.xml | grep -A1 Prove | tail -1 | cut -d\" -f2`
+  SP_INPUT=`cat $TMPDIR/geogebra.xml | grep -A1 Prove | tail -1 | cut -d\" -f2 | sed s/"&apos;"/"'"/g`
   cat $TMPDIR/geogebra.xml | awk '{
    if ($0=="<command name=\"Prove\">") rm=1;
    if (rm!=1) print $0;
