@@ -2,10 +2,16 @@
 
 # Test the desktop version (ShowProof).
 
+TIMEOUT=60
+
+if [ "$1" != "" ];
+ TIMEOUT=$1
+ fi
+
 set -e
 cd ../../../../desktop
 ../gradlew installDist
 cd ../test/scripts/benchmark/prover
-xvfb-run -a -s "-screen 0 1024x768x24" ./runtests-sql -r -p "BotanaGiac Botana" -F -d -s http\\://prover-test.risc.jku.at/~kovzol/singularws-dev/ -t 60
+xvfb-run -a -s "-screen 0 1024x768x24" ./runtests-sql -r -p "BotanaGiac Botana" -F -d -s http\\://prover-test.risc.jku.at/~kovzol/singularws-dev/ -t $TIMEOUT
 ./report-sql -F -e -c "BotanaGiac,F Botana,F"
 google-chrome html/all.html &
