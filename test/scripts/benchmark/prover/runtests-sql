@@ -8,7 +8,7 @@ MY_VERSION=2.3
 
 DEBUG=0 # In tmp/ there can be some log, if you set this to 1.
 DBDEBUG=0
-TIMEOUT=20 # 5, 10, 20, 30, 60 or 600
+TIMEOUT=20 # 5, 10, 20, 30, 60, 600 or 3600
 # PROVERS="Recio PureSymbolic Botana BotanaGiac OpenGeoProver_Wu OpenGeoProver_Area Auto Web"
 PROVERS="Auto Web"
 SINGULARWSREMOTEURL=http://singularws.idm.jku.at/
