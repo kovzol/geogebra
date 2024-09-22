@@ -4,7 +4,7 @@
 
 TIMEOUT=60
 
-if [ "$1" != "" ];
+if [ "$1" != "" ]; then
  TIMEOUT=$1
  fi
 
