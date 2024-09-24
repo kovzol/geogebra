@@ -104,11 +104,11 @@ while getopts "t:p:P:s:S:dbDFhvrV" OPT; do
      PROVEDETAILS=1
      ;;
     2022)
-     MYCOLUMNS="Auto Web"
+     PROVERS="Auto Web"
      PROVEDETAILS=1
      ;;
     2024)
-     MYCOLUMNS="Recio BotanaGiac Web"
+     PROVERS="Recio BotanaGiac Web"
      PROVEDETAILS=1
      ;;
    esac # -S
