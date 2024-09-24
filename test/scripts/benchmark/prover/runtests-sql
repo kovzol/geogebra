@@ -107,6 +107,10 @@ while getopts "t:p:P:s:S:dbDFhvrV" OPT; do
      MYCOLUMNS="Auto Web"
      PROVEDETAILS=1
      ;;
+    2024)
+     MYCOLUMNS="Recio BotanaGiac Web"
+     PROVEDETAILS=1
+     ;;
    esac # -S
    ;;
   s)

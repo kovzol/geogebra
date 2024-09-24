@@ -483,6 +483,7 @@ public abstract class CASgiac implements CASGenericInterface {
 		ENVELOPE_EQU("envelopeEqu", ggbGiac("envelopeEqu(polys,elimvars,precision,curvevarx,curvevary)->"
 				+ "{ local polys2,D;"
 				+ "  polys2:=jacobiPrepare(polys,[curvervarx,curvevary]);"
+				// + "  polys2:=polys;"
 				// + "  print(polys2);"
 				+ "  D:=jacobiDet(polys2,[curvevarx,curvevary]);"
 				+ "  polys2:=append(polys2,D);"
