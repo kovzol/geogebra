@@ -4551,6 +4551,12 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		exportStringToFile("html", html);
 	}
 
+	public void exportCASLatex() {
+		CASExport casExp = new CASExport(this);
+		String latex = casExp.createLatex();
+		exportStringToFile("tex", latex);
+	}
+
 	public void exportCASMaple() {
 		CASExport casExp = new CASExport(this);
 		String txt = casExp.createMapleTxt(true);

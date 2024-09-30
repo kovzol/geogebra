@@ -168,6 +168,104 @@ public class CASExport {
 		return html;
 	}
 
+	public String createLatex() {
+		String latex = "\\documentclass[12pt]{article}\n"
+				+ "\\usepackage{xcolor}\n"
+				+ "\\usepackage{breqn}\n"
+				+ "\\sloppy\n"
+				+ "\\title{" + loc.getMenuDefault("CASView", "CAS View") + "}\n"
+				+ "\\begin{document}\n";
+
+		Construction cons = app.kernel.getConstruction();
+		CASView cv = (CASView) cons.getApplication().getView(VIEW_CAS);
+		int rows = cv.getRowCount();
+
+		if (numbered) {
+			latex += "\\begin{enumerate}\n";
+		} else {
+			latex += "\\begin{itemize}\n";
+		}
+
+		// Iterate on all cells:
+		for (int i = 0; i < rows; i++) {
+			if (numbered) {
+				latex += "\\item\n";
+			}
+
+			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
+			String input;
+			String fullInput = cell.getFullInput();
+			if (fullInput != null) {
+				input = fullInput;
+			} else {
+				input = cell.getInput(StringTemplate.defaultTemplate);
+			}
+			GColor color = cell.getFontColor();
+			int red = color.getRed();
+			int green = color.getGreen();
+			int blue = color.getBlue();
+
+			// Set colors and text styles:
+			if (useColors) {
+				latex += "\\definecolor{mycolor" + i + "}{rgb}{" + red / 256.0 + ", "
+					+ green / 256.0 + ", " + blue / 256.0 + "}\n";
+				if ((cell.getFontStyle() & GFont.BOLD) == GFont.BOLD) {
+					latex += "\\textbf{";
+				}
+				if ((cell.getFontStyle() & GFont.ITALIC) == GFont.ITALIC && fullInput == null) {
+					latex += "\\textit{";
+				}
+				if ((cell.getFontStyle() & GFont.UNDERLINE) == GFont.UNDERLINE) {
+					latex += "\\underline{";
+				}
+			}
+
+			input = input.replace(Unicode.BULLET + "", "$\\bullet$");
+			input = input.replace(Unicode.IS_ELEMENT_OF + "", " $\\in$ ");
+			input = input.replace(Unicode.PARALLEL + "", " $\\parallel$ ");
+			input = input.replace(Unicode.PERPENDICULAR + "", " $\\perp$ ");
+			input = input.replace(Unicode.QUESTEQ + "", " $\\stackrel{?}{=}$ ");
+			input = input.replace(Unicode.NOTEQUAL + "", " $\\neq$ ");
+			input = input.replace("^", "\\^{}");
+
+			latex += "\\textcolor{mycolor" + i + "}{" + input + "}";
+			if (useColors) {
+				if ((cell.getFontStyle() & GFont.UNDERLINE) == GFont.UNDERLINE) {
+					latex += "}";
+				}
+				if ((cell.getFontStyle() & GFont.ITALIC) == GFont.ITALIC) {
+					latex += "}";
+				}
+				if ((cell.getFontStyle() & GFont.BOLD) == GFont.BOLD) {
+					latex += "}";
+				}
+			}
+			latex += "\n";
+
+			// If there is an output formula, put it in the output:
+			if (!cell.isUseAsText() || fullInput != null) {
+				String output = "";
+				String latexOutput = cell.getLaTeXOutput(false);
+				if (latexOutput != null) {
+					output = "\\begin{dmath*}" + latexOutput + "\\end{dmath*}\n";
+				} else {
+					output = "\\begin{center}" + cv.getRowOutputValue(i) + "\\end{center}\n";
+				}
+				latex += output + "\n";
+			}
+
+		}
+		if (numbered) {
+			latex += "\\end{enumerate}\n";
+		} else {
+			latex += "\\end{itemize}\n";
+		}
+
+		latex += "\\end{document}\n";
+		return latex;
+	}
+
+
 	public String createMapleTxt(boolean showPrompt) {
 		String txt = "";
 
