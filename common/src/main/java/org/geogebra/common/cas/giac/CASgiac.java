@@ -489,12 +489,17 @@ public abstract class CASgiac implements CASGenericInterface {
 		 */
 		ENVELOPE_EQU("envelopeEqu", ggbGiac("envelopeEqu(polys,elimvars,precision,curvevarx,curvevary)->"
 				+ "{ local polys2,D;"
-				// "  polys2:=jacobiPrepare(polys,[curvervarx,curvevary]);"
-				+ "  polys2:=polys;"
-				+ "  print(polys2);"
-				+ "  D:=jacobiDet(polys2,[curvevarx,curvevary]);"
+				+ "  D:=jacobiDet(polys,[curvevarx,curvevary]);" // no linearization by default
+				+ "  if (D==0) { " // Hotfix if the number of polys + 2 != number of variables:
+				// in some strange situations (including test examples nephroid-concurrent and
+				// offset-of-offset) the number of polys + 3 == number of variables. FIXME
+				+ "    polys2:=jacobiPrepare(polys,[curvervarx,curvevary]);" // with linearization
+				+ "    polys:=polys2;"
+				+ "    print(polys);"
+				+ "    D:=jacobiDet(polys,[curvevarx,curvevary]);" // recompute D with simpler polys
+				+ "  };"
 				+ "  print(D);"
-				+ "  polys2:=append(polys2,D);"
+				+ "  polys2:=append(polys,D);"
 				+ "  return(locusEqu(polys2,elimvars,precision,curvevarx,curvevary));"
 				+ "}")),
 		/**
