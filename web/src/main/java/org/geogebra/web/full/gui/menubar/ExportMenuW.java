@@ -260,6 +260,21 @@ public class ExportMenuW extends AriaMenuBar implements MenuBarI {
 						app.exportStringToFile("txt", txt);
 					}
 				});
+
+				menu.addItem(menuText(app.getLocalization()
+						.getMenuDefault("Download.CASViewLatex", "CAS View to LaTeX (.tex)")), true, new MenuCommand(app) {
+					@Override
+					public void doExecute() {
+						menu.hide();
+						CASExport casExp = new CASExport(app);
+						String latex = casExp.createLatex();
+						app.exportStringToFile("tex", latex);
+						// FIXME: All web textual exports are encoded incorrectly (except HTML).
+						// It seems they are not using Unicode but some ISO-8859-*
+						// but the usual conversion techniques do not seem to work.
+					}
+				});
+
 			}
 		}
 	}
