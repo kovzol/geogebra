@@ -79,6 +79,8 @@ public abstract class CASgiac implements CASGenericInterface {
 	 */
 	public final static String initStringWeb = "init geogebra";
 
+	public final static boolean DELINEARIZATION = true; // do delinearization by default
+
 	/**
 	 * string to put Giac off GeoGebra mode
 	 */
@@ -489,11 +491,14 @@ public abstract class CASgiac implements CASGenericInterface {
 		 */
 		ENVELOPE_EQU("envelopeEqu", ggbGiac("envelopeEqu(polys,elimvars,precision,curvevarx,curvevary)->"
 				+ "{ local polys2,D;"
-				+ "  D:=jacobiDet(polys,[curvevarx,curvevary]);" // no linearization by default
+				+
+				(DELINEARIZATION ?
+				  "  D:=0; " :
+				  "  D:=jacobiDet(polys,[curvevarx,curvevary]);") // don't use delinarization
 				+ "  if (D==0) { " // Hotfix if the number of polys + 2 != number of variables:
 				// in some strange situations (including test examples nephroid-concurrent and
 				// offset-of-offset) the number of polys + 3 == number of variables. FIXME
-				+ "    polys2:=jacobiPrepare(polys,[curvervarx,curvevary]);" // with linearization
+				+ "    polys2:=jacobiPrepare(polys,[curvervarx,curvevary]);" // with delinearization
 				+ "    polys:=polys2;"
 				+ "    print(polys);"
 				+ "    D:=jacobiDet(polys,[curvevarx,curvevary]);" // recompute D with simpler polys
