@@ -117,6 +117,7 @@ public class AlgoEnvelope extends AlgoElement implements UsesCAS {
 
 		efficientInputFingerprint = fingerprint(efficientInput);
 		myPrecision = kernel.precision();
+		kernel.getApplication().resetVariableNumbering();
 	}
 
 	/**
