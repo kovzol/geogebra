@@ -407,9 +407,11 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "  polys2:=[0];"
 				+ "  while(polys!=polys2) {" // do the simplification until there is a change,
 				// start a round (maybe it's unnecessary to compute multiple rounds, check: TODO)
+				// + "  print(polys);" // for debugging
 				+ "  polys2:=polys;"
 				+ "  c:=1;"
 				+ "  while(c<(size(lvar(polys)))){"
+				// + "  print(polys);" // for debugging
 				+ "      ii:=0;"
 				+ "      while(ii<(size(polys))){"
 				+ "          degs:=degree(polys[ii],vars);"
@@ -429,7 +431,7 @@ public abstract class CASgiac implements CASGenericInterface {
 				+ "                      p:=p+1;"
 				+ "                      linvar:=vars[pos[p]];"
 				+ "                    };; ;"
-				// + "                  print(linvar);"
+				+ "                  print(linvar);"
 				+ "                  if ((not(is_element(linvar,excludevars))) || (c<2)) {"
 				+ "                      if (is_element(linvar,excludevars)) keep:=append(keep,polys[ii]); ;"
 				// + "                      print(keep);"
@@ -440,12 +442,14 @@ public abstract class CASgiac implements CASGenericInterface {
 				// + "                      oo1:=ooo[1];"
 				// + "                      print(oo1);"
 				+ "                      substval:=(op((solve(polys[ii]=0,linvar))[0]))[1];"
-				// + "                      print(substval);"
+				+ "                      print(substval);"
 				+ "                      polys:=remove(0,expand(subs(polys,[linvar],[substval])));"
 				+ "                      vars:=lvar(polys);"
 				+ "                      ii:=-1;"
 				+ "                    };"
 				+ "                };"
+				+ "                print(polys,size(polys));" // for debugging
+				+ "                print(vars,size(vars));" // for debugging
 				+ "            };"
 				+ "          ii:=ii+1;"
 				+ "        };; ;"
