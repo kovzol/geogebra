@@ -30,6 +30,7 @@ import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 
 public class AlgoLineBisectorSegment extends AlgoElement
 		implements SymbolicParametersAlgo, SymbolicParametersBotanaAlgo {
@@ -258,7 +259,11 @@ public class AlgoLineBisectorSegment extends AlgoElement
 				botanaVars[1] = new PVariable(kernel);
 				botanaVars[2] = new PVariable(kernel);
 				botanaVars[3] = new PVariable(kernel);
-				// TODO: Create descriptions.
+				botanaVarsDescr = new String[4];
+				setBotanaVarsDescr1(0, "x");
+				setBotanaVarsDescr1(1, "y");
+				setBotanaVarsDescr2(2, "x");
+				setBotanaVarsDescr2(3, "y");
 			}
 
 			botanaPolynomials = SymbolicParameters
@@ -301,6 +306,19 @@ public class AlgoLineBisectorSegment extends AlgoElement
 		botanaVars = null;
 		botanaVarsDescr = null;
 		botanaPolynomials = null;
+	}
+
+	void setBotanaVarsDescr1(int pos, String coord) {
+		Localization loc = s.kernel.getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfMidpointOfB",
+				"%0 value of midpoint of %1",
+				coord, s.getLabelSimple());
+	}
+	void setBotanaVarsDescr2(int pos, String coord) {
+		Localization loc = s.kernel.getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfRotationOfPointBAroundTheMidpointOfCByDDegrees",
+				"%0 value of rotation of point %1 around the midpoint of %2 by %3 degrees",
+				coord, s.getStartPoint().getLabelSimple(), s.getLabelSimple(), "90");
 	}
 
 }
