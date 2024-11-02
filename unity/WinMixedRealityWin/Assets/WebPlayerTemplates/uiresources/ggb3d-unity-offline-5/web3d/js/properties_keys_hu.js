@@ -1978,7 +1978,7 @@ __GGB__keysVar["hu"].menu = {
     "IntersectionCurve.Help": "K\xe9t fel\xfclet metsz\xe9svonal\xe1nak meghat\xe1roz\xe1sa",
     "IntersectionCurveOfAB": "%0 \xe9s %1 metsz\xe9svonala",
     "IntersectionLineOfAB": "%0 \xe9s %1 metsz\xe9svonala",
-    "IntersectionOfAandB": "%0 \xe9s %1 metsz\xe9svonala",
+    "IntersectionOfAandB": "%0 \xe9s %1 metszete",
     "IntersectionPointOfAB": "%0 \xe9s %1 metsz\xe9spontja",
     "IntersectionPointOfABNearC": "%0 \xe9s %1 metsz\xe9spontja %2 k\xf6zel\xe9ben",
     "IntersectionPointOfABWithInitialValueC": "%0 \xe9s %1 metsz\xe9spontja %2 kezd\u0151\xe9rt\xe9kkel",
