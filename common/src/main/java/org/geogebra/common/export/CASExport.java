@@ -220,13 +220,17 @@ public class CASExport {
 				}
 			}
 
+			input = input.replace("{", "\\{");
+			input = input.replace("}", "\\}");
+			input = input.replace("_", "\\_");
+			input = input.replace("^", "\\^{}");
+
 			input = input.replace(Unicode.BULLET + "", "$\\bullet$");
 			input = input.replace(Unicode.IS_ELEMENT_OF + "", " $\\in$ ");
 			input = input.replace(Unicode.PARALLEL + "", " $\\parallel$ ");
 			input = input.replace(Unicode.PERPENDICULAR + "", " $\\perp$ ");
 			input = input.replace(Unicode.QUESTEQ + "", " $\\stackrel{?}{=}$ ");
 			input = input.replace(Unicode.NOTEQUAL + "", " $\\neq$ ");
-			input = input.replace("^", "\\^{}");
 
 			latex += "\\textcolor{mycolor" + i + "}{" + input + "}";
 			if (useColors) {
