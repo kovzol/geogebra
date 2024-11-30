@@ -800,8 +800,22 @@ public class Discover {
 											new AlgoArePerpendicular(cons, gl1, gl2);
 									GeoElement root = new GeoBoolean(cons);
 									root.setParentAlgorithm(aap);
+
+									// Obtain label:
+									String gl1s, gl2s;
+									if (pl1 != null) {
+										gl1s = pl1.toString();
+									} else {
+										gl1s = gl1.getLabelSimple(); // if there is no parallel line to it
+									}
+									if (pl2 != null) {
+										gl2s = pl2.toString();
+									} else {
+										gl2s = gl2.getLabelSimple();  // if there is no parallel line to it
+									}
+
 									GeoList output = discoveryPool.AlgoProveDetailsCached(root,
-											pl1.toString() + Unicode.PERPENDICULAR + pl2);
+											gl1s + Unicode.PERPENDICULAR + gl2s);
 									if (output.size() > 0) {
 										GeoElement truth = output.get(0);
 										if (((GeoBoolean) truth).getBoolean()) {
