@@ -144,8 +144,6 @@ public class AlgoPointInRegion extends AlgoElement implements SymbolicParameters
 		botanaVars = new PVariable[2];
 		botanaVars[0] = new PVariable(kernel);
 		botanaVars[1] = new PVariable(kernel);
-		botanaVarsDescr[0] = "x value of the point";
-		botanaVarsDescr[1] = "y value of the point";
 		return botanaVars;
 	}
 
