@@ -13,7 +13,6 @@ import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.geogebra.common.cas.GeoGebraCAS;
@@ -175,6 +174,7 @@ public class ProverBotanasMethod {
 				* (setSize - 2) / 6];
 		i = 0;
 		/* Creating the set of triplets: */
+		// GeoElement is not Comparable. Therefore, we cannot use TreeSet here.
 		HashSet<HashSet<GeoElement>> triplets = new HashSet<>();
 		for (GeoElement geo1 : freePoints) {
 			for (GeoElement geo2 : freePoints) {
@@ -201,8 +201,8 @@ public class ProverBotanasMethod {
 								PPolynomial p = PPolynomial.collinear(fv1[0],
 										fv1[1], fv2[0], fv2[1], fv3[0], fv3[1]);
 								Log.info("Forcing non-collinearity for points "
-										+ geo1 + ":" + geo1.hashCode() + ", "
-										+ geo2 + ":" + geo2.hashCode() + " and "
+										+ geo1 + ":" + ", "
+										+ geo2 + ":" + " and "
 										+ geo3);
 								/*
 								 * Rabinowitsch trick for prohibiting
@@ -323,7 +323,7 @@ public class ProverBotanasMethod {
 		 * this list is empty. Some algos and geo types should create an entry
 		 * for some of the Botana variables.
 		 */
-		Set<PVariable> freeVariables = new TreeSet<>();
+		TreeSet<PVariable> freeVariables = new TreeSet<>();
 		/**
 		 * The set of "almost free" variables. They are free in most cases, but we
 		 * should avoid the assumption that they are free. So, if other variables
@@ -332,7 +332,7 @@ public class ProverBotanasMethod {
 		 * set one of the coordinates freely. But in some degenerate cases, it is not so,
 		 * e.g. for vertical or horizontal lines.
 		 */
-		Set<PVariable> almostFreeVariables = new TreeSet<>();
+		TreeSet<PVariable> almostFreeVariables = new TreeSet<>();
 
 		private boolean disallowFixSecondPoint = false;
 
@@ -341,11 +341,11 @@ public class ProverBotanasMethod {
 		private PPolynomial[] thesisFactors;
 		private TreeMap<GeoElement, PPolynomial[]> geoPolys = new TreeMap<>();
 		// ineqs cannot be eliminated:
-		public Set<String> ineqs = new TreeSet<>(); // TODO: Write getter/setter instead.
+		public TreeSet<String> ineqs = new TreeSet<>(); // TODO: Write getter/setter instead.
 		private boolean dryRun = false; // If set, do not compute any heavy detail.
-		private Set<String> extVars = new TreeSet<>(); // external variables (may be substitued)
-		private Set<String> extPolys = new TreeSet<>(); // external polynomials (may be eliminated)
-		private Set<String> posVars = new TreeSet<>(); // positive variables (RG)
+		private TreeSet<String> extVars = new TreeSet<>(); // external variables (may be substitued)
+		private TreeSet<String> extPolys = new TreeSet<>(); // external polynomials (may be eliminated)
+		private TreeSet<String> posVars = new TreeSet<>(); // positive variables (RG)
 		// Positive variables should not be eliminated via GB, so we maintain a list of them.
 		// Such variables are: sqrt2, a, b, c (lengths of sides).
 		private String thesisIneq = null;
@@ -411,7 +411,7 @@ public class ProverBotanasMethod {
 		 *
 		 * @return the set of free variables
 		 */
-		public Set<PVariable> getFreeVariables() {
+		public TreeSet<PVariable> getFreeVariables() {
 			return freeVariables;
 		}
 
@@ -420,7 +420,7 @@ public class ProverBotanasMethod {
 		 *
 		 * @return the set of "almost" free variables
 		 */
-		public Set<PVariable> getAlmostFreeVariables() {
+		public TreeSet<PVariable> getAlmostFreeVariables() {
 			return almostFreeVariables;
 		}
 
@@ -2676,7 +2676,7 @@ public class ProverBotanasMethod {
 
 		PPolynomial ndgproduct = new PPolynomial(BigInteger.ONE);
 
-		Set<Set<PPolynomial>> eliminationIdeal;
+		HashSet<TreeSet<PPolynomial>> eliminationIdeal;
 		NDGDetector ndgd = new NDGDetector(prover, substitutions,
 				as.freeVariables);
 
@@ -2712,7 +2712,7 @@ public class ProverBotanasMethod {
 				return ProofResult.UNKNOWN;
 			}
 
-			Iterator<Set<PPolynomial>> ndgSet = eliminationIdeal.iterator();
+			Iterator<TreeSet<PPolynomial>> ndgSet = eliminationIdeal.iterator();
 
 			List<TreeSet<GeoPoint>> xEqualSet = new ArrayList<>();
 			// xEqualSet.add(new TreeSet<GeoPoint>());
@@ -2732,7 +2732,7 @@ public class ProverBotanasMethod {
 				 * All NDGs must be translatable into human readable form.
 				 */
 				boolean readable = true;
-				Set<PPolynomial> thisNdgSet = ndgSet.next();
+				TreeSet<PPolynomial> thisNdgSet = ndgSet.next();
 				Iterator<PPolynomial> ndg = thisNdgSet.iterator();
 				ndgproduct = new PPolynomial(BigInteger.ONE);
 				while (ndg.hasNext() && readable) {
@@ -3030,10 +3030,10 @@ public class ProverBotanasMethod {
 		}
 		se--;
 
-		Set<PVariable> freeVariables = as.freeVariables;
-		HashSet<PVariable> substVars = null;
+		TreeSet<PVariable> freeVariables = as.freeVariables;
+		TreeSet<PVariable> substVars = null;
 		String polysAsCommaSeparatedString = PPolynomial.getPolysAsCommaSeparatedString(polys);
-		substVars = new HashSet<>(substitutions.keySet());
+		substVars = new TreeSet<>(substitutions.keySet());
 
 		String freeVars = PPolynomial.getVarsAsCommaSeparatedString(polys, substVars, true,
 				freeVariables);

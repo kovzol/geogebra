@@ -2,11 +2,11 @@ package org.geogebra.common.kernel.prover;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.TreeMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.Iterator;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.kernel.Kernel;
@@ -26,7 +26,7 @@ public class HilbertDimension {
 
 	private static Kernel kernel;
 
-	private static Set<PVariable> aMaximalSet;
+	private static TreeSet<PVariable> aMaximalSet;
 
 	/**
 	 * Get a maximum size independent set that contains the same amount element
@@ -35,20 +35,20 @@ public class HilbertDimension {
 	 * @return a maximum size independent set
 	 */
 	/* Using static here is dangerous. FIXME */
-	public static Set<PVariable> getAMaximalSet() {
+	public static TreeSet<PVariable> getAMaximalSet() {
 		return aMaximalSet;
 	}
 
 	private static boolean eliminationIsZero(ArrayList<PPolynomial> polys,
-			Set<PVariable> vars, TreeMap<PVariable, BigInteger> substitutions) {
-		Set<Set<PPolynomial>> eliminationIdeal = PPolynomial.eliminate(
+			TreeSet<PVariable> vars, TreeMap<PVariable, BigInteger> substitutions) {
+		HashSet<TreeSet<PPolynomial>> eliminationIdeal = PPolynomial.eliminate(
 				polys.toArray(new PPolynomial[polys.size()]), substitutions,
 				kernel, 0,
 				true, false, vars);
-		Iterator<Set<PPolynomial>> ndgSet;
+		Iterator<TreeSet<PPolynomial>> ndgSet;
 		ndgSet = eliminationIdeal.iterator();
 		while (ndgSet.hasNext()) {
-			Set<PPolynomial> thisNdgSet = ndgSet.next();
+			TreeSet<PPolynomial> thisNdgSet = ndgSet.next();
 			for (PPolynomial poly : thisNdgSet) {
 				if (poly.isZero()) {
 					return true;
@@ -64,9 +64,9 @@ public class HilbertDimension {
 		int dim = 0;
 
 		kernel = as.geoStatement.getKernel();
-		HashSet<HashSet<PVariable>> nextUseful,
-				/* lastUseful = new HashSet<>(), */ useful = new HashSet<>();
-		HashSet<PVariable> allVars = PPolynomial.getVars(as.getPolynomials());
+		TreeSet<TreeSet<PVariable>> nextUseful,
+				/* lastUseful = new TreeSet<>(), */ useful = new TreeSet<>();
+		TreeSet<PVariable> allVars = PPolynomial.getVars(as.getPolynomials());
 		// Remove substituted vars:
 		for (PVariable var : substitutions.keySet()) {
 			allVars.remove(var);
@@ -75,7 +75,7 @@ public class HilbertDimension {
 		// Create the useful set of variable sets, each containing one single
 		// variable first:
 		for (PVariable var : allVars) {
-			HashSet<PVariable> singleSet = new HashSet<>();
+			TreeSet<PVariable> singleSet = new TreeSet<>();
 			singleSet.add(var);
 			useful.add(singleSet);
 		}
@@ -86,9 +86,9 @@ public class HilbertDimension {
 			Log.debug(useful.size() + " useful sets to be checked for " + dim
 					+ " dimensions");
 			/* lastUseful = nextUseful; */
-			nextUseful = new HashSet<>();
+			nextUseful = new TreeSet<>();
 			// Check the useful set if they are useful in the future:
-			for (HashSet<PVariable> set : useful) {
+			for (TreeSet<PVariable> set : useful) {
 				if (eliminationIsZero(as.getPolynomials(), set,
 						substitutions)) {
 					nextUseful.add(set);
@@ -103,10 +103,10 @@ public class HilbertDimension {
 			}
 
 			// Create next useful set:
-			useful = new HashSet<>();
-			for (HashSet<PVariable> set1 : nextUseful) {
-				for (HashSet<PVariable> set2 : nextUseful) {
-					HashSet<PVariable> union = new HashSet<>(set1);
+			useful = new TreeSet<>();
+			for (TreeSet<PVariable> set1 : nextUseful) {
+				for (TreeSet<PVariable> set2 : nextUseful) {
+					TreeSet<PVariable> union = new TreeSet<>(set1);
 					union.addAll(set2);
 					if (union.size() == dim + 1) {
 						useful.add(union);
@@ -144,10 +144,10 @@ public class HilbertDimension {
 		int dim = 0;
 
 		kernel = as.geoStatement.getKernel();
-		HashSet<HashSet<PVariable>> nextUseful = new HashSet<>(),
+		HashSet<TreeSet<PVariable>> nextUseful = new HashSet<>(),
 				lastUseful = new HashSet<>(),
 				useful = new HashSet<>();
-		HashSet<PVariable> allVars = PPolynomial.getVars(as.getPolynomials());
+		TreeSet<PVariable> allVars = PPolynomial.getVars(as.getPolynomials());
 		// Remove substituted vars:
 		for (PVariable var : substitutions.keySet()) {
 			allVars.remove(var);
@@ -156,7 +156,7 @@ public class HilbertDimension {
 		// Create the useful set of variable sets, each containing one single
 		// variable first:
 		for (PVariable var : allVars) {
-			HashSet<PVariable> singleSet = new HashSet<>();
+			TreeSet<PVariable> singleSet = new TreeSet<>();
 			singleSet.add(var);
 			useful.add(singleSet);
 		}
@@ -169,7 +169,7 @@ public class HilbertDimension {
 			lastUseful = nextUseful;
 			nextUseful = new HashSet<>();
 			// Check the useful set if they are useful in the future:
-			for (HashSet<PVariable> set : useful) {
+			for (TreeSet<PVariable> set : useful) {
 				if (eliminationIsZero(as.getPolynomials(), set,
 						substitutions)) {
 					nextUseful.add(set);
@@ -178,9 +178,9 @@ public class HilbertDimension {
 
 			// Create next useful set:
 			useful = new HashSet<>();
-			for (HashSet<PVariable> set1 : nextUseful) {
-				for (HashSet<PVariable> set2 : nextUseful) {
-					HashSet<PVariable> union = new HashSet<>(set1);
+			for (TreeSet<PVariable> set1 : nextUseful) {
+				for (TreeSet<PVariable> set2 : nextUseful) {
+					TreeSet<PVariable> union = new TreeSet<>(set1);
 					union.addAll(set2);
 					if (union.size() == dim + 1) {
 						useful.add(union);
@@ -197,12 +197,12 @@ public class HilbertDimension {
 			TreeMap<PVariable, BigInteger> substitutions, int minDim) {
 
 		kernel = as.geoStatement.getKernel();
-		HashSet<PVariable> allVars = PPolynomial.getVars(as.getPolynomials());
+		TreeSet<PVariable> allVars = PPolynomial.getVars(as.getPolynomials());
 		// Remove substituted vars:
 		for (PVariable var : substitutions.keySet()) {
 			allVars.remove(var);
 		}
-		HashSet<PVariable> dependentVars = new HashSet<>();
+		TreeSet<PVariable> dependentVars = new TreeSet<>();
 		dependentVars.addAll(allVars);
 		dependentVars.removeAll(as.getFreeVariables());
 		dependentVars.removeAll(substitutions.keySet());
@@ -213,7 +213,7 @@ public class HilbertDimension {
 			}
 			depVars.append(var);
 		}
-		HashSet<PVariable> freeVariables = new HashSet<>();
+		TreeSet<PVariable> freeVariables = new TreeSet<>();
 		freeVariables.addAll(as.getFreeVariables());
 		freeVariables.removeAll(substitutions.keySet());
 		StringBuilder freeVars = new StringBuilder();
@@ -236,10 +236,10 @@ public class HilbertDimension {
 		// https://stackoverflow.com/a/8910767
 		int gbasisSize = gbasisResult.length()
 				- gbasisResult.replace("{", "").length() - 1;
-		HashSet<HashSet<PVariable>> initials = new HashSet<>();
+		HashSet<TreeSet<PVariable>> initials = new HashSet<>();
 		int pos = 1;
 		for (int i = 0; i < gbasisSize; ++i) {
-			HashSet<PVariable> initial = new HashSet<>();
+			TreeSet<PVariable> initial = new TreeSet<>();
 			while (!gbasisResult.substring(pos, pos + 1).equals("}")) {
 				pos++;
 				// the current position must be a v
@@ -278,7 +278,7 @@ public class HilbertDimension {
 
 		// It is possible that the naive dimension is the Hilbert dimension.
 		// In this case we will use the geometrically free variables.
-		aMaximalSet = new HashSet<>();
+		aMaximalSet = new TreeSet<>();
 		aMaximalSet.addAll(freeVariables);
 		Log.debug("The geometrically free variables should be independent: "
 				+ aMaximalSet);
@@ -292,14 +292,17 @@ public class HilbertDimension {
 			boolean independentFound = false;
 
 			while (allSubsets.hasNext() && !independentFound) {
-				Set<PVariable> X = allSubsets.next();
+				TreeSet<PVariable> X = new TreeSet<>();
+				for (PVariable pv : allSubsets.next()) {
+					X.add(pv);
+				}
 				boolean independent = true;
 				// Log.debug(X);
 				// in(g) \not\in K[X] means in(g) is not completely in X
-				Iterator<HashSet<PVariable>> initialIterator = initials
+				Iterator<TreeSet<PVariable>> initialIterator = initials
 						.iterator();
 				while (initialIterator.hasNext() && independent) {
-					HashSet<PVariable> initial = initialIterator.next();
+					TreeSet<PVariable> initial = initialIterator.next();
 					if (X.containsAll(initial)) {
 						// we found an in(g) which is completely in X
 						// therefore X is not independent

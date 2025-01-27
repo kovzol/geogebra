@@ -2,7 +2,6 @@ package org.geogebra.common.kernel.prover.polynomial;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.TreeMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -406,8 +405,8 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 * The set of the variables in this polynomial
 	 * @return the set of variables
 	 */
-	public HashSet<PVariable> getVars() {
-		HashSet<PVariable> v = new HashSet<>();
+	public TreeSet<PVariable> getVars() {
+		TreeSet<PVariable> v = new TreeSet<>();
 		Iterator<PTerm> it = terms.keySet().iterator();
 		while (it.hasNext()) {
 			PTerm t = it.next();
@@ -421,13 +420,13 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 * @param polys the polynomials
 	 * @return the set of variables
 	 */
-	public static HashSet<PVariable> getVars(PPolynomial[] polys) {
-		HashSet<PVariable> v = new HashSet<>();
+	public static TreeSet<PVariable> getVars(PPolynomial[] polys) {
+		TreeSet<PVariable> v = new TreeSet<>();
 		int polysLength = 0;
 		if (polys != null)
 			polysLength = polys.length;
 		for (int i=0; i<polysLength; ++i) {
-			HashSet<PVariable> vars = polys[i].getVars();
+			TreeSet<PVariable> vars = polys[i].getVars();
 			if (vars != null)
 				v.addAll(vars);
 		}
@@ -441,10 +440,10 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 *            the polynomials
 	 * @return the set of variables
 	 */
-	public static HashSet<PVariable> getVars(ArrayList<PPolynomial> polys) {
-		HashSet<PVariable> v = new HashSet<>();
+	public static TreeSet<PVariable> getVars(ArrayList<PPolynomial> polys) {
+		TreeSet<PVariable> v = new TreeSet<>();
 		for (PPolynomial poly : polys) {
-			HashSet<PVariable> vars = poly.getVars();
+			TreeSet<PVariable> vars = poly.getVars();
 			if (vars != null)
 				v.addAll(vars);
 		}
@@ -466,10 +465,10 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 * @return the comma separated list
 	 */
 	public static String getVarsAsCommaSeparatedString(PPolynomial[] polys,
-			HashSet<PVariable> extraVars, Boolean free,
-			Set<PVariable> freeVariables) {
+			TreeSet<PVariable> extraVars, Boolean free,
+			TreeSet<PVariable> freeVariables) {
 		StringBuilder sb = new StringBuilder();
-		HashSet<PVariable> vars = new HashSet<>();
+		TreeSet<PVariable> vars = new TreeSet<>();
 		if (polys.length != 0) {
 			vars = getVars(polys);
 		} else {
@@ -1070,7 +1069,7 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 */
 	
 	public static String createEliminateFactorizedScript( 
-			PPolynomial[] polys, PVariable[] pVariables, Set<PVariable> dependentVariables) {
+			PPolynomial[] polys, PVariable[] pVariables, TreeSet<PVariable> dependentVariables) {
 
 		String ringVariable = "r";
 		String idealVariable = "i";
@@ -1155,11 +1154,11 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 */
 	public static ExtendedBoolean solvable(PPolynomial[] polys,
 			TreeMap<PVariable, BigInteger> substitutions, Kernel kernel,
-			boolean transcext, Set<PVariable> freeVariables) {
+			boolean transcext, TreeSet<PVariable> freeVariables) {
 		
-		HashSet<PVariable> substVars = null;
+		TreeSet<PVariable> substVars = null;
 		String polysAsCommaSeparatedString = getPolysAsCommaSeparatedString(polys);
-		substVars = new HashSet<>(substitutions.keySet());
+		substVars = new TreeSet<>(substitutions.keySet());
 
 		String freeVars = getVarsAsCommaSeparatedString(polys, substVars, true,
 				freeVariables);
@@ -1276,10 +1275,10 @@ public class PPolynomial implements Comparable<PPolynomial> {
 	 *            input set of free variables
 	 * @return elements of the elimination ideal or null if computation failed
 	 */
-	public static Set<Set<PPolynomial>> eliminate(PPolynomial[] eqSystem,
+	public static HashSet<TreeSet<PPolynomial>> eliminate(PPolynomial[] eqSystem,
 			TreeMap<PVariable, BigInteger> substitutions, Kernel kernel,
 			int permutation, boolean factorized, boolean oneCurve,
-			Set<PVariable> freeVariablesInput) {
+			TreeSet<PVariable> freeVariablesInput) {
 
 		TreeSet<PVariable> dependentVariables = new TreeSet<>();
 		TreeSet<PVariable> freeVariables = new TreeSet<>();
@@ -1437,8 +1436,8 @@ public class PPolynomial implements Comparable<PPolynomial> {
 		if ("empty list".equals(elimResult) || "{0}".equals(elimResult)) {
 			// If we get an empty list from Singular, it means
 			// the answer is false, so we artificially create the {{0}} answer.
-			Set<Set<PPolynomial>> ret = new HashSet<>();
-			HashSet<PPolynomial> polys = new HashSet<>();
+			HashSet<TreeSet<PPolynomial>> ret = new HashSet<>();
+			TreeSet<PPolynomial> polys = new TreeSet<>();
 			polys.add(new PPolynomial(BigInteger.ZERO)); // this might be Polynomial() as well
 			ret.add(polys);
 			return ret;
@@ -1466,8 +1465,8 @@ public class PPolynomial implements Comparable<PPolynomial> {
 			GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
 			elimResult = cas.evaluate(eliminateCommand);
 			if (elimResult.equals("{0,1}") || elimResult.equals("{1,0}")) {
-				Set<Set<PPolynomial>> ret = new HashSet<>();
-				HashSet<PPolynomial> ps = new HashSet<>();
+				HashSet<TreeSet<PPolynomial>> ret = new HashSet<>();
+				TreeSet<PPolynomial> ps = new TreeSet<>();
 				ps.add(new PPolynomial(BigInteger.ONE));
 				ret.add(ps);
 				return ret;
@@ -1477,8 +1476,33 @@ public class PPolynomial implements Comparable<PPolynomial> {
 		}
 
 		try {
-			return PolynomialParser.parseFactoredPolynomialSet(
-					elimResult, variables);
+			HashSet<PVariable> variablesH = new HashSet<>();
+			for (PVariable pv : variables) {
+				variablesH.add(pv);
+				}
+			Set<Set<PPolynomial>> polynomialsH;
+			polynomialsH = PolynomialParser.parseFactoredPolynomialSet(
+					elimResult, variablesH);
+			/* PPolynomial objects can be organized into a TreeSet,
+			 * because they are Comparable.
+			 * But a set of PPolynomial objects cannot,
+			 * because we (currently) don't define an ordering on them.
+			 * This means that the result here is non-deterministic,
+			 * and certain computations (including NDGs) may be different on different
+			 * runs or platforms.
+			 * In general, we use HashSet<TreeSet<PPolynomial>>
+			 * to produce some useful result without taking
+			 * care of the ordering of the polynomial sets.
+			 */
+			HashSet<TreeSet<PPolynomial>> polynomials = new HashSet<>();
+			for (Set<PPolynomial> pps : polynomialsH) {
+				TreeSet<PPolynomial> ppt = new TreeSet<>();
+				for (PPolynomial pp : pps) {
+					ppt.add(pp);
+				}
+				polynomials.add(ppt);
+			}
+			return polynomials;
 		} catch (ParseException e) {
 			Log.debug("Cannot parse: " + elimResult);
 			e.printStackTrace();

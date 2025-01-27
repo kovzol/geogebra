@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -204,7 +204,7 @@ public class NDGDetector {
 
 		List<GeoElement> freePoints = ProverBotanasMethod
 				.getFreePoints(statement);
-		HashSet<GeoElement> freePointsSet = new HashSet<>(freePoints);
+		TreeSet<GeoElement> freePointsSet = new TreeSet<>(freePoints);
 
 		// CHECKING COLLINEARITY
 
@@ -298,9 +298,9 @@ public class NDGDetector {
 			}
 		}
 
-		HashSet<PVariable> freeXvars = new HashSet<>();
+		TreeSet<PVariable> freeXvars = new TreeSet<>();
 		TreeMap<PVariable, GeoElement> xvarGeo = new TreeMap<>();
-		HashSet<PVariable> freeYvars = new HashSet<>();
+		TreeSet<PVariable> freeYvars = new TreeSet<>();
 		TreeMap<PVariable, GeoElement> yvarGeo = new TreeMap<>();
 		Iterator<GeoElement> it = prover.getStatement().getAllPredecessors()
 				.iterator();
