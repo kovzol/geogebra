@@ -87,10 +87,10 @@ public class PVariable implements Comparable<PVariable> {
 	public int compareTo(PVariable v) {
 		int vId = v.getId();
 		if (id < vId) {
-			return 1;
+			return -1;
 		}
 		if (id > vId) {
-			return -1;
+			return 1;
 		}
 		return 0;
 	}
