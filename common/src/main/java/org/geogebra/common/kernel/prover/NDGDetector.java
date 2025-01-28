@@ -84,8 +84,10 @@ public class NDGDetector {
 		 * Maybe this condition was already detected, or marked as unreadable.
 		 * By using the lookup table, we don't have to do heavy computations
 		 * twice.
-		 * TODO: Is this cached also if the vaiables are new? Check!
+		 * TODO: Is this cached also if the variables are new? Check!
 		 */
+
+		Log.debug("Trying to detect polynomial " + p);
 		NDGCondition ndgc = null;
 		String keyString = p.substitute(substitutions).toString();
 		ndgc = lookupTable.get(keyString);
@@ -97,8 +99,6 @@ public class NDGDetector {
 			}
 			return ndgc;
 		}
-
-		Log.debug("Trying to detect polynomial " + p);
 
 		// CHECKING FORMULA WITH QUANTITIES
 
