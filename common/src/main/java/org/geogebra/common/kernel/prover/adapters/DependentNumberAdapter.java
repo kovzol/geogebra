@@ -44,6 +44,17 @@ public class DependentNumberAdapter extends ProverAdapter {
 		}
 		Kernel kernel = adn.getKernel();
 		ExpressionNode definition = adn.getExpression();
+		if (definition.toString().contains("Segment")) {
+			throw new NoSymbolicParametersException();
+			// This a workaround to avoid infinite loop on some exotic constructions. FIXME.
+			// For some reason, when resetting the symbolic variables,
+			// the segment variables are not initialized correctly
+			// in the voodoo magic (see below), and the command
+			// Segment(ggbtmpvarA,ggbtmpvarB) remains in the definition.
+			// To avoid freezing (because of infinite recursion),
+			// we simply skip handling the situation and throw
+			// an exception.
+		}
 		traverseExpression(definition, kernel);
 
 		if (botanaVars == null) {
@@ -422,6 +433,7 @@ public class DependentNumberAdapter extends ProverAdapter {
 	 */
 	public void expressionNodeToPolynomial(ExpressionNode expNode, PolynomialNode polyNode)
 			throws NoSymbolicParametersException {
+		Log.debug(expNode); // check for infinite loop
 		if (polyNode.getPoly() != null) {
 			return;
 		}
