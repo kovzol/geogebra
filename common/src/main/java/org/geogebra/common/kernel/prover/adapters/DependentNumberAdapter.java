@@ -44,17 +44,6 @@ public class DependentNumberAdapter extends ProverAdapter {
 		}
 		Kernel kernel = adn.getKernel();
 		ExpressionNode definition = adn.getExpression();
-		if (definition.toString().contains("Segment")) {
-			throw new NoSymbolicParametersException();
-			// This a workaround to avoid infinite loop on some exotic constructions. FIXME.
-			// For some reason, when resetting the symbolic variables,
-			// the segment variables are not initialized correctly
-			// in the voodoo magic (see below), and the command
-			// Segment(ggbtmpvarA,ggbtmpvarB) remains in the definition.
-			// To avoid freezing (because of infinite recursion),
-			// we simply skip handling the situation and throw
-			// an exception.
-		}
 		traverseExpression(definition, kernel);
 
 		if (botanaVars == null) {
@@ -82,7 +71,27 @@ public class DependentNumberAdapter extends ProverAdapter {
 		String exprGiacStr = "";
 		// expand(lcm(denom(coeff(gg)))*gg);
 		// see also CASgiac.createEliminateScript()
-		String gg = definition.toString(StringTemplate.giacTemplate) + "-"
+		String giacDefinition = definition.toString(StringTemplate.giacTemplate);
+		// This may contain substrings like Segment[ggbtmpvarA, ggbtmpvarB] for some exotic constructions.
+		// We need to rewrite such texts accordingly.
+		for (GeoSegment s : allSegmentsFromExpression) {
+			String sp = s.getStartPoint().getLabelSimple(); // maybe here we want a StringTemplate? TODO.
+			String se = s.getEndPoint().getLabelSimple();
+			int entries = segVarPairs.size();
+			boolean found = false;
+			for (int i = 0; i < entries && !found; i++) {
+				Entry<GeoElement, PVariable> curr = segVarPairs.get(i);
+				if (curr.getKey().equals(s)) { // here is the segment we are searching for
+					PVariable sv = curr.getValue();
+					found = true;
+					String key = "Segment[" + Kernel.TMP_VARIABLE_PREFIX + sp + ", " +
+						Kernel.TMP_VARIABLE_PREFIX + se + "]";
+					String replacement = sv.toString();
+					giacDefinition = giacDefinition.replace(key, replacement);
+				}
+			}
+		}
+		String gg = giacDefinition + "-"
 				+ Kernel.TMP_VARIABLE_PREFIX + botanaVars[0];
 		exprGiacStr = "expand(lcm(denom(coeff(" + gg + ")))*(" + gg + "))";
 
@@ -200,6 +209,7 @@ public class DependentNumberAdapter extends ProverAdapter {
 			 * This is voodoo magic here. We may need a different solution
 			 * rather than playing with the label. TODO.
 			 */
+			/*
 			Construction cons = kernel.getConstruction();
 			boolean suppress = cons.isSuppressLabelsActive();
 			cons.setSuppressLabelCreation(false);
@@ -210,6 +220,7 @@ public class DependentNumberAdapter extends ProverAdapter {
 				s.update();
 			}
 			cons.setSuppressLabelCreation(suppress);
+			 */
 			Entry<GeoElement, PVariable> pair = new AbstractMap.SimpleEntry<>(
 					s, currentVar);
 			searchSegVarPair(pair);
