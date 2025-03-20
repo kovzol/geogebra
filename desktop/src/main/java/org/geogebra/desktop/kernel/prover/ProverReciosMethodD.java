@@ -242,6 +242,7 @@ public class ProverReciosMethodD extends AbstractProverReciosMethod {
 					for (BigInteger result : exactCoordinates) {
 						nrOfChecks++;
 						if (!result.equals(BigInteger.ZERO)) {
+							Log.debug("Statement fails on check " + nrOfChecks);
 							wrong = true;
 							break;
 						}
