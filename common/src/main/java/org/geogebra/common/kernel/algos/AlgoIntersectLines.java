@@ -162,7 +162,7 @@ public class AlgoIntersectLines extends AlgoIntersectAbstract
 	public void getFreeVariables(HashSet<PVariable> variables)
 			throws NoSymbolicParametersException {
 		if ((g instanceof GeoSegment) || (h instanceof GeoSegment)) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (g != null && h != null) {
 			g.getFreeVariables(variables);
@@ -176,7 +176,7 @@ public class AlgoIntersectLines extends AlgoIntersectAbstract
 	public int[] getDegrees(AbstractProverReciosMethod a)
 			throws NoSymbolicParametersException {
 		if ((g instanceof GeoSegment) || (h instanceof GeoSegment)) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (g != null && h != null) {
 			int[] degree1 = g.getDegrees(a);
@@ -191,7 +191,7 @@ public class AlgoIntersectLines extends AlgoIntersectAbstract
 			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if ((g instanceof GeoSegment) || (h instanceof GeoSegment)) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (g != null && h != null) {
 			BigInteger[] coords1 = g.getExactCoordinates(values);
@@ -204,7 +204,7 @@ public class AlgoIntersectLines extends AlgoIntersectAbstract
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
 		if ((g instanceof GeoSegment) || (h instanceof GeoSegment)) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (g != null && h != null) {
 			PPolynomial[] coords1 = g.getPolynomials();
