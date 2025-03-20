@@ -123,7 +123,7 @@ public class AlgoAreConcurrent extends AlgoElement
 		if ((inputLine1 instanceof GeoSegment)
 				|| (inputLine2 instanceof GeoSegment)
 				|| (inputLine3 instanceof GeoSegment)) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (inputLine1 != null && inputLine2 != null && inputLine3 != null) {
 			inputLine1.getFreeVariables(variables);
@@ -140,7 +140,7 @@ public class AlgoAreConcurrent extends AlgoElement
 		if ((inputLine1 instanceof GeoSegment)
 				|| (inputLine2 instanceof GeoSegment)
 				|| (inputLine3 instanceof GeoSegment)) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (inputLine1 != null && inputLine2 != null && inputLine3 != null) {
 			int[] degree1 = inputLine1.getDegrees(a);
@@ -165,7 +165,7 @@ public class AlgoAreConcurrent extends AlgoElement
 		if ((inputLine1 instanceof GeoSegment)
 				|| (inputLine2 instanceof GeoSegment)
 				|| (inputLine3 instanceof GeoSegment)) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (inputLine1 != null && inputLine2 != null && inputLine3 != null) {
 			BigInteger[] coords1 = inputLine1.getExactCoordinates(values);
@@ -192,7 +192,7 @@ public class AlgoAreConcurrent extends AlgoElement
 		if ((inputLine1 instanceof GeoSegment)
 				|| (inputLine2 instanceof GeoSegment)
 				|| (inputLine3 instanceof GeoSegment)) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (inputLine1 != null && inputLine2 != null && inputLine3 != null) {
 			PPolynomial[] coords1 = inputLine1.getPolynomials();
