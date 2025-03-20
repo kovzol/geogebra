@@ -91,6 +91,7 @@ public class ProverReciosMethodD extends AbstractProverReciosMethod {
 			TreeMap<PVariable, BigInteger> values, int deg, SymbolicParameters s,
 			AlgebraicStatement as) {
 		int n = freeVariables.size();
+		Log.debug("Checking n=" + n + " free variables, degree " + deg);
 		PVariable[] variables = new PVariable[n];
 		Iterator<PVariable> it = freeVariables.iterator();
 		for (int i = 0; i < n; i++) {

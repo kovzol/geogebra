@@ -235,7 +235,7 @@ public class AlgoPointOnPath extends AlgoElement
 	public void getFreeVariables(HashSet<PVariable> variables)
 			throws NoSymbolicParametersException {
 		if (input[0] instanceof GeoSegment) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (input[0] instanceof GeoLine) {
 			((SymbolicParametersAlgo) input[0]).getFreeVariables(variables);
@@ -252,7 +252,7 @@ public class AlgoPointOnPath extends AlgoElement
 	public int[] getDegrees(AbstractProverReciosMethod a)
 			throws NoSymbolicParametersException {
 		if (input[0] instanceof GeoSegment) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (input[0] instanceof GeoLine) {
 			int[] degreesLine = ((SymbolicParametersAlgo) input[0])
@@ -272,7 +272,7 @@ public class AlgoPointOnPath extends AlgoElement
 			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if (input[0] instanceof GeoSegment) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (input[0] instanceof GeoLine && variable != null) {
 			BigInteger[] exactCoordinates = new BigInteger[3];
@@ -309,7 +309,7 @@ public class AlgoPointOnPath extends AlgoElement
 	@Override
 	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
 		if (input[0] instanceof GeoSegment) {
-			throw new NoSymbolicParametersException();
+			// throw new NoSymbolicParametersException();
 		}
 		if (path instanceof GeoLine) {
 			if (variable == null) {
