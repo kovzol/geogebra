@@ -18,6 +18,10 @@ the Free Software Foundation.
 
 package org.geogebra.common.kernel.algos;
 
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.TreeMap;
+
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
@@ -45,6 +49,7 @@ import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoLineND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.matrix.Coords;
+import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.adapters.MirrorAdapter;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
@@ -57,7 +62,7 @@ import org.geogebra.common.util.MyMath;
  * @author Markus
  */
 public class AlgoMirror extends AlgoTransformation implements
-		SymbolicParametersBotanaAlgo {
+		SymbolicParametersBotanaAlgo, SymbolicParametersAlgo {
 
 	protected Mirrorable out;
 	private GeoLineND mirrorLine;
@@ -67,6 +72,9 @@ public class AlgoMirror extends AlgoTransformation implements
 
 	private GeoPoint transformedPoint;
 	private MirrorAdapter mirrorBotana;
+
+	private PPolynomial[] polynomials;
+
 
 	/**
 	 * Creates new "mirror at point" algo
@@ -505,5 +513,84 @@ public class AlgoMirror extends AlgoTransformation implements
 		if (mirrorBotana != null) {
 			mirrorBotana.reset();
 		}
+	}
+
+	@Override
+	public SymbolicParameters getSymbolicParameters() {
+		return new SymbolicParameters(this);
+	}
+
+	@Override
+	public void getFreeVariables(HashSet<PVariable> variables)
+			throws NoSymbolicParametersException {
+		if (inGeo instanceof GeoPoint && mirror == mirrorPoint) {
+			if (inGeo != null && mirrorPoint != null) {
+				((GeoPoint) inGeo).getFreeVariables(variables);
+				((GeoPoint) mirrorPoint).getFreeVariables(variables);
+				return;
+			}
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
+	public int[] getDegrees(AbstractProverReciosMethod a)
+			throws NoSymbolicParametersException {
+		if (inGeo instanceof GeoPoint && mirror == mirrorPoint) {
+			if (inGeo != null && mirrorPoint != null) {
+				int[] degreeP = ((GeoPoint) inGeo).getDegrees(a);
+				int[] degreeM = ((GeoPoint) mirrorPoint).getDegrees(a);
+				int[] result = new int[3];
+				result[0] = Math.max(degreeM[0] + degreeP[2],
+						degreeM[2] + degreeP[0]);
+				result[1] = Math.max(degreeM[1] + degreeP[2],
+						degreeM[2] + degreeP[1]);
+				result[2] = degreeM[2] + degreeP[2];
+				return result;
+			}
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
+	public BigInteger[] getExactCoordinates(
+			TreeMap<PVariable, BigInteger> values)
+			throws NoSymbolicParametersException {
+		if (inGeo instanceof GeoPoint && mirror == mirrorPoint) {
+			if (inGeo != null && mirrorPoint != null) {
+				BigInteger[] pP = ((GeoPoint) inGeo).getExactCoordinates(values);
+				BigInteger[] pM = ((GeoPoint) mirrorPoint).getExactCoordinates(values);
+				BigInteger[] coords = new BigInteger[3];
+				// We use the equations from AlgoMidpoint (the lazy way):
+				// 1>> e1:=m0-p0*q2-q0*p2
+				// 2>> e2:=m1-p1*q2-q1*p2
+				// 3>> e3:=m2-2*p2*q2
+				// 4>> l:=solve([e1,e2,e3],[q0,q1,q2])
+				// list[[(2*m0*p2-m2*p0)/(2*p2^2),(2*m1*p2-m2*p1)/(2*p2^2),m2/(2*p2)]]
+				// 5>> simplify(l*2*p2^2)
+				// list[[2*m0*p2-m2*p0,2*m1*p2-m2*p1,m2*p2]]
+				coords[0] = BigInteger.valueOf(2).multiply(pM[0]).multiply(pP[2]).subtract(pM[2].multiply(pP[0]));
+				coords[1] = BigInteger.valueOf(2).multiply(pM[1]).multiply(pP[2]).subtract(pM[2].multiply(pP[1]));
+				coords[2] = pM[2].multiply(pP[2]);
+				return coords;
+			}
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
+	public PPolynomial[] getPolynomials() throws NoSymbolicParametersException {
+		if (inGeo instanceof GeoPoint && mirror == mirrorPoint) {
+			if (inGeo != null && mirrorPoint != null) {
+				PPolynomial[] pP = ((GeoPoint) inGeo).getPolynomials();
+				PPolynomial[] pM = ((GeoPoint) mirrorPoint).getPolynomials();
+				polynomials = new PPolynomial[3];
+				polynomials[0] = new PPolynomial(2).multiply(pM[0]).multiply(pP[2]).subtract(pM[2].multiply(pP[0]));
+				polynomials[1] = new PPolynomial(2).multiply(pM[1]).multiply(pP[2]).subtract(pM[2].multiply(pP[1]));
+				polynomials[2] = pM[2].multiply(pP[2]);
+				return polynomials;
+			}
+		}
+		throw new NoSymbolicParametersException();
 	}
 }
