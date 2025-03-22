@@ -128,7 +128,8 @@ public class AlgoAreCongruent extends AlgoElement
 			throws NoSymbolicParametersException {
 		if ((inputElement1 instanceof GeoSegment)
 				|| (inputElement2 instanceof GeoSegment)) {
-			// throw new NoSymbolicParametersException();
+			// unimplemented
+			throw new NoSymbolicParametersException();
 		}
 		if (inputElement1 != null && inputElement2 != null) {
 			if (((inputElement1 instanceof GeoPoint)
@@ -152,7 +153,8 @@ public class AlgoAreCongruent extends AlgoElement
 			throws NoSymbolicParametersException {
 		if ((inputElement1 instanceof GeoSegment)
 				|| (inputElement2 instanceof GeoSegment)) {
-			// throw new NoSymbolicParametersException();
+			// unimplemented
+			throw new NoSymbolicParametersException();
 		}
 		if (inputElement1 != null && inputElement2 != null) {
 			if (((inputElement1 instanceof GeoPoint)
@@ -183,7 +185,8 @@ public class AlgoAreCongruent extends AlgoElement
 			throws NoSymbolicParametersException {
 		if ((inputElement1 instanceof GeoSegment)
 				|| (inputElement2 instanceof GeoSegment)) {
-			// throw new NoSymbolicParametersException();
+			// unimplemented
+			throw new NoSymbolicParametersException();
 		}
 		if (inputElement1 != null && inputElement2 != null) {
 			if (((inputElement1 instanceof GeoPoint)
