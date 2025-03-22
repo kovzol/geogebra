@@ -175,10 +175,10 @@ public class AlgoOrthoLinePointLine extends AlgoElement
 			int[] degreeL = ((GeoLine) l).getDegrees(a);
 
 			int[] result = new int[3];
-			result[0] = degreeL[1] + degreeP[2] + degreeL[2];
-			result[1] = degreeL[0] + degreeP[2] + degreeL[2];
+			result[0] = degreeL[1] + degreeP[2];
+			result[1] = degreeL[0] + degreeP[2];
 			result[2] = Math.max(degreeL[0] + degreeP[1],
-					degreeL[1] + degreeP[0]) + degreeL[2];
+					degreeL[1] + degreeP[0]);
 			return result;
 		}
 		throw new NoSymbolicParametersException();
@@ -192,10 +192,10 @@ public class AlgoOrthoLinePointLine extends AlgoElement
 			BigInteger[] pP = P.getExactCoordinates(values);
 			BigInteger[] pL = ((GeoLine) l).getExactCoordinates(values);
 			BigInteger[] coords = new BigInteger[3];
-			coords[0] = pL[1].multiply(pP[2]).multiply(pL[2]).negate();
-			coords[1] = pL[0].multiply(pP[2]).multiply(pL[2]);
+			coords[0] = pL[1].multiply(pP[2]).negate();
+			coords[1] = pL[0].multiply(pP[2]);
 			coords[2] = pL[0].multiply(pP[1]).negate()
-					.add(pL[1].multiply(pP[0])).multiply(pL[2]);
+					.add(pL[1].multiply(pP[0]));
 			return coords;
 		}
 		throw new NoSymbolicParametersException();
@@ -207,10 +207,10 @@ public class AlgoOrthoLinePointLine extends AlgoElement
 			PPolynomial[] pP = P.getPolynomials();
 			PPolynomial[] pL = ((GeoLine) l).getPolynomials();
 			polynomials = new PPolynomial[3];
-			polynomials[0] = pL[1].multiply(pP[2]).multiply(pL[2]).negate();
-			polynomials[1] = pL[0].multiply(pP[2]).multiply(pL[2]);
+			polynomials[0] = pL[1].multiply(pP[2]).negate();
+			polynomials[1] = pL[0].multiply(pP[2]);
 			polynomials[2] = pL[0].multiply(pP[1]).negate()
-					.add(pL[1].multiply(pP[0])).multiply(pL[2]);
+					.add(pL[1].multiply(pP[0]));
 			return polynomials;
 		}
 		throw new NoSymbolicParametersException();

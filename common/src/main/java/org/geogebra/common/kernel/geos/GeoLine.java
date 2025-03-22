@@ -66,6 +66,7 @@ import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.DoubleUtil;
 import org.geogebra.common.util.ExtendedBoolean;
 import org.geogebra.common.util.MyMath;
+import org.geogebra.common.util.debug.Log;
 
 import com.himamis.retex.editor.share.util.Unicode;
 
@@ -1616,8 +1617,10 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
 		if (algoParent instanceof SymbolicParametersAlgo) {
-			return ((SymbolicParametersAlgo) algoParent)
+			BigInteger[] coords = ((SymbolicParametersAlgo) algoParent)
 					.getExactCoordinates(values);
+			Log.trace( label + "=" + algoParent.getDefinition(StringTemplate.algebraTemplate) + ": " + coords[0] + " " + coords[1] + " " + coords[2] + " ");
+			return coords;
 		}
 		return null;
 	}

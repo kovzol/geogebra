@@ -40,6 +40,7 @@ import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
 import org.geogebra.common.main.Localization;
+import org.geogebra.common.util.debug.Log;
 
 /**
  *
@@ -163,10 +164,10 @@ public class AlgoLinePointLine extends AlgoElement
 			int[] degreeP = P.getDegrees(a);
 			int[] degreeL = ((GeoLine) l).getDegrees(a);
 			int[] degrees = new int[3];
-			degrees[0] = degreeL[0] + degreeP[2] + degreeL[2];
-			degrees[1] = degreeL[1] + degreeP[2] + degreeL[2];
+			degrees[0] = degreeL[0] + degreeP[2];
+			degrees[1] = degreeL[1] + degreeP[2];
 			degrees[2] = Math.max(degreeL[0] + degreeP[0],
-					degreeL[1] + degreeP[1]) + degreeL[2];
+					degreeL[1] + degreeP[1]);
 			return degrees;
 		}
 
@@ -182,10 +183,10 @@ public class AlgoLinePointLine extends AlgoElement
 			BigInteger[] coordsP = P.getExactCoordinates(values);
 			BigInteger[] coordsL = ((GeoLine) l).getExactCoordinates(values);
 			BigInteger[] coords = new BigInteger[3];
-			coords[0] = coordsL[0].multiply(coordsP[2]).multiply(coordsL[2]);
-			coords[1] = coordsL[1].multiply(coordsP[2]).multiply(coordsL[2]);
+			coords[0] = coordsL[0].multiply(coordsP[2]);
+			coords[1] = coordsL[1].multiply(coordsP[2]);
 			coords[2] = coordsL[0].multiply(coordsP[0])
-					.add(coordsL[1].multiply(coordsP[1])).negate().multiply(coordsL[2]);
+					.add(coordsL[1].multiply(coordsP[1])).negate();
 			return coords;
 		}
 
@@ -199,10 +200,10 @@ public class AlgoLinePointLine extends AlgoElement
 			PPolynomial[] coordsP = P.getPolynomials();
 			PPolynomial[] coordsl = ((GeoLine) l).getPolynomials();
 			polynomials = new PPolynomial[3];
-			polynomials[0] = coordsl[0].multiply(coordsP[2]).multiply(coordsl[2]);
-			polynomials[1] = coordsl[1].multiply(coordsP[2]).multiply(coordsl[2]);
+			polynomials[0] = coordsl[0].multiply(coordsP[2]);
+			polynomials[1] = coordsl[1].multiply(coordsP[2]);
 			polynomials[2] = coordsl[0].multiply(coordsP[0])
-					.add(coordsl[1].multiply(coordsP[1])).negate().multiply(coordsl[2]);
+					.add(coordsl[1].multiply(coordsP[1])).negate();
 			return polynomials;
 		}
 

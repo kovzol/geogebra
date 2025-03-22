@@ -2651,14 +2651,18 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 			result[0] = values.get(variableCoordinate1);
 			result[1] = values.get(variableCoordinate2);
 			result[2] = BigInteger.ONE;
+			// free point
+			Log.trace( label + ": " + result[0] + " " + result[1] + " " + result[2] + " ");
 			if (result[0] == null || result[1] == null) {
 				throw new NoSymbolicParametersException();
 			}
 			return result;
 		}
 		if (algoParent instanceof SymbolicParametersAlgo) {
-			return ((SymbolicParametersAlgo) algoParent)
+			BigInteger[] coords = ((SymbolicParametersAlgo) algoParent)
 					.getExactCoordinates(values);
+			Log.trace( label + "=" + algoParent.getDefinition(StringTemplate.algebraTemplate) + ": " + coords[0] + " " + coords[1] + " " + coords[2] + " ");
+			return coords;
 		}
 		throw new NoSymbolicParametersException();
 	}
