@@ -116,9 +116,7 @@ public class ProverReciosMethodW extends AbstractProverReciosMethod {
 
 		} while (indicesChanged);
 
-		Log.debug(nrOfTests + " tests performed.");
-		Log.debug("n: " + n);
-		Log.debug("deg: " + deg);
+		Log.debug(nrOfTests + " tests performed");
 
 		return ProofResult.TRUE;
 	}

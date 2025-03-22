@@ -207,6 +207,7 @@ public abstract class AbstractProverReciosMethod {
 		for (int i : degs) {
 			deg = Math.max(deg, i);
 		}
+		Log.debug("n=" + nrFreeVariables + " deg=" + deg);
 
 		switch (nrFreeVariables) {
 		case 0:
@@ -307,7 +308,6 @@ public abstract class AbstractProverReciosMethod {
 		}
 
 		int nrOfTests = ((deg + 2) * (deg + 1)) / 2;
-		Log.debug("n=2, deg=" + deg);
 		Log.debug("nr of tests: " + nrOfTests);
 		int caseno = 0;
 		for (int i = 1; i < /* = */deg + 2; i++) {
