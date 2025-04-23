@@ -173,7 +173,7 @@ public interface ToolbarSvgResources extends ClientBundle, ToolbarResources {
 	@Override
 	SVGResource mode_move_32();
 
-	@Source("org/geogebra/common/icons/svg/web/toolIcons/mode_moverotate.svg")
+	@Source("org/geogebra/common/icons/svg/web/toolIcons/mode_movearoundpoint.svg")
 	@Override
 	SVGResource mode_moverotate_32();
 
