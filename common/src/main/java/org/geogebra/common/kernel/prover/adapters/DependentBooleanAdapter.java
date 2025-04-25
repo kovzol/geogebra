@@ -280,21 +280,27 @@ public class DependentBooleanAdapter extends ProverAdapter {
 			throws NoSymbolicParametersException {
 		if (node.getLeft() != null && node.getLeft().isGeoElement()
 				&& node.getLeft() instanceof GeoSegment) {
-			// if segment was given with command, eg. Segment[A,B]
+			// Old: if segment was given with command, eg. Segment[A,B]
 			// set new name for segment (which giac will use later)
+			// Preferred (new): use end points for label name
+			String label = ((GeoSegment) node.getLeft()).getStartPoint().getLabelSimple() +
+					((GeoSegment) node.getLeft()).getEndPoint().getLabelSimple();
 			if (((GeoSegment) node.getLeft()).getLabelSimple() == null) {
 				((GeoSegment) node.getLeft())
-						.setLabel(new PVariable(kernel).toString());
+						.setLabel(/* new PVariable(kernel).toString() */ label);
 			}
 			allSegmentsFromExpression.add((GeoSegment) node.getLeft());
 		}
 		if (node.getRight() != null && node.getRight().isGeoElement()
 				&& node.getRight() instanceof GeoSegment) {
-			// if segment was given with command, eg. Segment[A,B]
+			// Old: if segment was given with command, eg. Segment[A,B]
 			// set new name for segment (which giac will use later)
+			// Preferred (new): use end points for label name
+			String label = ((GeoSegment) node.getRight()).getStartPoint().getLabelSimple() +
+					((GeoSegment) node.getRight()).getEndPoint().getLabelSimple();
 			if (((GeoSegment) node.getRight()).getLabelSimple() == null) {
 				((GeoSegment) node.getRight())
-						.setLabel(new PVariable(kernel).toString());
+						.setLabel(/* new PVariable(kernel).toString() */ label);
 			}
 			allSegmentsFromExpression.add((GeoSegment) node.getRight());
 		}
