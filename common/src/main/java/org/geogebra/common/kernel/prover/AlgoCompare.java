@@ -238,6 +238,16 @@ public class AlgoCompare extends AlgoElement {
             return;
         }
 
+        double[] sign = new double[2];
+        for (int i = 0; i < 2; i++) {
+            sign[i] = Math.signum(getDoubleValue(inpElem[i]));
+        }
+        if (sign[0] < 0 || sign[1] < 0) {
+            // not yet implemented
+            Log.debug("Negative quantities are not yet implemented");
+            return;
+        }
+
         // setInputOutput();
         do {
             cons.removeFromAlgorithmList(this);
@@ -678,6 +688,17 @@ public class AlgoCompare extends AlgoElement {
             return "(" + inp[i] + ")<sup>" + exponent[i] + "</sup>";
         }
         return "(" + inp[i] + ")^" + exponent[i];
+    }
+
+    double getDoubleValue(GeoElement inp) {
+        if (inp instanceof GeoSegment) {
+            return ((GeoSegment) inp).getLength();
+        }
+        if (inp instanceof GeoNumeric) {
+            return ((GeoNumeric) inp).getValue();
+        }
+        Log.debug("getDoubleValue: unimplemented " + inp);
+        return 0;
     }
 
 }
