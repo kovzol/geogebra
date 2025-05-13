@@ -91,6 +91,8 @@ public class Compute {
 			boolean useProduct = true;
 			for (String d : disjunctions) {
 				// appendResponse("LOG: d=" + d, Log.VERBOSE);
+				// Add missing multiplication signs:
+				d = d.replaceAll("([0-9]+) \\(-m\\)", "$1*(-m)");
 				if (d.endsWith(" = 0")) {
 					d = d.substring(0, d.length() - 4); // remove = 0
 				}
@@ -522,9 +524,13 @@ public class Compute {
 				replace("TRUE", "1=1");
 
 		// add missing condition to output
-		rewrite += " && m>0";
-
-		String real = rewriteGiac(rewrite, kernel);
+		String rewriteMpos = rewrite + " && m>0";
+		String real = rewriteGiac(rewriteMpos, kernel);
+		if (real.equals("")) {
+			// retry by using (-m) instead of m:
+			String rewriteMneg = rewrite.replace("m", "(-m)") + " && m>0";
+			real = rewriteGiac(rewriteMneg, kernel);
+		}
 		if (real.equals("?")) {
 			// There may be an issue with Giac.
 			appendResponse("GIAC ERROR");

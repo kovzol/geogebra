@@ -242,11 +242,6 @@ public class AlgoCompare extends AlgoElement {
         for (int i = 0; i < 2; i++) {
             sign[i] = Math.signum(getDoubleValue(inpElem[i]));
         }
-        if (sign[0] < 0 || sign[1] < 0) {
-            // not yet implemented
-            // Log.debug("Negative quantities are not yet implemented");
-            // return;
-        }
 
         // setInputOutput();
         do {
@@ -461,9 +456,6 @@ public class AlgoCompare extends AlgoElement {
                     if (retval.contains("ERROR")) {
                         retval = "";
                     }
-                    if (sign[0] != sign[1] && !retval.equals("")) {
-                        retval = "-" + retval; // negate, not beautiful (it puts a minus sign before the whole string), change the number instead, TODO
-                    }
                     outputText.setTextString(retval);
                     debugElapsedTime();
                     if (!useRealGeom) {
@@ -509,29 +501,28 @@ public class AlgoCompare extends AlgoElement {
             rgwsCas = realgeomWS.getCAS();
         }
 
+        String signmod = ""; // sign modifier
+        if (sign[0] != sign[1]) {
+            signmod = "-";
+        }
+
         if (rgwsCas.equals("mathematica") && rgResult != null && !rgResult.equals("")) {
             // If there was some useful result in RealGeom, then use it and forget the previous results from Giac.
-            retval = rgMathematica2ggb(rgResult);
+            retval = rgMathematica2ggb(rgResult, signmod);
         }
 
         if ((rgwsCas.equals("") || rgwsCas.equals("qepcad") || (rgwsCas.equals("tarski")))
                 && rgResult != null && !rgResult.equals("[]") && !rgResult.equals("")) {
             // If there was some useful result in RealGeom, then use it and forget the previous results from Giac.
-            retval = rgQepcad2ggb(rgResult);
+            retval = rgQepcad2ggb(rgResult, signmod);
         }
 
-        if (sign[0] != sign[1]) {
-            if (!retval.equals("")) {
-                retval = "-"
-                        + retval; // negate, not beautiful (it puts a minus sign before the whole string), change the number instead, TODO
-            }
-        }
-        if (sign[0]<0 && sign[1]<0) { // multiplying by (-1) correctly
+        if (sign[1]<0) { // multiplying by (-1) correctly, if sign[0]<0, we handle the situation by prepending a "-"
             // first round
             retval = retval.replaceAll("&lt;", "GreaterHtml");
             retval = retval.replaceAll("&gt;", "LessHtml");
             retval = retval.replaceAll("" + Unicode.GREATER_EQUAL, "LessEqualUnicode");
-            retval = retval.replaceAll("" + Unicode.LESS_EQUAL, "GreaterEqual");
+            retval = retval.replaceAll("" + Unicode.LESS_EQUAL, "GreaterEqualUnicode");
             retval = retval.replaceAll(" < ", " GreaterMath ");
             retval = retval.replaceAll(" > ", " LessMath ");
             // second round
@@ -546,10 +537,10 @@ public class AlgoCompare extends AlgoElement {
         outputText.setTextString(retval);
     }
 
-    private String rgMathematica2ggb(String rgResult) {
+    private String rgMathematica2ggb(String rgResult, String signmod) {
         retval = "";
         String[] cases = rgResult.split("\\|\\|");
-        inp[0] = inpWithExponent(0);
+        inp[0] = signmod + inpWithExponent(0);
         inp[1] = inpWithExponent(1);
 
         for (String result : cases) {
@@ -622,10 +613,10 @@ public class AlgoCompare extends AlgoElement {
         return retval;
     }
 
-    private String rgQepcad2ggb(String rgResult) {
+    private String rgQepcad2ggb(String rgResult, String signmod) {
         retval = "";
         String[] cases = rgResult.split(",");
-        inp[0] = inpWithExponent(0);
+        inp[0] = signmod + inpWithExponent(0);
         inp[1] = inpWithExponent(1);
 
         for (String result : cases) {
