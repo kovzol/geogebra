@@ -244,8 +244,8 @@ public class AlgoCompare extends AlgoElement {
         }
         if (sign[0] < 0 || sign[1] < 0) {
             // not yet implemented
-            Log.debug("Negative quantities are not yet implemented");
-            return;
+            // Log.debug("Negative quantities are not yet implemented");
+            // return;
         }
 
         // setInputOutput();
@@ -461,6 +461,9 @@ public class AlgoCompare extends AlgoElement {
                     if (retval.contains("ERROR")) {
                         retval = "";
                     }
+                    if (sign[0] != sign[1] && !retval.equals("")) {
+                        retval = "-" + retval; // negate, not beautiful (it puts a minus sign before the whole string), change the number instead, TODO
+                    }
                     outputText.setTextString(retval);
                     debugElapsedTime();
                     if (!useRealGeom) {
@@ -517,6 +520,28 @@ public class AlgoCompare extends AlgoElement {
             retval = rgQepcad2ggb(rgResult);
         }
 
+        if (sign[0] != sign[1]) {
+            if (!retval.equals("")) {
+                retval = "-"
+                        + retval; // negate, not beautiful (it puts a minus sign before the whole string), change the number instead, TODO
+            }
+        }
+        if (sign[0]<0 && sign[1]<0) { // multiplying by (-1) correctly
+            // first round
+            retval = retval.replaceAll("&lt;", "GreaterHtml");
+            retval = retval.replaceAll("&gt;", "LessHtml");
+            retval = retval.replaceAll("" + Unicode.GREATER_EQUAL, "LessEqualUnicode");
+            retval = retval.replaceAll("" + Unicode.LESS_EQUAL, "GreaterEqual");
+            retval = retval.replaceAll(" < ", " GreaterMath ");
+            retval = retval.replaceAll(" > ", " LessMath ");
+            // second round
+            retval = retval.replaceAll("LessEqualUnicode", "" + Unicode.LESS_EQUAL);
+            retval = retval.replaceAll("GreaterEqualUnicode", "" + Unicode.GREATER_EQUAL);
+            retval = retval.replaceAll("LessHtml", "&lt;");
+            retval = retval.replaceAll("GreaterHtml", "&gt;");
+            retval = retval.replaceAll("LessMath", "<");
+            retval = retval.replaceAll("GreaterMath", ">");
+        }
         debugElapsedTime();
         outputText.setTextString(retval);
     }
