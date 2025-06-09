@@ -348,6 +348,7 @@ public class AlgoConicFivePoints extends AlgoElement
 				botanaVars[i] = new PVariable(kernel);
 			}
 		}
+		botanaVarsDescr = new String[8];
 		PVariable x = botanaVars[0];
 		botanaVarsDescr[0] = "The x-value";
 		PVariable y = botanaVars[1];

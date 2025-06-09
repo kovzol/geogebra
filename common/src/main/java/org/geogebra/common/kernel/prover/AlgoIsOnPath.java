@@ -2,6 +2,7 @@ package org.geogebra.common.kernel.prover;
 
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Path;
+import org.geogebra.common.kernel.algos.AlgoConicFivePoints;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.SymbolicParametersBotanaAlgo;
@@ -125,6 +126,13 @@ public class AlgoIsOnPath extends AlgoElement
 
 	private PPolynomial[][] getPolynomialsConic()
 			throws NoSymbolicParametersException {
+
+		AlgoElement algoParent = ((GeoElement) inputPoint).getParentAlgorithm();
+		// AlgoConicFivePoints is not implemented
+		if (((AlgoPointOnPath) algoParent).getPath().getParentAlgorithm() instanceof AlgoConicFivePoints) {
+			throw new NoSymbolicParametersException();
+		}
+
 		if (((GeoConic) inputPath).isCircle()) {
 			PVariable[] fv1 = inputPoint.getBotanaVars(inputPoint);
 			PVariable[] fv2 = ((GeoConic) inputPath).getBotanaVars(inputPath);
@@ -180,8 +188,7 @@ public class AlgoIsOnPath extends AlgoElement
 
 			PPolynomial e_1 = new PPolynomial();
 			PPolynomial e_2 = new PPolynomial();
-			AlgoElement algoParent = ((GeoElement) inputPoint)
-					.getParentAlgorithm();
+
 			// case input point is point on ellipse/hyperbola
 			if (algoParent instanceof AlgoPointOnPath
 					&& (((GeoConic) ((AlgoPointOnPath) algoParent).getPath())
