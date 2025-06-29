@@ -129,8 +129,10 @@ public class AlgoIsOnPath extends AlgoElement
 
 		AlgoElement algoParent = ((GeoElement) inputPoint).getParentAlgorithm();
 		// AlgoConicFivePoints is not implemented
-		if (((AlgoPointOnPath) algoParent).getPath().getParentAlgorithm() instanceof AlgoConicFivePoints) {
-			throw new NoSymbolicParametersException();
+		if (algoParent instanceof AlgoPointOnPath) {
+			if (((AlgoPointOnPath) algoParent).getPath().getParentAlgorithm() instanceof AlgoConicFivePoints) {
+				throw new NoSymbolicParametersException();
+			}
 		}
 
 		if (((GeoConic) inputPath).isCircle()) {
