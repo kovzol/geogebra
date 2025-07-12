@@ -954,7 +954,8 @@ public class Discover {
 						}
 					}
 				}
-				if (ortholinepoints.size() > 0) {
+				if (ortholinepoints.size() > 0 && discoveryPool.points.contains((startpoint))
+						&& discoveryPool.points.contains((secondpoint))) {
 					discoveryPool.addLine(discoveryPool.getPoint(startpoint),
 							discoveryPool.getPoint(secondpoint));
 					for (GeoPoint p : ortholinepoints) {
