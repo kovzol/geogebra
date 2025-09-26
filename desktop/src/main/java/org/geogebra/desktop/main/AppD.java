@@ -1178,6 +1178,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 					|| "Recio".equalsIgnoreCase(str[1])
 					|| "Botana".equalsIgnoreCase(str[1])
 					|| "alternativeBotana".equalsIgnoreCase(str[1])
+					|| "CNI".equalsIgnoreCase(str[1])
 					|| "PureSymbolic".equalsIgnoreCase(str[1])
 					|| "Auto".equalsIgnoreCase(str[1])) {
 				proverSettings.proverEngine = str[1].toLowerCase();

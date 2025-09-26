@@ -72,6 +72,10 @@ public abstract class Prover {
 		 */
 		PURE_SYMBOLIC_PROVER,
 		/**
+		 * complex number identity method
+		 */
+		CNI_PROVER,
+		/**
 		 * default prover (GeoGebra decides internally)
 		 */
 		AUTO,
