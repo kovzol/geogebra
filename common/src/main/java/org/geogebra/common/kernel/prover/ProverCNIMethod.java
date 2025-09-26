@@ -2,6 +2,8 @@ package org.geogebra.common.kernel.prover;
 
 import java.util.TreeSet;
 
+import org.geogebra.common.cas.GeoGebraCAS;
+import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
@@ -17,6 +19,8 @@ import org.geogebra.common.util.debug.Log;
 
 public class ProverCNIMethod {
 
+	private static Kernel kernel;
+
 	public static class CNIDefinition {
 		String declaration;
 		String realRelation;
@@ -26,6 +30,7 @@ public class ProverCNIMethod {
 	public static ProofResult prove(Prover prover) {
 
 		GeoElement statement = prover.getStatement();
+		kernel = statement.getKernel();
 
 		String declarations = "";
 		String realRelations = "";
@@ -113,6 +118,7 @@ public class ProverCNIMethod {
 		program += "][" + (codeLengthLines - 1) + "]";
 
 		Log.debug("CNI program:\n" + program);
+		executeGiac(program);
 
 		return ProofResult.UNKNOWN;
 
@@ -215,6 +221,16 @@ public class ProverCNIMethod {
 			return input.substring(0, input.length() - length);
 		}
 		return input;
+	}
+
+	private static String executeGiac(String command) {
+		GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
+		try {
+			return cas.evaluateRaw(command);
+		} catch (Throwable e) {
+			Log.error("Error in ProverCNIMethod/executeGiac: input=" + command);
+			return "ERROR";
+		}
 	}
 
 }
