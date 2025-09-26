@@ -20,7 +20,6 @@ public class ProverCNIMethod {
 	public static class CNIDefinition {
 		String declaration;
 		String realRelation;
-		boolean declarative;
 		boolean ignore;
 	}
 
@@ -31,6 +30,7 @@ public class ProverCNIMethod {
 		String declarations = "";
 		String realRelations = "";
 		int realRelationsNo = 0;
+		boolean declarative = true;
 
 		String VARIABLE_R_STRING = "r_"; // This must be a kind of unique string.
 		String VARIABLE_I_STRING = "I_"; // This must be a kind of unique string.
@@ -40,6 +40,9 @@ public class ProverCNIMethod {
 
 		// Free points. We need them to eliminate the variables according to them.
 		TreeSet<GeoElement> freePoints = new TreeSet<>();
+		// Real-relational points. We need them to eliminate the variables according to them too.
+		TreeSet<GeoElement> realRelationalPoints = new TreeSet<>();
+
 		for (GeoElement ge : allPredecessors) {
 			if (ge.getParentAlgorithm() == null) {
 				freePoints.add(ge);
@@ -63,6 +66,8 @@ public class ProverCNIMethod {
 						realRelationsNo++;
 						realRelations += CASrealRelation + "=" + VARIABLE_R_STRING + realRelationsNo + ",";
 					}
+					realRelationalPoints.add(ge);
+					declarative = false;
 				}
 			}
 		}
@@ -94,12 +99,15 @@ public class ProverCNIMethod {
 			program += "[" + declaration + "],";
 		}
 		program += "[" + VARIABLE_I_STRING + ":=eliminate([" + realRelations + "],";
-		String freePointsL = "";
+		String toEliminate = "";
 		for (GeoElement ge : freePoints) {
-			freePointsL += getUniqueLabel(ge) + ",";
+			toEliminate += getUniqueLabel(ge) + ",";
 		}
-		freePointsL = removeTail(freePointsL, 1);
-		program += "[" + freePointsL + "])]";
+		for (GeoElement ge : realRelationalPoints) {
+			toEliminate += getUniqueLabel(ge) + ",";
+		}
+		toEliminate = removeTail(toEliminate, 1);
+		program += "[" + toEliminate + "])]";
 		// Temporary code:
 		int codeLengthLines = predefinitions.length + declarationsA.length + 1;
 		program += "][" + (codeLengthLines - 1) + "]";
@@ -130,7 +138,6 @@ public class ProverCNIMethod {
 			String Pl = getUniqueLabel(P);
 			String Ql = getUniqueLabel(Q);
 			c.declaration = gel + ":=(" + Pl + "+" + Ql + ")/2";
-			c.declarative = true;
 			return c;
 		}
 		if (ae instanceof AlgoMidpointSegment) {
@@ -140,7 +147,6 @@ public class ProverCNIMethod {
 			String Pl = getUniqueLabel(P);
 			String Ql = getUniqueLabel(Q);
 			c.declaration = gel + ":=(" + Pl + "+" + Ql + ")/2";
-			c.declarative = true;
 			return c;
 		}
 		// Real relations:
@@ -158,7 +164,6 @@ public class ProverCNIMethod {
 			String hEl = getUniqueLabel(hE);
 			c.realRelation = "coll(" + gSl + "," + gEl + "," + gel + ")\n" +
 					"coll(" + hSl + "," + hEl + "," + gel + ")";
-			c.declarative = false;
 			return c;
 		}
 		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment) {
@@ -190,7 +195,6 @@ public class ProverCNIMethod {
 			String Bl = getUniqueLabel(B);
 			String Cl = getUniqueLabel(C);
 			c.realRelation = "coll(" + Al + "," + Bl + "," + Cl + ")";
-			c.declarative = false;
 			return c;
 		}
 		// Unimplemented, but it should be handled...
