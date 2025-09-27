@@ -17,6 +17,8 @@ import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.Prover.ProofResult;
 import org.geogebra.common.util.debug.Log;
 
+import static org.geogebra.common.cas.giac.CASgiac.ggbGiac;
+
 public class ProverCNIMethod {
 
 	private static Kernel kernel;
@@ -113,12 +115,41 @@ public class ProverCNIMethod {
 		}
 		toEliminate = removeTail(toEliminate, 1);
 		program += "[" + toEliminate + "])]";
-		// Temporary code:
 		int codeLengthLines = predefinitions.length + declarationsA.length + 1;
 		program += "][" + (codeLengthLines - 1) + "]";
+		String elimIdeal = executeGiac(program);
+		// This is in form {{4*r_1*r_2*r_-4*r_1*r_2-4*r_1*r_-4*r_2*r_+3*r_1+3*r_2+3*r_}}
+		// or there may be multiple polynomials in the form {{...,...,...}}
 
-		Log.debug("CNI program:\n" + program);
-		executeGiac(program);
+		if (elimIdeal.equals("{{}}")) {
+			// There is no direct correspondence between r1, r2, ..., and r.
+			// The statement is quite probably false, but we cannot explicitly state this.
+			Log.debug("The elimination ideal is <0>, no conclusion.");
+			return ProofResult.UNKNOWN;
+		}
+
+		// There is direct correspondence.
+		String elimIdealL = removeHeadTail(elimIdeal, 1).
+				replace("{", "[").replace("}", "]"); // remove { and }
+		// Now we choose the minimal degree polynomial (in r) of this list.
+		program = "[[" + VARIABLE_I_STRING + ":= " + elimIdealL + "],[deg:=inf],[degi:=0],"
+				+ "[for (k:=0;k<size(" + VARIABLE_I_STRING + ");k++) { if (degree("
+					+ VARIABLE_I_STRING + "[k],r_)<deg) { deg:=degree("
+					+ VARIABLE_I_STRING + "[k],r_); degi:=k; } }],"
+				+ "[deg," + VARIABLE_I_STRING + "[degi]]][4]";
+		program = ggbGiac(program);
+		String minDegree = executeGiac(program);
+		// The result is in form: {1,4*r_1*r_2*r_-4*r_1*r_2-4*r_1*r_-4*r_2*r_+3*r_1+3*r_2+3*r_}
+
+		String minDegreeC = removeHeadTail(minDegree,1); // remove { and }
+		String[] minDegreeA = minDegreeC.split(","); // Separate items
+		int minDegreeI = Integer.valueOf(minDegreeA[0]);
+		if (minDegreeI == 1) {
+			// r can be expressed by using r1, r2, ..., here r is linear.
+			// The statement is true.
+			Log.debug("The elimination ideal contains " + minDegreeA[1] + ", it is linear in r_.");
+			return ProofResult.TRUE;
+		}
 
 		return ProofResult.UNKNOWN;
 
@@ -231,6 +262,14 @@ public class ProverCNIMethod {
 			Log.error("Error in ProverCNIMethod/executeGiac: input=" + command);
 			return "ERROR";
 		}
+	}
+
+	// This is already present in the class Compute. TODO: Unify the code.
+	static String removeHeadTail(String input, int length) {
+		if (input.length() >= 2 * length) {
+			return input.substring(length, input.length() - length);
+		}
+		return input;
 	}
 
 }
