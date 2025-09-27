@@ -6,6 +6,7 @@ import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
+import org.geogebra.common.kernel.algos.AlgoJoinPoints;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
 import org.geogebra.common.kernel.algos.AlgoMidpoint;
 import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
@@ -93,7 +94,8 @@ public class ProverCNIMethod {
 			realRelations += def.realRelation + "=" + VARIABLE_R_STRING;
 		}
 
-		String[] predefinitions = {"coll(A_,B_,C_):=(A_-B_)/(A_-C_)"};
+		String[] predefinitions = {"coll(A_,B_,C_):=(A_-B_)/(A_-C_)",
+			"parall(A_,B_,C_,D_):=(A_-B_)/(C_-D_)"};
 
 		// Putting the code together...
 		String program = "";
@@ -146,9 +148,16 @@ public class ProverCNIMethod {
 		int minDegreeI = Integer.valueOf(minDegreeA[0]);
 		if (minDegreeI == 1) {
 			// r can be expressed by using r1, r2, ..., here r is linear.
-			// The statement is true.
 			Log.debug("The elimination ideal contains " + minDegreeA[1] + ", it is linear in r_.");
-			return ProofResult.TRUE;
+			// Check if r can be expressed without a division:
+			// lvar(coeff(2*r_+1,r_)[0])
+			program = "lvar(coeff(" + minDegreeA[1] + ",r_)[0])";
+			String divVars = executeGiac(program);
+			if (divVars.equals("{}")) {
+				return ProofResult.TRUE;
+			}
+			// Cannot decide:
+			return ProofResult.UNKNOWN;
 		}
 
 		return ProofResult.UNKNOWN;
@@ -203,7 +212,8 @@ public class ProverCNIMethod {
 					"coll(" + hSl + "," + hEl + "," + gel + ")";
 			return c;
 		}
-		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment) {
+		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment ||
+				ae instanceof AlgoJoinPoints) {
 			c.ignore = true;
 			return c;
 		}
@@ -232,6 +242,22 @@ public class ProverCNIMethod {
 			String Bl = getUniqueLabel(B);
 			String Cl = getUniqueLabel(C);
 			c.realRelation = "coll(" + Al + "," + Bl + "," + Cl + ")";
+			return c;
+		}
+		if (ae instanceof AlgoAreParallel) {
+			AlgoAreParallel aap = (AlgoAreParallel) ae;
+			GeoElement[] input = aap.getInput();
+			GeoLine g = (GeoLine) input[0];
+			GeoLine h = (GeoLine) input[1];
+			GeoPoint gS = g.getStartPoint();
+			GeoPoint gE = g.getEndPoint();
+			GeoPoint hS = h.getStartPoint();
+			GeoPoint hE = h.getEndPoint();
+			String gSl = getUniqueLabel(gS);
+			String gEl = getUniqueLabel(gE);
+			String hSl = getUniqueLabel(hS);
+			String hEl = getUniqueLabel(hE);
+			c.realRelation = "parall(" + gSl + "," + gEl + "," + hSl + "," + hEl + ")";
 			return c;
 		}
 		// Unimplemented, but it should be handled...
