@@ -1,9 +1,11 @@
 package org.geogebra.common.kernel.prover;
 
+import java.util.ArrayList;
 import java.util.TreeSet;
 
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
 import org.geogebra.common.kernel.algos.AlgoJoinPoints;
@@ -12,9 +14,11 @@ import org.geogebra.common.kernel.algos.AlgoMidpoint;
 import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoPolygon;
+import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.Prover.ProofResult;
 import org.geogebra.common.util.debug.Log;
@@ -85,17 +89,19 @@ public class ProverCNIMethod {
 		// Put the first two points into 0 and 1:
 		int i = 0;
 		TreeSet<GeoElement> specialized = new TreeSet<>();
+		String specCode = "";
 		for (GeoElement ge : freePoints) {
 			if (i == 0) {
-				declarations = getUniqueLabel(ge) + ":=0\n" + declarations;
+				specCode += getUniqueLabel(ge) + ":=0\n";
 				specialized.add(ge);
 			}
 			if (i == 1) {
-				declarations = getUniqueLabel(ge) + ":=1\n" + declarations;
+				specCode += getUniqueLabel(ge) + ":=1\n";
 				specialized.add(ge);
 			}
 			i++;
 		}
+		declarations = specCode + declarations; // Prepend specializations before declarations.
 		freePoints.removeAll(specialized);
 		// These will be no longer free points.
 
@@ -114,7 +120,9 @@ public class ProverCNIMethod {
 		}
 
 		String[] predefinitions = {"coll(A_,B_,C_):=(A_-B_)/(A_-C_)",
-			"parall(A_,B_,C_,D_):=(A_-B_)/(C_-D_)"};
+				"par(A_,B_,C_,D_):=(A_-B_)/(C_-D_)",
+				"conc(A_,B_,C_,D_):=((C_-A_)/(C_-B))/((D_-A_)/(D_-B_))"
+		};
 
 		// Putting the code together...
 		String program = "";
@@ -287,10 +295,29 @@ public class ProverCNIMethod {
 				c.realRelation = "coll(" + gSl + "," + gEl + "," + gel + ")";
 				return c;
 			}
+			if (p instanceof GeoConic) {
+				if (((GeoConic) p).isCircle()) {
+					ArrayList<GeoPointND> points = ((GeoConic) p).getPointsOnConic();
+					if (points.size() >= 4) {
+						GeoPoint A = (GeoPoint) points.get(0).toGeoElement();
+						GeoPoint B = (GeoPoint) points.get(1).toGeoElement();
+						GeoPoint C = (GeoPoint) points.get(2).toGeoElement();
+						GeoPoint D = (GeoPoint) points.get(3).toGeoElement();
+						String Al = getUniqueLabel(A);
+						String Bl = getUniqueLabel(B);
+						String Cl = getUniqueLabel(C);
+						String Dl = getUniqueLabel(D);
+						c.realRelation = "conc(" + Al + "," + Bl + "," + Cl + "," + Dl + ")";
+						return c;
+					}
+					return null; // Not implemented.
+				}
+				return null; // Not implemented.
+			}
 			return null; // Not implemented.
 		}
 		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment ||
-				ae instanceof AlgoJoinPoints) {
+				ae instanceof AlgoJoinPoints || ae instanceof AlgoCircleThreePoints) {
 			c.ignore = true;
 			return c;
 		}
@@ -334,7 +361,7 @@ public class ProverCNIMethod {
 			String gEl = getUniqueLabel(gE);
 			String hSl = getUniqueLabel(hS);
 			String hEl = getUniqueLabel(hE);
-			c.realRelation = "parall(" + gSl + "," + gEl + "," + hSl + "," + hEl + ")";
+			c.realRelation = "par(" + gSl + "," + gEl + "," + hSl + "," + hEl + ")";
 			return c;
 		}
 		// Unimplemented, but it should be handled...
