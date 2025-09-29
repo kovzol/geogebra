@@ -10,7 +10,7 @@ DEBUG=0 # In tmp/ there can be some log, if you set this to 1.
 DBDEBUG=0
 TIMEOUT=20 # 5, 10, 20, 30, 60, 600 or 3600
 # PROVERS="Recio PureSymbolic Botana BotanaGiac OpenGeoProver_Wu OpenGeoProver_Area Auto Web"
-PROVERS="Auto Web"
+PROVERS="Auto Web CNI"
 SINGULARWSREMOTEURL=http://singularws.idm.jku.at/
 PROVEDETAILS=0 # Rewrite Prove[] to ProveDetails if set to 1
 
@@ -96,7 +96,7 @@ while getopts "t:p:P:s:S:dbDFhvrV" OPT; do
      PROVEDETAILS=1
      ;;
     prove)
-     PROVERS="Recio Botana BotanaGiac OpenGeoProver_Wu OpenGeoProver_Area Auto Web"
+     PROVERS="Recio Botana BotanaGiac OpenGeoProver_Wu OpenGeoProver_Area Auto Web CNI"
      PROVEDETAILS=0
      ;;
     provedetails)
