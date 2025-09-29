@@ -80,6 +80,24 @@ public class ProverCNIMethod {
 			}
 		}
 
+		// Specialization.
+		// Put the first two points into 0 and 1:
+		int i = 0;
+		TreeSet<GeoElement> specialized = new TreeSet<>();
+		for (GeoElement ge : freePoints) {
+			if (i == 0) {
+				declarations = getUniqueLabel(ge) + ":=0\n" + declarations;
+				specialized.add(ge);
+			}
+			if (i == 1) {
+				declarations = getUniqueLabel(ge) + ":=1\n" + declarations;
+				specialized.add(ge);
+			}
+			i++;
+		}
+		freePoints.removeAll(specialized);
+		// These will be no longer free points.
+
 		// Adding the thesis. This is very similar to the code above:
 		CNIDefinition def = getCNIThesisDefinition(statement);
 		if (def == null) {
@@ -209,9 +227,9 @@ public class ProverCNIMethod {
 	}
 
 	/** Create the CNI definition for a GeoElement (for a hypothesis).
-	 * Compute the rhs of the declaration String, the lhs of the real relation String,
+	 * Compute the full declaration String, but only the lhs of the real relation String,
 	 * and return them to the caller. This method should cover all algos sooner or later.
-	 * Now it is just a prototype that implements the CNI method some frequently used algos.
+	 * Now it is just a prototype that implements the CNI method for some frequently used algos.
 	 *
 	 * @param ge the input GeoElement
 	 * @return all required information for the CNI definition for the input
