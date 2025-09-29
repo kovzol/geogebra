@@ -14,6 +14,7 @@ import org.geogebra.common.kernel.algos.AlgoJoinPointsRay;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
 import org.geogebra.common.kernel.algos.AlgoLineBisector;
 import org.geogebra.common.kernel.algos.AlgoLineBisectorSegment;
+import org.geogebra.common.kernel.algos.AlgoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoMidpoint;
 import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
@@ -311,59 +312,10 @@ public class ProverCNIMethod {
 			GeoLine g = ail.getg();
 			GeoLine h = ail.geth();
 			String rel1 = "", rel2 = "";
-			GeoPoint gS = g.getStartPoint();
-			GeoPoint gE = g.getEndPoint();
-			GeoPoint hS = h.getStartPoint();
-			GeoPoint hE = h.getEndPoint();
-			if (gS != null && gE != null) {
-				rel1 = collinear(gS, gE, ge);
-			} else {
-				if (gS != null) {
-					AlgoElement gAe = g.getParentAlgorithm();
-					if (gAe instanceof AlgoAngularBisectorPoints) {
-						GeoPoint A = ((AlgoAngularBisectorPoints) gAe).getA();
-						GeoPoint B = ((AlgoAngularBisectorPoints) gAe).getB();
-						GeoPoint C = ((AlgoAngularBisectorPoints) gAe).getC();
-						rel1 = eqangle(A, B, ge, ge, B, C);
-					} else if (gAe instanceof AlgoLineBisector) {
-						GeoPoint A = ((AlgoLineBisector) gAe).getA();
-						GeoPoint B = ((AlgoLineBisector) gAe).getB();
-						rel1 = eqangle(ge, A, B, A, B, ge);
-					} else if (gAe instanceof AlgoLineBisectorSegment) {
-						GeoSegment f = ((AlgoLineBisectorSegment) gAe).getSegment();
-						GeoPoint A = f.getStartPoint();
-						GeoPoint B = f.getEndPoint();
-						rel1 = eqangle(ge, A, B, A, B, ge);
-					} else {
-						// Not yet implemented.
-						return null;
-					}
-				}
-			}
-			if (hS != null && hE != null) {
-				rel2 = collinear(hS, hE, ge);
-			} else {
-				if (hS != null) {
-					AlgoElement hAe = h.getParentAlgorithm();
-					if (hAe instanceof AlgoAngularBisectorPoints) {
-						GeoPoint A = ((AlgoAngularBisectorPoints) hAe).getA();
-						GeoPoint B = ((AlgoAngularBisectorPoints) hAe).getB();
-						GeoPoint C = ((AlgoAngularBisectorPoints) hAe).getC();
-						rel2 = eqangle(A, B, ge, ge, B, C);
-					} else if (hAe instanceof AlgoLineBisector) {
-						GeoPoint A = ((AlgoLineBisector) hAe).getA();
-						GeoPoint B = ((AlgoLineBisector) hAe).getB();
-						rel2 = eqangle(ge, A, B, A, B, ge);
-					} else if (hAe instanceof AlgoLineBisectorSegment) {
-						GeoSegment f = ((AlgoLineBisectorSegment) hAe).getSegment();
-						GeoPoint A = f.getStartPoint();
-						GeoPoint B = f.getEndPoint();
-						rel2 = eqangle(ge, A, B, A, B, ge);
-					} else {
-						// Not yet implemented.
-						return null;
-					}
-				}
+			rel1 = online((GeoPoint) ge, g);
+			rel2 = online((GeoPoint) ge, h);
+			if (rel1 == null || rel2 == null) {
+				return null; // Not implemented.
 			}
 			c.realRelation = rel1 + "\n" + rel2;
 			return c;
@@ -375,7 +327,7 @@ public class ProverCNIMethod {
 			if (p instanceof GeoLine) {
 				GeoPoint gS = ((GeoLine) p).getStartPoint();
 				GeoPoint gE = ((GeoLine) p).getEndPoint();
-				c.realRelation = collinear(gS, gE, ge);
+				c.realRelation = online((GeoPoint) ge, (GeoLine) p);
 				return c;
 			}
 			if (p instanceof GeoConic) {
@@ -398,7 +350,8 @@ public class ProverCNIMethod {
 		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment ||
 				ae instanceof AlgoJoinPoints || ae instanceof AlgoCircleThreePoints ||
 				ae instanceof AlgoAngularBisectorPoints || ae instanceof AlgoLineBisector ||
-				ae instanceof AlgoLineBisectorSegment || ae instanceof AlgoJoinPointsRay) {
+				ae instanceof AlgoLineBisectorSegment || ae instanceof AlgoJoinPointsRay ||
+				ae instanceof AlgoLinePointLine) {
 			c.ignore = true;
 			return c;
 		}
@@ -445,11 +398,7 @@ public class ProverCNIMethod {
 			GeoPoint gE = g.getEndPoint();
 			GeoPoint hS = h.getStartPoint();
 			GeoPoint hE = h.getEndPoint();
-			String gSl = getUniqueLabel(gS);
-			String gEl = getUniqueLabel(gE);
-			String hSl = getUniqueLabel(hS);
-			String hEl = getUniqueLabel(hE);
-			c.realRelation = "par(" + gSl + "," + gEl + "," + hSl + "," + hEl + ")";
+			c.realRelation = parallel(gS, gE, hS, hE);
 			return c;
 		}
 		if (ae instanceof AlgoAreEqual) {
@@ -518,6 +467,15 @@ public class ProverCNIMethod {
 		return "conc(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
 	}
 
+	static String parallel(GeoPoint ge1, GeoPoint ge2, GeoPoint ge3, GeoPoint ge4) {
+		String ge1l = getUniqueLabel(ge1);
+		String ge2l = getUniqueLabel(ge2);
+		String ge3l = getUniqueLabel(ge3);
+		String ge4l = getUniqueLabel(ge4);
+		return "par(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
+	}
+
+
 	static String eqangle(GeoElement ge1, GeoElement ge2, GeoElement ge3, GeoElement ge4,
 			GeoElement ge5, GeoElement ge6) {
 		String ge1l = getUniqueLabel(ge1);
@@ -527,5 +485,44 @@ public class ProverCNIMethod {
 		String ge5l = getUniqueLabel(ge5);
 		String ge6l = getUniqueLabel(ge6);
 		return "eqangle(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + "," + ge5l + "," + ge6l + ")";
+	}
+
+	static String online(GeoPoint ge, GeoLine g) {
+		GeoPoint gS = g.getStartPoint();
+		GeoPoint gE = g.getEndPoint();
+		if (gS != null && gE != null) {
+			return collinear(gS, gE, ge);
+		} else {
+			if (gS != null) {
+				AlgoElement gAe = g.getParentAlgorithm();
+				if (gAe instanceof AlgoAngularBisectorPoints) {
+					GeoPoint A = ((AlgoAngularBisectorPoints) gAe).getA();
+					GeoPoint B = ((AlgoAngularBisectorPoints) gAe).getB();
+					GeoPoint C = ((AlgoAngularBisectorPoints) gAe).getC();
+					return eqangle(A, B, ge, ge, B, C);
+				} else if (gAe instanceof AlgoLineBisector) {
+					GeoPoint A = ((AlgoLineBisector) gAe).getA();
+					GeoPoint B = ((AlgoLineBisector) gAe).getB();
+					return eqangle(ge, A, B, A, B, ge);
+				} else if (gAe instanceof AlgoLineBisectorSegment) {
+					GeoSegment f = ((AlgoLineBisectorSegment) gAe).getSegment();
+					GeoPoint A = f.getStartPoint();
+					GeoPoint B = f.getEndPoint();
+					return eqangle(ge, A, B, A, B, ge);
+				} else if (gAe instanceof AlgoLinePointLine) {
+					AlgoLinePointLine alpl = (AlgoLinePointLine) gAe;
+					GeoElement[] input = alpl.getInput();
+					GeoPoint P = (GeoPoint) input[0];
+					GeoLine h = (GeoLine) input[1];
+					GeoPoint hS = h.getStartPoint();
+					GeoPoint hE = h.getEndPoint();
+					return parallel(P, (GeoPoint) ge, hS, hE);
+				} else {
+					// Not yet implemented.
+					return null;
+				}
+			}
+		}
+		return null; // Unimplemented.
 	}
 }
