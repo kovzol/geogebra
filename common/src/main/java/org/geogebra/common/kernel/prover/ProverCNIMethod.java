@@ -11,6 +11,7 @@ import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
 import org.geogebra.common.kernel.algos.AlgoJoinPoints;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
+import org.geogebra.common.kernel.algos.AlgoLineBisector;
 import org.geogebra.common.kernel.algos.AlgoMidpoint;
 import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
@@ -184,6 +185,11 @@ public class ProverCNIMethod {
 
 		String minDegreeC = removeHeadTail(minDegree,1); // remove { and }
 		String[] minDegreeA = minDegreeC.split(","); // Separate items
+		if (minDegreeA[0].equals("+infinity")) {
+			// r cannot be expressed, the statement is probably false...
+			Log.debug("The elimination ideal does not contain r_.");
+			return ProofResult.UNKNOWN;
+		}
 		int minDegreeI = Integer.valueOf(minDegreeA[0]);
 		if (minDegreeI == 1) {
 			// r can be expressed by using r1, r2, ..., here r is linear.
@@ -295,6 +301,10 @@ public class ProverCNIMethod {
 						GeoPoint B = ((AlgoAngularBisectorPoints) gAe).getB();
 						GeoPoint C = ((AlgoAngularBisectorPoints) gAe).getC();
 						rel1 = eqangle(A, B, ge, ge, B, C);
+					} else if (gAe instanceof AlgoLineBisector) {
+						GeoPoint A = ((AlgoLineBisector) gAe).getA();
+						GeoPoint B = ((AlgoLineBisector) gAe).getB();
+						rel2 = eqangle(ge, A, B, A, B, ge);
 					} else {
 						// Not yet implemented.
 						return null;
@@ -311,6 +321,10 @@ public class ProverCNIMethod {
 						GeoPoint B = ((AlgoAngularBisectorPoints) hAe).getB();
 						GeoPoint C = ((AlgoAngularBisectorPoints) hAe).getC();
 						rel2 = eqangle(A, B, ge, ge, B, C);
+					} else if (hAe instanceof AlgoLineBisector) {
+						GeoPoint A = ((AlgoLineBisector) hAe).getA();
+						GeoPoint B = ((AlgoLineBisector) hAe).getB();
+						rel2 = eqangle(ge, A, B, A, B, ge);
 					} else {
 						// Not yet implemented.
 						return null;
@@ -349,7 +363,7 @@ public class ProverCNIMethod {
 		}
 		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment ||
 				ae instanceof AlgoJoinPoints || ae instanceof AlgoCircleThreePoints ||
-				ae instanceof AlgoAngularBisectorPoints) {
+				ae instanceof AlgoAngularBisectorPoints || ae instanceof AlgoLineBisector) {
 			c.ignore = true;
 			return c;
 		}
