@@ -35,6 +35,7 @@ public class ProverCNIMethod {
 		String declaration;
 		String realRelation;
 		boolean ignore;
+		boolean rMustBe0 = false;
 	}
 
 	public static ProofResult prove(Prover prover) {
@@ -46,6 +47,7 @@ public class ProverCNIMethod {
 		String realRelations = "";
 		int realRelationsNo = 0;
 		boolean declarative = true;
+		boolean rMustBeZero = false;
 
 		String VARIABLE_R_STRING = "r_"; // This must be a kind of unique string.
 		String VARIABLE_I_STRING = "I_"; // This must be a kind of unique string.
@@ -127,6 +129,9 @@ public class ProverCNIMethod {
 		if (def.realRelation != null) {
 			realRelations += def.realRelation + "=" + VARIABLE_R_STRING;
 		}
+		if (def.rMustBe0) {
+			rMustBeZero = true;
+		}
 
 		String[] predefinitions = {"coll(A_,B_,C_):=(A_-B_)/(A_-C_)",
 				"par(A_,B_,C_,D_):=(A_-B_)/(C_-D_)",
@@ -171,7 +176,7 @@ public class ProverCNIMethod {
 			return ProofResult.UNKNOWN;
 		}
 
-		// There is direct correspondence.
+		// There is a direct correspondence.
 		String elimIdealL = removeHeadTail(elimIdeal, 1).
 				replace("{", "[").replace("}", "]"); // remove { and }
 		// Now we choose the minimal degree polynomial (in r) of this list.
@@ -199,6 +204,14 @@ public class ProverCNIMethod {
 			program = "lvar(coeff(" + minDegreeA[1] + ",r_)[0])";
 			String divVars = executeGiac(program);
 			if (divVars.equals("{}")) {
+				if (rMustBeZero) {
+					if (minDegreeA[1].equals("r_")) {
+						Log.debug("r_ is zero.");
+						return ProofResult.TRUE;
+					}
+					Log.debug("r_ should be zero.");
+					return ProofResult.UNKNOWN; // maybe here we can result FALSE?
+				}
 				return ProofResult.TRUE;
 			}
 			// Read off the divisor when expressing r:
@@ -229,6 +242,11 @@ public class ProverCNIMethod {
 
 			String minDegree2C = removeHeadTail(minDegree2,1); // remove { and }
 			String[] minDegree2A = minDegree2C.split(","); // Separate items
+			if (minDegree2A[0].equals("+infinity")) {
+				// r cannot be expressed, the statement is probably false...
+				Log.debug("The second elimination ideal does not contain r_.");
+				return ProofResult.UNKNOWN;
+			}
 			int minDegree2I = Integer.valueOf(minDegree2A[0]);
 			if (minDegree2I == 1) {
 				// The secondly computed ideal is linear.
@@ -241,12 +259,15 @@ public class ProverCNIMethod {
 					return ProofResult.TRUE;
 				}
 				// Cannot decide, maybe we need another round? TODO
+				Log.debug("Another division occurred, a third elimination is needed.");
 				return ProofResult.UNKNOWN;
 			}
 			// The division does not result in an unambiguous case.
+			Log.debug("The division does not result in an unambiguous case.");
 			return ProofResult.UNKNOWN;
 		}
 		// The case is not linear.
+		Log.debug("r_ is not linear, further check is needed.");
 		return ProofResult.UNKNOWN;
 	}
 
@@ -304,7 +325,7 @@ public class ProverCNIMethod {
 					} else if (gAe instanceof AlgoLineBisector) {
 						GeoPoint A = ((AlgoLineBisector) gAe).getA();
 						GeoPoint B = ((AlgoLineBisector) gAe).getB();
-						rel2 = eqangle(ge, A, B, A, B, ge);
+						rel1 = eqangle(ge, A, B, A, B, ge);
 					} else {
 						// Not yet implemented.
 						return null;
@@ -352,7 +373,7 @@ public class ProverCNIMethod {
 						GeoPoint B = (GeoPoint) points.get(1).toGeoElement();
 						GeoPoint C = (GeoPoint) points.get(2).toGeoElement();
 						GeoPoint D = (GeoPoint) points.get(3).toGeoElement();
-						c.realRelation = concyclyc(A, B, C, D);
+						c.realRelation = concyclic(A, B, C, D);
 						return c;
 					}
 					return null; // Not implemented.
@@ -398,7 +419,7 @@ public class ProverCNIMethod {
 			GeoElement B = input[1];
 			GeoElement C = input[2];
 			GeoElement D = input[3];
-			c.realRelation = concyclyc(A, B, C, D);
+			c.realRelation = concyclic(A, B, C, D);
 			return c;
 		}
 		if (ae instanceof AlgoAreParallel) {
@@ -416,6 +437,19 @@ public class ProverCNIMethod {
 			String hEl = getUniqueLabel(hE);
 			c.realRelation = "par(" + gSl + "," + gEl + "," + hSl + "," + hEl + ")";
 			return c;
+		}
+		if (ae instanceof AlgoAreEqual) {
+			AlgoAreEqual aae = (AlgoAreEqual) ae;
+			GeoElement[] input = aae.getInput();
+			if (input[0] instanceof GeoPoint && input[1] instanceof GeoPoint) {
+				GeoPoint P = (GeoPoint) input[0];
+				GeoPoint Q = (GeoPoint) input[1];
+				String Pl = getUniqueLabel(P);
+				String Ql = getUniqueLabel(Q);
+				c.realRelation = Pl + "-" + Ql;
+				c.rMustBe0 = true;
+				return c;
+			}
 		}
 		// Unimplemented, but it should be handled...
 		return null;
@@ -462,7 +496,7 @@ public class ProverCNIMethod {
 		return "coll(" + ge1l + "," + ge2l + "," + ge3l + ")";
 	}
 
-	static String concyclyc(GeoElement ge1, GeoElement ge2, GeoElement ge3, GeoElement ge4) {
+	static String concyclic(GeoElement ge1, GeoElement ge2, GeoElement ge3, GeoElement ge4) {
 		String ge1l = getUniqueLabel(ge1);
 		String ge2l = getUniqueLabel(ge2);
 		String ge3l = getUniqueLabel(ge3);
