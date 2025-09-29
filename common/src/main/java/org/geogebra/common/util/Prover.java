@@ -759,8 +759,6 @@ public abstract class Prover {
 			result = override(ProverCNIMethod.prove(this));
 			return;
 		}
-
-
 	}
 
 	/**

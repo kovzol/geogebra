@@ -5,6 +5,7 @@ import java.util.TreeSet;
 
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.algos.AlgoAngularBisectorPoints;
 import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
@@ -61,7 +62,14 @@ public class ProverCNIMethod {
 				freePoints.add(ge);
 			} else {
 				// We also collect declarative and real-relational definitions.
-				CNIDefinition def = getCNIHypothesisDefinition(ge);
+				CNIDefinition def = null;
+				try {
+					def = getCNIHypothesisDefinition(ge);
+				} catch (NullPointerException ex) {
+					Log.debug("The CNI method does not yet fully implement " + ge.getParentAlgorithm().toString()
+							+ " which is required for " + ge.getLabelSimple());
+					return ProofResult.UNKNOWN;
+				}
 				if (def == null) {
 					Log.debug("The CNI method does not yet implement " + ge.getParentAlgorithm().toString()
 						+ " which is required for " + ge.getLabelSimple());
@@ -121,7 +129,8 @@ public class ProverCNIMethod {
 
 		String[] predefinitions = {"coll(A_,B_,C_):=(A_-B_)/(A_-C_)",
 				"par(A_,B_,C_,D_):=(A_-B_)/(C_-D_)",
-				"conc(A_,B_,C_,D_):=((C_-A_)/(C_-B))/((D_-A_)/(D_-B_))"
+				"conc(A_,B_,C_,D_):=((C_-A_)/(C_-B))/((D_-A_)/(D_-B_))",
+				"eqangle(A_,B_,C_,D_,E_,F_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))"
 		};
 
 		// Putting the code together...
@@ -271,16 +280,44 @@ public class ProverCNIMethod {
 			AlgoIntersectLines ail = (AlgoIntersectLines) ae;
 			GeoLine g = ail.getg();
 			GeoLine h = ail.geth();
+			String rel1 = "", rel2 = "";
 			GeoPoint gS = g.getStartPoint();
 			GeoPoint gE = g.getEndPoint();
 			GeoPoint hS = h.getStartPoint();
 			GeoPoint hE = h.getEndPoint();
-			String gSl = getUniqueLabel(gS);
-			String gEl = getUniqueLabel(gE);
-			String hSl = getUniqueLabel(hS);
-			String hEl = getUniqueLabel(hE);
-			c.realRelation = "coll(" + gSl + "," + gEl + "," + gel + ")\n" +
-					"coll(" + hSl + "," + hEl + "," + gel + ")";
+			if (gS != null && gE != null) {
+				rel1 = collinear(gS, gE, ge);
+			} else {
+				if (gS != null) {
+					AlgoElement gAe = g.getParentAlgorithm();
+					if (gAe instanceof AlgoAngularBisectorPoints) {
+						GeoPoint A = ((AlgoAngularBisectorPoints) gAe).getA();
+						GeoPoint B = ((AlgoAngularBisectorPoints) gAe).getB();
+						GeoPoint C = ((AlgoAngularBisectorPoints) gAe).getC();
+						rel1 = eqangle(A, B, ge, ge, B, C);
+					} else {
+						// Not yet implemented.
+						return null;
+					}
+				}
+			}
+			if (hS != null && hE != null) {
+				rel2 = collinear(hS, hE, ge);
+			} else {
+				if (hS != null) {
+					AlgoElement hAe = h.getParentAlgorithm();
+					if (hAe instanceof AlgoAngularBisectorPoints) {
+						GeoPoint A = ((AlgoAngularBisectorPoints) hAe).getA();
+						GeoPoint B = ((AlgoAngularBisectorPoints) hAe).getB();
+						GeoPoint C = ((AlgoAngularBisectorPoints) hAe).getC();
+						rel2 = eqangle(A, B, ge, ge, B, C);
+					} else {
+						// Not yet implemented.
+						return null;
+					}
+				}
+			}
+			c.realRelation = rel1 + "\n" + rel2;
 			return c;
 		}
 		if (ae instanceof AlgoPointOnPath) {
@@ -290,9 +327,7 @@ public class ProverCNIMethod {
 			if (p instanceof GeoLine) {
 				GeoPoint gS = ((GeoLine) p).getStartPoint();
 				GeoPoint gE = ((GeoLine) p).getEndPoint();
-				String gSl = getUniqueLabel(gS);
-				String gEl = getUniqueLabel(gE);
-				c.realRelation = "coll(" + gSl + "," + gEl + "," + gel + ")";
+				c.realRelation = collinear(gS, gE, ge);
 				return c;
 			}
 			if (p instanceof GeoConic) {
@@ -303,11 +338,7 @@ public class ProverCNIMethod {
 						GeoPoint B = (GeoPoint) points.get(1).toGeoElement();
 						GeoPoint C = (GeoPoint) points.get(2).toGeoElement();
 						GeoPoint D = (GeoPoint) points.get(3).toGeoElement();
-						String Al = getUniqueLabel(A);
-						String Bl = getUniqueLabel(B);
-						String Cl = getUniqueLabel(C);
-						String Dl = getUniqueLabel(D);
-						c.realRelation = "conc(" + Al + "," + Bl + "," + Cl + "," + Dl + ")";
+						c.realRelation = concyclyc(A, B, C, D);
 						return c;
 					}
 					return null; // Not implemented.
@@ -317,7 +348,8 @@ public class ProverCNIMethod {
 			return null; // Not implemented.
 		}
 		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment ||
-				ae instanceof AlgoJoinPoints || ae instanceof AlgoCircleThreePoints) {
+				ae instanceof AlgoJoinPoints || ae instanceof AlgoCircleThreePoints ||
+				ae instanceof AlgoAngularBisectorPoints) {
 			c.ignore = true;
 			return c;
 		}
@@ -342,10 +374,17 @@ public class ProverCNIMethod {
 			GeoElement A = input[0];
 			GeoElement B = input[1];
 			GeoElement C = input[2];
-			String Al = getUniqueLabel(A);
-			String Bl = getUniqueLabel(B);
-			String Cl = getUniqueLabel(C);
-			c.realRelation = "coll(" + Al + "," + Bl + "," + Cl + ")";
+			c.realRelation = collinear(A, B, C);
+			return c;
+		}
+		if (ae instanceof AlgoAreConcyclic) {
+			AlgoAreConcyclic aac = (AlgoAreConcyclic) ae;
+			GeoElement[] input = aac.getInput();
+			GeoElement A = input[0];
+			GeoElement B = input[1];
+			GeoElement C = input[2];
+			GeoElement D = input[3];
+			c.realRelation = concyclyc(A, B, C, D);
 			return c;
 		}
 		if (ae instanceof AlgoAreParallel) {
@@ -402,4 +441,29 @@ public class ProverCNIMethod {
 		return input;
 	}
 
+	static String collinear(GeoElement ge1, GeoElement ge2, GeoElement ge3) {
+		String ge1l = getUniqueLabel(ge1);
+		String ge2l = getUniqueLabel(ge2);
+		String ge3l = getUniqueLabel(ge3);
+		return "coll(" + ge1l + "," + ge2l + "," + ge3l + ")";
+	}
+
+	static String concyclyc(GeoElement ge1, GeoElement ge2, GeoElement ge3, GeoElement ge4) {
+		String ge1l = getUniqueLabel(ge1);
+		String ge2l = getUniqueLabel(ge2);
+		String ge3l = getUniqueLabel(ge3);
+		String ge4l = getUniqueLabel(ge4);
+		return "conc(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
+	}
+
+	static String eqangle(GeoElement ge1, GeoElement ge2, GeoElement ge3, GeoElement ge4,
+			GeoElement ge5, GeoElement ge6) {
+		String ge1l = getUniqueLabel(ge1);
+		String ge2l = getUniqueLabel(ge2);
+		String ge3l = getUniqueLabel(ge3);
+		String ge4l = getUniqueLabel(ge4);
+		String ge5l = getUniqueLabel(ge5);
+		String ge6l = getUniqueLabel(ge6);
+		return "eqangle(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + "," + ge5l + "," + ge6l + ")";
+	}
 }
