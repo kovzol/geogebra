@@ -10,8 +10,10 @@ import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
 import org.geogebra.common.kernel.algos.AlgoJoinPoints;
+import org.geogebra.common.kernel.algos.AlgoJoinPointsRay;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
 import org.geogebra.common.kernel.algos.AlgoLineBisector;
+import org.geogebra.common.kernel.algos.AlgoLineBisectorSegment;
 import org.geogebra.common.kernel.algos.AlgoMidpoint;
 import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
@@ -20,6 +22,7 @@ import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.Prover.ProofResult;
@@ -326,6 +329,11 @@ public class ProverCNIMethod {
 						GeoPoint A = ((AlgoLineBisector) gAe).getA();
 						GeoPoint B = ((AlgoLineBisector) gAe).getB();
 						rel1 = eqangle(ge, A, B, A, B, ge);
+					} else if (gAe instanceof AlgoLineBisectorSegment) {
+						GeoSegment f = ((AlgoLineBisectorSegment) gAe).getSegment();
+						GeoPoint A = f.getStartPoint();
+						GeoPoint B = f.getEndPoint();
+						rel1 = eqangle(ge, A, B, A, B, ge);
 					} else {
 						// Not yet implemented.
 						return null;
@@ -345,6 +353,11 @@ public class ProverCNIMethod {
 					} else if (hAe instanceof AlgoLineBisector) {
 						GeoPoint A = ((AlgoLineBisector) hAe).getA();
 						GeoPoint B = ((AlgoLineBisector) hAe).getB();
+						rel2 = eqangle(ge, A, B, A, B, ge);
+					} else if (hAe instanceof AlgoLineBisectorSegment) {
+						GeoSegment f = ((AlgoLineBisectorSegment) hAe).getSegment();
+						GeoPoint A = f.getStartPoint();
+						GeoPoint B = f.getEndPoint();
 						rel2 = eqangle(ge, A, B, A, B, ge);
 					} else {
 						// Not yet implemented.
@@ -384,7 +397,8 @@ public class ProverCNIMethod {
 		}
 		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment ||
 				ae instanceof AlgoJoinPoints || ae instanceof AlgoCircleThreePoints ||
-				ae instanceof AlgoAngularBisectorPoints || ae instanceof AlgoLineBisector) {
+				ae instanceof AlgoAngularBisectorPoints || ae instanceof AlgoLineBisector ||
+				ae instanceof AlgoLineBisectorSegment || ae instanceof AlgoJoinPointsRay) {
 			c.ignore = true;
 			return c;
 		}
