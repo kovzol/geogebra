@@ -129,7 +129,7 @@ public class ProverCNIMethod {
 
 		String[] predefinitions = {"coll(A_,B_,C_):=(A_-B_)/(A_-C_)",
 				"par(A_,B_,C_,D_):=(A_-B_)/(C_-D_)",
-				"conc(A_,B_,C_,D_):=((C_-A_)/(C_-B))/((D_-A_)/(D_-B_))",
+				"conc(A_,B_,C_,D_):=((C_-A_)/(C_-B_))/((D_-A_)/(D_-B_))",
 				"eqangle(A_,B_,C_,D_,E_,F_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))"
 		};
 
