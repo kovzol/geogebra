@@ -107,7 +107,10 @@ public class ProverCNIMethod {
 		for (String declaration : declarationsA) {
 			program += "[" + declaration + "],";
 		}
-		program += "[" + VARIABLE_I_STRING + ":=eliminate([" + realRelations + "],";
+		program += "[" + VARIABLE_I_STRING + ":=eliminate([" + realRelations;
+		String program1 = program; // first program stored, later it may be required with an edit
+		String rest = "";
+		rest += "],";
 		String toEliminate = "";
 		for (GeoElement ge : freePoints) {
 			toEliminate += getUniqueLabel(ge) + ",";
@@ -116,9 +119,10 @@ public class ProverCNIMethod {
 			toEliminate += getUniqueLabel(ge) + ",";
 		}
 		toEliminate = removeTail(toEliminate, 1);
-		program += "[" + toEliminate + "])]";
+		rest += "[" + toEliminate + "])]";
 		int codeLengthLines = predefinitions.length + declarationsA.length + 1;
-		program += "][" + (codeLengthLines - 1) + "]";
+		rest += "][" + (codeLengthLines - 1) + "]";
+		program += rest;
 		String elimIdeal = executeGiac(program);
 		// This is in form {{4*r_1*r_2*r_-4*r_1*r_2-4*r_1*r_-4*r_2*r_+3*r_1+3*r_2+3*r_}}
 		// or there may be multiple polynomials in the form {{...,...,...}}
@@ -135,9 +139,8 @@ public class ProverCNIMethod {
 				replace("{", "[").replace("}", "]"); // remove { and }
 		// Now we choose the minimal degree polynomial (in r) of this list.
 		program = "[[" + VARIABLE_I_STRING + ":= " + elimIdealL + "],[deg:=inf],[degi:=0],"
-				+ "[for (k:=0;k<size(" + VARIABLE_I_STRING + ");k++) { if (degree("
-					+ VARIABLE_I_STRING + "[k],r_)<deg) { deg:=degree("
-					+ VARIABLE_I_STRING + "[k],r_); degi:=k; } }],"
+				+ "[for (k:=0;k<size(" + VARIABLE_I_STRING + ");k++) { d:=degree(" + VARIABLE_I_STRING + "[k],r_);"
+				+ "if (d>0 && d<deg) { deg:=d; degi:=k; } }],"
 				+ "[deg," + VARIABLE_I_STRING + "[degi]]][4]";
 		program = ggbGiac(program);
 		String minDegree = executeGiac(program);
@@ -156,12 +159,53 @@ public class ProverCNIMethod {
 			if (divVars.equals("{}")) {
 				return ProofResult.TRUE;
 			}
-			// Cannot decide:
+			// Read off the divisor when expressing r:
+			program = "coeff(" + minDegreeA[1] + ",r_)[0])";
+			String divisor = executeGiac(program);
+			// Insert the divisor in the first program and check what happens:
+			program = program1 + "," + divisor + rest;
+			String elimIdeal2 = executeGiac(program);
+
+			if (elimIdeal2.equals("{{1}}")) {
+				// The case divisor == 0 is contradictory. This means that division by zero
+				// is not a relevant issue, so we can be sure that the statement is true.
+				Log.debug("Division by zero is irrelevant.");
+				return ProofResult.TRUE;
+			}
+
+			// There is direct correspondence between r1, r2, ..., and r.
+			String elimIdeal2L = removeHeadTail(elimIdeal2, 1).
+					replace("{", "[").replace("}", "]"); // remove { and }
+			// Now we choose the minimal degree polynomial (in r) of this list.
+			program = "[[" + VARIABLE_I_STRING + ":= " + elimIdeal2L + "],[deg:=inf],[degi:=0],"
+					+ "[for (k:=0;k<size(" + VARIABLE_I_STRING + ");k++) { d:=degree(" + VARIABLE_I_STRING + "[k],r_);"
+					+ "if (d>0 && d<deg) { deg:=d; degi:=k; } }],"
+					+ "[deg," + VARIABLE_I_STRING + "[degi]]][4]";
+			program = ggbGiac(program);
+			String minDegree2 = executeGiac(program);
+			// The result is in form: {1,4*r_1*r_2*r_-4*r_1*r_2-4*r_1*r_-4*r_2*r_+3*r_1+3*r_2+3*r_}
+
+			String minDegree2C = removeHeadTail(minDegree2,1); // remove { and }
+			String[] minDegree2A = minDegree2C.split(","); // Separate items
+			int minDegree2I = Integer.valueOf(minDegree2A[0]);
+			if (minDegree2I == 1) {
+				// The secondly computed ideal is linear.
+				Log.debug("The second elimination ideal contains " + minDegree2A[1] + ", it is linear in r_.");
+				// Check if r can be expressed without a division:
+				// lvar(coeff(2*r_+1,r_)[0])
+				program = "lvar(coeff(" + minDegree2A[1] + ",r_)[0])";
+				String divVars2 = executeGiac(program);
+				if (divVars2.equals("{}")) {
+					return ProofResult.TRUE;
+				}
+				// Cannot decide, maybe we need another round? TODO
+				return ProofResult.UNKNOWN;
+			}
+			// The division does not result in an unambiguous case.
 			return ProofResult.UNKNOWN;
 		}
-
+		// The case is not linear.
 		return ProofResult.UNKNOWN;
-
 	}
 
 	/** Create the CNI definition for a GeoElement (for a hypothesis).
