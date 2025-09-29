@@ -10,6 +10,7 @@ import org.geogebra.common.kernel.algos.AlgoJoinPoints;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
 import org.geogebra.common.kernel.algos.AlgoMidpoint;
 import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
+import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoPolygon;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
@@ -273,6 +274,20 @@ public class ProverCNIMethod {
 			c.realRelation = "coll(" + gSl + "," + gEl + "," + gel + ")\n" +
 					"coll(" + hSl + "," + hEl + "," + gel + ")";
 			return c;
+		}
+		if (ae instanceof AlgoPointOnPath) {
+			AlgoPointOnPath apop = (AlgoPointOnPath) ae;
+			GeoElement[] input = apop.getInput();
+			GeoElement p = input[0];
+			if (p instanceof GeoLine) {
+				GeoPoint gS = ((GeoLine) p).getStartPoint();
+				GeoPoint gE = ((GeoLine) p).getEndPoint();
+				String gSl = getUniqueLabel(gS);
+				String gEl = getUniqueLabel(gE);
+				c.realRelation = "coll(" + gSl + "," + gEl + "," + gel + ")";
+				return c;
+			}
+			return null; // Not implemented.
 		}
 		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment ||
 				ae instanceof AlgoJoinPoints) {
