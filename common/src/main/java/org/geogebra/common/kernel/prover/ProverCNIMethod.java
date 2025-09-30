@@ -78,7 +78,7 @@ public class ProverCNIMethod {
 				CNIDefinition def = null;
 				try {
 					def = getCNIHypothesisDefinition(ge);
-				} catch (NullPointerException ex) {
+				} catch (Exception ex) {
 					Log.debug("The CNI method does not yet fully implement " + ge.getParentAlgorithm().toString()
 							+ " which is required for " + ge.getLabelSimple());
 					return ProofResult.UNKNOWN;
@@ -127,10 +127,15 @@ public class ProverCNIMethod {
 		// These will be no longer free points.
 
 		// Adding the thesis. This is very similar to the code above:
-		CNIDefinition def = getCNIThesisDefinition(statement);
+		CNIDefinition def = null;
+		try {
+			def = getCNIThesisDefinition(statement);
+		} catch (Exception e) {
+			Log.debug("The CNI method does not yet fully implement " + statement.getParentAlgorithm().toString());
+			return ProofResult.UNKNOWN;
+		}
 		if (def == null) {
-			Log.debug("The CNI method does not yet implement " + statement.getParentAlgorithm().toString()
-					+ " which is required for " + statement.getLabelSimple());
+			Log.debug("The CNI method does not yet implement " + statement.getParentAlgorithm().toString());
 			return ProofResult.UNKNOWN;
 		}
 		if (def.declaration != null) {
