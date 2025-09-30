@@ -242,6 +242,10 @@ public class ProverCNIMethod {
 				// The case divisor == 0 is contradictory. This means that division by zero
 				// is not a relevant issue, so we can be sure that the statement is true.
 				Log.debug("Division by zero is irrelevant.");
+				if (rMustBeZero) {
+					Log.debug("r_ should be zero.");
+					return ProofResult.UNKNOWN; // maybe here we can result FALSE?
+				}
 				return ProofResult.TRUE;
 			}
 
@@ -273,6 +277,10 @@ public class ProverCNIMethod {
 				program = "lvar(coeff(" + minDegree2A[1] + ",r_)[0])";
 				String divVars2 = executeGiac(program);
 				if (divVars2.equals("{}")) {
+					if (rMustBeZero) {
+						Log.debug("r_ should be zero.");
+						return ProofResult.UNKNOWN; // maybe here we can result FALSE?
+						}
 					return ProofResult.TRUE;
 				}
 				// Cannot decide, maybe we need another round? TODO
@@ -438,8 +446,16 @@ public class ProverCNIMethod {
 			GeoElement[] input = aae.getInput();
 			return equal(input[0], input[1]);
 		}
+		if (ae instanceof AlgoAreCongruent) {
+			AlgoAreCongruent aac = (AlgoAreCongruent) ae;
+			GeoElement[] input = aac.getInput();
+			return equal(input[0], input[1]);
+		}
 		if (ae instanceof AlgoDependentBoolean) {
 			ExpressionNode en = ((AlgoDependentBoolean) ae).getExpression();
+			if (!en.getLeft().isGeoElement() || !en.getRight().isGeoElement()) {
+				return null; // Unimplemented (maybe a sum).
+			}
 			GeoElement ge1 = en.getLeftTree().getSingleGeoElement();
 			GeoElement ge2 = en.getRightTree().getSingleGeoElement();
 			Operation o = en.getOperation();
@@ -616,7 +632,7 @@ public class ProverCNIMethod {
 	}
 
 	static CNIDefinition equal(GeoElement ge1, GeoElement ge2) {
-		CNIDefinition c = null;
+		CNIDefinition c = new CNIDefinition();;
 		if (ge1 instanceof GeoPoint && ge2 instanceof GeoPoint) {
 			GeoPoint P = (GeoPoint) ge1;
 			GeoPoint Q = (GeoPoint) ge2;
