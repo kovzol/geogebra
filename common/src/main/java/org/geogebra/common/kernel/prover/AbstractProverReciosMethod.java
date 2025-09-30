@@ -261,10 +261,10 @@ public abstract class AbstractProverReciosMethod {
 	private static ProofResult compute1d(final HashSet<PVariable> freeVariables,
 			final TreeMap<PVariable, BigInteger> values, final int deg,
 			final SymbolicParameters s, AlgebraicStatement as) {
-		int nrOfTests = deg + 2;
+		int nrOfTests = deg + 1;
 		Log.debug("nr of tests: " + nrOfTests);
 		PVariable variable = freeVariables.iterator().next();
-		for (int i = 1; i <= deg + 2; i++) {
+		for (int i = 1; i <= deg + 1; i++) {
 			values.put(variable, BigInteger.valueOf(i));
 			if (as != null) {
 				// use Botana's method

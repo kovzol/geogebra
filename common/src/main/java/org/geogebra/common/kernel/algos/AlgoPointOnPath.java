@@ -237,6 +237,8 @@ public class AlgoPointOnPath extends AlgoElement
 		if (input[0] instanceof GeoSegment) {
 			// throw new NoSymbolicParametersException();
 		}
+		// We allow only one variable to define because the point on a path does not have
+		// a freedom, only in one dimension.
 		if (input[0] instanceof GeoLine) {
 			((SymbolicParametersAlgo) input[0]).getFreeVariables(variables);
 			if (variable == null) {
