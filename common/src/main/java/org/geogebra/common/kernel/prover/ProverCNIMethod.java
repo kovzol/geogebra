@@ -8,6 +8,7 @@ import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.algos.AlgoAngularBisectorPoints;
 import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
 import org.geogebra.common.kernel.algos.AlgoCircleTwoPoints;
+import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
@@ -22,12 +23,14 @@ import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
 import org.geogebra.common.kernel.algos.AlgoOrthoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoPolygon;
+import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
+import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.Prover.ProofResult;
 import org.geogebra.common.util.debug.Log;
@@ -144,7 +147,8 @@ public class ProverCNIMethod {
 				"par(A_,B_,C_,D_):=(A_-B_)/(C_-D_)",
 				"perppar(A_,B_,C_,D_):=((A_-B_)/(C_-D_))^2",
 				"conc(A_,B_,C_,D_):=((C_-A_)/(C_-B_))/((D_-A_)/(D_-B_))",
-				"eqangle(A_,B_,C_,D_,E_,F_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))"
+				"eqangle(A_,B_,C_,D_,E_,F_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))",
+				"isosc(A_,B_,C_):=eqangle(C_,B_,A_,A_,C_,B_)" // |AB|=|AC|
 		};
 
 		// Putting the code together...
@@ -412,11 +416,7 @@ public class ProverCNIMethod {
 			GeoElement[] input = aap.getInput();
 			GeoLine g = (GeoLine) input[0];
 			GeoLine h = (GeoLine) input[1];
-			GeoPoint gS = g.getStartPoint();
-			GeoPoint gE = g.getEndPoint();
-			GeoPoint hS = h.getStartPoint();
-			GeoPoint hE = h.getEndPoint();
-			c.realRelation = parallel(gS, gE, hS, hE);
+			c.realRelation = parallel(g, h);
 			return c;
 		}
 		if (ae instanceof AlgoArePerpendicular) { // in fact, perpendicular or parallel
@@ -425,24 +425,28 @@ public class ProverCNIMethod {
 			GeoElement[] input = aap.getInput();
 			GeoLine g = (GeoLine) input[0];
 			GeoLine h = (GeoLine) input[1];
-			GeoPoint gS = g.getStartPoint();
-			GeoPoint gE = g.getEndPoint();
-			GeoPoint hS = h.getStartPoint();
-			GeoPoint hE = h.getEndPoint();
-			c.realRelation = perppar(gS, gE, hS, hE);
+			c.realRelation = perppar(g, h);
 			return c;
 		}
 		if (ae instanceof AlgoAreEqual) {
 			AlgoAreEqual aae = (AlgoAreEqual) ae;
 			GeoElement[] input = aae.getInput();
-			if (input[0] instanceof GeoPoint && input[1] instanceof GeoPoint) {
-				GeoPoint P = (GeoPoint) input[0];
-				GeoPoint Q = (GeoPoint) input[1];
-				String Pl = getUniqueLabel(P);
-				String Ql = getUniqueLabel(Q);
-				c.realRelation = Pl + "-" + Ql;
-				c.rMustBe0 = true;
+			return equal(input[0], input[1]);
+		}
+		if (ae instanceof AlgoDependentBoolean) {
+			ExpressionNode en = ((AlgoDependentBoolean) ae).getExpression();
+			GeoElement ge1 = en.getLeftTree().getSingleGeoElement();
+			GeoElement ge2 = en.getRightTree().getSingleGeoElement();
+			Operation o = en.getOperation();
+			if (o == Operation.PARALLEL) {
+				c.realRelation = parallel((GeoLine) ge1, (GeoLine) ge2);
 				return c;
+			} else if (o == Operation.PERPENDICULAR) {
+				Log.debug("Warning: Testing perpendicularity AND parallelism simultaneously");
+				c.realRelation = perppar((GeoLine) ge1, (GeoLine) ge2);
+				return c;
+			} else if (o == Operation.EQUAL_BOOLEAN) {
+				return equal(ge1, ge2);
 			}
 		}
 		// Unimplemented, but it should be handled...
@@ -506,12 +510,35 @@ public class ProverCNIMethod {
 		return "par(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
 	}
 
+	static String parallel(GeoLine g, GeoLine h) {
+		GeoPoint gS = g.getStartPoint();
+		GeoPoint gE = g.getEndPoint();
+		GeoPoint hS = h.getStartPoint();
+		GeoPoint hE = h.getEndPoint();
+		return parallel(gS, gE, hS, hE);
+	}
+
 	static String perppar(GeoPoint ge1, GeoPoint ge2, GeoPoint ge3, GeoPoint ge4) {
 		String ge1l = getUniqueLabel(ge1);
 		String ge2l = getUniqueLabel(ge2);
 		String ge3l = getUniqueLabel(ge3);
 		String ge4l = getUniqueLabel(ge4);
 		return "perppar(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
+	}
+
+	static String perppar(GeoLine g, GeoLine h) {
+		GeoPoint gS = g.getStartPoint();
+		GeoPoint gE = g.getEndPoint();
+		GeoPoint hS = h.getStartPoint();
+		GeoPoint hE = h.getEndPoint();
+		return perppar(gS, gE, hS, hE);
+	}
+
+	static String isosc(GeoPoint ge1, GeoPoint ge2, GeoPoint ge3) {
+		String ge1l = getUniqueLabel(ge1);
+		String ge2l = getUniqueLabel(ge2);
+		String ge3l = getUniqueLabel(ge3);
+		return "isosc(" + ge1l + "," + ge2l + "," + ge3l + ")";
 	}
 
 	static String eqangle(GeoElement ge1, GeoElement ge2, GeoElement ge3, GeoElement ge4,
@@ -541,12 +568,12 @@ public class ProverCNIMethod {
 				} else if (gAe instanceof AlgoLineBisector) {
 					GeoPoint A = ((AlgoLineBisector) gAe).getA();
 					GeoPoint B = ((AlgoLineBisector) gAe).getB();
-					return eqangle(ge, A, B, A, B, ge);
+					return isosc(ge, A, B);
 				} else if (gAe instanceof AlgoLineBisectorSegment) {
 					GeoSegment f = ((AlgoLineBisectorSegment) gAe).getSegment();
 					GeoPoint A = f.getStartPoint();
 					GeoPoint B = f.getEndPoint();
-					return eqangle(ge, A, B, A, B, ge);
+					return isosc(ge, A, B);
 				} else if (gAe instanceof AlgoLinePointLine) {
 					AlgoLinePointLine alpl = (AlgoLinePointLine) gAe;
 					GeoElement[] input = alpl.getInput();
@@ -581,5 +608,44 @@ public class ProverCNIMethod {
 			return eqangle(ge, p, ce, ce, ge, p);
 		}
 		return null; // Unimplemented.
+	}
+
+	static CNIDefinition equal(GeoElement ge1, GeoElement ge2) {
+		CNIDefinition c = null;
+		if (ge1 instanceof GeoPoint && ge2 instanceof GeoPoint) {
+			GeoPoint P = (GeoPoint) ge1;
+			GeoPoint Q = (GeoPoint) ge2;
+			String Pl = getUniqueLabel(P);
+			String Ql = getUniqueLabel(Q);
+			c.realRelation = Pl + "-" + Ql;
+			c.rMustBe0 = true;
+			return c;
+		}
+		if (ge1 instanceof GeoSegment && ge2 instanceof GeoSegment) {
+			GeoSegment s1 = (GeoSegment) ge1;
+			GeoSegment s2 = (GeoSegment) ge2;
+			GeoPoint A = (GeoPoint) s1.getStartPoint();
+			GeoPoint B = (GeoPoint) s1.getEndPoint();
+			GeoPoint C = (GeoPoint) s2.getStartPoint();
+			GeoPoint D = (GeoPoint) s2.getEndPoint();
+			if (A.equals(C)) {
+				c.realRelation = isosc(B,A,D);
+				return c;
+			}
+			if (A.equals(D)) {
+				c.realRelation = isosc(B,A,C);
+				return c;
+			}
+			if (B.equals(C)) {
+				c.realRelation = isosc(A,B,D);
+				return c;
+			}
+			if (B.equals(D)) {
+				c.realRelation = isosc(A,B,C);
+				return c;
+			}
+			return null; // In general, checking |AB|=|CD| is not supported by the method.
+		}
+		return null; // Missing implementation for equality of other objects.
 	}
 }
