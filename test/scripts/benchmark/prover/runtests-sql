@@ -10,7 +10,7 @@ DEBUG=0 # In tmp/ there can be some log, if you set this to 1.
 DBDEBUG=0
 TIMEOUT=20 # 5, 10, 20, 30, 60, 600 or 3600
 # PROVERS="Recio PureSymbolic Botana BotanaGiac OpenGeoProver_Wu OpenGeoProver_Area Auto Web"
-PROVERS="Auto Web"
+PROVERS="Auto Web CNI"
 SINGULARWSREMOTEURL=http://singularws.idm.jku.at/
 PROVEDETAILS=0 # Rewrite Prove[] to ProveDetails if set to 1
 
@@ -96,7 +96,7 @@ while getopts "t:p:P:s:S:dbDFhvrV" OPT; do
      PROVEDETAILS=1
      ;;
     prove)
-     PROVERS="Recio Botana BotanaGiac OpenGeoProver_Wu OpenGeoProver_Area Auto Web"
+     PROVERS="Recio Botana BotanaGiac OpenGeoProver_Wu OpenGeoProver_Area Auto Web CNI"
      PROVEDETAILS=0
      ;;
     provedetails)
@@ -381,6 +381,21 @@ for i in `find -name '*.ggb' | sort`; do
      sed s/{//g | sed s/}//g | sed s/*/·/g`
     RESULT=`echo $RESULT | sed s/\"//g`
     # FIXME in GeoGebra.
+
+    if [ "$ENGINE" = "CNI" -a "$TIME" != "timeout" -a "$RESULT" = "" ]; then
+     grep --silent "STATEMENT IS UNKNOWN" $LOGFILE && {
+      grep --silent "CNI method does not yet fully implement" $LOGFILE && RESULT=nfiu
+      grep --silent "CNI method does not yet implement" $LOGFILE && RESULT=niu
+      grep --silent "Another division occurred" $LOGFILE && RESULT=d3u
+      grep --silent "r_ is not linear, further" $LOGFILE && RESULT=nlu
+      grep --silent "is <0>, no conclusion" $LOGFILE && RESULT=e0u
+      grep --silent "The elimination ideal does not contain r_" $LOGFILE && RESULT=enru
+      grep --silent "The second elimination ideal does not contain r_" $LOGFILE && RESULT=e2nru
+      grep --silent "r_ should be zero" $LOGFILE && RESULT=rn0u
+      grep --silent "The division does not result in an unambiguous case" $LOGFILE && RESULT=dau
+      }
+    fi
+
     if [ "$PROVEDETAILS" = 2 ]; then
      RESULT="-" # No answer...?
      RESULTCLASS="undefined"
@@ -403,6 +418,7 @@ for i in `find -name '*.ggb' | sort`; do
       RESULT=ngtu
      grep --silent "NullPointerException" $LOGFILE && \
       RESULT=npe
+     
      # No classification is possible...
      if [ "$RESULT" = "-" -a "$DIRNAME" = "true" ]; then
       RESULT=u
@@ -456,7 +472,9 @@ for i in `find -name '*.ggb' | sort`; do
   echo -n "$RESULT;$TIME;"
   DIRNAMELENGTH=${#DIRNAME}
   if [ "$PROVEDETAILS" != 2 -a "${RESULT:0:$DIRNAMELENGTH}" != "$DIRNAME" ]; then
-   if [ "$RESULT" = "undefined" -o "$RESULT" = "" -o "$RESULT" = "?" ]; then
+   if [ "$RESULT" = "undefined" -o "$RESULT" = "" -o "$RESULT" = "?" -o "$RESULT" = "niu" \
+     -o "$RESULT" = "nlu" -o "$RESULT" = "rn0u" -o "$RESULT" = "nlu" -o "$RESULT" = "d3u" \
+     -o "$RESULT" = "nfiu" -o "$RESULT" = "enru" -o "$RESULT" = "e0u" ]; then
     RESULTCLASS="undefined"
     accepted=null
    else

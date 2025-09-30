@@ -26,6 +26,7 @@ import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.prover.AbstractProverReciosMethod;
 import org.geogebra.common.kernel.prover.ProverBotanasMethod;
+import org.geogebra.common.kernel.prover.ProverCNIMethod;
 import org.geogebra.common.kernel.prover.ProverPureSymbolicMethod;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.scripting.CmdShowProof;
@@ -71,6 +72,10 @@ public abstract class Prover {
 		 * the statements)
 		 */
 		PURE_SYMBOLIC_PROVER,
+		/**
+		 * complex number identity method
+		 */
+		CNI_PROVER,
 		/**
 		 * default prover (GeoGebra decides internally)
 		 */
@@ -750,8 +755,10 @@ public abstract class Prover {
 				|| currentEngine == ProverEngine.OPENGEOPROVER_AREA) {
 			result = override(openGeoProver(currentEngine));
 			return;
+		} else if (currentEngine == ProverEngine.CNI_PROVER) {
+			result = override(ProverCNIMethod.prove(this));
+			return;
 		}
-
 	}
 
 	/**

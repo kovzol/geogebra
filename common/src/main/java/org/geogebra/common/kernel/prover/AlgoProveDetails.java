@@ -173,6 +173,8 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 			p.setProverEngine(ProverEngine.RECIOS_PROVER);
 		} else if ("PureSymbolic".equalsIgnoreCase(proverSettings.proverEngine)) {
 			p.setProverEngine(ProverEngine.PURE_SYMBOLIC_PROVER);
+		} else if ("CNI".equalsIgnoreCase(proverSettings.proverEngine)) {
+			p.setProverEngine(ProverEngine.CNI_PROVER);
 		} else if ("Auto".equalsIgnoreCase(proverSettings.proverEngine)) {
 			p.setProverEngine(ProverEngine.AUTO);
 		}
