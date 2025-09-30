@@ -7,7 +7,9 @@ import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.algos.AlgoAngularBisectorPoints;
 import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
+import org.geogebra.common.kernel.algos.AlgoCircleTwoPoints;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
 import org.geogebra.common.kernel.algos.AlgoJoinPoints;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsRay;
@@ -17,6 +19,7 @@ import org.geogebra.common.kernel.algos.AlgoLineBisectorSegment;
 import org.geogebra.common.kernel.algos.AlgoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoMidpoint;
 import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
+import org.geogebra.common.kernel.algos.AlgoOrthoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoPolygon;
 import org.geogebra.common.kernel.geos.GeoConic;
@@ -139,6 +142,7 @@ public class ProverCNIMethod {
 
 		String[] predefinitions = {"coll(A_,B_,C_):=(A_-B_)/(A_-C_)",
 				"par(A_,B_,C_,D_):=(A_-B_)/(C_-D_)",
+				"perppar(A_,B_,C_,D_):=((A_-B_)/(C_-D_))^2",
 				"conc(A_,B_,C_,D_):=((C_-A_)/(C_-B_))/((D_-A_)/(D_-B_))",
 				"eqangle(A_,B_,C_,D_,E_,F_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))"
 		};
@@ -320,6 +324,19 @@ public class ProverCNIMethod {
 			c.realRelation = rel1 + "\n" + rel2;
 			return c;
 		}
+		if (ae instanceof AlgoIntersectLineConic) {
+			AlgoIntersectLineConic ailc = (AlgoIntersectLineConic) ae;
+			GeoLine l = ailc.getLine();
+			GeoConic co = ailc.getConic();
+			String rel1 = "", rel2 = "";
+			rel1 = online((GeoPoint) ge, l);
+			rel2 = oncircle((GeoPoint) ge, co);
+			if (rel1 == null || rel2 == null) {
+				return null; // Not implemented.
+			}
+			c.realRelation = rel1 + "\n" + rel2;
+			return c;
+		}
 		if (ae instanceof AlgoPointOnPath) {
 			AlgoPointOnPath apop = (AlgoPointOnPath) ae;
 			GeoElement[] input = apop.getInput();
@@ -351,7 +368,8 @@ public class ProverCNIMethod {
 				ae instanceof AlgoJoinPoints || ae instanceof AlgoCircleThreePoints ||
 				ae instanceof AlgoAngularBisectorPoints || ae instanceof AlgoLineBisector ||
 				ae instanceof AlgoLineBisectorSegment || ae instanceof AlgoJoinPointsRay ||
-				ae instanceof AlgoLinePointLine) {
+				ae instanceof AlgoLinePointLine || ae instanceof AlgoOrthoLinePointLine ||
+				ae instanceof AlgoCircleTwoPoints) {
 			c.ignore = true;
 			return c;
 		}
@@ -399,6 +417,19 @@ public class ProverCNIMethod {
 			GeoPoint hS = h.getStartPoint();
 			GeoPoint hE = h.getEndPoint();
 			c.realRelation = parallel(gS, gE, hS, hE);
+			return c;
+		}
+		if (ae instanceof AlgoArePerpendicular) { // in fact, perpendicular or parallel
+			Log.debug("Warning: Testing perpendicularity AND parallelism simultaneously");
+			AlgoArePerpendicular aap = (AlgoArePerpendicular) ae;
+			GeoElement[] input = aap.getInput();
+			GeoLine g = (GeoLine) input[0];
+			GeoLine h = (GeoLine) input[1];
+			GeoPoint gS = g.getStartPoint();
+			GeoPoint gE = g.getEndPoint();
+			GeoPoint hS = h.getStartPoint();
+			GeoPoint hE = h.getEndPoint();
+			c.realRelation = perppar(gS, gE, hS, hE);
 			return c;
 		}
 		if (ae instanceof AlgoAreEqual) {
@@ -475,6 +506,13 @@ public class ProverCNIMethod {
 		return "par(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
 	}
 
+	static String perppar(GeoPoint ge1, GeoPoint ge2, GeoPoint ge3, GeoPoint ge4) {
+		String ge1l = getUniqueLabel(ge1);
+		String ge2l = getUniqueLabel(ge2);
+		String ge3l = getUniqueLabel(ge3);
+		String ge4l = getUniqueLabel(ge4);
+		return "perppar(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
+	}
 
 	static String eqangle(GeoElement ge1, GeoElement ge2, GeoElement ge3, GeoElement ge4,
 			GeoElement ge5, GeoElement ge6) {
@@ -517,11 +555,30 @@ public class ProverCNIMethod {
 					GeoPoint hS = h.getStartPoint();
 					GeoPoint hE = h.getEndPoint();
 					return parallel(P, (GeoPoint) ge, hS, hE);
+				} else if (gAe instanceof AlgoOrthoLinePointLine) {
+					AlgoOrthoLinePointLine alpl = (AlgoOrthoLinePointLine) gAe;
+					GeoElement[] input = alpl.getInput();
+					GeoPoint P = (GeoPoint) input[0];
+					GeoLine h = (GeoLine) input[1];
+					GeoPoint hS = h.getStartPoint();
+					GeoPoint hE = h.getEndPoint();
+					return perppar(P, (GeoPoint) ge, hS, hE);
 				} else {
 					// Not yet implemented.
 					return null;
 				}
 			}
+		}
+		return null; // Unimplemented.
+	}
+
+	static String oncircle(GeoPoint ge, GeoConic co) {
+		AlgoElement coAe = co.getParentAlgorithm();
+		if (coAe instanceof AlgoCircleTwoPoints) {
+			AlgoCircleTwoPoints actp = (AlgoCircleTwoPoints) coAe;
+			GeoPoint ce = (GeoPoint) actp.getInput(0);
+			GeoPoint p = (GeoPoint) actp.getInput(1);
+			return eqangle(ge, p, ce, ce, ge, p);
 		}
 		return null; // Unimplemented.
 	}
