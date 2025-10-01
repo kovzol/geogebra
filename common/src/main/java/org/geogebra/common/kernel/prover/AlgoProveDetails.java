@@ -51,6 +51,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	private boolean showproof = false;
 	private boolean captionalgebra = false;
 	private String inputFingerprint;
+	private Prover p;
 
 	/**
 	 * Proves the given statement and gives some details in a list.
@@ -159,7 +160,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 		}
 
 		// Create and initialize the prover
-		Prover p = UtilFactory.getPrototype().newProver();
+		p = UtilFactory.getPrototype().newProver();
 		ProverSettings proverSettings = ProverSettings.get();
 		if ("OpenGeoProver".equalsIgnoreCase(proverSettings.proverEngine)) {
 			if ("Wu".equalsIgnoreCase(proverSettings.proverMethod)) {
@@ -360,6 +361,10 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 
 	public static String statementText (GeoElement statement) {
 		return Prover.getTextFormat(statement, true, "\n");
+	}
+
+	public Prover getProver() {
+		return p;
 	}
 
 }

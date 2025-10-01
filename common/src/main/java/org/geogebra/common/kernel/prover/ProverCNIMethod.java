@@ -5,6 +5,7 @@ import java.util.TreeSet;
 
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoAngularBisectorPoints;
 import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
 import org.geogebra.common.kernel.algos.AlgoCircleTwoPoints;
@@ -30,6 +31,8 @@ import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
+import org.geogebra.common.kernel.scripting.CmdShowProof;
+import org.geogebra.common.main.Localization;
 import org.geogebra.common.plugin.Operation;
 import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.Prover.ProofResult;
@@ -52,6 +55,7 @@ public class ProverCNIMethod {
 
 		GeoElement statement = prover.getStatement();
 		kernel = statement.getKernel();
+		Localization loc = kernel.getLocalization();
 
 		String declarations = "";
 		String realRelations = "";
@@ -70,6 +74,9 @@ public class ProverCNIMethod {
 		// Real-relational points. We need them to eliminate the variables according to them too.
 		TreeSet<GeoElement> realRelationalPoints = new TreeSet<>();
 
+		if (prover.getShowproof()) {
+			prover.addProofLine(loc.getMenuDefault("TheHypotheses", "The hypotheses:"));
+		}
 		for (GeoElement ge : allPredecessors) {
 			if (ge.getParentAlgorithm() == null) {
 				freePoints.add(ge);
@@ -93,12 +100,25 @@ public class ProverCNIMethod {
 				}
 				if (def.declaration != null) {
 					declarations += def.declaration + "\n";
+					if (prover.getShowproof()) {
+						prover.addProofLine(CmdShowProof.TEXT_EQUATION, def.declaration);
+					}
 				}
 				if (def.realRelation != null) {
 					String[] CASrealRelations = def.realRelation.split("\n");
+					if (prover.getShowproof()) {
+						prover.addProofLine(loc.getPlain("ConsideringDefinitionA",
+								ge.getLabelSimple() + " = "
+										+ ge.getDefinition(
+										StringTemplate.defaultTemplate)));
+					}
 					for (String CASrealRelation : CASrealRelations) {
 						realRelationsNo++;
-						realRelations += CASrealRelation + "=" + VARIABLE_R_STRING + realRelationsNo + ",";
+						String expression = CASrealRelation + "=" + VARIABLE_R_STRING + realRelationsNo;
+						realRelations += expression + ",";
+						if (prover.getShowproof()) {
+							prover.addProofLine(CmdShowProof.TEXT_EQUATION, expression);
+						}
 					}
 					realRelationalPoints.add(ge);
 					declarative = false;
@@ -107,17 +127,29 @@ public class ProverCNIMethod {
 		}
 
 		// Specialization.
+		if (prover.getShowproof()) {
+			prover.addProofLine(CmdShowProof.SPECIALIZATION, loc.getMenuDefault("WlogCoordinates",
+					"Without loss of generality, some coordinates can be fixed:"));
+		}
 		// Put the first two points into 0 and 1:
 		int i = 0;
 		TreeSet<GeoElement> specialized = new TreeSet<>();
 		String specCode = "";
 		for (GeoElement ge : freePoints) {
 			if (i == 0) {
-				specCode += getUniqueLabel(ge) + ":=0\n";
+				String spec1 = getUniqueLabel(ge) + ":=0";
+				specCode += spec1 + "\n";
+				if (prover.getShowproof()) {
+					prover.addProofLine(CmdShowProof.TEXT_EQUATION, spec1);
+				}
 				specialized.add(ge);
 			}
 			if (i == 1) {
-				specCode += getUniqueLabel(ge) + ":=1\n";
+				String spec2 = getUniqueLabel(ge) + ":=1";
+				specCode += spec2 + "\n";
+				if (prover.getShowproof()) {
+					prover.addProofLine(CmdShowProof.TEXT_EQUATION, spec2);
+				}
 				specialized.add(ge);
 			}
 			i++;
@@ -138,11 +170,22 @@ public class ProverCNIMethod {
 			Log.debug("The CNI method does not yet implement " + statement.getParentAlgorithm().toString());
 			return ProofResult.UNKNOWN;
 		}
+		if (prover.getShowproof()) {
+			prover.addProofLine(loc.getMenuDefault("TheThesis", "The thesis:"));
+		}
 		if (def.declaration != null) {
 			declarations += def.declaration;
+			if (prover.getShowproof()) {
+				prover.addProofLine(CmdShowProof.TEXT_EQUATION, def.declaration);
+			}
 		}
 		if (def.realRelation != null) {
-			realRelations += def.realRelation + "=" + VARIABLE_R_STRING;
+			String thesis = def.realRelation + "=" + VARIABLE_R_STRING;
+			realRelations += thesis;
+			if (prover.getShowproof()) {
+				prover.addProofLine(CmdShowProof.TEXT_EQUATION, thesis);
+			}
+
 		}
 		if (def.rMustBe0) {
 			rMustBeZero = true;
@@ -186,9 +229,19 @@ public class ProverCNIMethod {
 		// This is in form {{4*r_1*r_2*r_-4*r_1*r_2-4*r_1*r_-4*r_2*r_+3*r_1+3*r_2+3*r_}}
 		// or there may be multiple polynomials in the form {{...,...,...}}
 
+		if (prover.getShowproof()) {
+			prover.addProofLine(loc.getMenuDefault("EliminateAllComplexVariables",
+					"We eliminate all variables that correspond to complex points."));
+		}
+
 		if (elimIdeal.equals("{{}}")) {
 			// There is no direct correspondence between r1, r2, ..., and r.
 			// The statement is quite probably false, but we cannot explicitly state this.
+			if (prover.getShowproof()) {
+				prover.addProofLine(CmdShowProof.PROBLEM,
+						loc.getMenuDefault("NoCorrespondenceBetweenHypothesesThesis",
+								"There is no correspondence between the hypotheses and the thesis."));
+			}
 			Log.debug("The elimination ideal is <0>, no conclusion.");
 			return ProofResult.UNKNOWN;
 		}
@@ -209,12 +262,23 @@ public class ProverCNIMethod {
 		String[] minDegreeA = minDegreeC.split(","); // Separate items
 		if (minDegreeA[0].equals("+infinity")) {
 			// r cannot be expressed, the statement is probably false...
+			if (prover.getShowproof()) {
+				prover.addProofLine(CmdShowProof.PROBLEM,
+						loc.getMenuDefault("ThesisCannotBeExpressed",
+								"The thesis cannot be expressed with the hypotheses."));
+			}
 			Log.debug("The elimination ideal does not contain r_.");
 			return ProofResult.UNKNOWN;
 		}
 		int minDegreeI = Integer.valueOf(minDegreeA[0]);
 		if (minDegreeI == 1) {
 			// r can be expressed by using r1, r2, ..., here r is linear.
+			if (prover.getShowproof()) {
+				prover.addProofLine(loc.getPlain(
+						"The thesis (%0) can be expressed as a rational expression of the hypotheses, because %0 is linear in an obtained polynomial equation:",
+						VARIABLE_R_STRING));
+				prover.addProofLine(minDegreeA[1] + "=0");
+			}
 			Log.debug("The elimination ideal contains " + minDegreeA[1] + ", it is linear in r_.");
 			// Check if r can be expressed without a division:
 			// lvar(coeff(2*r_+1,r_)[0])
@@ -223,17 +287,40 @@ public class ProverCNIMethod {
 			if (divVars.equals("{}")) {
 				if (rMustBeZero) {
 					if (minDegreeA[1].equals("r_")) {
+						if (prover.getShowproof()) {
+							prover.addProofLine(CmdShowProof.CONCLUSION,
+									loc.getMenuDefault("ThesisZeroStatementTrue",
+											"Since the thesis is zero, the statement is true."));
+						}
 						Log.debug("r_ is zero.");
 						return ProofResult.TRUE;
 					}
+					if (prover.getShowproof()) {
+						prover.addProofLine(CmdShowProof.PROBLEM,
+								loc.getMenuDefault("ThesisShouldBeZero",
+										"Since the thesis is not zero, the statement cannot be proven."));
+					}
 					Log.debug("r_ should be zero.");
 					return ProofResult.UNKNOWN; // maybe here we can result FALSE?
+				}
+				if (prover.getShowproof()) {
+					prover.addProofLine(loc.getMenuDefault("ThesisCanBeExpressedPolynomial",
+							"The thesis can be expressed as a polynomial expression of the hypotheses."));
+					prover.addProofLine(CmdShowProof.CONCLUSION,
+							loc.getMenuDefault("HypothesesRealThesisReal",
+									"Since all hypotheses are real expressions, the thesis must also be real."));
 				}
 				return ProofResult.TRUE;
 			}
 			// Read off the divisor when expressing r:
 			program = "coeff(" + minDegreeA[1] + ",r_)[0])";
 			String divisor = executeGiac(program);
+			if (prover.getShowproof()) {
+				prover.addProofLine(
+						loc.getPlain("Expressing the thesis requires a division by %0.", divisor));
+				prover.addProofLine(loc.getMenuDefault("AssumeDivisorZero",
+						"Let us assume that that divisor is 0 and restart the elimination."));
+			}
 			// Insert the divisor in the first program and check what happens:
 			program = program1 + "," + divisor + rest;
 			String elimIdeal2 = executeGiac(program);
@@ -241,10 +328,24 @@ public class ProverCNIMethod {
 			if (elimIdeal2.equals("{{1}}")) {
 				// The case divisor == 0 is contradictory. This means that division by zero
 				// is not a relevant issue, so we can be sure that the statement is true.
+				if (prover.getShowproof()) {
+					prover.addProofLine(loc.getMenuDefault("DivisorCannotBeZero",
+							"The elimination verifies that that divisor cannot be zero."));
+				}
 				Log.debug("Division by zero is irrelevant.");
 				if (rMustBeZero) {
+					if (prover.getShowproof()) {
+						prover.addProofLine(CmdShowProof.PROBLEM,
+								loc.getMenuDefault("ThesisShouldBeZero",
+										"Since the thesis is not zero, the statement cannot be proven."));
+					}
 					Log.debug("r_ should be zero.");
 					return ProofResult.UNKNOWN; // maybe here we can result FALSE?
+				}
+				if (prover.getShowproof()) {
+					prover.addProofLine(CmdShowProof.CONCLUSION,
+							loc.getMenuDefault("HypothesesRealThesisReal",
+									"Since all hypotheses are real expressions, the thesis must also be real."));
 				}
 				return ProofResult.TRUE;
 			}
@@ -265,12 +366,23 @@ public class ProverCNIMethod {
 			String[] minDegree2A = minDegree2C.split(","); // Separate items
 			if (minDegree2A[0].equals("+infinity")) {
 				// r cannot be expressed, the statement is probably false...
+				if (prover.getShowproof()) {
+					prover.addProofLine(CmdShowProof.PROBLEM,
+							loc.getMenuDefault("AssumingZeroThesisCannotBeExpressed",
+									"Assuming that this is zero, the thesis cannot be expressed with the hypotheses."));
+				}
 				Log.debug("The second elimination ideal does not contain r_.");
 				return ProofResult.UNKNOWN;
 			}
 			int minDegree2I = Integer.valueOf(minDegree2A[0]);
 			if (minDegree2I == 1) {
 				// The secondly computed ideal is linear.
+				if (prover.getShowproof()) {
+					prover.addProofLine(loc.getPlain(
+							"The thesis (%0) can now be expressed as a rational expression of the hypotheses, because %0 is linear in an obtained polynomial equation:",
+							VARIABLE_R_STRING));
+					prover.addProofLine(minDegree2A[1] + "=0");
+				}
 				Log.debug("The second elimination ideal contains " + minDegree2A[1] + ", it is linear in r_.");
 				// Check if r can be expressed without a division:
 				// lvar(coeff(2*r_+1,r_)[0])
@@ -278,20 +390,56 @@ public class ProverCNIMethod {
 				String divVars2 = executeGiac(program);
 				if (divVars2.equals("{}")) {
 					if (rMustBeZero) {
+						if (minDegree2A[1].equals(VARIABLE_R_STRING)) {
+							if (prover.getShowproof()) {
+								prover.addProofLine(CmdShowProof.CONCLUSION,
+										loc.getMenuDefault("ThesisZeroStatementTrue",
+												"Since the thesis is zero, the statement is true."));
+							}
+							Log.debug("r_ is zero.");
+							return ProofResult.TRUE;
+						}
+						if (prover.getShowproof()) {
+							prover.addProofLine(CmdShowProof.PROBLEM,
+									loc.getMenuDefault("ThesisShouldBeZeroNow",
+											"Since the thesis is not zero now, the statement cannot be proven."));
+						}
 						Log.debug("r_ should be zero.");
 						return ProofResult.UNKNOWN; // maybe here we can result FALSE?
 						}
+					if (prover.getShowproof()) {
+						prover.addProofLine(loc.getMenuDefault("NowThesisCanBeExpressedPolynomial",
+								"Now the thesis can be expressed as a polynomial expression of the hypotheses."));
+						prover.addProofLine(CmdShowProof.CONCLUSION,
+								loc.getMenuDefault("HypothesesRealThesisReal",
+										"Since all hypotheses are real expressions, the thesis must also be real."));
+					}
 					return ProofResult.TRUE;
 				}
 				// Cannot decide, maybe we need another round? TODO
+				if (prover.getShowproof()) {
+					prover.addProofLine(CmdShowProof.PROBLEM,
+							loc.getMenuDefault("ThesisStillContainsDivision",
+									"The thesis still contains a division, no conclusion can be found."));
+				}
 				Log.debug("Another division occurred, a third elimination is needed.");
 				return ProofResult.UNKNOWN;
 			}
 			// The division does not result in an unambiguous case.
+			if (prover.getShowproof()) {
+				prover.addProofLine(CmdShowProof.PROBLEM,
+						loc.getMenuDefault("ThesisCannotBeExpressedDivision",
+								"The thesis cannot be expressed as a division now."));
+			}
 			Log.debug("The division does not result in an unambiguous case.");
 			return ProofResult.UNKNOWN;
 		}
 		// The case is not linear.
+		if (prover.getShowproof()) {
+			prover.addProofLine(CmdShowProof.PROBLEM,
+					loc.getMenuDefault("ThesisCannotBeExpressedDivision",
+							"The thesis cannot be expressed as a division."));
+		}
 		Log.debug("r_ is not linear, further check is needed.");
 		return ProofResult.UNKNOWN;
 	}

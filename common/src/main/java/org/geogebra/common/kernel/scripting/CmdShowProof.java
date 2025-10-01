@@ -22,6 +22,7 @@ import org.geogebra.common.kernel.prover.AlgoProveDetails;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.MyError;
+import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.debug.Log;
 
 import com.himamis.retex.editor.share.util.Unicode;
@@ -34,9 +35,11 @@ public class CmdShowProof extends CmdScripting {
 	public static char ALMOST_FREE_VARIABLES = 'a';
 	public static char TEXT = 't';
 	public static char EQUATION = 'e';
+	public static char TEXT_EQUATION = 'E';
 	public static char PROBLEM = 'p';
 	public static char NDG = 'n';
 	public static char CONTRADICTION = 'c';
+	public static char CONCLUSION = 'C';
 	public static char SPECIALIZATION = 's';
 	public static char OTHER = ' ';
 
@@ -107,37 +110,64 @@ public class CmdShowProof extends CmdScripting {
 				percent = 60;
 				updatePercentInfo();
 
-				boolean statementTrue = false;
 				GeoList output = algo.getGeoList();
 				GeoCasCell gcc2 = new GeoCasCell(cons);
 				gcc2.setUseAsText(true);
-				if (output.size() == 0 || (output.size() == 2 && (!((GeoBoolean) output.get(0)).isDefined()))) {
-					if (output.size() == 2) { // There was some info given on the reason why the proof was unsuccessful...
-						String proofs = ((GeoText) output.get(1)).toString();
-						proofs = proofs.substring(1, proofs.length() - 1);
-						String[] proof = proofs.split("\n");
-						String hint = proof[proof.length - 1].substring(1); // use only the last piece of information
-						gcc2.setInput(hint); // show hint
-					} else {
-						gcc2.setInput(loc.getMenuDefault("ProofUnknown", "The statement could not be proven nor disproven."));
-					}
-				} else {
+				boolean statementTrue = false;
+
+				if (algo.getProver().getProverEngine().equals(Prover.ProverEngine.CNI_PROVER)) {
+					// CNI prover
 					boolean proofResult = ((GeoBoolean) output.get(0)).getBoolean();
 					if (proofResult) {
+						gcc2.setInput(loc.getMenuDefault("TrueUnderNondegeneracyConditions",
+								"The statement is true under some non-degeneracy conditions (see below)."));
 						statementTrue = true;
-						if (output.size() == 2) {
-							gcc2.setInput(loc.getMenuDefault("StatementAlwaysTrue", "The statement is always true."));
+					} else {
+						// This is hacky, TODO: unify this in the whole class:
+						if (algo.getProver().getProofResult().equals(Prover.ProofResult.UNKNOWN)) {
+							gcc2.setInput(loc.getMenuDefault("ProofUnknown",
+									"The statement could not be proven nor disproven."));
 						} else {
-							if (output.get(2).toString().equals("\"c\"")) {
-								gcc2.setInput(loc.getMenuDefault("TrueOnParts", "The statement is true on parts, false on parts."));
-								statementTrue = false; // Unimplemented. TODO.
-							} else {
-								gcc2.setInput(loc.getMenuDefault("TrueUnderNondegeneracyConditions",
-										"The statement is true under some non-degeneracy conditions (see below)."));
-							}
+							gcc2.setInput(loc.getMenuDefault("StatementFalse", "The statement is false."));
+						}
+					}
+				} else { // Botana's prover
+					if (output.size() == 0 || (output.size() == 2 && (!((GeoBoolean) output.get(
+							0)).isDefined()))) {
+						if (output.size()
+								== 2) { // There was some info given on the reason why the proof was unsuccessful...
+							String proofs = ((GeoText) output.get(1)).toString();
+							proofs = proofs.substring(1, proofs.length() - 1);
+							String[] proof = proofs.split("\n");
+							String hint = proof[proof.length - 1].substring(
+									1); // use only the last piece of information
+							gcc2.setInput(hint); // show hint
+						} else {
+							gcc2.setInput(loc.getMenuDefault("ProofUnknown",
+									"The statement could not be proven nor disproven."));
 						}
 					} else {
-						gcc2.setInput(loc.getMenuDefault("StatementFalse", "The statement is false."));
+						boolean proofResult = ((GeoBoolean) output.get(0)).getBoolean();
+						if (proofResult) {
+							statementTrue = true;
+							if (output.size() == 2) {
+								gcc2.setInput(loc.getMenuDefault("StatementAlwaysTrue",
+										"The statement is always true."));
+							} else {
+								if (output.get(2).toString().equals("\"c\"")) {
+									gcc2.setInput(loc.getMenuDefault("TrueOnParts",
+											"The statement is true on parts, false on parts."));
+									statementTrue = false; // Unimplemented. TODO.
+								} else {
+									gcc2.setInput(
+											loc.getMenuDefault("TrueUnderNondegeneracyConditions",
+													"The statement is true under some non-degeneracy conditions (see below)."));
+								}
+							}
+						} else {
+							gcc2.setInput(loc.getMenuDefault("StatementFalse",
+									"The statement is false."));
+						}
 					}
 				}
 				gcc2.setFontColor(GColor.RED);
@@ -146,24 +176,30 @@ public class CmdShowProof extends CmdScripting {
 				cons.setCasCellRow(gcc2, rows++);
 
 				if (statementTrue) {
+
 					String proofs = ((GeoText) output.get(output.size() - 1)).toString();
 					proofs = proofs.substring(1, proofs.length() - 1);
 					String[] proof = proofs.split("\n");
-					if (proofs.length() == 0) {
-						proofs = TEXT + loc.getMenuDefault("StatementTrivial", "The statement is trivial.");
-					}
-					else if (contradictionFound(proof)) {
-						proofs = TEXT + loc.getMenuDefault("ProveByContradiction", "We prove this by contradiction.")
-								+ "\n" + proofs;
-					} else {
-						proofs = PROBLEM + loc.getMenuDefault("NoFullProof",
-								"Currently no full proof can be provided, but just some steps.")
-										+ "\n" +
-								PROBLEM + loc.getMenuDefault("NoFullPresentation",
-										"In the background, all steps are checked, but a full presentation is not yet implemented.")
-										+ "\n" +
-								PROBLEM + loc.getMenuDefault("TryNewerVersion", "Please try a newer version of GeoGebra Discovery if possible.")
-										+"\n" + proofs;
+
+					if (algo.getProver().getProverEngine().equals(Prover.ProverEngine.BOTANAS_PROVER)) {
+						if (proofs.length() == 0) {
+							proofs = TEXT + loc.getMenuDefault("StatementTrivial",
+									"The statement is trivial.");
+						} else if (contradictionFound(proof)) {
+							proofs = TEXT + loc.getMenuDefault("ProveByContradiction",
+									"We prove this by contradiction.")
+									+ "\n" + proofs;
+						} else {
+							proofs = PROBLEM + loc.getMenuDefault("NoFullProof",
+									"Currently no full proof can be provided, but just some steps.")
+									+ "\n" +
+									PROBLEM + loc.getMenuDefault("NoFullPresentation",
+									"In the background, all steps are checked, but a full presentation is not yet implemented.")
+									+ "\n" +
+									PROBLEM + loc.getMenuDefault("TryNewerVersion",
+									"Please try a newer version of GeoGebra Discovery if possible.")
+									+ "\n" + proofs;
+						}
 					}
 
 					proof = proofs.split("\n"); // recompute, maybe there are some infos added
@@ -176,7 +212,8 @@ public class CmdShowProof extends CmdScripting {
 						boolean showstep = true;
 						if (s < steps - 1) {
 							String nextstep = proof[s + 1];
-							if (step.endsWith(":") && nextstep.endsWith(":")) {
+							if (algo.getProver().getProverEngine().equals(Prover.ProverEngine.BOTANAS_PROVER) &&
+									step.endsWith(":") && nextstep.endsWith(":")) {
 								showstep = false; // don't show this step,
 								// because it contains empty substeps
 							}
@@ -245,6 +282,13 @@ public class CmdShowProof extends CmdScripting {
 							}
 							if (type == PROBLEM) {
 								gcc3.setFontStyle(GFont.ITALIC);
+							}
+							if (type == CONCLUSION) {
+								gcc3.setFontColor(GColor.RED);
+								gcc3.setFontStyle(GFont.BOLD);
+							}
+							if (type == TEXT_EQUATION) {
+								gcc3.setFontStyle(GFont.BOLD);
 							}
 							gcc3.computeOutput();
 							gcc3.update();
