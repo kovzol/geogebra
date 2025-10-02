@@ -172,6 +172,7 @@ public class CASExport {
 		String latex = "\\documentclass[12pt]{article}\n"
 				+ "\\usepackage{xcolor}\n"
 				+ "\\usepackage{breqn}\n"
+				+ "\\usepackage{amssymb}\n" // for \mathbb{...}
 				+ "\\sloppy\n"
 				+ "\\title{" + loc.getMenuDefault("CASView", "CAS View") + "}\n"
 				+ "\\begin{document}\n";
@@ -231,6 +232,7 @@ public class CASExport {
 			input = input.replace(Unicode.PERPENDICULAR + "", " $\\perp$ ");
 			input = input.replace(Unicode.QUESTEQ + "", " $\\stackrel{?}{=}$ ");
 			input = input.replace(Unicode.NOTEQUAL + "", " $\\neq$ ");
+			input = input.replace("\u211D", "$\\mathbb{R}$");
 
 			latex += "\\textcolor{mycolor" + i + "}{" + input + "}";
 			if (useColors) {
