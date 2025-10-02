@@ -40,15 +40,21 @@ import org.geogebra.common.util.debug.Log;
 
 import static org.geogebra.common.cas.giac.CASgiac.ggbGiac;
 
+import com.himamis.retex.editor.share.util.Unicode;
+
 public class ProverCNIMethod {
 
 	private static Kernel kernel;
+
+	public static int WARNING_PERPENDICULAR_OR_PARALLEL = 1;
+	public static int WARNING_EQUALITY_OR_COLLINEAR = 2;
 
 	public static class CNIDefinition {
 		String declaration;
 		String realRelation;
 		boolean ignore;
 		boolean rMustBe0 = false;
+		int warning = 0;
 	}
 
 	public static ProofResult prove(Prover prover) {
@@ -65,6 +71,18 @@ public class ProverCNIMethod {
 
 		String VARIABLE_R_STRING = "r_"; // This must be a kind of unique string.
 		String VARIABLE_I_STRING = "I_"; // This must be a kind of unique string.
+
+		String[] predefinitions = {"coll(A_,B_,C_):=(A_-B_)/(A_-C_)",
+				"par(A_,B_,C_,D_):=(A_-B_)/(C_-D_)",
+				"perppar(A_,B_,C_,D_):=((A_-B_)/(C_-D_))^2",
+				"conc(A_,B_,C_,D_):=((C_-A_)/(C_-B_))/((D_-A_)/(D_-B_))",
+				"eqangle(A_,B_,C_,D_,E_,F_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))",
+				"isosc(A_,B_,C_):=eqangle(C_,B_,A_,A_,C_,B_)" // |AB|=|AC|
+		};
+		String predefs = "";
+		for (String predefinition : predefinitions) {
+			predefs += "[" + predefinition + "],";
+		}
 
 		// All predecessors:
 		TreeSet<GeoElement> allPredecessors = statement.getAllPredecessors();
@@ -117,7 +135,18 @@ public class ProverCNIMethod {
 						String expression = CASrealRelation + "=" + VARIABLE_R_STRING + realRelationsNo;
 						realRelations += expression + ",";
 						if (prover.getShowproof()) {
-							prover.addProofLine(CmdShowProof.TEXT_EQUATION, expression);
+							String rewriteProgram = "[" + predefs + expression + "][" + predefinitions.length + "]";
+							String expression2 = executeGiac(rewriteProgram);
+							prover.addProofLine(CmdShowProof.TEXT_EQUATION, expression2
+									+ Unicode.IS_ELEMENT_OF + "\u211D");
+							if (def.warning == WARNING_PERPENDICULAR_OR_PARALLEL) {
+								prover.addProofLine(CmdShowProof.PROBLEM, loc.getMenuDefault("PerpendicularityParallelism",
+										"Perpendicularity means perpendicularity or parallelism simultaneously."));
+							}
+							if (def.warning == WARNING_EQUALITY_OR_COLLINEAR) {
+								prover.addProofLine(CmdShowProof.PROBLEM, loc.getMenuDefault("EqualityCollinearity",
+										"Equality of lengths means equality or collinearity simultaneously."));
+							}
 						}
 					}
 					realRelationalPoints.add(ge);
@@ -172,6 +201,7 @@ public class ProverCNIMethod {
 		}
 		if (prover.getShowproof()) {
 			prover.addProofLine(loc.getMenuDefault("TheThesis", "The thesis:"));
+			prover.addProofLine(statement.getParentAlgorithm().getDefinition(StringTemplate.defaultTemplate));
 		}
 		if (def.declaration != null) {
 			declarations += def.declaration;
@@ -183,7 +213,18 @@ public class ProverCNIMethod {
 			String thesis = def.realRelation + "=" + VARIABLE_R_STRING;
 			realRelations += thesis;
 			if (prover.getShowproof()) {
-				prover.addProofLine(CmdShowProof.TEXT_EQUATION, thesis);
+				String rewriteProgram = "[" + predefs + thesis + "][" + predefinitions.length + "]";
+				String thesis2 = executeGiac(rewriteProgram);
+				prover.addProofLine(CmdShowProof.TEXT_EQUATION, thesis2);
+				if (def.warning == WARNING_PERPENDICULAR_OR_PARALLEL) {
+					prover.addProofLine(CmdShowProof.PROBLEM, loc.getMenuDefault("PerpendicularityParallelism",
+							"Perpendicularity means perpendicularity or parallelism simultaneously"));
+				}
+				if (def.warning == WARNING_EQUALITY_OR_COLLINEAR) {
+					prover.addProofLine(CmdShowProof.PROBLEM,
+							loc.getMenuDefault("EqualityCollinearity",
+									"Equality of lengths means equality or collinearity simultaneously."));
+				}
 			}
 
 		}
@@ -191,20 +232,10 @@ public class ProverCNIMethod {
 			rMustBeZero = true;
 		}
 
-		String[] predefinitions = {"coll(A_,B_,C_):=(A_-B_)/(A_-C_)",
-				"par(A_,B_,C_,D_):=(A_-B_)/(C_-D_)",
-				"perppar(A_,B_,C_,D_):=((A_-B_)/(C_-D_))^2",
-				"conc(A_,B_,C_,D_):=((C_-A_)/(C_-B_))/((D_-A_)/(D_-B_))",
-				"eqangle(A_,B_,C_,D_,E_,F_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))",
-				"isosc(A_,B_,C_):=eqangle(C_,B_,A_,A_,C_,B_)" // |AB|=|AC|
-		};
-
 		// Putting the code together...
 		String program = "";
 		program = "[";
-		for (String predefinition : predefinitions) {
-			program += "[" + predefinition + "],";
-		}
+		program += predefs;
 		String[] declarationsA = declarations.split("\n");
 		for (String declaration : declarationsA) {
 			program += "[" + declaration + "],";
@@ -486,6 +517,12 @@ public class ProverCNIMethod {
 			if (rel1 == null || rel2 == null) {
 				return null; // Not implemented.
 			}
+			if (rel1.startsWith("perppar") || rel2.startsWith("perppar")) {
+				c.warning = WARNING_PERPENDICULAR_OR_PARALLEL;
+			}
+			if (rel1.startsWith("isosc") || rel2.startsWith("isosc")) {
+				c.warning = WARNING_EQUALITY_OR_COLLINEAR;
+			}
 			c.realRelation = rel1 + "\n" + rel2;
 			return c;
 		}
@@ -499,6 +536,12 @@ public class ProverCNIMethod {
 			if (rel1 == null || rel2 == null) {
 				return null; // Not implemented.
 			}
+			if (rel1.startsWith("perppar")) {
+				c.warning = WARNING_PERPENDICULAR_OR_PARALLEL;
+			}
+			if (rel1.startsWith("isosc")) {
+				c.warning = WARNING_EQUALITY_OR_COLLINEAR;
+			}
 			c.realRelation = rel1 + "\n" + rel2;
 			return c;
 		}
@@ -510,6 +553,12 @@ public class ProverCNIMethod {
 				GeoPoint gS = ((GeoLine) p).getStartPoint();
 				GeoPoint gE = ((GeoLine) p).getEndPoint();
 				c.realRelation = online((GeoPoint) ge, (GeoLine) p);
+				if (c.realRelation.startsWith("perppar")) {
+					c.warning = WARNING_PERPENDICULAR_OR_PARALLEL;
+				}
+				if (c.realRelation.startsWith("isosc")) {
+					c.warning = WARNING_EQUALITY_OR_COLLINEAR;
+				}
 				return c;
 			}
 			if (p instanceof GeoConic) {
@@ -587,6 +636,7 @@ public class ProverCNIMethod {
 			GeoLine g = (GeoLine) input[0];
 			GeoLine h = (GeoLine) input[1];
 			c.realRelation = perppar(g, h);
+			c.warning = WARNING_PERPENDICULAR_OR_PARALLEL;
 			return c;
 		}
 		if (ae instanceof AlgoAreEqual) {
@@ -613,6 +663,7 @@ public class ProverCNIMethod {
 			} else if (o == Operation.PERPENDICULAR) {
 				Log.debug("Warning: Testing perpendicularity AND parallelism simultaneously");
 				c.realRelation = perppar((GeoLine) ge1, (GeoLine) ge2);
+				c.warning = WARNING_PERPENDICULAR_OR_PARALLEL;
 				return c;
 			} else if (o == Operation.EQUAL_BOOLEAN) {
 				return equal(ge1, ge2);
@@ -774,7 +825,7 @@ public class ProverCNIMethod {
 			AlgoCircleTwoPoints actp = (AlgoCircleTwoPoints) coAe;
 			GeoPoint ce = (GeoPoint) actp.getInput(0);
 			GeoPoint p = (GeoPoint) actp.getInput(1);
-			return eqangle(ge, p, ce, ce, ge, p);
+			return isosc(ce, p, ge);
 		}
 		return null; // Unimplemented.
 	}
@@ -798,19 +849,23 @@ public class ProverCNIMethod {
 			GeoPoint C = (GeoPoint) s2.getStartPoint();
 			GeoPoint D = (GeoPoint) s2.getEndPoint();
 			if (A.equals(C)) {
-				c.realRelation = isosc(B,A,D);
+				c.realRelation = isosc(A,B,D);
+				c.warning = WARNING_EQUALITY_OR_COLLINEAR;
 				return c;
 			}
 			if (A.equals(D)) {
-				c.realRelation = isosc(B,A,C);
+				c.realRelation = isosc(A,B,C);
+				c.warning = WARNING_EQUALITY_OR_COLLINEAR;
 				return c;
 			}
 			if (B.equals(C)) {
-				c.realRelation = isosc(A,B,D);
+				c.realRelation = isosc(B,A,D);
+				c.warning = WARNING_EQUALITY_OR_COLLINEAR;
 				return c;
 			}
 			if (B.equals(D)) {
-				c.realRelation = isosc(A,B,C);
+				c.realRelation = isosc(B,A,C);
+				c.warning = WARNING_EQUALITY_OR_COLLINEAR;
 				return c;
 			}
 			return null; // In general, checking |AB|=|CD| is not supported by the method.
