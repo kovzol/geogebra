@@ -139,15 +139,15 @@ public class ProverCNIMethod {
 							String expression2 = executeGiac(rewriteProgram);
 							prover.addProofLine(CmdShowProof.TEXT_EQUATION, expression2
 									+ Unicode.IS_ELEMENT_OF + "\u211D");
-							if (def.warning == WARNING_PERPENDICULAR_OR_PARALLEL) {
-								prover.addProofLine(CmdShowProof.PROBLEM, loc.getMenuDefault("PerpendicularityParallelism",
-										"Perpendicularity means perpendicularity or parallelism simultaneously."));
-							}
-							if (def.warning == WARNING_EQUALITY_OR_COLLINEAR) {
-								prover.addProofLine(CmdShowProof.PROBLEM, loc.getMenuDefault("EqualityCollinearity",
-										"Equality of lengths means equality or collinearity simultaneously."));
-							}
 						}
+					}
+					if (def.warning == WARNING_PERPENDICULAR_OR_PARALLEL) {
+						prover.addProofLine(CmdShowProof.PROBLEM, loc.getMenuDefault("PerpendicularityParallelism",
+								"Perpendicularity means perpendicularity or parallelism simultaneously."));
+					}
+					if (def.warning == WARNING_EQUALITY_OR_COLLINEAR) {
+						prover.addProofLine(CmdShowProof.PROBLEM, loc.getMenuDefault("EqualityCollinearity",
+								"Equality of lengths means equality or collinearity simultaneously."));
 					}
 					realRelationalPoints.add(ge);
 					declarative = false;
