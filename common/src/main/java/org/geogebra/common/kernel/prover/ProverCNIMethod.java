@@ -69,7 +69,7 @@ public class ProverCNIMethod {
 		boolean declarative = true;
 		boolean rMustBeZero = false;
 
-		String VARIABLE_R_STRING = "r_"; // This must be a kind of unique string.
+		String VARIABLE_R_STRING = "r__"; // This must be a kind of unique string.
 		String VARIABLE_I_STRING = "I_"; // This must be a kind of unique string.
 
 		String[] predefinitions = {"coll(A_,B_,C_):=(A_-B_)/(A_-C_)",
@@ -282,7 +282,8 @@ public class ProverCNIMethod {
 				replace("{", "[").replace("}", "]"); // remove { and }
 		// Now we choose the minimal degree polynomial (in r) of this list.
 		program = "[[" + VARIABLE_I_STRING + ":= " + elimIdealL + "],[deg:=inf],[degi:=0],"
-				+ "[for (k:=0;k<size(" + VARIABLE_I_STRING + ");k++) { d:=degree(" + VARIABLE_I_STRING + "[k],r_);"
+				+ "[for (k:=0;k<size(" + VARIABLE_I_STRING + ");k++) { d:=degree(" + VARIABLE_I_STRING
+				+ "[k]," + VARIABLE_R_STRING + ");"
 				+ "if (d>0 && d<deg) { deg:=d; degi:=k; } }],"
 				+ "[deg," + VARIABLE_I_STRING + "[degi]]][4]";
 		program = ggbGiac(program);
@@ -313,11 +314,11 @@ public class ProverCNIMethod {
 			Log.debug("The elimination ideal contains " + minDegreeA[1] + ", it is linear in r_.");
 			// Check if r can be expressed without a division:
 			// lvar(coeff(2*r_+1,r_)[0])
-			program = "lvar(coeff(" + minDegreeA[1] + ",r_)[0])";
+			program = "lvar(coeff(" + minDegreeA[1] + "," + VARIABLE_R_STRING + ")[0])";
 			String divVars = executeGiac(program);
 			if (divVars.equals("{}")) {
 				if (rMustBeZero) {
-					if (minDegreeA[1].equals("r_")) {
+					if (minDegreeA[1].equals(VARIABLE_R_STRING)) {
 						if (prover.getShowproof()) {
 							prover.addProofLine(CmdShowProof.CONCLUSION,
 									loc.getMenuDefault("ThesisZeroStatementTrue",
@@ -344,7 +345,7 @@ public class ProverCNIMethod {
 				return ProofResult.TRUE;
 			}
 			// Read off the divisor when expressing r:
-			program = "coeff(" + minDegreeA[1] + ",r_)[0])";
+			program = "coeff(" + minDegreeA[1] + "," + VARIABLE_R_STRING + ")[0])";
 			String divisor = executeGiac(program);
 			if (prover.getShowproof()) {
 				prover.addProofLine(
@@ -386,7 +387,8 @@ public class ProverCNIMethod {
 					replace("{", "[").replace("}", "]"); // remove { and }
 			// Now we choose the minimal degree polynomial (in r) of this list.
 			program = "[[" + VARIABLE_I_STRING + ":= " + elimIdeal2L + "],[deg:=inf],[degi:=0],"
-					+ "[for (k:=0;k<size(" + VARIABLE_I_STRING + ");k++) { d:=degree(" + VARIABLE_I_STRING + "[k],r_);"
+					+ "[for (k:=0;k<size(" + VARIABLE_I_STRING + ");k++) { d:=degree(" + VARIABLE_I_STRING
+					+ "[k]," + VARIABLE_R_STRING + ");"
 					+ "if (d>0 && d<deg) { deg:=d; degi:=k; } }],"
 					+ "[deg," + VARIABLE_I_STRING + "[degi]]][4]";
 			program = ggbGiac(program);
@@ -417,7 +419,7 @@ public class ProverCNIMethod {
 				Log.debug("The second elimination ideal contains " + minDegree2A[1] + ", it is linear in r_.");
 				// Check if r can be expressed without a division:
 				// lvar(coeff(2*r_+1,r_)[0])
-				program = "lvar(coeff(" + minDegree2A[1] + ",r_)[0])";
+				program = "lvar(coeff(" + minDegree2A[1] + ","+ VARIABLE_R_STRING + ")[0])";
 				String divVars2 = executeGiac(program);
 				if (divVars2.equals("{}")) {
 					if (rMustBeZero) {
