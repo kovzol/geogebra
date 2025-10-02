@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Test the CNI method.
+
+set -e
+cd ../../../../desktop
+../gradlew installDist
+cd ../test/scripts/benchmark/prover
+./runtests-sql -r -p CNI -d
+./report-sql -c CNI
+google-chrome html/all.html &
