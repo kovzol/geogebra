@@ -118,6 +118,10 @@ while getopts "t:H:o:P:T:c:d:b:S:NeDFGhv" OPT; do
      MYCOLUMNS="Recio BotanaGiac Web"
      PROVEDETAILS=1
      ;;
+    2025)
+     MYCOLUMNS="CNI Recio BotanaGiac Web"
+     PROVEDETAILS=1
+     ;;
    esac # -S
    ;;
   e)
