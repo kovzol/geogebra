@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
+import org.geogebra.common.kernel.algos.AlgoAnglePoints;
 import org.geogebra.common.kernel.algos.AlgoAngularBisectorPoints;
 import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
 import org.geogebra.common.kernel.algos.AlgoCircleTwoPoints;
@@ -25,6 +26,7 @@ import org.geogebra.common.kernel.algos.AlgoOrthoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoPolygon;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
+import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
@@ -226,7 +228,6 @@ public class ProverCNIMethod {
 									"Equality of lengths means equality or collinearity simultaneously."));
 				}
 			}
-
 		}
 		if (def.rMustBe0) {
 			rMustBeZero = true;
@@ -585,7 +586,7 @@ public class ProverCNIMethod {
 				ae instanceof AlgoAngularBisectorPoints || ae instanceof AlgoLineBisector ||
 				ae instanceof AlgoLineBisectorSegment || ae instanceof AlgoJoinPointsRay ||
 				ae instanceof AlgoLinePointLine || ae instanceof AlgoOrthoLinePointLine ||
-				ae instanceof AlgoCircleTwoPoints) {
+				ae instanceof AlgoCircleTwoPoints || ae instanceof AlgoAnglePoints) {
 			c.ignore = true;
 			return c;
 		}
@@ -871,6 +872,23 @@ public class ProverCNIMethod {
 				return c;
 			}
 			return null; // In general, checking |AB|=|CD| is not supported by the method.
+		}
+		if (ge1 instanceof GeoAngle && ge2 instanceof GeoAngle) {
+			GeoAngle a1 = (GeoAngle) ge1;
+			GeoAngle a2 = (GeoAngle) ge2;
+			AlgoElement ae1 = a1.getParentAlgorithm();
+			AlgoElement ae2 = a2.getParentAlgorithm();
+			if (ae1 instanceof AlgoAnglePoints && ae2 instanceof AlgoAnglePoints) {
+				GeoPoint A = (GeoPoint) ((AlgoAnglePoints) ae1).getA();
+				GeoPoint B = (GeoPoint) ((AlgoAnglePoints) ae1).getB();
+				GeoPoint C = (GeoPoint) ((AlgoAnglePoints) ae1).getC();
+				GeoPoint D = (GeoPoint) ((AlgoAnglePoints) ae2).getA();
+				GeoPoint E = (GeoPoint) ((AlgoAnglePoints) ae2).getB();
+				GeoPoint F = (GeoPoint) ((AlgoAnglePoints) ae2).getC();
+				c.realRelation = eqangle(A,B,C,D,E,F);
+				return c;
+			}
+			return null; // Not yet implemented;
 		}
 		return null; // Missing implementation for equality of other objects.
 	}
