@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test the desktop version (ShowProof).
+# Test the desktop version via Botana's method (ShowProof).
 
 TIMEOUT=60
 

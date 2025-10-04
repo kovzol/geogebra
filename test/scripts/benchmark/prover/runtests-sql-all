@@ -10,7 +10,7 @@ if [ "$BUILD_NUMBER" = "" ]; then
 
 MYDIR=`pwd $0`
 cd $MYDIR
-./runtests-sql -S 2024 -d -r
-./report-sql -S 2024 -G
+./runtests-sql -S 2025 -d -r
+./report-sql -S 2025 -G
 
 # Run ./check-sums after this.

@@ -111,6 +111,10 @@ while getopts "t:p:P:s:S:dbDFhvrV" OPT; do
      PROVERS="Recio BotanaGiac Web"
      PROVEDETAILS=1
      ;;
+    2025)
+     PROVERS="CNI Recio BotanaGiac Web"
+     PROVEDETAILS=1
+     ;;
    esac # -S
    ;;
   s)
