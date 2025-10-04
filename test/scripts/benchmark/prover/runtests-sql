@@ -478,7 +478,7 @@ for i in `find -name '*.ggb' | sort`; do
   if [ "$PROVEDETAILS" != 2 -a "${RESULT:0:$DIRNAMELENGTH}" != "$DIRNAME" ]; then
    if [ "$RESULT" = "undefined" -o "$RESULT" = "" -o "$RESULT" = "?" -o "$RESULT" = "niu" \
      -o "$RESULT" = "nlu" -o "$RESULT" = "rn0u" -o "$RESULT" = "nlu" -o "$RESULT" = "d3u" \
-     -o "$RESULT" = "nfiu" -o "$RESULT" = "enru" -o "$RESULT" = "e0u" ]; then
+     -o "$RESULT" = "nfiu" -o "$RESULT" = "enru" -o "$RESULT" = "e0u" -o "$RESULT" = "e2nru" ]; then
     RESULTCLASS="undefined"
     accepted=null
    else
