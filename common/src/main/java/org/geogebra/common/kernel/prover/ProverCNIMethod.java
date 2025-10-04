@@ -52,11 +52,12 @@ public class ProverCNIMethod {
 	public static int WARNING_EQUALITY_OR_COLLINEAR = 2;
 
 	public static class CNIDefinition {
-		String declaration;
-		String realRelation;
-		boolean ignore;
-		boolean rMustBe0 = false;
-		int warning = 0;
+		// TODO: Consider adding more refinements here, add extra infos related to the Strings.
+		String declaration; // \n-separated Strings of declarations in Giac format
+		String realRelation; // \n-separated Strings of rhs of real relations in Giac format
+		boolean ignore; // empty definition?
+		boolean rMustBe0 = false; // if r is required to be 0
+		int warning = 0; // different interpretation than usual?
 	}
 
 	public static ProofResult prove(Prover prover) {
