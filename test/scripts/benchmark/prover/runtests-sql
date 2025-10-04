@@ -362,6 +362,7 @@ for i in `find -name '*.ggb' | sort`; do
    # --regressionFile is broken since 5.0.244.0, so we don't use its output
    RETVAL=$?
    RESULT=""
+   TIME=""
    fi
 
   # Being optimistic
@@ -398,7 +399,8 @@ for i in `find -name '*.ggb' | sort`; do
       grep --silent "r_ should be zero" $LOGFILE && RESULT=rn0u
       grep --silent "The division does not result in an unambiguous case" $LOGFILE && RESULT=dau
       if [ "$RESULT" = "" ]; then
-       RESULT=u
+       RESULT=xu
+       fi
       }
     fi
 
