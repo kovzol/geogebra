@@ -14,6 +14,7 @@ import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
+import org.geogebra.common.kernel.algos.AlgoIntersectSingle;
 import org.geogebra.common.kernel.algos.AlgoJoinPoints;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsRay;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
@@ -519,6 +520,9 @@ public class ProverCNIMethod {
 			return c;
 		}
 		// Real relations:
+		if (ae instanceof AlgoIntersectSingle) {
+			ae = ((AlgoIntersectSingle) ae).getAlgo();
+		}
 		if (ae instanceof AlgoIntersectLines) {
 			AlgoIntersectLines ail = (AlgoIntersectLines) ae;
 			GeoLine g = ail.getg();
@@ -677,6 +681,14 @@ public class ProverCNIMethod {
 				c.realRelation = perppar((GeoLine) ge1, (GeoLine) ge2);
 				c.warning = WARNING_PERPENDICULAR_OR_PARALLEL;
 				return c;
+			} else if (o == Operation.IS_ELEMENT_OF) {
+				if (ge1 instanceof GeoPoint && ge2 instanceof GeoLine) {
+					GeoElement P1 = ((GeoLine) ge2).getStartPoint();
+					GeoElement P2 = ((GeoLine) ge2).getEndPoint();
+					c.realRelation = collinear(ge1, P1, P2);
+					return c;
+				}
+				return null; // unimplemented
 			} else if (o == Operation.EQUAL_BOOLEAN) {
 				return equal(ge1, ge2);
 			}
