@@ -77,10 +77,14 @@ public class ProverCNIMethod {
 		String VARIABLE_R_STRING = "r__"; // This must be a kind of unique string.
 		String VARIABLE_I_STRING = "I_"; // This must be a kind of unique string.
 
-		String[] predefinitions = {"coll(A_,B_,C_):=(A_-B_)/(A_-C_)",
-				"par(A_,B_,C_,D_):=(A_-B_)/(C_-D_)",
-				"perppar(A_,B_,C_,D_):=((A_-B_)/(C_-D_))^2",
-				"conc(A_,B_,C_,D_):=((C_-A_)/(C_-B_))/((D_-A_)/(D_-B_))",
+		// We try to avoid divisions by X-Y if X or Y are generated points,
+		// to not introduce extra degeneracy than required. That is,
+		// all formulas assume that arguments are ordered where the free points appear first.
+		String[] predefinitions = {"coll(A_,B_,C_):=(A_-C_)/(A_-B_)",
+				"par(A_,B_,C_,D_):=(C_-D_)/(A_-B_)",
+				"perppar(A_,B_,C_,D_):=((C_-D_)/(A_-B_))^2",
+				"conc(A_,B_,C_,D_):=((C_-D_)/(C_-A_))/((B_-D_)/(B_-A_))",
+				// They are not considered yet:
 				"eqangle(A_,B_,C_,D_,E_,F_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))",
 				"isosc(A_,B_,C_):=eqangle(C_,B_,A_,A_,C_,B_)" // |AB|=|AC|
 		};
@@ -716,18 +720,32 @@ public class ProverCNIMethod {
 	}
 
 	static String collinear(GeoElement ge1, GeoElement ge2, GeoElement ge3) {
-		String ge1l = getUniqueLabel(ge1);
-		String ge2l = getUniqueLabel(ge2);
-		String ge3l = getUniqueLabel(ge3);
-		return "coll(" + ge1l + "," + ge2l + "," + ge3l + ")";
+		TreeSet<GeoElement> collPoints = new TreeSet<>();
+		collPoints.add(ge1);
+		collPoints.add(ge2);
+		collPoints.add(ge3);
+		String ret = "coll(";
+		for (GeoElement cp : collPoints) {
+			ret += getUniqueLabel(cp) + ",";
+		}
+		ret = removeTail(ret, 1);
+		ret += ")";
+		return ret;
 	}
 
 	static String concyclic(GeoElement ge1, GeoElement ge2, GeoElement ge3, GeoElement ge4) {
-		String ge1l = getUniqueLabel(ge1);
-		String ge2l = getUniqueLabel(ge2);
-		String ge3l = getUniqueLabel(ge3);
-		String ge4l = getUniqueLabel(ge4);
-		return "conc(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
+		TreeSet<GeoElement> concPoints = new TreeSet<>();
+		concPoints.add(ge1);
+		concPoints.add(ge2);
+		concPoints.add(ge3);
+		concPoints.add(ge4);
+		String ret = "conc(";
+		for (GeoElement cp : concPoints) {
+			ret += getUniqueLabel(cp) + ",";
+		}
+		ret = removeTail(ret, 1);
+		ret += ")";
+		return ret;
 	}
 
 	static String parallel(GeoPoint ge1, GeoPoint ge2, GeoPoint ge3, GeoPoint ge4) {
@@ -735,6 +753,21 @@ public class ProverCNIMethod {
 		String ge2l = getUniqueLabel(ge2);
 		String ge3l = getUniqueLabel(ge3);
 		String ge4l = getUniqueLabel(ge4);
+
+		int i1 = ge1.getConstructionIndex();
+		int i2 = ge2.getConstructionIndex();
+		int i3 = ge3.getConstructionIndex();
+		int i4 = ge4.getConstructionIndex();
+
+		// In a natural order we return the same ordered quadruple:
+		if (i1 < i2 && i2 < i3 && i3 < i4)
+			return "par(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
+
+		// In some reversed orders we return the same ordered quadruple:
+		if ((i1 > i3 && i2 > i4) || (i1 > i4 && i2 > i3))
+			return "par(" + ge3l + "," + ge4l + "," + ge1l + "," + ge2l + ")";
+
+		// Otherwise we return the default order:
 		return "par(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
 	}
 
@@ -751,6 +784,21 @@ public class ProverCNIMethod {
 		String ge2l = getUniqueLabel(ge2);
 		String ge3l = getUniqueLabel(ge3);
 		String ge4l = getUniqueLabel(ge4);
+
+		int i1 = ge1.getConstructionIndex();
+		int i2 = ge2.getConstructionIndex();
+		int i3 = ge3.getConstructionIndex();
+		int i4 = ge4.getConstructionIndex();
+
+		// In a natural order we return the same ordered quadruple:
+		if (i1 < i2 && i2 < i3 && i3 < i4)
+			return "perppar(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
+
+		// In some reversed orders we return the same ordered quadruple:
+		if ((i1 > i3 && i2 > i4) || (i1 > i4 && i2 > i3))
+			return "perppar(" + ge3l + "," + ge4l + "," + ge1l + "," + ge2l + ")";
+
+		// Otherwise we return the default order:
 		return "perppar(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + ")";
 	}
 
