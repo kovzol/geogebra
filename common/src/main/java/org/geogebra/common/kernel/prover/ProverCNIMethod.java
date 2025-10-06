@@ -58,6 +58,7 @@ public class ProverCNIMethod {
 		boolean ignore; // empty definition?
 		boolean rMustBe0 = false; // if r is required to be 0
 		int warning = 0; // different interpretation than usual?
+		int specRestriction = 0; // number of disallowed fixed points
 	}
 
 	public static ProofResult prove(Prover prover) {
@@ -71,6 +72,7 @@ public class ProverCNIMethod {
 		int realRelationsNo = 0;
 		boolean declarative = true;
 		boolean rMustBeZero = false;
+		int maxSpecRestriction = 0;
 
 		String VARIABLE_R_STRING = "r__"; // This must be a kind of unique string.
 		String VARIABLE_I_STRING = "I_"; // This must be a kind of unique string.
@@ -158,38 +160,6 @@ public class ProverCNIMethod {
 			}
 		}
 
-		// Specialization.
-		if (prover.getShowproof()) {
-			prover.addProofLine(CmdShowProof.SPECIALIZATION, loc.getMenuDefault("WlogCoordinates",
-					"Without loss of generality, some coordinates can be fixed:"));
-		}
-		// Put the first two points into 0 and 1:
-		int i = 0;
-		TreeSet<GeoElement> specialized = new TreeSet<>();
-		String specCode = "";
-		for (GeoElement ge : freePoints) {
-			if (i == 0) {
-				String spec1 = getUniqueLabel(ge) + ":=0";
-				specCode += spec1 + "\n";
-				if (prover.getShowproof()) {
-					prover.addProofLine(CmdShowProof.TEXT_EQUATION, spec1);
-				}
-				specialized.add(ge);
-			}
-			if (i == 1) {
-				String spec2 = getUniqueLabel(ge) + ":=1";
-				specCode += spec2 + "\n";
-				if (prover.getShowproof()) {
-					prover.addProofLine(CmdShowProof.TEXT_EQUATION, spec2);
-				}
-				specialized.add(ge);
-			}
-			i++;
-		}
-		declarations = specCode + declarations; // Prepend specializations before declarations.
-		freePoints.removeAll(specialized);
-		// These will be no longer free points.
-
 		// Adding the thesis. This is very similar to the code above:
 		CNIDefinition def = null;
 		try {
@@ -228,11 +198,45 @@ public class ProverCNIMethod {
 							loc.getMenuDefault("EqualityCollinearity",
 									"Equality of lengths means equality or collinearity simultaneously."));
 				}
+				if (def.specRestriction > 0 && def.specRestriction > maxSpecRestriction) {
+					maxSpecRestriction = def.specRestriction;
+				}
 			}
 		}
 		if (def.rMustBe0) {
 			rMustBeZero = true;
 		}
+		// Specialization.
+		if (prover.getShowproof()) {
+			prover.addProofLine(CmdShowProof.SPECIALIZATION, loc.getMenuDefault("WlogCoordinates",
+					"Without loss of generality, some coordinates can be fixed:"));
+		}
+		// Put the first two points into 0 and 1:
+		int i = 0;
+		TreeSet<GeoElement> specialized = new TreeSet<>();
+		String specCode = "";
+		for (GeoElement ge : freePoints) {
+			if (i == 0 && maxSpecRestriction < 2) {
+				String spec1 = getUniqueLabel(ge) + ":=0";
+				specCode += spec1 + "\n";
+				if (prover.getShowproof()) {
+					prover.addProofLine(CmdShowProof.TEXT_EQUATION, spec1);
+				}
+				specialized.add(ge);
+			}
+			if (i == 1 && maxSpecRestriction < 1) {
+				String spec2 = getUniqueLabel(ge) + ":=1";
+				specCode += spec2 + "\n";
+				if (prover.getShowproof()) {
+					prover.addProofLine(CmdShowProof.TEXT_EQUATION, spec2);
+				}
+				specialized.add(ge);
+			}
+			i++;
+		}
+		declarations = specCode + declarations; // Prepend specializations before declarations.
+		freePoints.removeAll(specialized);
+		// These will be no longer free points.
 
 		// Putting the code together...
 		String program = "";
@@ -843,6 +847,7 @@ public class ProverCNIMethod {
 			String Ql = getUniqueLabel(Q);
 			c.realRelation = Pl + "-" + Ql;
 			c.rMustBe0 = true;
+			c.specRestriction = 1; // the second free point cannot be fixed
 			return c;
 		}
 		if (ge1 instanceof GeoSegment && ge2 instanceof GeoSegment) {
