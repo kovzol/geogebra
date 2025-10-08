@@ -578,17 +578,10 @@ public class ProverCNIMethod {
 				return c;
 			}
 			if (p instanceof GeoConic) {
+				AlgoElement pAe = p.getParentAlgorithm();
 				if (((GeoConic) p).isCircle()) {
-					ArrayList<GeoPointND> points = ((GeoConic) p).getPointsOnConic();
-					if (points.size() >= 4) {
-						GeoPoint A = (GeoPoint) points.get(0).toGeoElement();
-						GeoPoint B = (GeoPoint) points.get(1).toGeoElement();
-						GeoPoint C = (GeoPoint) points.get(2).toGeoElement();
-						GeoPoint D = (GeoPoint) points.get(3).toGeoElement();
-						c.realRelation = concyclic(A, B, C, D);
-						return c;
-					}
-					return null; // Not implemented.
+					c.realRelation = oncircle((GeoPoint) ge, (GeoConic) p);
+					return c;
 				}
 				return null; // Not implemented.
 			}
@@ -894,6 +887,13 @@ public class ProverCNIMethod {
 			GeoPoint ce = (GeoPoint) actp.getInput(0);
 			GeoPoint p = (GeoPoint) actp.getInput(1);
 			return isosc(ce, p, ge);
+		}
+		if (coAe instanceof AlgoCircleThreePoints) {
+			AlgoCircleThreePoints actp = (AlgoCircleThreePoints) coAe;
+			GeoPoint A = (GeoPoint) actp.getA();
+			GeoPoint B = (GeoPoint) actp.getB();
+			GeoPoint C = (GeoPoint) actp.getC();
+			return concyclic(A, B, C, ge);
 		}
 		return null; // Unimplemented.
 	}
