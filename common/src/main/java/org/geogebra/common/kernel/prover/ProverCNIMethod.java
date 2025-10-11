@@ -26,6 +26,7 @@ import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
 import org.geogebra.common.kernel.algos.AlgoOrthoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoPolygon;
+import org.geogebra.common.kernel.algos.AlgoRotatePoint;
 import org.geogebra.common.kernel.algos.AlgoTranslate;
 import org.geogebra.common.kernel.algos.AlgoVector;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
@@ -40,6 +41,7 @@ import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.scripting.CmdShowProof;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.plugin.Operation;
+import org.geogebra.common.util.DoubleUtil;
 import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.Prover.ProofResult;
 import org.geogebra.common.util.debug.Log;
@@ -57,8 +59,10 @@ public class ProverCNIMethod {
 
 	public static class CNIDefinition {
 		// TODO: Consider adding more refinements here, add extra infos related to the Strings.
-		String declaration; // \n-separated Strings of declarations in Giac format
-		String realRelation; // \n-separated Strings of rhs of real relations in Giac format
+		String declaration; // declaration in Giac format
+		String realRelation; // \n-separated Strings of lhs of real relations in Giac format
+		String zeroRelation; // lhs of zero relation in Giac format
+		String extraVariable; // an extra variable that is used in the zero relation (and the declaration)
 		boolean ignore; // empty definition?
 		boolean rMustBe0 = false; // if r is required to be 0
 		int warning = 0; // different interpretation than usual?
@@ -99,16 +103,25 @@ public class ProverCNIMethod {
 
 		// All predecessors:
 		TreeSet<GeoElement> allPredecessors = statement.getAllPredecessors();
+		// Keep only points:
+		TreeSet<GeoPoint> allPredecessorPoints = new TreeSet<>();
+		for (GeoElement p : allPredecessors) {
+			if (p instanceof GeoPoint) {
+				allPredecessorPoints.add((GeoPoint) p);
+			}
+		}
 
 		// Free points. We need them to eliminate the variables according to them.
-		TreeSet<GeoElement> freePoints = new TreeSet<>();
+		TreeSet<GeoPoint> freePoints = new TreeSet<>();
 		// Real-relational points. We need them to eliminate the variables according to them too.
 		TreeSet<GeoElement> realRelationalPoints = new TreeSet<>();
+
+		String extraVariables = "";
 
 		if (prover.getShowproof()) {
 			prover.addProofLine(loc.getMenuDefault("TheHypotheses", "The hypotheses:"));
 		}
-		for (GeoElement ge : allPredecessors) {
+		for (GeoPoint ge : allPredecessorPoints) {
 			if (ge.getParentAlgorithm() == null) {
 				freePoints.add(ge);
 			} else {
@@ -129,20 +142,29 @@ public class ProverCNIMethod {
 				if (def.ignore) {
 					continue; // for
 				}
+
+				if (prover.getShowproof()) {
+					prover.addProofLine(loc.getPlain("ConsideringDefinitionA",
+							ge.getLabelSimple() + " = "
+									+ ge.getDefinition(
+									StringTemplate.defaultTemplate)));
+				}
+
 				if (def.declaration != null) {
 					declarations += def.declaration + "\n";
 					if (prover.getShowproof()) {
 						prover.addProofLine(CmdShowProof.TEXT_EQUATION, def.declaration);
 					}
 				}
+				if (def.zeroRelation != null) {
+					realRelations += def.zeroRelation + ",";
+					extraVariables = def.extraVariable + ",";
+					if (prover.getShowproof()) {
+						prover.addProofLine(CmdShowProof.TEXT_EQUATION, def.zeroRelation + "=0");
+					}
+				}
 				if (def.realRelation != null) {
 					String[] CASrealRelations = def.realRelation.split("\n");
-					if (prover.getShowproof()) {
-						prover.addProofLine(loc.getPlain("ConsideringDefinitionA",
-								ge.getLabelSimple() + " = "
-										+ ge.getDefinition(
-										StringTemplate.defaultTemplate)));
-					}
 					for (String CASrealRelation : CASrealRelations) {
 						realRelationsNo++;
 						String expression = CASrealRelation + "=" + VARIABLE_R_STRING + realRelationsNo;
@@ -164,6 +186,11 @@ public class ProverCNIMethod {
 					}
 					realRelationalPoints.add(ge);
 					declarative = false;
+				}
+				if (def.declaration == null && def.realRelation == null && def.zeroRelation == null && !def.ignore) {
+					Log.debug("The CNI method does not yet implement " + ge.getParentAlgorithm().toString()
+							+ " which is required for " + ge.getLabelSimple());
+					return ProofResult.UNKNOWN;
 				}
 			}
 		}
@@ -211,9 +238,14 @@ public class ProverCNIMethod {
 				}
 			}
 		}
+		if (def.declaration == null && def.realRelation == null && !def.ignore) {
+			Log.debug("The CNI method does not yet fully implement " + statement.getParentAlgorithm().toString());
+			return ProofResult.UNKNOWN;
+		}
 		if (def.rMustBe0) {
 			rMustBeZero = true;
 		}
+
 		// Specialization.
 		if (prover.getShowproof()) {
 			prover.addProofLine(CmdShowProof.SPECIALIZATION, loc.getMenuDefault("WlogCoordinates",
@@ -265,6 +297,7 @@ public class ProverCNIMethod {
 		for (GeoElement ge : realRelationalPoints) {
 			toEliminate += getUniqueLabel(ge) + ",";
 		}
+		toEliminate += extraVariables;
 		toEliminate = removeTail(toEliminate, 1);
 		rest += "[" + toEliminate + "])]";
 		int codeLengthLines = predefinitions.length + declarationsA.length + 1;
@@ -332,7 +365,8 @@ public class ProverCNIMethod {
 			String divVars = executeGiac(program);
 			if (divVars.equals("{}")) {
 				if (rMustBeZero) {
-					if (minDegreeA[1].equals(VARIABLE_R_STRING)) {
+					if (minDegreeA[1].equals(VARIABLE_R_STRING) ||
+							minDegreeA[1].equals("-" + VARIABLE_R_STRING)) {
 						if (prover.getShowproof()) {
 							prover.addProofLine(CmdShowProof.CONCLUSION,
 									loc.getMenuDefault("ThesisZeroStatementTrue",
@@ -437,7 +471,7 @@ public class ProverCNIMethod {
 				String divVars2 = executeGiac(program);
 				if (divVars2.equals("{}")) {
 					if (rMustBeZero) {
-						if (minDegree2A[1].equals(VARIABLE_R_STRING)) {
+						if (minDegree2A[1].equals(VARIABLE_R_STRING) || minDegree2A[1].equals("-" + VARIABLE_R_STRING)) {
 							if (prover.getShowproof()) {
 								prover.addProofLine(CmdShowProof.CONCLUSION,
 										loc.getMenuDefault("ThesisZeroStatementTrue",
@@ -623,6 +657,41 @@ public class ProverCNIMethod {
 			}
 			return null; // Not implemented.
 		}
+		if (ae instanceof AlgoRotatePoint) {
+			AlgoRotatePoint arp = (AlgoRotatePoint) ae;
+			GeoElement P = (GeoElement) arp.getInput(0); // rotated
+			GeoElement a = (GeoElement) arp.getInput(1); // angle
+			GeoElement C = (GeoElement) arp.getInput(2); // center
+			if (P instanceof GeoPoint && a instanceof GeoAngle && C instanceof GeoPoint) {
+				// This is taken from AlgoRotatePoint (Botana's method)
+				double angleDoubleVal = ((GeoAngle) a).getDouble();
+				double angleDoubleValDeg = angleDoubleVal / Math.PI * 180;
+				int angleValDeg = (int) angleDoubleValDeg;
+				if (!DoubleUtil.isInteger(angleDoubleValDeg)) {
+					// unhandled angle, not an integer degree
+					return null; // Unimplemented.
+				}
+				// Compute the gcd of the angle and 360 degrees. For 90 degrees, this is 90,
+				// for 120, this is 120, for 135, this is 45, for example.
+				long gcd = kernel.gcd(angleValDeg, 360);
+				// Which primitive root of unit will be used to describe the rotation?
+				long prim = Math.abs(360 / gcd); // This is 4 for 90 degrees, 3 for 120 degrees,
+				// 8 for 135 (~45) degrees.
+				// Create the minimal polynomial. E.g.: "expand(r2e(cyclotomic(8)))", for 135 degrees.
+				String VARIABLE_CYCLOTOMIC = "CT__";
+				String ctVar = VARIABLE_CYCLOTOMIC + prim;
+				String minpolyP = "subst(expand(r2e(cyclotomic(" + prim + "))),x=" + ctVar + ")";
+				String minpoly = executeGiac(minpolyP);
+				// Now we create the declaration:
+				String Pl = getUniqueLabel(P);
+				String Cl = getUniqueLabel(C);
+				c.declaration = gel + ":=" + Cl + "+(" + Pl + "-" + Cl + ")*" + ctVar; // complex rotation
+				c.zeroRelation = minpoly; // set the minimal polynomial as an extra relation
+				c.extraVariable = ctVar; // set the extra variable
+				return c;
+			}
+		}
+		// Maybe this is no longer required (since only points can be inputs of this method):
 		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment ||
 				ae instanceof AlgoJoinPoints || ae instanceof AlgoCircleThreePoints ||
 				ae instanceof AlgoAngularBisectorPoints || ae instanceof AlgoLineBisector ||
@@ -713,9 +782,7 @@ public class ProverCNIMethod {
 				return c;
 			} else if (o == Operation.IS_ELEMENT_OF) {
 				if (ge1 instanceof GeoPoint && ge2 instanceof GeoLine) {
-					GeoElement P1 = ((GeoLine) ge2).getStartPoint();
-					GeoElement P2 = ((GeoLine) ge2).getEndPoint();
-					c.realRelation = collinear(ge1, P1, P2);
+					c.realRelation = online((GeoPoint) ge1, (GeoLine) ge2);
 					return c;
 				}
 				return null; // unimplemented
@@ -745,9 +812,12 @@ public class ProverCNIMethod {
 
 	private static String executeGiac(String command) {
 		GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
-		command = command.replace("'", "APOSTROPHE"); // FIXME
+		String APOSTROPHE = "AP__";
+		command = command.replace("'", APOSTROPHE);
 		try {
-			return cas.evaluateRaw(command);
+			String ret = cas.evaluateRaw(command);
+			ret = ret.replace(APOSTROPHE, "'");
+			return ret;
 		} catch (Throwable e) {
 			Log.error("Error in ProverCNIMethod/executeGiac: input=" + command);
 			return "ERROR";
