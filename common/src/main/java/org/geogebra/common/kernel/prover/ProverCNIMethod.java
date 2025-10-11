@@ -27,6 +27,7 @@ import org.geogebra.common.kernel.algos.AlgoMirror;
 import org.geogebra.common.kernel.algos.AlgoOrthoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoPolygon;
+import org.geogebra.common.kernel.algos.AlgoPolygonRegular;
 import org.geogebra.common.kernel.algos.AlgoRotatePoint;
 import org.geogebra.common.kernel.algos.AlgoTranslate;
 import org.geogebra.common.kernel.algos.AlgoVector;
@@ -35,6 +36,7 @@ import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.geos.GeoVector;
@@ -57,6 +59,7 @@ public class ProverCNIMethod {
 
 	public static int WARNING_PERPENDICULAR_OR_PARALLEL = 1;
 	public static int WARNING_EQUALITY_OR_COLLINEAR = 2;
+	public static String VARIABLE_CYCLOTOMIC = "CT__";
 
 	public static class CNIDefinition {
 		// TODO: Consider adding more refinements here, add extra infos related to the Strings.
@@ -675,13 +678,11 @@ public class ProverCNIMethod {
 				long prim = Math.abs(360 / gcd); // This is 4 for 90 degrees, 3 for 120 degrees,
 				// 8 for 135 (~45) degrees.
 				// Create the minimal polynomial. E.g.: "expand(r2e(cyclotomic(8)))", for 135 degrees.
-				String VARIABLE_CYCLOTOMIC = "CT__";
-				String ctVar = VARIABLE_CYCLOTOMIC + prim;
-				String minpolyP = "subst(expand(r2e(cyclotomic(" + prim + "))),x=" + ctVar + ")";
-				String minpoly = executeGiac(minpolyP);
+				String minpoly = cyclotomicPolynomial((int) prim);
 				// Now we create the declaration:
 				String Pl = getUniqueLabel(P);
 				String Cl = getUniqueLabel(C);
+				String ctVar = VARIABLE_CYCLOTOMIC + prim;
 				c.declaration = gel + ":=" + Cl + "+(" + Pl + "-" + Cl + ")*" + ctVar; // complex rotation
 				c.zeroRelation = minpoly; // set the minimal polynomial as an extra relation
 				c.extraVariable = ctVar; // set the extra variable
@@ -700,6 +701,43 @@ public class ProverCNIMethod {
 			}
 			return null; // Not implemented.
 		}
+		if (ae instanceof AlgoPolygonRegular) {
+			AlgoPolygonRegular ap = (AlgoPolygonRegular) ae;
+			GeoPoint A = (GeoPoint) ap.getInput(0);
+			GeoPoint B = (GeoPoint) ap.getInput(1);
+			String Al = getUniqueLabel(A);
+			String Bl = getUniqueLabel(B);
+			int num = (int) ((GeoNumeric) ap.getInput(2)).getValue(); // number of sides
+			// The sum of external angles in a regular polygon is 360 degrees.
+			// When computing C from A and B, C=B+(B-A)*CT_num,
+			// D=C+(C-B)*CT_num
+			// where CT_num is a numth primitive root of the unit.
+			// That is, D=B+(B-A)*CT_num+(B+(B-A)*CT_num-B)*CT_num=B+(B-A)*CT_num+((B-A)*CT_num)*CT_num,
+			// in general, for the ith vertex (numbered from 0), P_i=B+(B-A)*(CT_num+CT_num^2+CT_num^3+...+CT_num^(i-1))
+			// where P_i is the ith vertex.
+			GeoElement[] outputObjects = ap.getOutput();
+			// The 0th object is the polygon, the 1st, 2nd, ..., nth are the segments of the sides,
+			// the (n+1)th object is the 2nd point, the (n+2)th object is the 3rd point, and so on.
+			for (int i = num + 1; i < outputObjects.length; i++) {
+				if (ge.equals(outputObjects[i])) {
+					int whichPoint = i - num + 1;
+					String ctVar = VARIABLE_CYCLOTOMIC + num;
+					c.declaration = gel + ":=" + Bl + "+(" + Bl + "-" + Al + ")*(";
+					for (int j = 1; j < whichPoint; j++) {
+						if (j>1) {
+							c.declaration += "+";
+						}
+						c.declaration += ctVar + "^" + j;
+					}
+					c.declaration += ")";
+					c.zeroRelation = cyclotomicPolynomial(num);
+					c.extraVariable = ctVar;
+					return c;
+				}
+			}
+
+		}
+
 		// Unimplemented, but it should be handled...
 		return null;
 	}
@@ -1063,5 +1101,11 @@ public class ProverCNIMethod {
 			return null; // Not yet implemented;
 		}
 		return null; // Missing implementation for equality of other objects.
+	}
+
+	public static String cyclotomicPolynomial(int n) {
+		String ctVar = VARIABLE_CYCLOTOMIC + n;
+		String minpolyP = "subst(expand(r2e(cyclotomic(" + n + "))),x=" + ctVar + ")";
+		return executeGiac(minpolyP);
 	}
 }
