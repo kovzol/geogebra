@@ -26,6 +26,8 @@ import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
 import org.geogebra.common.kernel.algos.AlgoOrthoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoPolygon;
+import org.geogebra.common.kernel.algos.AlgoTranslate;
+import org.geogebra.common.kernel.algos.AlgoVector;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoConic;
@@ -33,6 +35,7 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoSegment;
+import org.geogebra.common.kernel.geos.GeoVector;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.scripting.CmdShowProof;
 import org.geogebra.common.main.Localization;
@@ -485,6 +488,22 @@ public class ProverCNIMethod {
 							"The thesis cannot be expressed as a division."));
 		}
 		Log.debug("r_ is not linear, further check is needed.");
+
+		// Maybe the case is quadratic.
+		if (minDegreeI == 2) {
+			Log.debug("r_ is quadratic.");
+			program = "[[D:=discriminant(" + minDegreeA[1] + "," + VARIABLE_R_STRING + ")],[total_degree(D,lvar(D))]][1]";
+			String discDegreeL = executeGiac(program);
+			String discDegreeS = removeHeadTail(discDegreeL, 1);
+			int discDegree = Integer.parseInt(discDegreeS);
+			Log.debug("The degree of the discriminant is " + discDegree);
+			if (discDegree > 2) {
+				Log.debug("No method can be directly applied to detect positivity.");
+			} else {
+				Log.debug("There is hope to detect positivity.");
+			}
+		}
+
 		return ProofResult.UNKNOWN;
 	}
 
@@ -587,12 +606,30 @@ public class ProverCNIMethod {
 			}
 			return null; // Not implemented.
 		}
+		if (ae instanceof AlgoTranslate) {
+			AlgoTranslate at = (AlgoTranslate) ae;
+			GeoElement P = (GeoElement) at.getInput(0);
+			GeoElement v = (GeoElement) at.getInput(1);
+			if (P instanceof GeoPoint && v instanceof GeoVector) {
+				GeoVector gv = (GeoVector) v;
+				AlgoElement gvAe = gv.getParentAlgorithm();
+				GeoElement A = (GeoElement) gvAe.getInput(0);
+				GeoElement B = (GeoElement) gvAe.getInput(1);
+				String Pl = getUniqueLabel(P);
+				String Al = getUniqueLabel(A);
+				String Bl = getUniqueLabel(B);
+				c.declaration = gel + ":=" + Pl + "+" + Bl + "-" + Al;
+				return c;
+			}
+			return null; // Not implemented.
+		}
 		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment ||
 				ae instanceof AlgoJoinPoints || ae instanceof AlgoCircleThreePoints ||
 				ae instanceof AlgoAngularBisectorPoints || ae instanceof AlgoLineBisector ||
 				ae instanceof AlgoLineBisectorSegment || ae instanceof AlgoJoinPointsRay ||
 				ae instanceof AlgoLinePointLine || ae instanceof AlgoOrthoLinePointLine ||
-				ae instanceof AlgoCircleTwoPoints || ae instanceof AlgoAnglePoints) {
+				ae instanceof AlgoCircleTwoPoints || ae instanceof AlgoAnglePoints ||
+				ae instanceof AlgoVector) {
 			c.ignore = true;
 			return c;
 		}
@@ -708,6 +745,7 @@ public class ProverCNIMethod {
 
 	private static String executeGiac(String command) {
 		GeoGebraCAS cas = (GeoGebraCAS) kernel.getGeoGebraCAS();
+		command = command.replace("'", "APOSTROPHE"); // FIXME
 		try {
 			return cas.evaluateRaw(command);
 		} catch (Throwable e) {
