@@ -691,17 +691,6 @@ public class ProverCNIMethod {
 				return c;
 			}
 		}
-		// Maybe this is no longer required (since only points can be inputs of this method):
-		if (ae instanceof AlgoPolygon || ae instanceof AlgoJoinPointsSegment ||
-				ae instanceof AlgoJoinPoints || ae instanceof AlgoCircleThreePoints ||
-				ae instanceof AlgoAngularBisectorPoints || ae instanceof AlgoLineBisector ||
-				ae instanceof AlgoLineBisectorSegment || ae instanceof AlgoJoinPointsRay ||
-				ae instanceof AlgoLinePointLine || ae instanceof AlgoOrthoLinePointLine ||
-				ae instanceof AlgoCircleTwoPoints || ae instanceof AlgoAnglePoints ||
-				ae instanceof AlgoVector) {
-			c.ignore = true;
-			return c;
-		}
 		// Unimplemented, but it should be handled...
 		return null;
 	}
