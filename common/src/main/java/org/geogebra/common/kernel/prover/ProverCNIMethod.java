@@ -23,6 +23,7 @@ import org.geogebra.common.kernel.algos.AlgoLineBisectorSegment;
 import org.geogebra.common.kernel.algos.AlgoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoMidpoint;
 import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
+import org.geogebra.common.kernel.algos.AlgoMirror;
 import org.geogebra.common.kernel.algos.AlgoOrthoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoPolygon;
@@ -63,7 +64,6 @@ public class ProverCNIMethod {
 		String realRelation; // \n-separated Strings of lhs of real relations in Giac format
 		String zeroRelation; // lhs of zero relation in Giac format
 		String extraVariable; // an extra variable that is used in the zero relation (and the declaration)
-		boolean ignore; // empty definition?
 		boolean rMustBe0 = false; // if r is required to be 0
 		int warning = 0; // different interpretation than usual?
 		int specRestriction = 0; // number of disallowed fixed points
@@ -139,9 +139,6 @@ public class ProverCNIMethod {
 						+ " which is required for " + ge.getLabelSimple());
 					return ProofResult.UNKNOWN;
 				}
-				if (def.ignore) {
-					continue; // for
-				}
 
 				if (prover.getShowproof()) {
 					prover.addProofLine(loc.getPlain("ConsideringDefinitionA",
@@ -187,7 +184,7 @@ public class ProverCNIMethod {
 					realRelationalPoints.add(ge);
 					declarative = false;
 				}
-				if (def.declaration == null && def.realRelation == null && def.zeroRelation == null && !def.ignore) {
+				if (def.declaration == null && def.realRelation == null && def.zeroRelation == null) {
 					Log.debug("The CNI method does not yet implement " + ge.getParentAlgorithm().toString()
 							+ " which is required for " + ge.getLabelSimple());
 					return ProofResult.UNKNOWN;
@@ -238,7 +235,7 @@ public class ProverCNIMethod {
 				}
 			}
 		}
-		if (def.declaration == null && def.realRelation == null && !def.ignore) {
+		if (def.declaration == null && def.realRelation == null) {
 			Log.debug("The CNI method does not yet fully implement " + statement.getParentAlgorithm().toString());
 			return ProofResult.UNKNOWN;
 		}
@@ -690,6 +687,18 @@ public class ProverCNIMethod {
 				c.extraVariable = ctVar; // set the extra variable
 				return c;
 			}
+		}
+		if (ae instanceof AlgoMirror) {
+			AlgoMirror am = (AlgoMirror) ae;
+			GeoElement P = (GeoElement) am.getInput(0);
+			GeoElement M = (GeoElement) am.getInput(1);
+			if (P instanceof GeoPoint && M instanceof  GeoPoint) {
+				String Pl = getUniqueLabel(P);
+				String Ml = getUniqueLabel(M);
+				c.declaration = gel + ":=" + Ml + "-(" + Pl + "-" + Ml + ")";
+				return c;
+			}
+			return null; // Not implemented.
 		}
 		// Unimplemented, but it should be handled...
 		return null;
