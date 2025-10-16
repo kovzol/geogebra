@@ -225,15 +225,15 @@ public class AlgoDilate extends AlgoTransformation
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
 		GeoNumeric num = null;
-		boolean cachable = false; // Unfortunately, this must be disabled. :-(
+		boolean cachable = true; // This is now enabled. TODO: Check if this is okay.
 		if (this.r instanceof GeoNumeric) {
 			num = (GeoNumeric) this.getInput(1);
 			if (num != null && num.isNumberValue() && num.isDrawable()) {
-				cachable = false; // this may be a slider or a non-constant value, so don't cache
+				// cachable = false; // this may be a slider or a non-constant value, so don't cache
 			}
 			AlgoElement ae = num.getParentAlgorithm();
 			if (ae instanceof AlgoDependentNumber) {
-				cachable = false; // this is a dependent expression, so don't cache
+				// cachable = false; // this is a dependent expression, so don't cache
 			}
 		}
 

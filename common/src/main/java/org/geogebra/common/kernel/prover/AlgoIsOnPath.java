@@ -99,11 +99,9 @@ public class AlgoIsOnPath extends AlgoElement
 	@Override
 	public PPolynomial[][] getBotanaPolynomials()
 			throws NoSymbolicParametersException {
-		/* Don't use caching, the polynomial can contain old values.
 		if (botanaPolynomials != null) {
 			return botanaPolynomials;
 		}
-		 */
 
 		if (inputPoint != null && inputPath != null) {
 			if (inputPath instanceof GeoLine) {

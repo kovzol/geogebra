@@ -163,10 +163,9 @@ public class AlgoPolygonRegular extends AlgoPolygonRegularND
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
-		// Cache is forbidden since the number of sides can be changed.
-		// if (botanaPolynomials != null) {
-		//   return botanaPolynomials;
-		// }
+		if (botanaPolynomials != null) {
+		  return botanaPolynomials;
+		}
 
 		PVariable[] varsA;
 		PVariable[] varsB;

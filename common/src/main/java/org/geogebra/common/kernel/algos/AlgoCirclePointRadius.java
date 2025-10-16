@@ -113,17 +113,17 @@ public class AlgoCirclePointRadius extends AlgoSphereNDPointRadius implements
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
 			throws NoSymbolicParametersException {
-		boolean cachable = false; // This must be disabled. :-(
+		boolean cachable = true; // This is now enabled. TODO: Check if this is okay.
 		GeoNumeric num = null;
 
 		if (!(this.getInput(1) instanceof GeoSegment) && this.getInput(1) instanceof GeoNumeric) {
 			num = (GeoNumeric) this.getInput(1);
 			if (num != null && num.isNumberValue() && num.isDrawable()) {
-				cachable = false; // this may be a slider or a non-constant value, so don't cache
+				// cachable = false; // this may be a slider or a non-constant value, so don't cache
 			}
 			AlgoElement ae = num.getParentAlgorithm();
 			if (ae instanceof AlgoDependentNumber) {
-				cachable = false; // this is a dependent expression, so don't cache
+				// cachable = false; // this is a dependent expression, so don't cache
 			}
 
 		}
