@@ -794,7 +794,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			System.out.println(
 					"  --prover=OPTIONS\tset options for the prover subsystem\n"
 							+ "    where OPTIONS is a comma separated list, formed with the following available settings (defaults in brackets):\n"
-							+ "      engine:ENGINE\tset engine (Auto|OpenGeoProver|Recio|Botana|PureSymbolic) ["
+							+ "      engine:ENGINE\tset engine (Auto|OpenGeoProver|Recio|Botana|PureSymbolic|CNI) ["
 							+ proverSettings.proverEngine + "]\n"
 							+ "      timeout:SECS\tset the maximum time attributed to the prover (in seconds) ["
 							+ proverSettings.proverTimeout + "]\n"
