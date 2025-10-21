@@ -58,6 +58,7 @@ public class OptionsCASD implements OptionPanelD, ActionListener, SetLabels {
 	public OptionsCASD(AppD app) {
 		wrappedPanel = new JPanel();
 		wrappedPanel.setLayout(new BoxLayout(wrappedPanel, BoxLayout.PAGE_AXIS));
+		// wrappedPanel.setLayout(new GridLayout(4, 1));
 
 		this.app = app;
 		casSettings = app.getSettings().getCasSettings();
@@ -76,6 +77,7 @@ public class OptionsCASD implements OptionPanelD, ActionListener, SetLabels {
 	 */
 	private void initGUI() {
 		JPanel panel1 = new JPanel();
+		panel1.setLayout(new FlowLayout(FlowLayout.LEFT));
 		cbTimeout = new JComboBox(OptionsCAS.getTimeoutOptions());
 		cbTimeout.addActionListener(this);
 		timeoutLabel = new JLabel();
@@ -84,18 +86,21 @@ public class OptionsCASD implements OptionPanelD, ActionListener, SetLabels {
 		panel1.add(cbTimeout);
 
 		JPanel panel2 = new JPanel();
+		panel2.setLayout(new FlowLayout(FlowLayout.LEFT));
 		cbShowRoots = new JCheckBox();
 		cbShowRoots.addActionListener(this);
 		cbShowRoots.setSelected(casSettings.getShowExpAsRoots());
 		panel2.add(cbShowRoots);
 
 		JPanel panel3 = new JPanel();
+		panel3.setLayout(new FlowLayout(FlowLayout.LEFT));
 		cbShowNavigation = new JCheckBox();
 		cbShowNavigation.addActionListener(this);
 		cbShowNavigation.setSelected(casSettings.getShowExpAsRoots());
 		panel3.add(cbShowNavigation);
 
 		proverPanel = new JPanel();
+		proverPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		engineLabel = new JLabel();
 		cbEngine = new JComboBox<>(getEngineOptions(app));
 		cbEngine.addActionListener(this);
