@@ -980,6 +980,15 @@ public class ProverCNIMethod {
 		return "isosc(" + ge1l + "," + ge2l + "," + ge3l + ")";
 	}
 
+	// |AB|=|CD|
+	static String equal(GeoPoint A, GeoPoint B, GeoPoint C, GeoPoint D) {
+		String Al = getUniqueLabel(A);
+		String Bl = getUniqueLabel(B);
+		String Cl = getUniqueLabel(C);
+		String Dl = getUniqueLabel(D);
+		return "isosc(" + Dl + "," + Bl + "+" + Dl + "-" + Al + "," + Cl + ")";
+	}
+
 	static String eqangle(GeoElement ge1, GeoElement ge2, GeoElement ge3, GeoElement ge4,
 			GeoElement ge5, GeoElement ge6) {
 		String ge1l = getUniqueLabel(ge1);
@@ -1106,7 +1115,10 @@ public class ProverCNIMethod {
 				c.warning = WARNING_EQUALITY_OR_COLLINEAR;
 				return c;
 			}
-			return null; // In general, checking |AB|=|CD| is not supported by the method.
+			// General method (consider using it in general, that is, to remove the previous cases):
+			c.realRelation = equal(A,B,C,D);
+			c.warning = WARNING_EQUALITY_OR_COLLINEAR;
+			return c;
 		}
 		if (ge1 instanceof GeoAngle && ge2 instanceof GeoAngle) {
 			GeoAngle a1 = (GeoAngle) ge1;
