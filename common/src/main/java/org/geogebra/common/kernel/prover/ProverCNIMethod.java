@@ -12,6 +12,7 @@ import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
 import org.geogebra.common.kernel.algos.AlgoCircleTwoPoints;
 import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.algos.AlgoIntersectConics;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
 import org.geogebra.common.kernel.algos.AlgoIntersectSingle;
@@ -610,6 +611,19 @@ public class ProverCNIMethod {
 			}
 			if (rel1.startsWith("isosc")) {
 				c.warning = WARNING_EQUALITY_OR_COLLINEAR;
+			}
+			c.realRelation = rel1 + "\n" + rel2;
+			return c;
+		}
+		if (ae instanceof AlgoIntersectConics) {
+			AlgoIntersectConics aic = (AlgoIntersectConics) ae;
+			GeoConic co1 = aic.getA();
+			GeoConic co2 = aic.getB();
+			String rel1 = "", rel2 = "";
+			rel1 = oncircle((GeoPoint) ge, co1);
+			rel2 = oncircle((GeoPoint) ge, co2);
+			if (rel1 == null || rel2 == null) {
+				return null; // Not implemented.
 			}
 			c.realRelation = rel1 + "\n" + rel2;
 			return c;
