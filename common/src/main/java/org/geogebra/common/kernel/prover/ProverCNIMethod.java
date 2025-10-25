@@ -1022,13 +1022,24 @@ public class ProverCNIMethod {
 					GeoPoint hE = h.getEndPoint();
 					return parallel(P, (GeoPoint) ge, hS, hE);
 				} else if (gAe instanceof AlgoOrthoLinePointLine) {
-					AlgoOrthoLinePointLine alpl = (AlgoOrthoLinePointLine) gAe;
-					GeoElement[] input = alpl.getInput();
+					AlgoOrthoLinePointLine aolpl = (AlgoOrthoLinePointLine) gAe;
+					GeoElement[] input = aolpl.getInput();
 					GeoPoint P = (GeoPoint) input[0];
 					GeoLine h = (GeoLine) input[1];
 					GeoPoint hS = h.getStartPoint();
 					GeoPoint hE = h.getEndPoint();
-					return perppar(P, (GeoPoint) ge, hS, hE);
+					if (hE != null) {
+						return perppar(P, (GeoPoint) ge, hS, hE);
+					}
+					AlgoElement hAe = h.getParentAlgorithm();
+					if (hAe instanceof AlgoOrthoLinePointLine) {
+						AlgoOrthoLinePointLine aolplH = (AlgoOrthoLinePointLine) hAe;
+						GeoElement[] inputH = aolplH.getInput();
+						GeoLine hEl = (GeoLine) inputH[1];
+						hS = (GeoPoint) hEl.getStartPoint();
+						hE = (GeoPoint) hEl.getEndPoint();
+						return parallel(P, (GeoPoint) ge, hS, hE); // check if not null, TODO
+					}
 				} else {
 					// Not yet implemented.
 					return null;
