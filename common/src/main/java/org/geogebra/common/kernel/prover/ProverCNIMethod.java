@@ -1115,7 +1115,7 @@ public class ProverCNIMethod {
 				c.warning = WARNING_EQUALITY_OR_COLLINEAR;
 				return c;
 			}
-			// General method (consider using it in general, that is, to remove the previous cases):
+			// General method (but we do not use it in general, to keep readability):
 			c.realRelation = equal(A,B,C,D);
 			c.warning = WARNING_EQUALITY_OR_COLLINEAR;
 			return c;
