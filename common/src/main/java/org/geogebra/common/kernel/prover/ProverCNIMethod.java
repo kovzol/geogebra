@@ -34,6 +34,7 @@ import org.geogebra.common.kernel.algos.AlgoRotatePoint;
 import org.geogebra.common.kernel.algos.AlgoTranslate;
 import org.geogebra.common.kernel.algos.AlgoVector;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
+import org.geogebra.common.kernel.arithmetic.MySpecialDouble;
 import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -99,6 +100,7 @@ public class ProverCNIMethod {
 				"conc(A_,B_,C_,D_):=((C_-D_)/(C_-A_))/((B_-D_)/(B_-A_))",
 				// They are not considered yet:
 				"eqangle(A_,B_,C_,D_,E_,F_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))",
+				"eqanglemul(A_,B_,C_,D_,E_,F_,n_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))^n_",
 				"isosc(A_,B_,C_):=eqangle(C_,B_,A_,A_,C_,B_)" // |AB|=|AC|
 		};
 		String predefs = "";
@@ -825,6 +827,31 @@ public class ProverCNIMethod {
 		if (ae instanceof AlgoDependentBoolean) {
 			ExpressionNode en = ((AlgoDependentBoolean) ae).getExpression();
 			if (!en.getLeft().isGeoElement() || !en.getRight().isGeoElement()) {
+				// Handle some special cases.
+				// 2 alpha == beta
+				if (en.getOperation() == Operation.EQUAL_BOOLEAN &&
+						((ExpressionNode) en.getLeft()).getOperation() == Operation.MULTIPLY &&
+						((ExpressionNode) en.getLeft()).getLeft() instanceof MySpecialDouble &&
+						((ExpressionNode) en.getLeft()).getRight() instanceof GeoAngle &&
+						en.getRight().isGeoElement() && en.getRight() instanceof GeoAngle) {
+					GeoAngle a1 = (GeoAngle) ((ExpressionNode) en.getLeft()).getRightTree().getSingleGeoElement();
+					GeoAngle a2 = (GeoAngle) ((ExpressionNode) en.getRightTree()).getSingleGeoElement();
+					AlgoElement ae1 = a1.getParentAlgorithm();
+					AlgoElement ae2 = a2.getParentAlgorithm();
+					double n = ((ExpressionNode) en.getLeft()).getLeft().evaluateDouble();
+					int ni = (int) n;
+					if (ae1 instanceof AlgoAnglePoints && ae2 instanceof AlgoAnglePoints) {
+						GeoPoint A = (GeoPoint) ((AlgoAnglePoints) ae1).getA();
+						GeoPoint B = (GeoPoint) ((AlgoAnglePoints) ae1).getB();
+						GeoPoint C = (GeoPoint) ((AlgoAnglePoints) ae1).getC();
+						GeoPoint D = (GeoPoint) ((AlgoAnglePoints) ae2).getA();
+						GeoPoint E = (GeoPoint) ((AlgoAnglePoints) ae2).getB();
+						GeoPoint F = (GeoPoint) ((AlgoAnglePoints) ae2).getC();
+						c.realRelation = eqanglemul(D,E,F,A,B,C,ni);
+						return c;
+					}
+					return null;
+				}
 				return null; // Unimplemented (maybe a sum).
 			}
 			GeoElement ge1 = en.getLeftTree().getSingleGeoElement();
@@ -1042,6 +1069,17 @@ public class ProverCNIMethod {
 		String ge5l = getUniqueLabel(ge5);
 		String ge6l = getUniqueLabel(ge6);
 		return "eqangle(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + "," + ge5l + "," + ge6l + ")";
+	}
+
+	static String eqanglemul(GeoElement ge1, GeoElement ge2, GeoElement ge3, GeoElement ge4,
+			GeoElement ge5, GeoElement ge6, int n) {
+		String ge1l = getUniqueLabel(ge1);
+		String ge2l = getUniqueLabel(ge2);
+		String ge3l = getUniqueLabel(ge3);
+		String ge4l = getUniqueLabel(ge4);
+		String ge5l = getUniqueLabel(ge5);
+		String ge6l = getUniqueLabel(ge6);
+		return "eqanglemul(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + "," + ge5l + "," + ge6l + "," + n + ")";
 	}
 
 	static String online(GeoPoint ge, GeoLine g) {
