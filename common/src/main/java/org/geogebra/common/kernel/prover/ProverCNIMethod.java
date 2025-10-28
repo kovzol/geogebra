@@ -935,11 +935,43 @@ public class ProverCNIMethod {
 	}
 
 	static String parallel(GeoLine g, GeoLine h) {
+		/* In general, here we need a much more sophisticated way.
+		 * It is possible that g or h is defined with a point and an algo (maybe parallelism or perpendicularity),
+		 * but the definition can go arbitrary deeply, so here some recursive way would be more general.
+		 */
 		GeoPoint gS = g.getStartPoint();
 		GeoPoint gE = g.getEndPoint();
 		GeoPoint hS = h.getStartPoint();
 		GeoPoint hE = h.getEndPoint();
-		return parallel(gS, gE, hS, hE);
+		if (gE != null && hE != null) {
+			return parallel(gS, gE, hS, hE);
+		}
+		if (gE == null && hE != null) {
+			AlgoElement gAe = g.getParentAlgorithm();
+			if (gAe instanceof AlgoOrthoLinePointLine) {
+				AlgoOrthoLinePointLine aolpl = (AlgoOrthoLinePointLine) gAe;
+				GeoElement[] input = aolpl.getInput();
+				GeoLine l = (GeoLine) input[1];
+				gS = l.getStartPoint();
+				gE = l.getEndPoint();
+				if (gE != null) {
+					return perppar(gS, gE, hS, hE);
+				}
+				// Maybe this is a parallelism (by using double perpendicularity):
+				AlgoElement lAe = l.getParentAlgorithm();
+				if (lAe instanceof AlgoOrthoLinePointLine) {
+					aolpl = (AlgoOrthoLinePointLine) lAe;
+					input = aolpl.getInput();
+					l = (GeoLine) input[1];
+					gS = l.getStartPoint();
+					gE = l.getEndPoint();
+					if (gE != null) {
+						return parallel(gS, gE, hS, hE);
+					}
+				}
+			}
+		}
+		return null; // Not yet implemented.
 	}
 
 	static String perppar(GeoPoint ge1, GeoPoint ge2, GeoPoint ge3, GeoPoint ge4) {
