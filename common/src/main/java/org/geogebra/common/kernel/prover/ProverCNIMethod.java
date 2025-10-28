@@ -843,6 +843,10 @@ public class ProverCNIMethod {
 					c.realRelation = online((GeoPoint) ge1, (GeoLine) ge2);
 					return c;
 				}
+				if (ge1 instanceof GeoPoint && ge2 instanceof GeoConic && ((GeoConic) ge2).isCircle()) {
+					c.realRelation = oncircle((GeoPoint) ge1, (GeoConic) ge2);
+					return c;
+				}
 				return null; // unimplemented
 			} else if (o == Operation.EQUAL_BOOLEAN) {
 				return equal(ge1, ge2);
