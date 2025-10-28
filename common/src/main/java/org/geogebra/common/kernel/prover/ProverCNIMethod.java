@@ -11,6 +11,7 @@ import org.geogebra.common.kernel.algos.AlgoAngularBisectorPoints;
 import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
 import org.geogebra.common.kernel.algos.AlgoCircleTwoPoints;
 import org.geogebra.common.kernel.algos.AlgoDependentBoolean;
+import org.geogebra.common.kernel.algos.AlgoDependentPoint;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersectConics;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
@@ -555,6 +556,13 @@ public class ProverCNIMethod {
 		AlgoElement ae = ge.getParentAlgorithm();
 		String gel = getUniqueLabel(ge);
 		// Declarations:
+		if (ae instanceof AlgoDependentPoint) {
+			String def = ge.getDefinition(StringTemplate.defaultTemplate);
+			// TODO: Check if this is polynomial. Now we are optimistic.
+			// TODO: The whole expression should be rewritten via getUniqueLabel.
+			c.declaration = gel + ":=" + def;
+			return c;
+		}
 		if (ae instanceof AlgoMidpoint) {
 			AlgoMidpoint am = (AlgoMidpoint) ae;
 			GeoElement P = am.getP();
