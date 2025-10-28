@@ -174,7 +174,7 @@ public class ProverCNIMethod {
 						if (prover.getShowproof()) {
 							String rewriteProgram = "[" + predefs + expression + "][" + predefinitions.length + "]";
 							String expression2 = executeGiac(rewriteProgram);
-							prover.addProofLine(CmdShowProof.TEXT_EQUATION, expression2
+							prover.addProofLine(CmdShowProof.TEXT_EQUATION, lhs(expression) + "=" + expression2
 									+ Unicode.IS_ELEMENT_OF + "\u211D");
 						}
 					}
@@ -225,7 +225,7 @@ public class ProverCNIMethod {
 			if (prover.getShowproof()) {
 				String rewriteProgram = "[" + predefs + thesis + "][" + predefinitions.length + "]";
 				String thesis2 = executeGiac(rewriteProgram);
-				prover.addProofLine(CmdShowProof.TEXT_EQUATION, thesis2);
+				prover.addProofLine(CmdShowProof.TEXT_EQUATION, lhs(thesis) + "=" + thesis2);
 				if (def.warning == WARNING_PERPENDICULAR_OR_PARALLEL) {
 					prover.addProofLine(CmdShowProof.PROBLEM, loc.getMenuDefault("PerpendicularityParallelism",
 							"Perpendicularity means perpendicularity or parallelism simultaneously"));
@@ -1184,5 +1184,10 @@ public class ProverCNIMethod {
 		String ctVar = VARIABLE_CYCLOTOMIC + n;
 		String minpolyP = "subst(expand(r2e(cyclotomic(" + n + "))),x=" + ctVar + ")";
 		return executeGiac(minpolyP);
+	}
+
+	public static String lhs(String eq) {
+		int eqIndex = eq.indexOf("=");
+		return eq.substring(0, eqIndex);
 	}
 }
