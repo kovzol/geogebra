@@ -1613,6 +1613,15 @@ public class GeoLine extends GeoVec3D implements Path, Translateable,
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a)
+			throws NoSymbolicParametersException {
+		if (algoParent instanceof SymbolicParametersAlgo) {
+			return ((SymbolicParametersAlgo) algoParent).getDegree(a);
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

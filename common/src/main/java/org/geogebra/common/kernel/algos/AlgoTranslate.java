@@ -210,6 +210,17 @@ public class AlgoTranslate extends AlgoTransformation
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		if (inGeo instanceof GeoPoint && v instanceof GeoVector) {
+			int degree1 = ((SymbolicParametersAlgo) inGeo).getDegree(a);
+			int degree2 = ((SymbolicParametersAlgo) v).getDegree(a);
+			int result = degree1 + degree2;
+			return result;
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

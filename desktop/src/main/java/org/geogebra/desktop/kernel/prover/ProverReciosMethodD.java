@@ -150,6 +150,9 @@ public class ProverReciosMethodD extends AbstractProverReciosMethod {
 				}
 				coordinates[i] = result;
 			}
+			// Print coordinates
+			Log.debug(indices[0] + "," + indices[1] + "," + indices[2] + " -> "
+					+ coordinates[0] + "," + coordinates[1] + "," + coordinates[2]);
 
 			nrOfTests++;
 

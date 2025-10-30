@@ -178,6 +178,18 @@ public class AlgoJoinPoints extends AlgoElement
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a)
+			throws NoSymbolicParametersException {
+		if (P != null && Q != null) {
+			int degree1 = P.getDegree(a);
+			int degree2 = Q.getDegree(a);
+			return degree1 + degree2;
+		}
+		throw new NoSymbolicParametersException();
+
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

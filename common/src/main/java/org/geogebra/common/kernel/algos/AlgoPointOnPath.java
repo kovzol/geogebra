@@ -270,6 +270,20 @@ public class AlgoPointOnPath extends AlgoElement
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		if (input[0] instanceof GeoSegment) {
+			// throw new NoSymbolicParametersException();
+		}
+		if (input[0] instanceof GeoLine) {
+			int degreeLine = ((SymbolicParametersAlgo) input[0])
+					.getDegree(a);
+			int result = degreeLine + 1; // TODO: double-check
+			return result;
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

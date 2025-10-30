@@ -130,6 +130,19 @@ public class AlgoAreCollinear extends AlgoElement
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		if (getInputPoint1() != null && getInputPoint2() != null
+				&& getInputPoint3() != null) {
+			int degree1 = getInputPoint1().getDegree(a);
+			int degree2 = getInputPoint2().getDegree(a);
+			int degree3 = getInputPoint3().getDegree(a);
+			int result = degree1 + degree2 + degree3;
+			return result;
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

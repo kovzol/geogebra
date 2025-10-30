@@ -553,6 +553,19 @@ public class AlgoMirror extends AlgoTransformation implements
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		if (inGeo instanceof GeoPoint && mirror == mirrorPoint) {
+			if (inGeo != null && mirrorPoint != null) {
+				int degreeP = ((GeoPoint) inGeo).getDegree(a);
+				int degreeM = ((GeoPoint) mirrorPoint).getDegree(a);
+				int result = degreeP + degreeM;
+				return result;
+			}
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

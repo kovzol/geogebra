@@ -180,6 +180,32 @@ public class AlgoAreCongruent extends AlgoElement
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		if ((inputElement1 instanceof GeoSegment)
+				|| (inputElement2 instanceof GeoSegment)) {
+			// unimplemented
+			throw new NoSymbolicParametersException();
+		}
+		if (inputElement1 != null && inputElement2 != null) {
+			if (((inputElement1 instanceof GeoPoint)
+					&& (inputElement2 instanceof GeoPoint))
+					|| ((inputElement1 instanceof GeoLine)
+					&& (inputElement2 instanceof GeoLine))
+					|| ((inputElement1 instanceof GeoVector)
+					&& (inputElement2 instanceof GeoVector))) {
+				int degree1 = ((SymbolicParametersAlgo) inputElement1)
+						.getDegree(a);
+				int degree2 = ((SymbolicParametersAlgo) inputElement2)
+						.getDegree(a);
+				int degree = degree1 + degree2; // TODO: double-check!
+				return degree;
+			}
+		}
+		throw new NoSymbolicParametersException();
+
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

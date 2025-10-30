@@ -46,6 +46,24 @@ public class SymbolicParameters {
 	}
 
 	/**
+	 * Getter for the degree of an object,
+	 * similarly to "degrees", but it is just one number
+	 * and usually greater than (or equal to) the maximum
+	 * of "degrees". See https://services.artofproblemsolving.com/download.php?id=YXR0YWNobWVudHMvOS80L2MxYTVkYmU5MGRlZWRjNGExYzhkYmQxOTU3NWNhYTU4OGYxMDhhLnBkZg==&rn=QW5pbWF0aW9uLnBkZg==
+	 * for details.
+	 *
+	 * @param a
+	 *            Recio's method
+	 * @return the degree of the polynomial
+	 * @throws NoSymbolicParametersException
+	 *             if no symbolic parameters can be obtained
+	 */
+	public int getDegree(AbstractProverReciosMethod a)
+			throws NoSymbolicParametersException {
+		return spa.getDegree(a);
+	}
+
+	/**
 	 * Returns the maximum degree of degree1 and degree2 in each coordinate.
 	 * 
 	 * @param degree1

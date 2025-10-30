@@ -187,6 +187,19 @@ public class AlgoIntersectLines extends AlgoIntersectAbstract
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		if ((g instanceof GeoSegment) || (h instanceof GeoSegment)) {
+			// throw new NoSymbolicParametersException();
+		}
+		if (g != null && h != null) {
+			int degree1 = g.getDegree(a);
+			int degree2 = h.getDegree(a);
+			return degree1 + degree2;
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

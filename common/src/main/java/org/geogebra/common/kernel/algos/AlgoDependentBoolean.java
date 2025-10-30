@@ -146,6 +146,19 @@ public class AlgoDependentBoolean extends AlgoElement implements
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		SymbolicParametersAlgo algo = getRootAlgo();
+		if (algo != null) {
+			int ret = algo.getDegree(a);
+			algo.remove();
+			return ret;
+		}
+
+		throw new NoSymbolicParametersException();
+
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

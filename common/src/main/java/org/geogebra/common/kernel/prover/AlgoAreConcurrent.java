@@ -159,6 +159,23 @@ public class AlgoAreConcurrent extends AlgoElement
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		if ((inputLine1 instanceof GeoSegment)
+				|| (inputLine2 instanceof GeoSegment)
+				|| (inputLine3 instanceof GeoSegment)) {
+			// throw new NoSymbolicParametersException();
+		}
+		if (inputLine1 != null && inputLine2 != null && inputLine3 != null) {
+			int degree1 = inputLine1.getDegree(a);
+			int degree2 = inputLine2.getDegree(a);
+			int degree3 = inputLine3.getDegree(a);
+			int result = degree1 + degree2 + degree3;
+			return result;
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

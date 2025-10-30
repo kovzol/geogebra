@@ -2642,6 +2642,33 @@ public class GeoPoint extends GeoVec3D implements VectorValue, PathOrPoint,
 		throw new NoSymbolicParametersException();
 	}
 
+	public int getDegree(AbstractProverReciosMethod a)
+			throws NoSymbolicParametersException {
+		if (algoParent == null) {
+			GeoElement[] fixedElements = a.getFixedPoints();
+			if (fixedElements != null) {
+				boolean isContained = false;
+				for (GeoElement ge : fixedElements) {
+					if (ge.equals(this)) {
+						isContained = true;
+					}
+				}
+				if (isContained) {
+					// this is a fixed point
+					int result = 0;
+					return result;
+				}
+			}
+			// this is a free point
+			int result = 1;
+			return result;
+		}
+		if (algoParent instanceof SymbolicParametersAlgo) {
+			return ((SymbolicParametersAlgo) algoParent).getDegree(a);
+		}
+		throw new NoSymbolicParametersException();
+	}
+
 	@Override
 	public BigInteger[] getExactCoordinates(
 			final TreeMap<PVariable, BigInteger> values)

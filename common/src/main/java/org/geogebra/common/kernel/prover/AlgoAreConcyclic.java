@@ -256,6 +256,20 @@ public class AlgoAreConcyclic extends AlgoElement
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		if (inputPoint1 != null && inputPoint2 != null && inputPoint3 != null
+				&& inputPoint4 != null) {
+			int degree1 = inputPoint1.getDegree(a);
+			int degree2 = inputPoint2.getDegree(a);
+			int degree3 = inputPoint3.getDegree(a);
+			int degree4 = inputPoint4.getDegree(a);
+			int degree = 2 * (degree1 + degree2 + degree3 + degree4);
+			return degree;
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

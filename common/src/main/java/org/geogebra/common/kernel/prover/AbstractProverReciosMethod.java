@@ -209,6 +209,19 @@ public abstract class AbstractProverReciosMethod {
 		}
 		Log.debug("n=" + nrFreeVariables + " deg=" + deg);
 
+		/*
+		// experimental code by V. Molnar-Szabo and Z. Kovacs
+		int deg2 = -1;
+		try {
+			deg2 = s.getDegree(this);
+		} catch (NoSymbolicParametersException e) {
+			// return ProofResult.UNKNOWN;
+		}
+		Log.debug("n=" + nrFreeVariables + " deg=" + deg + " deg2=" + deg2);
+		// deg = deg2; // experimental
+		*/
+
+
 		switch (nrFreeVariables) {
 		case 0:
 			return compute0d(values, s, as);

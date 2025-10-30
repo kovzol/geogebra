@@ -133,6 +133,20 @@ public class AlgoMidpoint extends AlgoMidpointND
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		GeoPoint P = getP();
+		GeoPoint Q = getQ();
+		if (P != null && Q != null) {
+			int degreeP = P.getDegree(a);
+			int degreeQ = Q.getDegree(a);
+
+			int result = degreeP + degreeQ;
+			return result;
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

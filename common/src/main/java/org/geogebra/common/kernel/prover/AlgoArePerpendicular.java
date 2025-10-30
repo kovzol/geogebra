@@ -138,6 +138,17 @@ public class AlgoArePerpendicular extends AlgoElement
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		if (inputLine1 != null && inputLine2 != null) {
+			int degree1 = inputLine1.getDegree(a);
+			int degree2 = inputLine2.getDegree(a);
+			int degree = degree1 + degree2;
+			return degree;
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

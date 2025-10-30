@@ -154,6 +154,17 @@ public class AlgoLineBisector extends AlgoElement
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		if (A != null && B != null) {
+			int degree1 = A.getDegree(a);
+			int degree2 = B.getDegree(a);
+			int result = 2 * (degree1 + degree2);
+			return result;
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

@@ -175,6 +175,18 @@ public class AlgoLinePointLine extends AlgoElement
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a) throws NoSymbolicParametersException {
+		if (P != null && l instanceof GeoLine) {
+			int degreeP = P.getDegree(a);
+			int degreeL = ((GeoLine) l).getDegree(a);
+			int degree = degreeP + degreeL; // TODO: double-check!
+			return degree;
+		}
+
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {

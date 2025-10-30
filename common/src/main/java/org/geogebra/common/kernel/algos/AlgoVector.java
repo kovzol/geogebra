@@ -219,6 +219,19 @@ public class AlgoVector extends AlgoElement
 	}
 
 	@Override
+	public int getDegree(AbstractProverReciosMethod a)
+			throws NoSymbolicParametersException {
+		if (P != null && Q != null && P instanceof SymbolicParametersAlgo
+				&& Q instanceof SymbolicParametersAlgo) {
+			int degree1 = ((SymbolicParametersAlgo) P).getDegree(a);
+			int degree2 = ((SymbolicParametersAlgo) Q).getDegree(a);
+			int result = degree1 + degree2;
+			return result;
+		}
+		throw new NoSymbolicParametersException();
+	}
+
+	@Override
 	public BigInteger[] getExactCoordinates(
 			final TreeMap<PVariable, BigInteger> values)
 			throws NoSymbolicParametersException {
