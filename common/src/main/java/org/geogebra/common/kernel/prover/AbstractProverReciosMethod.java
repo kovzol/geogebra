@@ -225,17 +225,18 @@ public abstract class AbstractProverReciosMethod {
 		// deg = deg2; // experimental
 
 		// SHOWPROOF-related:
-		TreeSet<GeoElement> allPredecessors = statement.getAllPredecessors();
-		TreeSet<GeoPoint> allPredecessorPoints = new TreeSet<>();
-		for (GeoElement ge : allPredecessors) {
-			try {
-				SymbolicParameters sp = (((SymbolicParametersAlgo) ge).getSymbolicParameters());
-				int d = sp.getDegree(this);
-				if (ProverSettings.get().captionAlgebra || prover.getCaptionalgebra()) {
+		if (ProverSettings.get().captionAlgebra || prover.getCaptionalgebra()) {
+			TreeSet<GeoElement> allPredecessors = statement.getAllPredecessors();
+			TreeSet<GeoPoint> allPredecessorPoints = new TreeSet<>();
+			for (GeoElement ge : allPredecessors) {
+				try {
+					SymbolicParameters sp = (((SymbolicParametersAlgo) ge).getSymbolicParameters());
+					int d = sp.getDegree(this); // This is very inefficient,
+					// since each call computes all predecessors recursively. TODO: Find a better way.
 					addCaption(ge, "[" + d + "]");
+				} catch (Exception e) {
+					// do nothing
 				}
-			} catch (Exception e) {
-				// do nothing
 			}
 		}
 		if (prover.getShowproof()) {
