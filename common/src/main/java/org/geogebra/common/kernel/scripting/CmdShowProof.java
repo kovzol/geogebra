@@ -207,6 +207,9 @@ public class CmdShowProof extends CmdScripting {
 					boolean contradictionChecked = false;
 					for (int s = 0; s < steps; s++) {
 						String step = proof[s];
+						if (step.equals("")) {
+							continue; // skip this line
+						}
 						char type = proof[s].charAt(0);
 						step = step.substring(1); // remove the type (1st character)
 						step = step.replace("__", ""); // remove technical string (from CNI)

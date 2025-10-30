@@ -1,5 +1,7 @@
 package org.geogebra.common.kernel.prover;
 
+import static org.geogebra.common.kernel.kernelND.GeoElementND.LABEL_CAPTION;
+
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.TreeMap;
@@ -15,11 +17,14 @@ import org.geogebra.common.kernel.algos.SymbolicParameters;
 import org.geogebra.common.kernel.algos.SymbolicParametersAlgo;
 import org.geogebra.common.kernel.algos.SymbolicParametersBotanaAlgo;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.prover.ProverBotanasMethod.AlgebraicStatement;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.ProverSettings;
 import org.geogebra.common.util.ExtendedBoolean;
+import org.geogebra.common.util.MyMath;
 import org.geogebra.common.util.Prover;
 import org.geogebra.common.util.Prover.ProofResult;
 import org.geogebra.common.util.Prover.ProverEngine;
@@ -207,9 +212,8 @@ public abstract class AbstractProverReciosMethod {
 		for (int i : degs) {
 			deg = Math.max(deg, i);
 		}
-		Log.debug("n=" + nrFreeVariables + " deg=" + deg);
+		// Log.debug("n=" + nrFreeVariables + " deg=" + deg);
 
-		/*
 		// experimental code by V. Molnar-Szabo and Z. Kovacs
 		int deg2 = -1;
 		try {
@@ -219,8 +223,28 @@ public abstract class AbstractProverReciosMethod {
 		}
 		Log.debug("n=" + nrFreeVariables + " deg=" + deg + " deg2=" + deg2);
 		// deg = deg2; // experimental
-		*/
 
+		// SHOWPROOF-related:
+		TreeSet<GeoElement> allPredecessors = statement.getAllPredecessors();
+		TreeSet<GeoPoint> allPredecessorPoints = new TreeSet<>();
+		for (GeoElement ge : allPredecessors) {
+			try {
+				SymbolicParameters sp = (((SymbolicParametersAlgo) ge).getSymbolicParameters());
+				int d = sp.getDegree(this);
+				if (ProverSettings.get().captionAlgebra || prover.getCaptionalgebra()) {
+					addCaption(ge, "[" + d + "]");
+				}
+			} catch (Exception e) {
+				// do nothing
+			}
+		}
+		if (prover.getShowproof()) {
+			// Localization loc = statement.getKernel().getLocalization();
+			prover.addProofLine("Proving the statement involves a polynomial in " + nrFreeVariables
+					+ " variables of degree " + deg
+					+ " which requires " + ((int) MyMath.binomial(deg + nrFreeVariables, deg))
+					+ " test substitutions.");
+		}
 
 		switch (nrFreeVariables) {
 		case 0:
@@ -405,4 +429,28 @@ public abstract class AbstractProverReciosMethod {
 		return fixedPoints;
 	}
 
+	public void addCaption(GeoElement ge, String info) {
+
+		String caption = ge.getCaption(StringTemplate.defaultTemplate);
+		if (caption != null && caption.endsWith(info)) {
+			// This is already stored, do nothing.
+			return;
+		}
+
+		ge.setLabelMode(LABEL_CAPTION);
+		ge.setLabelVisible(true);
+
+		if (caption != null) {
+			if (caption.startsWith("$")) {
+				// this is probably a caption created by the Botana prover, so we clear it
+				caption = "";
+				// If not, it's still messing up our work, so it's safer to clear...
+			}
+			caption = caption + " " + info;
+		} else {
+			caption = ge.getLabelSimple() + " " + info;
+		}
+
+		ge.setCaption(caption);
+	}
 }
