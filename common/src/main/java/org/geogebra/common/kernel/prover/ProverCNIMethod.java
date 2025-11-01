@@ -857,18 +857,40 @@ public class ProverCNIMethod {
 			GeoLine l1 = (GeoLine) input[0];
 			GeoLine l2 = (GeoLine) input[1];
 			GeoLine l3 = (GeoLine) input[2];
-			// Define an extra point X as intersection of l1 and l2, and check if it is on l3:
+
+			// Define an extra point X as intersection of l1 and l2, and check if it is on l3,
+			// unless there is already an intersection of any of them. In that case, use that intersection.
+			// For presenting the proof, it is more elegant to use an existing point than
+			// creating an auxiliary one.
+			GeoPoint X = null;
 			Construction cons = l1.getConstruction();
-			AlgoIntersectLines ail = new AlgoIntersectLines(cons, null, l1, l2);
-			GeoPoint X = ail.getPoint();
-			X.setLabel("X"); // TODO: If there is already such a point, use it, otherwise don't remove it.
+			ArrayList<AlgoElement> ael = cons.getAlgoList();
+			int nrAlgos = ael.size();
+			for (int i = 0; i < nrAlgos && X == null; i++) {
+				AlgoElement a = ael.get(i);
+				if (a instanceof AlgoIntersectLines) {
+					GeoElement[] inputs = a.getInput();
+					TreeSet<GeoElement> ts = new TreeSet<>();
+					ts.add(inputs[0]);
+					ts.add(inputs[1]);
+					if (ts.contains(l1) && ts.contains(l2) || // allow any permutations :-)
+							ts.contains(l1) && ts.contains(l3) ||
+							ts.contains(l2) && ts.contains(l3)) {
+						X = (GeoPoint) a.getOutput(0);
+					}
+				}
+			}
+			if (X == null) { // create X because nothing was not found
+				AlgoIntersectLines ail = new AlgoIntersectLines(cons, null, l1, l2);
+				X = ail.getPoint();
+				X.setLabel("X");
+			}
+
 			String h1 = online(X, l1);
 			String h2 = online(X, l2);
 			String t = online(X, l3);
 			c.realRelation = h1 + "\n" + h2 + "\n" + t;
 			c.extraVariable = getUniqueLabel(X);
-			X.remove();
-			ail.remove();
 			return c;
 		}
 		if (ae instanceof AlgoDependentBoolean) {
@@ -886,7 +908,11 @@ public class ProverCNIMethod {
 					AlgoElement ae1 = a1.getParentAlgorithm();
 					AlgoElement ae2 = a2.getParentAlgorithm();
 					double n = ((ExpressionNode) en.getLeft()).getLeft().evaluateDouble();
-					int ni = (int) n;
+					int ni = (int) n; // FIXME. If ni is not an integer, this should be an error.
+					double EPSILON = 0.00001;
+					if (Math.abs(n-ni) < EPSILON) {
+						return null; // Not implemented.
+					}
 					if (ae1 instanceof AlgoAnglePoints && ae2 instanceof AlgoAnglePoints) {
 						GeoPoint A = (GeoPoint) ((AlgoAnglePoints) ae1).getA();
 						GeoPoint B = (GeoPoint) ((AlgoAnglePoints) ae1).getB();
@@ -897,7 +923,7 @@ public class ProverCNIMethod {
 						c.realRelation = eqanglemul(D,E,F,A,B,C,ni);
 						return c;
 					}
-					return null;
+					return null; // Not implemented.
 				}
 				return null; // Unimplemented (maybe a sum).
 			}
