@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 import org.geogebra.common.cas.GeoGebraCAS;
+import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoAnglePoints;
@@ -162,10 +163,12 @@ public class ProverCNIMethod {
 				}
 				if (def.zeroRelation != null) {
 					realRelations += def.zeroRelation + ",";
-					extraVariables = def.extraVariable + ",";
 					if (prover.getShowproof()) {
 						prover.addProofLine(CmdShowProof.TEXT_EQUATION, def.zeroRelation + "=0");
 					}
+				}
+				if (def.extraVariable != null) {
+					extraVariables = def.extraVariable + ",";
 				}
 				if (def.realRelation != null) {
 					String[] CASrealRelations = def.realRelation.split("\n");
@@ -221,8 +224,32 @@ public class ProverCNIMethod {
 				prover.addProofLine(CmdShowProof.TEXT_EQUATION, def.declaration);
 			}
 		}
+
+		if (def.extraVariable != null) {
+			extraVariables = def.extraVariable + ",";
+		}
+
 		if (def.realRelation != null) {
-			String thesis = def.realRelation + "=" + VARIABLE_R_STRING;
+
+			String[] CASrealRelations = def.realRelation.split("\n");
+			int nrRels = CASrealRelations.length;
+
+			// It's possible that there are multiple relations. In this case we append the
+			// first ones to the hypotheses and keep only the last one for the thesis.
+			// A typical application is AreConcurrent.
+			for (int i = 0; i < nrRels - 1; i++) {
+				String CASrealRelation = CASrealRelations[i];
+				realRelationsNo++;
+				String expression = CASrealRelation + "=" + VARIABLE_R_STRING + realRelationsNo;
+				realRelations += expression + ",";
+				if (prover.getShowproof()) {
+					String rewriteProgram = "[" + predefs + expression + "][" + predefinitions.length + "]";
+					String expression2 = executeGiac(rewriteProgram);
+					prover.addProofLine(CmdShowProof.TEXT_EQUATION, lhs(expression) + "=" + expression2
+							+ Unicode.IS_ELEMENT_OF + "\u211D");
+				}
+			}
+			String thesis = CASrealRelations[nrRels - 1] + "=" + VARIABLE_R_STRING;
 			realRelations += thesis;
 			if (prover.getShowproof()) {
 				String rewriteProgram = "[" + predefs + thesis + "][" + predefinitions.length + "]";
@@ -823,6 +850,26 @@ public class ProverCNIMethod {
 			AlgoAreCongruent aac = (AlgoAreCongruent) ae;
 			GeoElement[] input = aac.getInput();
 			return equal(input[0], input[1]);
+		}
+		if (ae instanceof AlgoAreConcurrent) {
+			AlgoAreConcurrent aac = (AlgoAreConcurrent) ae;
+			GeoElement[] input = aac.getInput();
+			GeoLine l1 = (GeoLine) input[0];
+			GeoLine l2 = (GeoLine) input[1];
+			GeoLine l3 = (GeoLine) input[2];
+			// Define an extra point X as intersection of l1 and l2, and check if it is on l3:
+			Construction cons = l1.getConstruction();
+			AlgoIntersectLines ail = new AlgoIntersectLines(cons, null, l1, l2);
+			GeoPoint X = ail.getPoint();
+			X.setLabel("X"); // TODO: If there is already such a point, use it, otherwise don't remove it.
+			String h1 = online(X, l1);
+			String h2 = online(X, l2);
+			String t = online(X, l3);
+			c.realRelation = h1 + "\n" + h2 + "\n" + t;
+			c.extraVariable = getUniqueLabel(X);
+			X.remove();
+			ail.remove();
+			return c;
 		}
 		if (ae instanceof AlgoDependentBoolean) {
 			ExpressionNode en = ((AlgoDependentBoolean) ae).getExpression();
