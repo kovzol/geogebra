@@ -780,10 +780,8 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 					+ "  --logFile=FILENAME\tset log file\n"
 					+ "  --silent\tCompletely mute logging\n"
 					+ "  --prover=OPTIONS\tSet options for the prover subsystem (use --proverhelp for more information)\n"
-			/*
-			 * +
-			 * "  --singularWS=OPTIONS\tSet options for SingularWS (use --singularWShelp for more information)\n"
-			 */
+					+ "  --singularWS=OPTIONS\tSet options for SingularWS (use --singularWShelp for more information)\n"
+					+ "  --realgeomWS=OPTIONS\tSet options for RealGeomWS (use --realgeomWShelp for more information)\n"
 			);
 
 			AppD.exit(0);
