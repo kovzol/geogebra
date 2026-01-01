@@ -4,6 +4,7 @@ import static org.geogebra.common.main.App.VIEW_CAS;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.awt.GColor;
@@ -12,7 +13,12 @@ import org.geogebra.common.cas.view.CASView;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.StringTemplate;
+import org.geogebra.common.kernel.arithmetic.Command;
+import org.geogebra.common.kernel.arithmetic.ExpressionNode;
+import org.geogebra.common.kernel.arithmetic.SymbolicMode;
+import org.geogebra.common.kernel.arithmetic.ValidExpression;
 import org.geogebra.common.kernel.geos.GeoCasCell;
+import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Feature;
 import org.geogebra.common.main.Localization;
@@ -307,7 +313,57 @@ public class CASExport {
 					if (var != null) {
 						txt += var + ":=";
 					}
-					String def = cell.getDefinitionDescription(StringTemplate.casCopyTemplate);
+
+					String def = null;
+
+					ValidExpression ve = cell.getInputVE();
+					if (ve != null) {
+						Command command = ve.getTopLevelCommand();
+						if (command != null) {
+							String name = command.getName();
+							if (name.equals("Solve")) {
+								int arguments = command.getArgumentNumber();
+								if (arguments == 2) {
+									String eqs = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+									String vars = String.valueOf(command.getArgument(1));
+									vars = vars.replace("{", "[");
+									vars = vars.replace("}", "]");
+									def = "solve(" + eqs + "," + vars + ")";
+								}
+							}
+
+							if (name.equals("Eliminate")) {
+								int arguments = command.getArgumentNumber();
+								String vars = "[";
+								if (arguments == 2) {
+									String eqs = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+									ExpressionNode equationsEN = command.getArgument(0);
+									ExpressionNode variablesEN = command.getArgument(1);
+									HashSet<GeoElement> variables = variablesEN.getVariables(SymbolicMode.SYMBOLIC);
+									HashSet<String> variablesS = new HashSet<>();
+									for (GeoElement ge : variables) {
+										variablesS.add(ge.toString());
+									}
+									for (GeoElement eqVar : equationsEN.getVariables(SymbolicMode.SYMBOLIC)) {
+										if (!variablesS.contains(eqVar.toString())) {
+											if (vars.length() > 1) {
+												vars += ",";
+											}
+											vars += eqVar;
+										}
+									}
+									vars += "]";
+									def = "eliminate(" + eqs + "," + vars + ")";
+								}
+							}
+
+						}
+					}
+
+					if (def == null) {
+						def = cell.getDefinitionDescription(StringTemplate.casCopyTemplate);
+					}
+
 					txt += def + ";\n";
 				}
 			}
