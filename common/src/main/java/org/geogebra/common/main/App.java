@@ -566,6 +566,21 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 
 	public static Tarski tarski;
 
+	/**
+	 * Initialize Tarski if it was not yet started.
+	 * Since 2026-01-06, the desktop version of GeoGebra Discovery
+	 * does not initialize Tarski on startup to
+	 * save time. Therefore, a check is required when
+	 * Tarski.eval() or Tarski.evalCached() is called.
+	 * The web version requires an early initialization.
+	 */
+	public void checkTarski() {
+
+		if (tarski == null) {
+			initializeTarski();
+		}
+	}
+
 	public void initializeTarski() {
 		Log.debug("Initializing Tarski...");
 		if (tarski == null) {

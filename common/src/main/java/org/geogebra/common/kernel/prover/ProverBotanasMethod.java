@@ -2106,6 +2106,7 @@ public class ProverBotanasMethod {
 			// We compute the dimension of the "positive" result, by using Tarski's
 			// solution-dimension and get-free-vars commands.
 
+			geoStatement.getKernel().getApplication().checkTarski();
 			String rgResultPS = geoStatement.getKernel().getApplication().tarski.evalCached("(t-neg [" + rgResult + "])");
 			String rgResultP = Compute.getTarskiOutput(rgResultPS);
 			// example: [v3 < 0 /\ v16 > 0] \/ [v3 < 0 /\ v16 - v3 < 0] \/ [v3 = 0 /\ v4 = 0] \/ [v3 > 0 /\ v16 < 0] \/ [v3 > 0 /\ v16 - v3 > 0] \/ [v16 = 0 /\ v16 - v3 = 0]

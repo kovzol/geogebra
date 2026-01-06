@@ -128,6 +128,7 @@ public class DrawInequalityExternal extends Drawable {
 				+ ymin + " " + " " + ymax + " -\" " + removeCADlines + "'(ord (" + ord + "))) ";
 		Log.debug(command);
 		startTime = (int) (UtilFactory.getPrototype().getMillisecondTime());
+		function.getApp().checkTarski();
 		String result = function.getApp().tarski.evalCached(command);
 		debugElapsedTime();
 

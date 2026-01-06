@@ -540,7 +540,8 @@ public class GeoGebraMenuBar extends JMenuBar implements EventRenderable {
 		sb.append(")<br>");
 		sb.append(GeoGebraConstants.BUILD_DATE);
 
-		String tarskiVersion = App.tarski.eval("(version)");
+		app.checkTarski();
+		String tarskiVersion = App.tarski.evalCached("(version)");
 		int tvl = tarskiVersion.length();
 		tarskiVersion = tarskiVersion.substring(1, tvl - 6);
 

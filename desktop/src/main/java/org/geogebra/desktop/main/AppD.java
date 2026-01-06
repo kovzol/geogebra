@@ -548,7 +548,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		// so early to get the timeout option for Tarski.
 
 		// initialize Tarski
-		initializeTarski();
+		// initializeTarski(); // Do lazy initialization instead of this.
 
 		boolean fileLoaded = handleFileArg(args);
 

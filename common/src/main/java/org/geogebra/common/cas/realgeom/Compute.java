@@ -495,6 +495,7 @@ public class Compute {
 
 		appendResponse("LOG: code=" + code);
 
+		k.getApplication().checkTarski();
 		result = k.getApplication().tarski.evalCached(code);
 
 		if (result.contains("\n")) {
@@ -739,6 +740,7 @@ public class Compute {
 		int expectedLines = 4;
 
 		appendResponse("LOG: code=" + code);
+		k.getApplication().checkTarski();
 		result = k.getApplication().tarski.evalCached(code);
 
 		if (result.contains("\n")) {

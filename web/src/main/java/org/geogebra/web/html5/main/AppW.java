@@ -1627,7 +1627,7 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 
 		getAppletFrame().setApplication(this);
 
-		initializeTarski();
+		initializeTarski(); // We'd prefer lazy initialization for quicker startup, but this is necessary here.
 
 		// Force loading CAS.
 		// Without this, we cannot ensure that the heavy computations are ready to go.
