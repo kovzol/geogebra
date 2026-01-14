@@ -332,6 +332,36 @@ public class CASExport {
 								}
 							}
 
+							if (name.equals("Factor")) {
+								int arguments = command.getArgumentNumber();
+								if (arguments == 1) { // two arguments are not implemented, TODO
+									// Maple does not have an option to have a second argument
+									String expr = command.getArgument(0).toString();
+									if (expr.startsWith("$")) {
+										// This is something like $1, so we convert it into something like !1:
+										expr = "!" + expr.substring(1);
+									} else {
+										expr = command.getArgument(0)
+												.getCASstring(StringTemplate.casCopyTemplate,
+														false);
+									}
+									def = "ifactor(" + expr + ")";
+								}
+							}
+
+							if (name.equals("Derivative")) {
+								int arguments = command.getArgumentNumber();
+								if (arguments == 1) { // if there is only one argument, then x is the default variable
+									String fun = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+									def = "diff(" + fun + ",x)";
+								}
+								if (arguments == 2) {
+									String fun = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+									String v = String.valueOf(command.getArgument(1));
+									def = "diff(" + fun + "," + v + ")";
+								}
+							}
+
 							if (name.equals("Eliminate")) {
 								int arguments = command.getArgumentNumber();
 								String vars = "[";
