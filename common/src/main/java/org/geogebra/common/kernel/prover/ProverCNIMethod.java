@@ -63,6 +63,7 @@ public class ProverCNIMethod {
 
 	public static int WARNING_PERPENDICULAR_OR_PARALLEL = 1;
 	public static int WARNING_EQUALITY_OR_COLLINEAR = 2;
+	public static int WARNING_ANGLE = 3;
 	public static String VARIABLE_CYCLOTOMIC = "CT__";
 
 	public static class CNIDefinition {
@@ -102,6 +103,7 @@ public class ProverCNIMethod {
 				// They are not considered yet:
 				"eqangle(A_,B_,C_,D_,E_,F_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))",
 				"eqanglemul(A_,B_,C_,D_,E_,F_,n_):=((B_-A_)/(B_-C_))/((E_-D_)/(E_-F_))^n_",
+				"anglex(A_,B_,C_,D_,n_):=((C_-D_)/(A_-B_))^n_",
 				"isosc(A_,B_,C_):=eqangle(C_,B_,A_,A_,C_,B_)" // |AB|=|AC|
 		};
 		String predefs = "";
@@ -263,6 +265,11 @@ public class ProverCNIMethod {
 					prover.addProofLine(CmdShowProof.PROBLEM,
 							loc.getMenuDefault("EqualityCollinearity",
 									"Equality of lengths means equality or collinearity simultaneously."));
+				}
+				if (def.warning == WARNING_ANGLE) {
+					prover.addProofLine(CmdShowProof.PROBLEM,
+							loc.getMenuDefault("AngleAmbiguity",
+									"Angle equality means equality or equality to another specific angle simultaneously."));
 				}
 				if (def.specRestriction > 0 && def.specRestriction > maxSpecRestriction) {
 					maxSpecRestriction = def.specRestriction;
@@ -899,6 +906,7 @@ public class ProverCNIMethod {
 				// Handle some special cases.
 				// 2 alpha == beta
 				if (en.getOperation() == Operation.EQUAL_BOOLEAN &&
+						en.getLeft() instanceof ExpressionNode &&
 						((ExpressionNode) en.getLeft()).getOperation() == Operation.MULTIPLY &&
 						((ExpressionNode) en.getLeft()).getLeft() instanceof MySpecialDouble &&
 						((ExpressionNode) en.getLeft()).getRight() instanceof GeoAngle &&
@@ -924,6 +932,39 @@ public class ProverCNIMethod {
 						return c;
 					}
 					return null; // Not implemented.
+				}
+				// alpha == 30 degrees
+				if (en.getOperation() == Operation.EQUAL_BOOLEAN &&
+						en.getLeft() instanceof GeoAngle &&
+						en.getRight() instanceof ExpressionNode &&
+						((ExpressionNode) en.getRight()).getOperation() == Operation.MULTIPLY &&
+						((ExpressionNode) en.getRight()).getLeft() instanceof MySpecialDouble &&
+						((ExpressionNode) en.getRight()).getRight().toString(StringTemplate.giacTemplate).equals("pi/180")) {
+
+					// This is taken from AlgoRotatePoint (Botana's method)
+					double angleDoubleVal = ((MySpecialDouble) (((ExpressionNode) en.getRight()).getLeft())).getDouble();
+					if (!DoubleUtil.isInteger(angleDoubleVal)) {
+						// unhandled angle, not an integer degree
+						return null; // Unimplemented.
+					}
+					int angleValDeg = (int) angleDoubleVal;
+					// Compute the gcd of the angle and 180 degrees. For 90 degrees, this is 90,
+					// for 120, this is 60, for 135, this is 45, for example.
+					long gcd = kernel.gcd(angleValDeg, 180);
+					// Which power is required to get a real number?
+					long rot = Math.abs(180 / gcd); // This is 2 for 90 degrees, 3 for 120 degrees,
+					// 4 for 135 (~45) degrees.
+					GeoAngle a = (GeoAngle) en.getLeft();
+					AlgoElement gae = a.getParentAlgorithm();
+					if (gae instanceof AlgoAnglePoints) {
+						GeoPoint A = (GeoPoint) ((AlgoAnglePoints) gae).getA();
+						GeoPoint B = (GeoPoint) ((AlgoAnglePoints) gae).getB();
+						GeoPoint C = (GeoPoint) ((AlgoAnglePoints) gae).getC();
+						c.realRelation = anglex(A, B, B, C, rot);
+						c.warning = WARNING_ANGLE;
+						return c;
+					}
+					return null; // Unimplemented.
 				}
 				return null; // Unimplemented (maybe a sum).
 			}
@@ -1153,6 +1194,15 @@ public class ProverCNIMethod {
 		String ge5l = getUniqueLabel(ge5);
 		String ge6l = getUniqueLabel(ge6);
 		return "eqanglemul(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + "," + ge5l + "," + ge6l + "," + n + ")";
+	}
+
+	static String anglex(GeoElement ge1, GeoElement ge2, GeoElement ge3, GeoElement ge4,
+			long n) {
+		String ge1l = getUniqueLabel(ge1);
+		String ge2l = getUniqueLabel(ge2);
+		String ge3l = getUniqueLabel(ge3);
+		String ge4l = getUniqueLabel(ge4);
+		return "anglex(" + ge1l + "," + ge2l + "," + ge3l + "," + ge4l + "," + n + ")";
 	}
 
 	static String online(GeoPoint ge, GeoLine g) {
