@@ -29,3 +29,23 @@ modules:
       - type: archive
         url: https://github.com/kovzol/geogebra/releases/download/v5.0.641.0-2025Nov01/GeoGebra-Discovery-5.0.641.0-2025Nov01-Linux64.zip
         sha256: f697f9e1631ba10011ed1e7147f875622b2f8c6c7b07dfb389a0188c27ab374c
+  - name: appdata
+    buildsystem: simple
+    build-commands:
+      - install -D io.github.kovzol.geogebra-discovery.desktop /app/share/applications/io.github.kovzol.geogebra-discovery.desktop
+      - install -D io.github.kovzol.geogebra-discovery.metainfo.xml /app/share/metainfo/io.github.kovzol.geogebra-discovery.metainfo.xml
+    sources:
+      - type: archive
+        url: https://github.com/kovzol/geogebra/archive/5d07f68f7a49c8c16e4d33428894e6cb79b6da5d.zip
+        sha256: 6181a881278b96d7762a36372d77861c4899ad1443419b94f7a3e6e2c93005ba
+  - name: icons
+    buildsystem: simple
+    build-commands:
+      - install -D docs/gd-128.png /app/share/icons/hicolor/128x128/apps/io.github.kovzol.geogebra-discovery.png
+      - install -D docs/gd-256.png /app/share/icons/hicolor/256x256/apps/io.github.kovzol.geogebra-discovery.png
+      - install -D docs/gd-512.png /app/share/icons/hicolor/512x512/apps/io.github.kovzol.geogebra-discovery.png
+      - install -D docs/gd.svg /app/share/icons/hicolor/scalable/apps/io.github.kovzol.geogebra-discovery.svg
+    sources:
+      - type: archive
+        url: https://github.com/kovzol/geogebra-discovery/archive/1abb4f0fb4178a2dac44a3b5eed487310062b777.zip
+        sha256: 26787a9285c74d990515948497beffece8a29e7dcd24fae2f5714a613d7d753a
