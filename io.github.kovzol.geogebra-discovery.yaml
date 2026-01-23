@@ -1,0 +1,31 @@
+app-id: io.github.kovzol.geogebra-discovery
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.openjdk11
+command: geogebra-discovery
+finish-args:
+  - --share=ipc
+  - --device=dri
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --env=JAVA_HOME=/app/jre
+  - --share=network
+  - --filesystem=home
+
+modules:
+  - name: openjdk
+    buildsystem: simple
+    build-commands:
+      - /usr/lib/sdk/openjdk11/install.sh
+  - name: geogebra-discovery
+    buildsystem: simple
+    build-commands:
+      - mkdir /app/bin
+      - cp -a * /app/bin
+      - ln -s /app/bin/geogebra/desktop/bin/desktop /app/bin/geogebra-discovery
+    sources:
+      - type: archive
+        url: https://github.com/kovzol/geogebra/releases/download/v5.0.641.0-2025Nov01/GeoGebra-Discovery-5.0.641.0-2025Nov01-Linux64.zip
+        sha256: f697f9e1631ba10011ed1e7147f875622b2f8c6c7b07dfb389a0188c27ab374c
