@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.kovzol.geogebra-discovery</id>
+
+  <name>GeoGebra Discovery</name>
+  <summary>An experimental version of GeoGebra</summary>
+
+  <url type="homepage">https://kovzol.github.io/geogebra-discovery</url>
+
+  <developer id="io.github.kovzol">
+    <name>Zoltán Kovács</name>
+  </developer>
+
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <description>
+
+    <p><em>GeoGebra Discovery</em> is an experimental version of GeoGebra. It contains some bleeding edge features of
+    GeoGebra that are under heavy development and therefore not intended for every day use yet,
+    so they are not included in the official GeoGebra version.</p>
+    </description>
+
+    <launchable type="desktop-id">io.github.kovzol.geogebra-discovery.desktop</launchable>
+
+  <categories>
+     <category>Education</category>
+     <category>Science</category>
+     <category>Math</category>
+  </categories>
+
+  <provides>
+    <binary>geogebra-discovery</binary>
+  </provides>
+
+  <url type="bugtracker">https://github.com/kovzol/geogebra/issues</url>
+
+    <screenshots>
+      <screenshot type="default">
+        <image>https://github.com/kovzol/geogebra/releases/download/v5.0.641.0-2023Oct21/rqe-demo-20231021.png</image>
+        <caption>Real quantifier elimination</caption>
+      </screenshot>
+      <screenshot>
+        <image>https://github.com/kovzol/geogebra/releases/download/v5.0.641.0-2023Oct26/derivative-example.png</image>
+        <caption>Definition of the derivative via real quantifier elimination</caption>
+      </screenshot>
+      <screenshot>
+        <image>https://github.com/kovzol/geogebra/releases/download/v5.0.641.0-2023Apr20/ex2.png</image>
+        <caption>Faithful plotting of higher degree algebraic curves (degree 6)</caption>
+      </screenshot>
+      <screenshot>
+        <image>https://github.com/kovzol/geogebra/releases/download/v5.0.641.0-2023Jan27/plot2d.png</image>
+        <caption>Faithful plotting of higher degree algebraic curves (degree 3)</caption>
+      </screenshot>
+      <screenshot>
+        <image>https://matek.hu/zoltan/visualize4.png</image>
+        <caption>Faithful plotting of higher degree semi-algebraic sets (degree 3)</caption>
+      </screenshot>
+    </screenshots>
+
+  <content_rating type="oars-1.1" />
+
+  <releases>
+    <release version="5.0.641.0" date="2025-11-01">
+    <url type="details">https://github.com/kovzol/geogebra/commits/b517deab97b922dfec59bd91a3fd76f4af78f337</url>
+      <description>
+        <p>Release description</p>
+          <ul>
+            <li>The CNI method has been updated by implementing several construction steps.</li>
+            <li>The <em>ShowProof</em> command now supports Recio's method as well.</li>
+            <li>Implement simple degree computation for the (Recio–)Chroman–Goel–Mudgal–Zveryk–Molnar-Szabo method</li>
+          </ul>
+      </description>
+    </release>
+  </releases>
+
+  </component>

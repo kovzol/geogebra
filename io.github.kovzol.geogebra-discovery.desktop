@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+
+Name=GeoGebra Discovery
+Comment=An experimental version of GeoGebra
+Categories=Science;Education;Math;
+
+Icon=io.github.kovzol.geogebra-discovery
+Exec=geogebra-discovery
+Terminal=false
