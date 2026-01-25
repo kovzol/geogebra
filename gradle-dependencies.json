@@ -1,0 +1,926 @@
+[
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/wisepersist/gwt-gradle-plugin/1.0.10/gwt-gradle-plugin-1.0.10.jar",
+        "sha256": "d0434bb611f253e548b14ecfcf0b18b82cb470eb630da3a7b65a4d6f9d707d70",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/commons-io/commons-io/2.4/commons-io-2.4.jar",
+        "sha256": "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar",
+        "sha256": "d919d904486c037f8d193412da0c92e22a9fa24230b9d67a57855c5c31c7e94e",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/github/javaparser/javaparser-symbol-solver-core/3.13.5/javaparser-symbol-solver-core-3.13.5.jar",
+        "sha256": "09adb3cda5efece7e62996bf8be43eeb831b1e649dd13ef161e327d3ba66cea3",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/google/guava/failureaccess/1.0/failureaccess-1.0.jar",
+        "sha256": "d084bef9cd07a8537a1753e4850a69b7e8bab1d1e22e9f3a1e4826309a7a2336",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/github/javaparser/javaparser-core/3.13.5/javaparser-core-3.13.5.jar",
+        "sha256": "3ad8087c59e6a13b699a4917897086ae30f9834b5d5718d88d1b321c887b461a",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/javassist/javassist/3.24.0-GA/javassist-3.24.0-GA.jar",
+        "sha256": "aba81efa678b621203fb89aeff81d6f126f7a9dd709401e5609c42976684ae23",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/github/javaparser/javaparser-symbol-solver-model/3.13.5/javaparser-symbol-solver-model-3.13.5.jar",
+        "sha256": "0d71c0d24d9f86181b198446ee8ddf18a597130877903c2276d3015ffe45383f",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/google/guava/guava/27.0-jre/guava-27.0-jre.jar",
+        "sha256": "63b09db6861011e7fb2481be7790c7fd4b03f0bb884b3de2ecba8823ad19bf3f",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
+        "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/github/javaparser/javaparser-symbol-solver-logic/3.13.5/javaparser-symbol-solver-logic-3.13.5.jar",
+        "sha256": "593a9659b70c0ef0677431d7ad8680ef9c86aa71deab9fb35db2b028d5de7973",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/checkerframework/checker-qual/2.5.2/checker-qual-2.5.2.jar",
+        "sha256": "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar",
+        "sha256": "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/codehaus/mojo/animal-sniffer-annotations/1.17/animal-sniffer-annotations-1.17.jar",
+        "sha256": "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+        "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0.jar",
+        "sha256": "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/kr/motd/maven/os-maven-plugin/1.6.0/os-maven-plugin-1.6.0.jar",
+        "sha256": "1cd9d6c089f966711bc7d9564976b3ffe65102616a5247681cc23095cfbdd1ac",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/javamodularity/moduleplugin/1.5.0/moduleplugin-1.5.0.jar",
+        "sha256": "756ed301407da61a2266f189f4798e592a15e75fefd10dc1b4ed5b54fc760d7f",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/google/guava/guava-jdk5/17.0/guava-jdk5-17.0.jar",
+        "sha256": "59bf456547b6dda3ced968cb56f7f2d3e14474e2de2960a32c47e31c1e456c61",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar",
+        "sha256": "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/apache/commons/commons-collections4/4.1/commons-collections4-4.1.jar",
+        "sha256": "b1fe8b5968b57d8465425357ed2d9dc695504518bed2df5b565c4b8e68c1c8a5",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/sun/jna/4.1.0/jna-4.1.0.jar",
+        "sha256": "1aa37e9ea6baa0ee152d89509f758f0847eac66ec179b955cafe0919e540a92e",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/ogprover/OpenGeoProver/20120725/OpenGeoProver-20120725.jar",
+        "sha256": "3a75cb7ebf9abc6eff84cb85ae84d1d0fa9300da7d83ec6ae6983ddfd822faee",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/netscape/javascript/jsobject/1/jsobject-1.jar",
+        "sha256": "e958a7df0ac7f684f3f10d46d34287662176afebc69263fc34094d2089dde53b",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/google/j2objc/annotations/2.7/annotations-2.7.jar",
+        "sha256": "e2b2241a15498fa25f68fa1107d1e00f3afb1d22111e580e56c056396024a56e",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/zspace/zspace/20180405a/zspace-20180405a-natives-windows-i586.jar",
+        "sha256": "7c3295e66e388162d63eeb7112fd9d9adbeb0d332a288c2b377c3a1187120f82",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/zspace/zspace/20180405a/zspace-20180405a-natives-windows-amd64.jar",
+        "sha256": "008bbf931af8b4e6790c2da0c0d3cacfc923c5c66a543b8863f968d5a3d7212b",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/intel/rssdk/libpxcclr/20150901/libpxcclr-20150901-natives-windows-amd64.jar",
+        "sha256": "07866be99bf2ccb4307a9bdd44eb9a67e95866f358568b7a5f4059b879a8b1d5",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/apple/mac_extensions/20040714/mac_extensions-20040714.jar",
+        "sha256": "f0f46aaca0deba5d07490f66d420a58e5a17e4fe8b5118a3ae831207d953f52b",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0-rc-20200307/jogl-all-2.4.0-rc-20200307.jar",
+        "sha256": "6dafbce41c9ab3f8739b8f6e5debde343d2b4ea1dd9f325cb66c1366b60cb671",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/code/findbugs/annotations/3.0.1/annotations-3.0.1.jar",
+        "sha256": "6b47ff0a6de0ce17cbedc3abb0828ca5bce3009d53ea47b3723ff023c4742f79",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/zspace/zspace/20180405a/zspace-20180405a.jar",
+        "sha256": "fb717a1a5d865ec2b417f1fb36b222b8ccee41fed1f50d005ccfd50783861233",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0-rc-20200307/gluegen-rt-2.4.0-rc-20200307.jar",
+        "sha256": "4d440c3f78f937b79dbe0f6ee2d9ee0604e366db5a14b09eba7da224da6dffa1",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/intel/rssdk/libpxcclr/20150901/libpxcclr-20150901.jar",
+        "sha256": "b4c2646d6724a4f7efb8a6d84b9d686555d41709b3b17b5d139600f790b76c7b",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/intel/rssdk/libpxcclr/20150901/libpxcclr-20150901-natives-windows-i586.jar",
+        "sha256": "96eea7e95d85078f7cc2511fad2071a110fd09eea7b07339065bd122d0bfa63f",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0-rc-20200307/gluegen-rt-2.4.0-rc-20200307-natives-linux-armv6hf.jar",
+        "sha256": "8da7a5109a3f25d89de4058cf75e84a0383bdfcc099fa304e768470a60c2e439",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0-rc-20200307/jogl-all-2.4.0-rc-20200307-natives-macosx-universal.jar",
+        "sha256": "d2784aa2fe55da0f0e89b9c51e6cb78e203ac5808dfebd244c6da2ab3f0e2745",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20231020/javatarski-1.37_20231020-natives-windows-amd64.jar",
+        "sha256": "094be2ed34d64643aae499ad8190c9ed11b12018c1ea8ab077f8f2a57e351962",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20231020/javatarski-1.37_20231020-natives-macosx-universal.jar",
+        "sha256": "3543e3b76366a8c6d20fb066064b19a1da32c94d8cfde0e7924cb55663a9f796",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20231020/javatarski-1.37_20231020-natives-linux-arm.jar",
+        "sha256": "3eec09e20bfa5bb1a1e6fc1ffcb86ec72c0d12363901d78ea56416c07a7b64e3",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20231020/javatarski-1.37_20231020-natives-linux-amd64.jar",
+        "sha256": "3933f4c61319b766312a39218de53fd4693592a1a5b5c265cf77a992c399f938",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0-rc-20200307/gluegen-rt-2.4.0-rc-20200307-natives-linux-amd64.jar",
+        "sha256": "0fd8d47c248bde84cf3c1b4e6ed134fe3187a95f421edbf54f5a143a56f7c2f8",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0-rc-20200307/jogl-all-2.4.0-rc-20200307-natives-linux-amd64.jar",
+        "sha256": "1a02d0fa345cd6af78d4b42bfb04f7ef2791fb78af1969cb2ba6996e54483c5c",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20250926/javagiac-20250926-natives-linux-amd64.jar",
+        "sha256": "2445e199c6441add796a648f7e2261a75f100c17fe24043848098116fd6e7cc7",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20250926/javagiac-20250926-natives-linux-arm.jar",
+        "sha256": "c9341347d6a9412e6a9d7ade0edc9f1e327d88319c4ca4418d1bfd4d009b5ecf",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0-rc-20200307/gluegen-rt-2.4.0-rc-20200307-natives-windows-amd64.jar",
+        "sha256": "15f4111e3fde6057a3af4efff91051eaba142fc9710c00602122614d9026b8ab",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20250926/javagiac-20250926-natives-windows-amd64.jar",
+        "sha256": "97766e94740ceda5b03687b354a6935a7d5de8e191da1d8981c1a32507ed315e",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20250926/javagiac-20250926-natives-macosx-universal.jar",
+        "sha256": "03a4d278d20af65a0eef794ee457002dc594d9bdf8029516de856618361af490",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0-rc-20200307/jogl-all-2.4.0-rc-20200307-natives-linux-armv6hf.jar",
+        "sha256": "90de25fcf6c3071829a54c448c2fce715e24c42781f0839194e9202a3fbb3481",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0-rc-20200307/gluegen-rt-2.4.0-rc-20200307-natives-macosx-universal.jar",
+        "sha256": "35ba4c4ba328ff994673bad23b08d6ef21c96adde8470cae248419e5857696da",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0-rc-20200307/jogl-all-2.4.0-rc-20200307-natives-windows-amd64.jar",
+        "sha256": "6c672f18d6f0a3ec2a2aeb85d1452171f0a0311d9408a3d8e31111ff43412991",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/wisepersist/gwt-gradle-plugin/1.0.9/gwt-gradle-plugin-1.0.9.jar",
+        "sha256": "65469fa97ec42ef74cf6b0ef9bd7f9f202ee1507494d2686fb565f9ef726dda4",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/wisepersist/gwt-gradle-plugin/1.0.13/gwt-gradle-plugin-1.0.13.jar",
+        "sha256": "0ebbad153fe43436fb282c3b53a186c01bbf2e06e197db78884af8fb52c0e8e3",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/com/google/elemental2/elemental2-webgl/1.2.0/elemental2-webgl-1.2.0.jar",
+        "sha256": "ca8c9ad08aa0a707049a71f4adc53c7eb4387f73036078f76a7d57bfc759e35f",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-util/7.1/asm-util-7.1.jar",
+        "sha256": "a24485517596ae1003dcf2329c044a2a861e5c25d4476a695ccaacf560c74d1a",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/elemental2/elemental2-core/1.1.0/elemental2-core-1.1.0.jar",
+        "sha256": "cd538e109be83c29178c8e80b875f17732e9325fba393bc86b4e6d3294dae034",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar",
+        "sha256": "b8545ba775f641f8bba86027f06307152279fee89a46a4006df1bf2f874d4d9d",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/gwtproject/timer/gwt-timer/1.0.0-RC1/gwt-timer-1.0.0-RC1.jar",
+        "sha256": "17ae436b0b06c5993ad6b4473b4b2870be2e33832688bc676940812b40117afd",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/elemental2/elemental2-dom/1.1.0/elemental2-dom-1.1.0.jar",
+        "sha256": "3276ee41c77c3593986deef7babba3ef8514cbc5246ab98a913523552000fb8d",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar",
+        "sha256": "905721a0eea90a81534abb7ee6ef4ea2e5e645fa1def0a5cd88402df1b46c9ed",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/gwt/gwt-dev/2.9.0/gwt-dev-2.9.0.jar",
+        "sha256": "55f9b79b4f66aad63301f7b99166db827fa5f677a7d8673138bad078eb1bd706",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/elemental2/elemental2-media/1.1.0/elemental2-media-1.1.0.jar",
+        "sha256": "f67d6c275335e5601891a0ce76d69429346a7cb3d6a8a45738aa321d11f7b488",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/7.1/asm-commons-7.1.jar",
+        "sha256": "e5590489d8f1984d85bfeabd3b17374c59c28ae09d48ec4a0ebbd01959ecd358",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/elemental2/elemental2-webstorage/1.1.0/elemental2-webstorage-1.1.0.jar",
+        "sha256": "4653a7213b633a15c93dc15f5719693ed88c72062e37b388067f04a44e16eef0",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-analysis/7.1/asm-analysis-7.1.jar",
+        "sha256": "4612c0511a63db2a2570f07ad1959e19ed8eb703e4114da945cb85682519a55c",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/gwt/gwt-user/2.9.0/gwt-user-2.9.0.jar",
+        "sha256": "80420ddfb3b7e2aedc29222328d34a8ebd9f8abab63a82ddf9d837d06a68f7fe",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/7.1/asm-tree-7.1.jar",
+        "sha256": "c0e82b220b0a52c71c7ca2a58c99a2530696c7b58b173052b9d48fe3efb10073",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/7.1/asm-7.1.jar",
+        "sha256": "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/colt/colt/1.2.0/colt-1.2.0.jar",
+        "sha256": "e1fcbfbdd0d0caedadfb59febace5a62812db3b9425f3a03ef4c4cbba3ed0ee3",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/io/bit3/jsass/5.4.0/jsass-5.4.0.jar",
+        "sha256": "89bbee7e5531aa5a0c9bac6ed615e5ccc68868df4d08bf829ffb993ffc1e663e",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/ant/ant/1.6.5/ant-1.6.5.jar",
+        "sha256": "f06a601c718a7c9262d74b7ec3baad14c82584e89235089b4f821d6a44d9e1e4",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar",
+        "sha256": "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/net/sourceforge/htmlunit/htmlunit/2.19/htmlunit-2.19.jar",
+        "sha256": "10f16ea03bbe6e41489570bf8994bf04f8763c40b28b3229703ae54f3136c843",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/tapestry/tapestry/4.0.2/tapestry-4.0.2.jar",
+        "sha256": "16dfc5b6b322bb0734b80e89d77fbeb987c809002fe59d52d9707a035949b107",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/commons-io/commons-io/2.5/commons-io-2.5.jar",
+        "sha256": "a10418348d234968600ccb1d988efcbbd08716e1d96936ccc1880e7d22513474",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/ibm/icu/icu4j/63.1/icu4j-63.1.jar",
+        "sha256": "0940c61d12667413a58206a010ab5ca0758cc44ad9e9957ea98e0f871ab5eda0",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-plus/9.2.14.v20151106/jetty-plus-9.2.14.v20151106.jar",
+        "sha256": "6c2c574507c693ad76fde1500b9090baccf346313ed342d98c4104234149bdf8",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-webapp/9.2.14.v20151106/jetty-webapp-9.2.14.v20151106.jar",
+        "sha256": "1865f0d3c0edc8727eb4e4d1f9c808cec039095e95cfff45816ea6f7059e6fc5",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-servlets/9.2.14.v20151106/jetty-servlets-9.2.14.v20151106.jar",
+        "sha256": "2a6e50cc48cfb5de3c3cf15176e229861ac7bc5e03285408078658298b75c421",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/apache-jsp/9.2.14.v20151106/apache-jsp-9.2.14.v20151106.jar",
+        "sha256": "a9634bc410be3b8d1f3849429d08a1c3ecaad79a023cbe90ae62f8b493d5f4e2",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/elemental2/elemental2-promise/1.1.0/elemental2-promise-1.1.0.jar",
+        "sha256": "333db946c46849abfe8ec836c07d01b3a9f498b135d8fe41e82ead48dcb8e1b0",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/jsinterop/base/1.0.0/base-1.0.0.jar",
+        "sha256": "603635c26a384f601b19fa79c04208bd2f52da7af54650a3abced5b813ca4412",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/jsinterop/jsinterop-annotations/2.0.0/jsinterop-annotations-2.0.0.jar",
+        "sha256": "ce01f48439240e46521b99cc4c889dcb6793f7a0b0a3e238a38359093f457b49",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA.jar",
+        "sha256": "e459f313ebc6db2483f8ceaad39af07086361b474fa92e40f442e8de5d9895dc",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-security/9.2.14.v20151106/jetty-security-9.2.14.v20151106.jar",
+        "sha256": "1810b2395f6f0717aef296c6c2d6f9504deb2076ef68b3312e1644c0b9cc3921",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-servlet/9.2.14.v20151106/jetty-servlet-9.2.14.v20151106.jar",
+        "sha256": "ac13cca38e1541647a2fbe726a871dc5c22a757c0d8900c08d77302e414a725f",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-server/9.2.14.v20151106/jetty-server-9.2.14.v20151106.jar",
+        "sha256": "bedeec57bccd1680c8ec71ea0071d4e6946fd8152668b69ab753b34729993e8b",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA-sources.jar",
+        "sha256": "a394d52a9b7fe2bb14f0718d2b3c8308ffe8f37e911956012398d55c9f9f9b54",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/w3c/css/sac/1.3/sac-1.3.jar",
+        "sha256": "003785669f921aafe4f137468dd20a01a36111e94fd7449f26c16e7924d82d23",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/net/sourceforge/cssparser/cssparser/0.9.18/cssparser-0.9.18.jar",
+        "sha256": "a2ecbd27997d4a15a1eeed9aa13d861090e0cdbdf2d4543c772a34b7c1e32a8f",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar",
+        "sha256": "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar",
+        "sha256": "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.5/commons-lang3-3.5.jar",
+        "sha256": "8ac96fc686512d777fca85e144f196cd7cfe0c0aec23127229497d1a38ff651c",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/xalan/xalan/2.7.2/xalan-2.7.2.jar",
+        "sha256": "a44bd80e82cb0f4cfac0dac8575746223802514e3cec9dc75235bc0de646af14",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpmime/4.5.1/httpmime-4.5.1.jar",
+        "sha256": "8376801929b82e1d64cbf554abc60be94cfe039a874f8e6f371d06dbd97b99df",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.5.1/httpclient-4.5.1.jar",
+        "sha256": "0ba1a340188f33408632cedbe25d6fe17c1458bde17680a06cd6f6a69476ff74",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.10/commons-codec-1.10.jar",
+        "sha256": "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/net/sourceforge/htmlunit/htmlunit-core-js/2.17/htmlunit-core-js-2.17.jar",
+        "sha256": "32fd749af1599ab0daf22b60cbe97b6792cb9fe8b4220496a3adb667e58a5c3c",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/xerces/xercesImpl/2.11.0/xercesImpl-2.11.0.jar",
+        "sha256": "175bbbd9def7a22a30e05f9c8db629c88fa5bdfc57d5658791901b54222abe1c",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/net/sourceforge/nekohtml/nekohtml/1.9.22/nekohtml-1.9.22.jar",
+        "sha256": "452978e8b6667c7b8357fd3f0a2f2f405e4560a7148143a69181735da5d19045",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar",
+        "sha256": "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/websocket/websocket-client/9.2.13.v20150730/websocket-client-9.2.13.v20150730.jar",
+        "sha256": "030c1582c768809078ffd604c687ec3dbf4ad207dfc292fd4a1062bd5a35f556",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-continuation/9.2.14.v20151106/jetty-continuation-9.2.14.v20151106.jar",
+        "sha256": "3e60ef633d4110f020a4d6207966a4884424a65067eea5a041d1eac1066bc453",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-xml/9.2.14.v20151106/jetty-xml-9.2.14.v20151106.jar",
+        "sha256": "3d13667a02e331c86b124d020338ec5cc901a7986ddf9fd99782578fe77a0459",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-http/9.2.14.v20151106/jetty-http-9.2.14.v20151106.jar",
+        "sha256": "635e5912cb14dfaefdf8fc7369fe96baa8d888b691a00290603d8bda41b80d61",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/websocket/websocket-common/9.2.13.v20150730/websocket-common-9.2.13.v20150730.jar",
+        "sha256": "861d99ac74d5f6a8ccf22e0c060c6eb0a0142e6327149ff298a7452b66ea5db6",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-jndi/9.2.14.v20151106/jetty-jndi-9.2.14.v20151106.jar",
+        "sha256": "9181d263612c457437d6f7e8470588eed862cdf1f08eec808d6577503bec5653",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-util/9.2.14.v20151106/jetty-util-9.2.14.v20151106.jar",
+        "sha256": "277a2cc734139f620bf5c88c09af2f0328b0114f6fad52776abfbcd8d37166ce",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar",
+        "sha256": "5909b396ca3a2be10d0eea32c74ef78d816e1b4ead21de1d78de1f890d033e04",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-io/9.2.14.v20151106/jetty-io-9.2.14.v20151106.jar",
+        "sha256": "16f2d49f497e5e42c92d96618adee2626af5ba1ac927589529b6fd9a92266d3a",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/mortbay/jasper/apache-jsp/8.0.9.M3/apache-jsp-8.0.9.M3.jar",
+        "sha256": "0c154c190b7e75530e7b0b015a370343e9e5ae80550d7d1e8c12f33725df66ec",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/toolchain/jetty-schemas/3.1.M0/jetty-schemas-3.1.M0.jar",
+        "sha256": "bb94452226bf103848614948c88f44d1057c2d9203d53affc1c9057a16223907",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/xalan/serializer/2.7.2/serializer-2.7.2.jar",
+        "sha256": "e8f5b4340d3b12a0cfa44ac2db4be4e0639e479ae847df04c4ed8b521734bb4a",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpcore/4.4.3/httpcore-4.4.3.jar",
+        "sha256": "e4ce096fab656865f0d78d88887377111fb2f3bcd5004c1cddbc899987f32b5e",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/xml-apis/xml-apis/1.4.01/xml-apis-1.4.01.jar",
+        "sha256": "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/mortbay/jasper/apache-el/8.0.9.M3/apache-el-8.0.9.M3.jar",
+        "sha256": "e55df966c864f749becd6f9fbd896e062935650a99880438ffef7b2614d59fc5",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/websocket/websocket-api/9.2.13.v20150730/websocket-api-9.2.13.v20150730.jar",
+        "sha256": "09da128275944e340a4a3357ad59e125df11a5cac0e63a2d1a0a098fa0463a11",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-annotations/9.2.14.v20151106/jetty-annotations-9.2.14.v20151106.jar",
+        "sha256": "d2e7774a3a15d6169d728c7f42b0e2b8a6dd3ed77dc776a2352e7a5b9b5f3a6b",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/com/google/gwt/gwt-servlet/2.9.0/gwt-servlet-2.9.0.jar",
+        "sha256": "b7888ebb6fd8ffee80e1f652997a7fb72a792b2e167bd593ebea03e072b8d243",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/org/murok/editor/1.0.202102101357/editor-1.0.202102101357-sources.jar",
+        "sha256": "1ae80ac5f900a9f155208bc99f44e0244565952214071d54104580db53365ff2",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/org/murok/editor/1.0.202102101357/editor-1.0.202102101357.jar",
+        "sha256": "e81021f3d045b0caa8b7808d5e0c5f273c4bd59d10cfaa22b9d64fb842e166ed",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/giac-gwt/20250926/giac-gwt-20250926-sources.jar",
+        "sha256": "694b565ee354ac0a67bc60c66a6f6e4110d7efa560e06298d43242e6b52c0e4f",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/giac-gwt/20250926/giac-gwt-20250926.jar",
+        "sha256": "6dcd1d3aee807f1532a8329c9bc35e35d8008095dc13993367eb0e1c4710b4bb",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-controls/11.0.2/javafx-controls-11.0.2.jar",
+        "sha256": "60106c2cf52a7f31eca1b8d08a952cf4b93b5b1d85492a755e97a0808a69ff9a",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-base/11.0.2/javafx-base-11.0.2.jar",
+        "sha256": "1f2f88898f54f1a29e2b58caaeb0a11050598a07524f296cd9aef6c00bb93d0f",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-graphics/11.0.2/javafx-graphics-11.0.2-linux.jar",
+        "sha256": "fb209564e50de3d8d055d9b3cd69d46a16d3ef18ec55162fc1300d1408a9d502",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-graphics/11.0.2/javafx-graphics-11.0.2.jar",
+        "sha256": "dee900a186a70bae8266845c56b03ad9a24e697cb52ba3da421c6049089b3638",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-web/11.0.2/javafx-web-11.0.2-linux.jar",
+        "sha256": "1565336d3af5a240116c13e43dea5c3d9a67496327b828fa10bf67eae9e5b1af",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-controls/11.0.2/javafx-controls-11.0.2-linux.jar",
+        "sha256": "c172042cf4ce77fc689fad6559256b11b99c6fb89ce5fd1b33dfc344b86a0a97",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-media/11.0.2/javafx-media-11.0.2-linux.jar",
+        "sha256": "490816861c6143a8e93c3051ade5ff65c27c879cc4d2549998143746764317d6",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-media/11.0.2/javafx-media-11.0.2.jar",
+        "sha256": "6ee2e8b3c931dbb98d98bb95aa82033fdb6f43cdfd569e60613db5834629d025",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-base/11.0.2/javafx-base-11.0.2-linux.jar",
+        "sha256": "84c356f1344bfd3aa74b55a23a0ce078b4c5e6a9be8853da8de415e5ecfcd41b",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-swing/11.0.2/javafx-swing-11.0.2-linux.jar",
+        "sha256": "e562dbdad05b2864e8dc5ef9721b0c9a2cb173159da4496a2782b8cd1e65b14c",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo1.maven.org/maven2/net/java/dev/javacc/javacc/6.1.2/javacc-6.1.2.jar",
+        "sha256": "ed0c5c960961cfeb431382cf0152827b01156747db3792d1bf93e81e32c204ab",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo1.maven.org/maven2/net/java/dev/javacc/javacc/7.0.13/javacc-7.0.13.jar",
+        "sha256": "a4ea46021ec567d89ca305763eedf738ba8a63601445e1aad08a329a6554502a",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
+        "url": "https://repo1.maven.org/maven2/org/javacc/plugin/javacc-maven-plugin/3.0.2/javacc-maven-plugin-3.0.2.jar",
+        "sha256": "470743fb6b6e4d066da215fb940cffac06fa61b5a735810a3c3b839c52077113",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/javacc/plugin/javacc-gradle-plugin/3.0.2/javacc-gradle-plugin-3.0.2.jar",
+        "sha256": "f73853b11935eab0f22d8cb75c17c6de403699ce065af890202d62c5946e7b95",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/javacc/plugin/javacc-gradle-plugin/3.0.2/javacc-gradle-plugin-3.0.2.pom",
+        "sha256": "7153dd4e4ded5f93e2d71280aa68e8863b26b60a66171bb3d7898519cd039b82",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/javacc/plugin/javacc-gradle-plugin/3.0.2/javacc-gradle-plugin-3.0.2.module",
+        "sha256": "fccb105a81ea63cdb6279340ad7d53acc21f510e14657bf0903ac69ede4bdefb",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/ca/coglinc/javacc-gradle-plugin/2.4.0/javacc-gradle-plugin-2.4.0.jar",
+        "sha256": "46c3074ebbbe10d50ecd6910a626310a41391656790add0917e901a7d69f89dc",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/ca/coglinc/javacc-gradle-plugin/2.4.0/javacc-gradle-plugin-2.4.0.pom",
+        "sha256": "3534acb87c2dc07da102a38fd709f5a0034781290cfa07233d94cb5cc3a2cab0",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/ca/coglinc/javacc/ca.coglinc.javacc.gradle.plugin/2.4.0/ca.coglinc.javacc.gradle.plugin-2.4.0.pom",
+        "sha256": "ce65a3beded56a61c6db5b3afdc1c0a55b87ea6bc07b04f16a66aa9fc0cfda3c",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/gradle/plugin/com/github/spotbugs/snom/spotbugs-gradle-plugin/4.6.0/spotbugs-gradle-plugin-4.6.0.jar",
+        "sha256": "5c1532dc89f3670c9f51b19a28bf5547e4843f3ed05c6550c69d003ec555bdc1",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/gradle/plugin/com/github/spotbugs/snom/spotbugs-gradle-plugin/4.6.0/spotbugs-gradle-plugin-4.6.0.pom",
+        "sha256": "1603544a8601830f693d884d6a5a61ee69d8d1c4da5843751922499729c771c2",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/github/spotbugs/com.github.spotbugs.gradle.plugin/4.6.0/com.github.spotbugs.gradle.plugin-4.6.0.pom",
+        "sha256": "9ee79a9bbba3c0668eaef5a123a13718c47217687160c49bb084df0a072a5f86",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/google/gradle/osdetector-gradle-plugin/1.6.1/osdetector-gradle-plugin-1.6.1.jar",
+        "sha256": "37f4a6d92f258762ecf62fd77186522bbecb5da1b20debc78f8361b856df0da7",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/com/google/gradle/osdetector-gradle-plugin/1.6.1/osdetector-gradle-plugin-1.6.1.pom",
+        "sha256": "8b831113a94e097bc49e1eca4d327fd22340570454d44cbb71c252b99e6c4c3f",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/openjfx/javafx-plugin/0.0.8/javafx-plugin-0.0.8.jar",
+        "sha256": "2d48ba151d186a5317b748aa606e73b6d81996bd85552945141e8e86031463ee",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/org/openjfx/javafx-plugin/0.0.8/javafx-plugin-0.0.8.pom",
+        "sha256": "aa14e852fa1a4f600f8ed474c4e83dbc4138fd415c51672cd598579c51a24bb4",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://repo.maven.apache.org/maven2/de/aaschmid/gradle-cpd-plugin/3.1/gradle-cpd-plugin-3.1.jar",
+        "sha256": "a4760030c790954f699f7f1c14b62910b3c1a70051b05136e3e981bb16bbb205",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/de/aaschmid/gradle-cpd-plugin/3.1/gradle-cpd-plugin-3.1.jar",
+        "sha256": "95a331c1029af79a25201e5e4314f9a4fb6772008c0a3687d7d8a3ae76a11442",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/de/aaschmid/gradle-cpd-plugin/3.1/gradle-cpd-plugin-3.1.pom",
+        "sha256": "3ffa2c51c120e31b62c652f7c6f854053a7c3e138cd0b3ef0554233765d25451",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://plugins.gradle.org/m2/de/aaschmid/cpd/de.aaschmid.cpd.gradle.plugin/3.1/de.aaschmid.cpd.gradle.plugin-3.1.pom",
+        "sha256": "f6efd4b8ad6be26af83a838cf676626586ade3c1d41c837988afefe8d8d31954",
+        "dest": "plugins"
+    },
+    {
+        "type": "file",
+        "url": "https://services.gradle.org/distributions/gradle-6.7.1-bin.zip",
+        "sha256": "3239b5ed86c3838a37d983ac100573f64c1f3fd8e1eb6c89fa5f9529b5ec091d",
+        "dest": "."
+    }
+]
