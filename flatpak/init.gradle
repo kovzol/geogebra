@@ -1,0 +1,14 @@
+allprojects {
+    buildscript {
+        repositories {
+            flatDir {
+                dirs "${rootDir}/dependencies", "${rootDir}/plugins"
+            }
+        }
+
+        dependencies {
+            classpath fileTree(dir: "${rootDir}/dependencies", include: ["*.jar"])
+            classpath fileTree(dir: "${rootDir}/plugins", include: ["osdetector-gradle-plugin-1.6.1.jar"])
+        }
+    }
+}
