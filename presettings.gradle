@@ -1,0 +1,26 @@
+pluginManagement {
+ repositories {
+  flatDir {
+   dirs "${rootDir}/plugins", "${rootDir}/dependencies"
+   }
+  }
+   resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == "com.github.spotbugs") {
+                useModule("com.github.spotbugs:spotbugs-gradle-plugin:4.6.0")
+            }
+            if (requested.id.id == "org.javacc.javacc") {
+                useModule("org.javacc:javacc-gradle-plugin:3.0.2")
+            }
+            if (requested.id.id == "com.google.gradle.osdetector") {
+                useModule("com.google.gradle:osdetector-gradle-plugin:1.6.1")
+            }
+            if (requested.id.id == "ca.coglinc.javacc") {
+                useModule("ca.coglinc:javacc-gradle-plugin:2.4.0")
+            }
+            if (requested.id.id == "de.aaschmid.cpd") {
+                useModule("de.aaschmid:gradle-cpd-plugin:3.1")
+            }
+        }
+    }
+ }
