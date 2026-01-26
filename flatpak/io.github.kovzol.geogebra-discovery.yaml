@@ -66,6 +66,6 @@ modules:
 
     sources:
       - type: archive
-        url: https://github.com/kovzol/geogebra/archive/121097252eea7498aea7b842408537a81d5e95f6.zip
-        sha256: 82c214e2e17b4fc4616afd082f2b4e33af42cad83a66227f85a6f29ea7fdf052
+        url: https://github.com/kovzol/geogebra/archive/8c3f7a3b8c095dbccf7c910f86cbe243ec7c03f3.zip
+        sha256: 0536670facf71ce2fbf0b72d44fff31deb0ae567642ee5d767ba5bc6354ca1f9
       - gradle-dependencies.json
