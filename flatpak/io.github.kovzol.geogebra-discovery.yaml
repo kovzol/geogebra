@@ -11,7 +11,6 @@ finish-args:
   - --socket=fallback-x11
   - --socket=wayland
   - --env=JAVA_HOME=/app/jre
-  - --env=HOME=$XDG_DATA_HOME
   - --share=network
   - --filesystem=xdg-documents
 
@@ -32,16 +31,16 @@ modules:
       # Install a specific version of Gradle. Note that currently GeoGebra Discovery cannot be compiled with Gradle 7+.
       - unzip -q gradle-6.7.1-bin.zip
 
-      # Remove unneeded Maven repositories (that used to worke via http and now they are unsupported):
+      # Remove unneeded Maven repositories (that used to work via http and now they are unsupported):
       - sed -i "/maven { url 'http:\/\//d" $(find . -type f -name "*.gradle")
       # Use the downloaded dependencies (see below):
       - sed -i '/repositories[[:space:]]*{/a flatDir { dirs "/run/build/geogebra-sources/dependencies" }' gradle-scripts/repositories.gradle
       # Give hints to Gradle on resolving plugins:
       - cp settings.gradle settings.gradle.old
-      - cat presettings.gradle settings.gradle.old > settings.gradle
+      - cat flatpak/presettings.gradle settings.gradle.old > settings.gradle
 
       # Build the application (also use an extra init script):
-      - gradle-6.7.1/bin/gradle -I init.gradle --offline --no-daemon :desktop:installDist
+      - gradle-6.7.1/bin/gradle -I flatpak/init.gradle --offline --no-daemon :desktop:installDist
 
       # Remove unnecessary libs and extra files:
       - rm -f desktop/build/install/desktop/bin/desktop.bat
@@ -56,26 +55,17 @@ modules:
       - mkdir -p /app/bin
       - cp -a desktop/build/install/desktop/* /app
       - ln -s /app/bin/desktop /app/bin/geogebra-discovery
-      - install -D io.github.kovzol.geogebra-discovery.desktop /app/share/applications/io.github.kovzol.geogebra-discovery.desktop
-      - install -D io.github.kovzol.geogebra-discovery.metainfo.xml /app/share/metainfo/io.github.kovzol.geogebra-discovery.metainfo.xml
-    sources:
-      - type: archive
-        url: https://github.com/kovzol/geogebra/archive/5d07f68f7a49c8c16e4d33428894e6cb79b6da5d.zip
-        sha256: 6181a881278b96d7762a36372d77861c4899ad1443419b94f7a3e6e2c93005ba
-      - gradle-dependencies.json
-      - type: file
-        path: presettings.gradle
-      - type: file
-        path: init.gradle
 
-  - name: icons
-    buildsystem: simple
-    build-commands:
-      - install -D docs/gd-128.png /app/share/icons/hicolor/128x128/apps/io.github.kovzol.geogebra-discovery.png
-      - install -D docs/gd-256.png /app/share/icons/hicolor/256x256/apps/io.github.kovzol.geogebra-discovery.png
-      - install -D docs/gd-512.png /app/share/icons/hicolor/512x512/apps/io.github.kovzol.geogebra-discovery.png
-      - install -D docs/gd.svg /app/share/icons/hicolor/scalable/apps/io.github.kovzol.geogebra-discovery.svg
+      # Copy .desktop, .metainfo and icons:
+      - install -D flatpak/io.github.kovzol.geogebra-discovery.desktop /app/share/applications/io.github.kovzol.geogebra-discovery.desktop
+      - install -D flatpak/io.github.kovzol.geogebra-discovery.metainfo.xml /app/share/metainfo/io.github.kovzol.geogebra-discovery.metainfo.xml
+      - install -D flatpak/gd-128.png /app/share/icons/hicolor/128x128/apps/io.github.kovzol.geogebra-discovery.png
+      - install -D flatpak/gd-256.png /app/share/icons/hicolor/256x256/apps/io.github.kovzol.geogebra-discovery.png
+      - install -D flatpak/gd-512.png /app/share/icons/hicolor/512x512/apps/io.github.kovzol.geogebra-discovery.png
+      - install -D flatpak/gd.svg /app/share/icons/hicolor/scalable/apps/io.github.kovzol.geogebra-discovery.svg
+
     sources:
       - type: archive
-        url: https://github.com/kovzol/geogebra-discovery/archive/1abb4f0fb4178a2dac44a3b5eed487310062b777.zip
-        sha256: 26787a9285c74d990515948497beffece8a29e7dcd24fae2f5714a613d7d753a
+        url: https://github.com/kovzol/geogebra/archive/121097252eea7498aea7b842408537a81d5e95f6.zip
+        sha256: 82c214e2e17b4fc4616afd082f2b4e33af42cad83a66227f85a6f29ea7fdf052
+      - gradle-dependencies.json
