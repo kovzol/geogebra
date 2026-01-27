@@ -6,6 +6,7 @@
   <summary>An experimental version of GeoGebra</summary>
 
   <url type="homepage">https://kovzol.github.io/geogebra-discovery</url>
+  <url type="vcs-browser">https://github.com/kovzol/geogebra</url>
 
   <developer id="io.github.kovzol">
     <name>Zoltán Kovács</name>
