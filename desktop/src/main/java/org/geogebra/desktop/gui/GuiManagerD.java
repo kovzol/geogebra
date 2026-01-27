@@ -1978,6 +1978,21 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 				fileChooser.setSelectedFile(file);
 				lastFilenameOfSaveDialog = file.getName();
 
+				// Linux Flathub related code.
+				String absolutePath = file.getAbsolutePath();
+				String documentsDir = System.getenv("XDG_DOCUMENTS_DIR");
+				String downloadDir = System.getenv("XDG_DOWNLOAD_DIR");
+				String flatpakId = System.getenv("FLATPAK_ID");
+				if (flatpakId != null && documentsDir != null && downloadDir != null
+					&& !absolutePath.startsWith(documentsDir) && !absolutePath.startsWith(downloadDir)) {
+					JOptionPane.showMessageDialog(null,
+							"The application is running in Flatpak's sandbox.\n" +
+							"It is not possible save data permanently in an arbitrary folder.\n" +
+							"Please save your data in your Documents or Downloads folder\n" +
+							"in order to avoid data loss after closing the program."
+					);
+				}
+
 				if (promptOverwrite && file.exists()) {
 					// ask overwrite question
 
