@@ -11,8 +11,12 @@ finish-args:
   - --socket=fallback-x11
   - --socket=wayland
   - --env=JAVA_HOME=/app/jre
+  - --env=JAVA_OPTS=-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java
+  - --env=XDG_DOCUMENTS_DIR=/home/$USER/Documents
+  - --env=XDG_DOWNLOAD_DIR=/home/$USER/Downloads
   - --share=network
   - --filesystem=xdg-documents
+  - --filesystem=xdg-download
 
 modules:
   - name: openjdk
@@ -51,21 +55,32 @@ modules:
       - rm -f desktop/build/install/desktop/lib/*zspace*.jar
       - rm -f desktop/build/install/desktop/lib/*arm*.jar
 
-      # Create folders and links for the executable:
+      # Create folders and wrapper for the executable:
       - mkdir -p /app/bin
       - cp -a desktop/build/install/desktop/* /app
-      - ln -s /app/bin/desktop /app/bin/geogebra-discovery
+      - echo 'export XDG_DOCUMENTS_DIR=`xdg-user-dir DOCUMENTS`' > /app/bin/geogebra-discovery
+      - echo 'export XDG_DOWNLOAD_DIR=`xdg-user-dir DOWNLOAD`' >> /app/bin/geogebra-discovery
+      - echo '/app/bin/desktop "$@"' >> /app/bin/geogebra-discovery
+      - chmod 755 /app/bin/geogebra-discovery
 
       # Copy .desktop, .metainfo and icons:
       - install -D flatpak/io.github.kovzol.geogebra-discovery.desktop /app/share/applications/io.github.kovzol.geogebra-discovery.desktop
-      - install -D flatpak/io.github.kovzol.geogebra-discovery.metainfo.xml /app/share/metainfo/io.github.kovzol.geogebra-discovery.metainfo.xml
-      - install -D flatpak/gd-128.png /app/share/icons/hicolor/128x128/apps/io.github.kovzol.geogebra-discovery.png
-      - install -D flatpak/gd-256.png /app/share/icons/hicolor/256x256/apps/io.github.kovzol.geogebra-discovery.png
-      - install -D flatpak/gd-512.png /app/share/icons/hicolor/512x512/apps/io.github.kovzol.geogebra-discovery.png
-      - install -D flatpak/gd.svg /app/share/icons/hicolor/scalable/apps/io.github.kovzol.geogebra-discovery.svg
+      - install -Dm644 flatpak/io.github.kovzol.geogebra-discovery.metainfo.xml /app/share/metainfo/io.github.kovzol.geogebra-discovery.metainfo.xml
+      - install -Dm644 flatpak/gd-128.png /app/share/icons/hicolor/128x128/apps/io.github.kovzol.geogebra-discovery.png
+      - install -Dm644 flatpak/gd-256.png /app/share/icons/hicolor/256x256/apps/io.github.kovzol.geogebra-discovery.png
+      - install -Dm644 flatpak/gd-512.png /app/share/icons/hicolor/512x512/apps/io.github.kovzol.geogebra-discovery.png
+      - install -Dm644 flatpak/gd.svg /app/share/icons/hicolor/scalable/apps/io.github.kovzol.geogebra-discovery.svg
 
     sources:
       - type: archive
-        url: https://github.com/kovzol/geogebra/archive/8c3f7a3b8c095dbccf7c910f86cbe243ec7c03f3.zip
-        sha256: 0536670facf71ce2fbf0b72d44fff31deb0ae567642ee5d767ba5bc6354ca1f9
+        url: https://github.com/kovzol/geogebra/archive/6231706c0eee25bf868e9f27cf9171bdc091bab7.zip
+        sha256: 84188ff4ffa57f8c41a8bb50fb4297b6322c4eb24bf2c128e9a4e1b0e6df2c6f
       - gradle-dependencies.json
+
+cleanup:
+  - /jre/bin/jjs
+  - /jre/bin/keytool
+  - /jre/bin/pack200
+  - /jre/bin/rmid
+  - /jre/bin/rmiregistry
+  - /jre/bin/unpack200
