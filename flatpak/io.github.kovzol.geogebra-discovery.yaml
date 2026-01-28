@@ -10,13 +10,17 @@ finish-args:
   - --device=dri
   - --socket=fallback-x11
   - --socket=wayland
-  - --env=JAVA_HOME=/app/jre
-  - --env=JAVA_OPTS=-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java
-  - --env=XDG_DOCUMENTS_DIR=/home/$USER/Documents
-  - --env=XDG_DOWNLOAD_DIR=/home/$USER/Downloads
   - --share=network
   - --filesystem=xdg-documents
   - --filesystem=xdg-download
+
+cleanup:
+  - /jre/bin/jjs
+  - /jre/bin/keytool
+  - /jre/bin/pack200
+  - /jre/bin/rmid
+  - /jre/bin/rmiregistry
+  - /jre/bin/unpack200
 
 modules:
   - name: openjdk
@@ -27,8 +31,8 @@ modules:
   - name: geogebra-sources
     buildsystem: simple
     build-options:
+      append-path: /usr/lib/sdk/openjdk11/bin
       env:
-        PATH: /app/bin:/usr/bin:/usr/lib/sdk/openjdk11/bin
         JAVA_HOME: /usr/lib/sdk/openjdk11/jvm/openjdk-11
         GRADLE_USER_HOME: /run/build/geogebra-sources/.gradle
     build-commands:
@@ -58,10 +62,7 @@ modules:
       # Create folders and wrapper for the executable:
       - mkdir -p /app/bin
       - cp -a desktop/build/install/desktop/* /app
-      - echo 'export XDG_DOCUMENTS_DIR=`xdg-user-dir DOCUMENTS`' > /app/bin/geogebra-discovery
-      - echo 'export XDG_DOWNLOAD_DIR=`xdg-user-dir DOWNLOAD`' >> /app/bin/geogebra-discovery
-      - echo '/app/bin/desktop "$@"' >> /app/bin/geogebra-discovery
-      - chmod 755 /app/bin/geogebra-discovery
+      - install -D geogebra-discovery /app/bin/geogebra-discovery
 
       # Copy .desktop, .metainfo and icons:
       - install -D flatpak/io.github.kovzol.geogebra-discovery.desktop /app/share/applications/io.github.kovzol.geogebra-discovery.desktop
@@ -75,12 +76,12 @@ modules:
       - type: archive
         url: https://github.com/kovzol/geogebra/archive/6231706c0eee25bf868e9f27cf9171bdc091bab7.zip
         sha256: 84188ff4ffa57f8c41a8bb50fb4297b6322c4eb24bf2c128e9a4e1b0e6df2c6f
+      - type: script
+        dest-filename: geogebra-discovery
+        commands:
+        - export JAVA_HOME=/app/jre
+        - export JAVA_OPTS=-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java
+        - export XDG_DOCUMENTS_DIR=`xdg-user-dir DOCUMENTS`
+        - export XDG_DOWNLOAD_DIR=`xdg-user-dir DOWNLOAD`
+        - /app/bin/desktop "$@"
       - gradle-dependencies.json
-
-cleanup:
-  - /jre/bin/jjs
-  - /jre/bin/keytool
-  - /jre/bin/pack200
-  - /jre/bin/rmid
-  - /jre/bin/rmiregistry
-  - /jre/bin/unpack200
