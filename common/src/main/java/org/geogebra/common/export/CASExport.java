@@ -387,6 +387,45 @@ public class CASExport {
 								}
 							}
 
+							if (name.equals("Integral")) {
+
+								int arguments = command.getArgumentNumber();
+								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+								def = "int(" + Expression + ",";
+								if (arguments == 1) {
+									def += "x)";
+								}
+								if (arguments == 2) {
+									String NameVar = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
+									def += NameVar + ")";
+								}
+								if (arguments == 3) {
+									String StartValue = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
+									String EndValue = command.getArgument(2).getCASstring(StringTemplate.casCopyTemplate, false);
+									def += "x=" + StartValue + ".." + EndValue + ")";
+								}
+								if (arguments == 4) {
+									String NameVar = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
+									String StartValue = command.getArgument(2).getCASstring(StringTemplate.casCopyTemplate, false);
+									String EndValue = command.getArgument(3).getCASstring(StringTemplate.casCopyTemplate, false);
+									def += NameVar + "=" + StartValue + ".." + EndValue + ")";
+								}
+							}
+							if (name.equals("Limit")) {
+								int arguments = command.getArgumentNumber();
+								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+								def = "limit(" + Expression + ",";
+								if (arguments == 2) {
+									String approacheTo = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
+									def += "x=" + approacheTo + ")";
+								}
+								if (arguments == 3) {
+									String NameVar = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
+									String approacheTo = command.getArgument(2).getCASstring(StringTemplate.casCopyTemplate, false);
+									def += NameVar + "=" + approacheTo + ")";
+								}
+							}
+
 						}
 					}
 
