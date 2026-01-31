@@ -8,6 +8,11 @@
   <url type="homepage">https://kovzol.github.io/geogebra-discovery</url>
   <url type="vcs-browser">https://github.com/kovzol/geogebra</url>
 
+  <branding>
+    <color type="primary" scheme_preference="light">#e2dcfe</color>
+    <color type="primary" scheme_preference="dark">#272541</color>
+  </branding>
+
   <developer id="io.github.kovzol">
     <name>Zoltán Kovács</name>
   </developer>

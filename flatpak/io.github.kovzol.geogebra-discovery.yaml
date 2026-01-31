@@ -8,8 +8,7 @@ command: geogebra-discovery
 finish-args:
   - --share=ipc
   - --device=dri
-  - --socket=fallback-x11
-  - --socket=wayland
+  - --socket=x11
   - --share=network
   - --filesystem=xdg-documents
   - --filesystem=xdg-download
@@ -74,8 +73,8 @@ modules:
 
     sources:
       - type: archive
-        url: https://github.com/kovzol/geogebra/archive/6231706c0eee25bf868e9f27cf9171bdc091bab7.zip
-        sha256: 84188ff4ffa57f8c41a8bb50fb4297b6322c4eb24bf2c128e9a4e1b0e6df2c6f
+        url: https://github.com/kovzol/geogebra/archive/7d7c26b6db4495f59cabb3dbd2f2c3cfe855fe9f.zip
+        sha256: ea12223aa904407747b57b01c5d97eb24b74e81ca7e6f48ada0220a32ce733b1
       - type: script
         dest-filename: geogebra-discovery
         commands:
