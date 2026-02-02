@@ -289,7 +289,7 @@ public class CASExport {
 			String input;
 			String fullInput = cell.getFullInput();
 			String var = cell.getAssignmentVariable();
-			if(var != null && !var.isEmpty() && !var.equals("NONE")){
+			if(var != null && !var.isEmpty() && !var.equals("NONE")) {
 				String FullAssignment = cell.getInput(StringTemplate.defaultTemplate);
 				FullAssignment = FullAssignment.substring(0 , FullAssignment.indexOf(":=")).trim();
 				shortNameToFullName.put(var , FullAssignment);
