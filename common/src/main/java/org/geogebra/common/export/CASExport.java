@@ -2,16 +2,14 @@ package org.geogebra.common.export;
 
 import static org.geogebra.common.main.App.VIEW_CAS;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
-import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GFont;
 import org.geogebra.common.cas.view.CASView;
 import org.geogebra.common.kernel.Construction;
-import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
@@ -20,7 +18,6 @@ import org.geogebra.common.kernel.arithmetic.ValidExpression;
 import org.geogebra.common.kernel.geos.GeoCasCell;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.App;
-import org.geogebra.common.main.Feature;
 import org.geogebra.common.main.Localization;
 
 import com.himamis.retex.editor.share.util.Unicode;
@@ -284,13 +281,20 @@ public class CASExport {
 		Construction cons = app.kernel.getConstruction();
 		CASView cv = (CASView) cons.getApplication().getView(VIEW_CAS);
 		int rows = cv.getRowCount();
-
+		Map<String , String> shortNameToFullName = new HashMap<>(); // Maps a short assignment name to its full assignment form
+		Map<String , String> fullNameToShortName = new HashMap<>(); // Maps a full assignment name to its short assignment form
 		// Iterate on all cells:
 		for (int i = 0; i < rows; i++) {
-
 			GeoCasCell cell = cv.getConsoleTable().getGeoCasCell(i);
 			String input;
 			String fullInput = cell.getFullInput();
+			String var = cell.getAssignmentVariable();
+			if (var != null && !var.isEmpty() && !var.equals("NONE")) {
+				String FullAssignment = cell.getInput(StringTemplate.defaultTemplate);
+				FullAssignment = FullAssignment.substring(0 , FullAssignment.indexOf(":=")).trim();
+				shortNameToFullName.put(var , FullAssignment);
+				fullNameToShortName.put(FullAssignment, var);
+			}
 			if (fullInput != null) {
 				input = fullInput;
 			} else {
@@ -309,7 +313,6 @@ public class CASExport {
 					if (showPrompt) {
 						txt += "> ";
 					}
-					String var = cell.getAssignmentVariable();
 					if (var != null) {
 						txt += var + ":=";
 					}
@@ -351,14 +354,20 @@ public class CASExport {
 
 							if (name.equals("Derivative")) {
 								int arguments = command.getArgumentNumber();
+								def = "diff(";
+								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+								if (shortNameToFullName.containsValue(Expression)) {
+									def += fullNameToShortName.get(Expression);
+								}
+								else {
+									def += Expression;
+								}
 								if (arguments == 1) { // if there is only one argument, then x is the default variable
-									String fun = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
-									def = "diff(" + fun + ",x)";
+									def += ", x)";
 								}
 								if (arguments == 2) {
-									String fun = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
 									String v = String.valueOf(command.getArgument(1));
-									def = "diff(" + fun + "," + v + ")";
+									def += "," + v + ")";
 								}
 							}
 
@@ -390,8 +399,14 @@ public class CASExport {
 							if (name.equals("Integral")) {
 
 								int arguments = command.getArgumentNumber();
+								def = "int(";
 								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
-								def = "int(" + Expression + ",";
+								if (shortNameToFullName.containsValue(Expression)) {
+									def += fullNameToShortName.get(Expression) + ",";
+								}
+								else {
+									def += Expression + ",";
+								}
 								if (arguments == 1) {
 									def += "x)";
 								}
@@ -414,7 +429,13 @@ public class CASExport {
 							if (name.equals("Limit")) {
 								int arguments = command.getArgumentNumber();
 								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
-								def = "limit(" + Expression + ",";
+								if (shortNameToFullName.containsValue(Expression)) {
+									String shortAssignment = fullNameToShortName.get(Expression);
+									def = "limit(" + shortAssignment + ",";
+								}
+								else {
+									def = "limit(" + Expression + ",";
+								}
 								if (arguments == 2) {
 									String approacheTo = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
 									def += "x=" + approacheTo + ")";
@@ -424,6 +445,34 @@ public class CASExport {
 									String approacheTo = command.getArgument(2).getCASstring(StringTemplate.casCopyTemplate, false);
 									def += NameVar + "=" + approacheTo + ")";
 								}
+							}
+							if (name.equals("CurveCartesian")) {
+								String XExpression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+								def = "plot([";
+								if (shortNameToFullName.containsValue(XExpression)) {
+									def += fullNameToShortName.get(XExpression) + ",";
+								} else {
+									def += XExpression + ",";
+								}
+								String YExpression = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
+								if (shortNameToFullName.containsValue(YExpression)) {
+									def += fullNameToShortName.get(YExpression) + ",";
+								} else {
+									def += YExpression + ",";
+								}
+
+								String NameVar = command.getArgument(2).getCASstring(StringTemplate.casCopyTemplate, false);
+								String StartValue = command.getArgument(3).getCASstring(StringTemplate.casCopyTemplate, false);
+
+								if (StartValue.contains("pi")) {
+									StartValue.replace("pi" , "Pi");
+								}
+
+								String EndValue = command.getArgument(4).getCASstring(StringTemplate.casCopyTemplate, false);
+								if (EndValue.contains("pi")) {
+									EndValue.replace("pi" , "Pi");
+								}
+								def += NameVar + "= " + StartValue + ".." + EndValue + "])";
 							}
 
 						}
