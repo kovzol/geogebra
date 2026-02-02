@@ -289,7 +289,7 @@ public class CASExport {
 			String input;
 			String fullInput = cell.getFullInput();
 			String var = cell.getAssignmentVariable();
-			if(var != null && !var.isEmpty() && !var.equals("NONE")) {
+			if (var != null && !var.isEmpty() && !var.equals("NONE")) {
 				String FullAssignment = cell.getInput(StringTemplate.defaultTemplate);
 				FullAssignment = FullAssignment.substring(0 , FullAssignment.indexOf(":=")).trim();
 				shortNameToFullName.put(var , FullAssignment);
@@ -356,7 +356,7 @@ public class CASExport {
 								int arguments = command.getArgumentNumber();
 								def = "diff(";
 								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
-								if(shortNameToFullName.containsValue(Expression)) {
+								if (shortNameToFullName.containsValue(Expression)) {
 									def += fullNameToShortName.get(Expression);
 								}
 								else {
@@ -401,7 +401,7 @@ public class CASExport {
 								int arguments = command.getArgumentNumber();
 								def = "int(";
 								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
-								if(shortNameToFullName.containsValue(Expression)) {
+								if (shortNameToFullName.containsValue(Expression)) {
 									def += fullNameToShortName.get(Expression) + ",";
 								}
 								else {
@@ -429,7 +429,7 @@ public class CASExport {
 							if (name.equals("Limit")) {
 								int arguments = command.getArgumentNumber();
 								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
-								if(shortNameToFullName.containsValue(Expression)) {
+								if (shortNameToFullName.containsValue(Expression)) {
 									String shortAssignment = fullNameToShortName.get(Expression);
 									def = "limit(" + shortAssignment + ",";
 								}
@@ -446,16 +446,16 @@ public class CASExport {
 									def += NameVar + "=" + approacheTo + ")";
 								}
 							}
-							if(name.equals("CurveCartesian")) {
+							if (name.equals("CurveCartesian")) {
 								String XExpression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
 								def = "plot([";
-								if(shortNameToFullName.containsValue(XExpression)) {
+								if (shortNameToFullName.containsValue(XExpression)) {
 									def += fullNameToShortName.get(XExpression) + ",";
 								} else {
 									def += XExpression + ",";
 								}
 								String YExpression = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
-								if(shortNameToFullName.containsValue(YExpression)) {
+								if (shortNameToFullName.containsValue(YExpression)) {
 									def += fullNameToShortName.get(YExpression) + ",";
 								} else {
 									def += YExpression + ",";
@@ -464,12 +464,12 @@ public class CASExport {
 								String NameVar = command.getArgument(2).getCASstring(StringTemplate.casCopyTemplate, false);
 								String StartValue = command.getArgument(3).getCASstring(StringTemplate.casCopyTemplate, false);
 
-								if(StartValue.contains("pi")) {
+								if (StartValue.contains("pi")) {
 									StartValue.replace("pi" , "Pi");
 								}
 
 								String EndValue = command.getArgument(4).getCASstring(StringTemplate.casCopyTemplate, false);
-								if(EndValue.contains("pi")) {
+								if (EndValue.contains("pi")) {
 									EndValue.replace("pi" , "Pi");
 								}
 								def += NameVar + "= " + StartValue + ".." + EndValue + "])";
