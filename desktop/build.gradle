@@ -96,11 +96,11 @@ dependencies {
     compile ext, files(jfxrtLocation)
 
     runtime "com.jogamp:jogl-all:$joglVersion:natives-linux-amd64",
-        "com.jogamp:jogl-all:$joglVersion:natives-linux-armv6hf",
+        "com.jogamp:jogl-all:$joglVersion:natives-linux-aarch64",
         "com.jogamp:jogl-all:$joglVersion:natives-windows-amd64",
         "com.jogamp:jogl-all:$joglVersion:natives-macosx-universal"
     runtime "com.jogamp:gluegen-rt:$joglVersion:natives-linux-amd64",
-        "com.jogamp:gluegen-rt:$joglVersion:natives-linux-armv6hf",
+        "com.jogamp:gluegen-rt:$joglVersion:natives-linux-aarch64",
         "com.jogamp:gluegen-rt:$joglVersion:natives-windows-amd64",
         "com.jogamp:gluegen-rt:$joglVersion:natives-macosx-universal"
     /*
@@ -115,12 +115,12 @@ dependencies {
     runtime "tk.tarski:javagiac:$javaGiacVersion:natives-linux-amd64",
             "tk.tarski:javagiac:$javaGiacVersion:natives-macosx-universal",
             "tk.tarski:javagiac:$javaGiacVersion:natives-windows-amd64",
-            "tk.tarski:javagiac:$javaGiacVersion:natives-linux-arm"
+            "tk.tarski:javagiac:$javaGiacVersion:natives-linux-aarch64"
 
     runtime "tk.tarski:javatarski:$javaTarskiVersion:natives-linux-amd64",
             "tk.tarski:javatarski:$javaTarskiVersion:natives-windows-amd64",
             "tk.tarski:javatarski:$javaTarskiVersion:natives-macosx-universal",
-            "tk.tarski:javatarski:$javaTarskiVersion:natives-linux-arm"
+            "tk.tarski:javatarski:$javaTarskiVersion:natives-linux-aarch64"
 
     testCompile project(':keyboard-base')
     testCompile "junit:junit:$junitVersion"

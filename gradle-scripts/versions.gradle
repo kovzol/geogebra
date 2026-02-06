@@ -13,7 +13,7 @@ ext.getGeogebraVersion = { root = ".."->
 ext.gwtCompilerVersion = '2.9.0'
 ext.gwtGradlePluginVersion = '1.0.10'
 ext.gradleVersionGGB = "6.7.1"
-ext.joglVersion = '2.2.0'
+ext.joglVersion = '2.4.0'
 ext.junitVersion = '4.13'
 ext.mockitoVersion = '3.2.4'
 ext.hamcrestVersion = '2.2'
@@ -22,4 +22,4 @@ ext.hamcrestVersion = '2.2'
 // Override this with an own compiled version:
 ext.javaGiacVersion = '20250926'
 // Please don't change this line since the automatism looks for exact match.
-ext.javaTarskiVersion = '1.37_20231020'
+ext.javaTarskiVersion = '1.37_20260206'
