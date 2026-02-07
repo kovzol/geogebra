@@ -22,4 +22,4 @@ ext.hamcrestVersion = '2.2'
 // Override this with an own compiled version:
 ext.javaGiacVersion = '20250926'
 // Please don't change this line since the automatism looks for exact match.
-ext.javaTarskiVersion = '1.37_20260206'
+ext.javaTarskiVersion = '1.37_20260207'
