@@ -73,8 +73,9 @@ modules:
 
     sources:
       - type: archive
-        url: https://github.com/kovzol/geogebra/archive/7d7c26b6db4495f59cabb3dbd2f2c3cfe855fe9f.zip
-        sha256: ea12223aa904407747b57b01c5d97eb24b74e81ca7e6f48ada0220a32ce733b1
+        url: https://github.com/kovzol/geogebra/archive/096acfc9940fa3c3b234142cfbc3ce36e33c778a.zip
+        sha256: 6f1c16272ec127eb61a829fa70481936596825c0121b6d682506aee40ea61abf
+
       - type: script
         dest-filename: geogebra-discovery
         commands:
@@ -84,3 +85,17 @@ modules:
         - export XDG_DOWNLOAD_DIR=`xdg-user-dir DOWNLOAD`
         - /app/bin/desktop "$@"
       - gradle-dependencies.json
+
+  - name: cleanup-x86_64
+    only-arches:
+      - x86_64
+    buildsystem: simple
+    build-commands:
+      - rm -f /app/lib/*aarch64*.jar
+
+  - name: cleanup-aarch64
+    only-arches:
+      - aarch64
+    buildsystem: simple
+    build-commands:
+      - rm -f /app/lib/*amd64*.jar
