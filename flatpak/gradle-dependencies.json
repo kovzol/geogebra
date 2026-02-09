@@ -175,8 +175,8 @@
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0-rc-20200307/jogl-all-2.4.0-rc-20200307.jar",
-        "sha256": "6dafbce41c9ab3f8739b8f6e5debde343d2b4ea1dd9f325cb66c1366b60cb671",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0/jogl-all-2.4.0.jar",
+        "sha256": "3bb78a7c7bcfe5bc5458f22d3a8dfd6e5c55f59d8a800ce99a074549d331ab98",
         "dest": "dependencies"
     },
     {
@@ -193,8 +193,8 @@
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0-rc-20200307/gluegen-rt-2.4.0-rc-20200307.jar",
-        "sha256": "4d440c3f78f937b79dbe0f6ee2d9ee0604e366db5a14b09eba7da224da6dffa1",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0/gluegen-rt-2.4.0.jar",
+        "sha256": "f2b3837849e4a328bbfe1cd18d060f7b92b6cbd584e1208038cc7d9e752d7101",
         "dest": "dependencies"
     },
     {
@@ -211,50 +211,50 @@
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0-rc-20200307/gluegen-rt-2.4.0-rc-20200307-natives-linux-armv6hf.jar",
-        "sha256": "8da7a5109a3f25d89de4058cf75e84a0383bdfcc099fa304e768470a60c2e439",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0/gluegen-rt-2.4.0-natives-linux-aarch64.jar",
+        "sha256": "ca90ff903029693955ed30e1363f7b60aa6c9b526fe6e43d552d90ab7f0da7dc",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0-rc-20200307/jogl-all-2.4.0-rc-20200307-natives-macosx-universal.jar",
-        "sha256": "d2784aa2fe55da0f0e89b9c51e6cb78e203ac5808dfebd244c6da2ab3f0e2745",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0/jogl-all-2.4.0-natives-macosx-universal.jar",
+        "sha256": "aef752d801e2936080d30a1077315a6f0028229739c4da2049bd462fb73c186d",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20231020/javatarski-1.37_20231020-natives-windows-amd64.jar",
-        "sha256": "094be2ed34d64643aae499ad8190c9ed11b12018c1ea8ab077f8f2a57e351962",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20260207/javatarski-1.37_20260207-natives-windows-amd64.jar",
+        "sha256": "1323846e1377a14e4f766f777641b465c8e1e193062606693682f09c37a6858b",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20231020/javatarski-1.37_20231020-natives-macosx-universal.jar",
-        "sha256": "3543e3b76366a8c6d20fb066064b19a1da32c94d8cfde0e7924cb55663a9f796",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20260207/javatarski-1.37_20260207-natives-macosx-universal.jar",
+        "sha256": "c9863abb52b06654176a21b1f60ee90881fd5b18fa0261041ee690c84fc212a8",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20231020/javatarski-1.37_20231020-natives-linux-arm.jar",
-        "sha256": "3eec09e20bfa5bb1a1e6fc1ffcb86ec72c0d12363901d78ea56416c07a7b64e3",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20260207/javatarski-1.37_20260207-natives-linux-aarch64.jar",
+        "sha256": "e881bb2fb0071a6dd207f131c17dbe306cebabf40821f8ad640d7b89c5342a4a",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20231020/javatarski-1.37_20231020-natives-linux-amd64.jar",
-        "sha256": "3933f4c61319b766312a39218de53fd4693592a1a5b5c265cf77a992c399f938",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20260207/javatarski-1.37_20260207-natives-linux-amd64.jar",
+        "sha256": "a672e1772b80ce7c0c0af86ae8ae2d4ca08d046787ebb0d1374b8522ecb4b1ff",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0-rc-20200307/gluegen-rt-2.4.0-rc-20200307-natives-linux-amd64.jar",
-        "sha256": "0fd8d47c248bde84cf3c1b4e6ed134fe3187a95f421edbf54f5a143a56f7c2f8",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0/gluegen-rt-2.4.0-natives-linux-amd64.jar",
+        "sha256": "6dbb8fd449f4e49ffd05cb17c9b969da82813c6ae7a26a997ab9770a634bb334",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0-rc-20200307/jogl-all-2.4.0-rc-20200307-natives-linux-amd64.jar",
-        "sha256": "1a02d0fa345cd6af78d4b42bfb04f7ef2791fb78af1969cb2ba6996e54483c5c",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0/jogl-all-2.4.0-natives-linux-amd64.jar",
+        "sha256": "128c1546af258916ea0930a6250bca2642f10f8c144786de98094106acf74a75",
         "dest": "dependencies"
     },
     {
@@ -265,14 +265,14 @@
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20250926/javagiac-20250926-natives-linux-arm.jar",
-        "sha256": "c9341347d6a9412e6a9d7ade0edc9f1e327d88319c4ca4418d1bfd4d009b5ecf",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20250926/javagiac-20250926-natives-linux-aarch64.jar",
+        "sha256": "3d97318d2634fe72deff5016b71a78fc8135f1e38a44815ed13c9013a348d12e",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0-rc-20200307/gluegen-rt-2.4.0-rc-20200307-natives-windows-amd64.jar",
-        "sha256": "15f4111e3fde6057a3af4efff91051eaba142fc9710c00602122614d9026b8ab",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0/gluegen-rt-2.4.0-natives-windows-amd64.jar",
+        "sha256": "82e828e50be60861f08c0e878a92cedf1d0d7c9553933194fce6f145c1384c23",
         "dest": "dependencies"
     },
     {
@@ -289,20 +289,20 @@
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0-rc-20200307/jogl-all-2.4.0-rc-20200307-natives-linux-armv6hf.jar",
-        "sha256": "90de25fcf6c3071829a54c448c2fce715e24c42781f0839194e9202a3fbb3481",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0/jogl-all-2.4.0-natives-linux-aarch64.jar",
+        "sha256": "4da6e01870a603d6722a7ef81eb5cee537e2f9d93b4f5c8f1c21d2bd07a2a257",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0-rc-20200307/gluegen-rt-2.4.0-rc-20200307-natives-macosx-universal.jar",
-        "sha256": "35ba4c4ba328ff994673bad23b08d6ef21c96adde8470cae248419e5857696da",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/gluegen-rt/2.4.0/gluegen-rt-2.4.0-natives-macosx-universal.jar",
+        "sha256": "76654cdd4faf5f032f70611179363d02241037910330f3fc886e95753e0ca6bb",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0-rc-20200307/jogl-all-2.4.0-rc-20200307-natives-windows-amd64.jar",
-        "sha256": "6c672f18d6f0a3ec2a2aeb85d1452171f0a0311d9408a3d8e31111ff43412991",
+        "url": "https://dev.geogebra.org/maven2/com/jogamp/jogl-all/2.4.0/jogl-all-2.4.0-natives-windows-amd64.jar",
+        "sha256": "979790c1bc03574ff08c0388b95da6ce08c78519326b39b39caa9c31748287e4",
         "dest": "dependencies"
     },
     {
