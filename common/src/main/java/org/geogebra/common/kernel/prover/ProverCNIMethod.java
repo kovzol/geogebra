@@ -918,7 +918,7 @@ public class ProverCNIMethod {
 					double n = ((ExpressionNode) en.getLeft()).getLeft().evaluateDouble();
 					int ni = (int) n; // FIXME. If ni is not an integer, this should be an error.
 					double EPSILON = 0.00001;
-					if (Math.abs(n-ni) < EPSILON) {
+					if (Math.abs(n-ni) > EPSILON) {
 						return null; // Not implemented.
 					}
 					if (ae1 instanceof AlgoAnglePoints && ae2 instanceof AlgoAnglePoints) {
