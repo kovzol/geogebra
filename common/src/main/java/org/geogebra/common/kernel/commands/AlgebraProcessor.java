@@ -726,6 +726,20 @@ public class AlgebraProcessor {
 	}
 
 	/**
+	 * @param cmd
+	 *            string to process
+	 * @return resulting output as String
+	 */
+	public void processAlgebraCommandConsole(String cmd, final AsyncOperation<GeoElementND[]> callback) {
+		try {
+			processAlgebraCommandNoExceptionHandling(cmd, true,
+					ErrorHelper.silent(), false, callback);
+		} catch (Exception e) {
+			// do nothing (since there is no exception thrown)
+		}
+	}
+
+	/**
 	 * @param cmd       string to process
 	 * @param storeUndo true to make undo step
 	 * @param callback  callback after the geos are created
