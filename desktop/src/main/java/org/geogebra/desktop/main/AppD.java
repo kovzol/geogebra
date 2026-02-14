@@ -253,6 +253,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 * License file
 	 */
 	public static final String LICENSE_FILE = "/org/geogebra/desktop/_license.txt";
+	private boolean console = false; // console mode
 
 	/**
 	 * Command line arguments
@@ -458,6 +459,10 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			handleHelpVersionArgs(args);
 		}
 
+		if (args != null && args.containsArg("console")) {
+			this.console = true;
+		}
+
 		isApplet = false;
 
 		if (frame != null) {
@@ -639,6 +644,14 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			kernel.setWantAnimationStarted(false);
 		}
 
+		if (console) {
+			try {
+				Console.start(kernel);
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+			}
+		}
+
 	}
 
 	// **************************************************************************
@@ -779,9 +792,10 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 					+ "  --logLevel=LEVEL\tset logging level (EMERGENCY|ALERT|CRITICAL|ERROR|WARN|NOTICE|INFO|DEBUG|TRACE)\n"
 					+ "  --logFile=FILENAME\tset log file\n"
 					+ "  --silent\tCompletely mute logging\n"
-					+ "  --prover=OPTIONS\tSet options for the prover subsystem (use --proverhelp for more information)\n"
-					+ "  --singularWS=OPTIONS\tSet options for SingularWS (use --singularWShelp for more information)\n"
-					+ "  --realgeomWS=OPTIONS\tSet options for RealGeomWS (use --realgeomWShelp for more information)\n"
+					+ "  --prover=OPTIONS\tset options for the prover subsystem (use --proverhelp for more information)\n"
+					+ "  --singularWS=OPTIONS\tset options for SingularWS (use --singularWShelp for more information)\n"
+					+ "  --realgeomWS=OPTIONS\tset options for RealGeomWS (use --realgeomWShelp for more information)\n"
+					+ "  --console\tstart console mode"
 			);
 
 			AppD.exit(0);
