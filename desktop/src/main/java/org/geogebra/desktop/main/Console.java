@@ -2,10 +2,10 @@ package org.geogebra.desktop.main;
 
 import java.io.IOException;
 import java.io.PrintStream;
-
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
+import org.geogebra.common.kernel.geos.GeoCasCell;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.util.AsyncOperation;
@@ -71,6 +71,8 @@ public class Console {
 						output += "<< " + g.getDefinition().toOutputValueString(StringTemplate.defaultTemplate) + "\n";
 					} else if (g instanceof GeoElement) {
 						output += "<< " + ((GeoElement) g).getAlgebraDescriptionDefault() + "\n";
+					} else if (g instanceof org.geogebra.common.kernel.geos.GeoCasCell) {
+						output += "<< " + ((GeoCasCell) g).getAlgebraDescriptionDefault() + "\n";
 					}
 				}
 			}
@@ -99,9 +101,10 @@ public class Console {
 				line = "$1:=Eliminate({x^2+y,y},{x})";
 				line = "aa";
 				line = "Line((1,1),(2,2))";
-				System.err.println("Dumb terminal mode, testing input " + line);
+				line = "$1:=RealQuantifierElimination(x^2<0)";
+				line = "\"dumb\"";
+				System.out.println("> " + line);
 				process(kernel, line);
-				System.err.println("End of dumb terminal mode");
 				return;
 			}
 
