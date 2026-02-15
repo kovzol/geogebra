@@ -254,6 +254,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 */
 	public static final String LICENSE_FILE = "/org/geogebra/desktop/_license.txt";
 	private boolean console = false; // console mode
+	private boolean texmacs = false; // TeXmacs mode
 
 	/**
 	 * Command line arguments
@@ -463,6 +464,11 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			this.console = true;
 		}
 
+		if (args != null && args.containsArg("texmacs")) {
+			this.console = true;
+			this.texmacs = true;
+		}
+
 		isApplet = false;
 
 		if (frame != null) {
@@ -646,7 +652,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 		if (console) {
 			try {
-				Console.start(kernel);
+				Console.start(kernel, texmacs);
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
 			}
@@ -796,6 +802,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 					+ "  --singularWS=OPTIONS\tset options for SingularWS (use --singularWShelp for more information)\n"
 					+ "  --realgeomWS=OPTIONS\tset options for RealGeomWS (use --realgeomWShelp for more information)\n"
 					+ "  --console\tstart console mode"
+					+ "  --texmacs\tstart TeXmacs mode (implies --console)"
 			);
 
 			AppD.exit(0);

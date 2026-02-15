@@ -1,6 +1,8 @@
 package org.geogebra.desktop.main;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
@@ -23,6 +25,7 @@ import org.jline.terminal.TerminalBuilder;
  * Start GeoGebra with --console (and, optionally, with --silent to mute debug messages)
  * and enter GeoGebra commands in the terminal (in the desktop version).
  * To mute all messages from Giac as well, redirect stderr to null.
+ * TODO: Mute Giac completely (by modifying its source code), and do the same for Tarski, too.
  *
  * Example on Linux:
  *
@@ -48,9 +51,21 @@ import org.jline.terminal.TerminalBuilder;
  *
  * Currently, the Input Bar is emulated (that is, inputs will be directly sent to Algebra View).
  * When falling back to dumb terminal mode, only one command line is evaluated.
+ *
+ * When no real terminal is used, no line editing is allowed. When the argument --texmacs is
+ * added, the TeXmacs plugin protocol jumps in by sending minimal communication to set up
+ * receiving input and sending output as verbatim code.
+ *
+ * To create a minimal TeXmacs plugin, install GeoGebra Discovery via snap to have the executable
+ * geogebra-discovery and create $HOME/.TeXmacs/plugins/geogebra-discovery/progs/init-geogebra-discovery.scm
+ * with the following content:
+ *
+ * (plugin-configure geogebra-discovery
+ *   (:require (url-exists-in-path? "geogebra-discovery"))
+ *   (:launch "geogebra-discovery --texmacs --silent")
+ *   (:session "GeoGebra Discovery"))
  */
 public class Console {
-	public static boolean dumb;
 	public static String line;
 	public static PrintStream originalOut = System.out;
 	public static PrintStream originalErr = System.err;
@@ -88,34 +103,48 @@ public class Console {
 		System.setErr(originalErr);
 	}
 
-	public static void start(Kernel kernel) throws IOException {
-	Terminal terminal = TerminalBuilder.builder()
-				.system(true).build();
-		if (terminal.getType().equals("dumb")) {
-			dumb = true;
-		}
-		LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
+	public static void start(Kernel kernel, boolean texmacs) throws IOException {
+
+		boolean interactive = System.console() != null; // most probably TeXmacs is communicating...
 
 		Thread inputThread = new Thread(() -> {
-			if (dumb) {
-				line = "$1:=Eliminate({x^2+y,y},{x})";
-				line = "aa";
-				line = "Line((1,1),(2,2))";
-				line = "$1:=RealQuantifierElimination(x^2<0)";
-				line = "\"dumb\"";
-				System.out.println("> " + line);
-				process(kernel, line);
-				return;
+			if (!interactive) {
+				BufferedReader br =	new BufferedReader(new InputStreamReader(System.in));
+				try {
+					if (texmacs) { // but listening to TeXmacs must be forced this way
+						System.out.print("\002channel:prompt\005");
+						// see the mycas example plugin in TeXmacs for more details
+					}
+					while ((line = br.readLine()) != null) {
+						if (line.trim().isEmpty()) {
+							continue;
+						}
+						if (texmacs) {
+							System.out.print("\002verbatim:");
+						}
+						process(kernel, line);
+						if (texmacs) {
+							System.out.print("\005");
+							System.out.flush();
+							System.out.print("\002channel:prompt\005");
+						}
+					}
+					return;
+				} catch (Exception e) {
+					return;
+				}
 			}
 
+			// Interactive operation mode:
 			while (true) {
 				String line;
+				LineReader reader = LineReaderBuilder.builder().build();
 				try {
 					line = reader.readLine("> ");
 					process(kernel, line);
 				} catch (UserInterruptException | EndOfFileException e) {
 					System.out.println("Console session ended, exiting...");
-					System.exit(0);
+					System.exit(0); // exit GeoGebra as well
 				}
 			}
 		});
