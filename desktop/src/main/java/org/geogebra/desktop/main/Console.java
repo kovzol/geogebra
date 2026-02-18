@@ -1,5 +1,7 @@
 package org.geogebra.desktop.main;
 
+import static org.geogebra.desktop.export.GraphicExportDialog.exportEPS;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,12 +13,11 @@ import org.geogebra.common.kernel.geos.GeoCasCell;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.util.AsyncOperation;
+import org.geogebra.desktop.euclidian.EuclidianViewD;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.reader.EndOfFileException;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
 
 /**
  * A command line interface to perform GeoGebra commands.
@@ -64,6 +65,8 @@ import org.jline.terminal.TerminalBuilder;
  *   (:require (url-exists-in-path? "geogebra-discovery"))
  *   (:launch "geogebra-discovery --texmacs --silent")
  *   (:session "GeoGebra Discovery"))
+ *
+ * A screenshot can be taken by entering a period ("."). It is shown with a fixed width (800).
  */
 public class Console {
 	public static String line;
@@ -112,11 +115,25 @@ public class Console {
 				BufferedReader br =	new BufferedReader(new InputStreamReader(System.in));
 				try {
 					if (texmacs) { // but listening to TeXmacs must be forced this way
-						System.out.print("\002channel:prompt\005");
+						System.out.print("\002channel:prompt\005> \005"); // set prompt to "> "
 						// see the mycas example plugin in TeXmacs for more details
 					}
 					while ((line = br.readLine()) != null) {
-						if (line.trim().isEmpty()) {
+						if (line.trim().equals(".")) { // create a screenshot
+							if (texmacs) {
+								StringBuilder sb = new StringBuilder();
+								double w = ((AppD) kernel.getApplication()).getActiveEuclidianView().getViewWidth();
+								double h = ((AppD) kernel.getApplication()).getActiveEuclidianView().getViewHeight();
+								double exportScale = w/h;
+								double ew = 800; // fix size for the width
+								double eh = ew/exportScale;
+								exportEPS((AppD) kernel.getApplication(),
+										(EuclidianViewD) kernel.getApplication()
+												.getActiveEuclidianView(),
+										sb, true, (int) ew,
+										(int) eh, exportScale);
+								System.out.print("\002ps:" + sb.toString() + "\005");
+							}
 							continue;
 						}
 						if (texmacs) {
