@@ -87,6 +87,16 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="5.0.641.0" date="2026-02-18">
+    <url type="details">https://github.com/kovzol/geogebra/commits/e4e75c804ecee5ffd74bd5ac3562fdb074776f1f</url>
+      <description>
+        <p>Release description</p>
+          <ul>
+            <li>Console mode</li>
+            <li>Basic support for TeXmacs</li>
+          </ul>
+      </description>
+    </release>
     <release version="5.0.641.0" date="2026-01-31">
     <url type="details">https://github.com/kovzol/geogebra/commits/241a6e7d02adb6d2c126ef5c07d22a8536aa1bd5</url>
       <description>
