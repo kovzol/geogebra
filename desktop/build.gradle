@@ -83,7 +83,7 @@ List ext = [
     'com.apple:mac_extensions:20040714', 
     'com.ogprover:OpenGeoProver:20120725',
     'com.sun:jna:4.1.0',
-    'org.jline:jline:3.30.0']
+    'org.jline:jline:3.21.0']
 
 
 dependencies {
