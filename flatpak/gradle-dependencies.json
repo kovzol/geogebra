@@ -811,6 +811,12 @@
     },
     {
         "type": "file",
+        "url": "https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0.jar",
+        "sha256": "1e7d63a2bd1c26354ca1987e55469ea4327c4a3845c10d7a7790ca9729c49c02",
+        "dest": "dependencies"
+    },
+    {
+        "type": "file",
         "url": "https://repo1.maven.org/maven2/org/javacc/plugin/javacc-maven-plugin/3.0.2/javacc-maven-plugin-3.0.2.jar",
         "sha256": "470743fb6b6e4d066da215fb940cffac06fa61b5a735810a3c3b839c52077113",
         "dest": "plugins"
