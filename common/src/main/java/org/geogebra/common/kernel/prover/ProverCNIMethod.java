@@ -346,8 +346,8 @@ public class ProverCNIMethod {
 		// or there may be multiple polynomials in the form {{...,...,...}}
 
 		if (prover.getShowproof()) {
-			prover.addProofLine(loc.getMenuDefault("EliminateAllComplexVariables",
-					"We eliminate all variables that correspond to complex points."));
+			prover.addProofLine(loc.getMenuDefault("EliminateAllFreeVariables",
+					"We eliminate all variables that correspond to free points."));
 		}
 
 		if (elimIdeal.equals("{{}}")) {
@@ -435,9 +435,9 @@ public class ProverCNIMethod {
 			String divisor = executeGiac(program);
 			if (prover.getShowproof()) {
 				prover.addProofLine(
-						loc.getPlain("Expressing the thesis requires a division by %0.", divisor));
+						loc.getPlain("Solving for %0 requires a division by %1.", VARIABLE_R_STRING, divisor));
 				prover.addProofLine(loc.getMenuDefault("AssumeDivisorZero",
-						"Let us assume that that divisor is 0 and restart the elimination."));
+						"Let us assume that this divisor is 0 and restart the elimination."));
 			}
 			// Insert the divisor in the first program and check what happens:
 			program = program1 + "," + divisor + rest;
@@ -448,7 +448,7 @@ public class ProverCNIMethod {
 				// is not a relevant issue, so we can be sure that the statement is true.
 				if (prover.getShowproof()) {
 					prover.addProofLine(loc.getMenuDefault("DivisorCannotBeZero",
-							"The elimination verifies that that divisor cannot be zero."));
+							"The elimination verifies that this divisor cannot be zero."));
 				}
 				Log.debug("Division by zero is irrelevant.");
 				if (rMustBeZero) {
@@ -498,7 +498,7 @@ public class ProverCNIMethod {
 				// The secondly computed ideal is linear.
 				if (prover.getShowproof()) {
 					prover.addProofLine(loc.getPlain(
-							"The thesis (%0) can now be expressed as a rational expression of the hypotheses, because %0 is linear in an obtained polynomial equation:",
+							"The thesis (%0) can now be isolated as a rational expression of the hypotheses, because %0 is linear in the following polynomial equation:",
 							VARIABLE_R_STRING));
 					prover.addProofLine(minDegree2A[1] + "=0");
 				}
