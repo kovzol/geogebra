@@ -302,8 +302,10 @@ public class GeoGebraFrame extends JFrame
 		if (AppD.WINDOWS_VISTA_OR_LATER) {
 			try {
 				AppId.setCurrentProcessExplicitAppUserModelID("geogebra.AppId");
-				System.out.println("AppID = "
-						+ AppId.getCurrentProcessExplicitAppUserModelID());
+				if (!args.containsArg("silent")) {
+					System.out.println("AppID = "
+							+ AppId.getCurrentProcessExplicitAppUserModelID());
+				}
 			} catch (Throwable t) {
 				System.err.println("problem setting AppId: " + t.getMessage());
 			}
