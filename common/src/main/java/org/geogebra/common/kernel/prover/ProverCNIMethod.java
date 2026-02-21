@@ -391,9 +391,9 @@ public class ProverCNIMethod {
 		if (minDegreeI == 1) {
 			// r can be expressed by using r1, r2, ..., here r is linear.
 			if (prover.getShowproof()) {
-				prover.addProofLine(loc.getPlain(
-						"The thesis (%0) can be expressed as a rational expression of the hypotheses, because %0 is linear in an obtained polynomial equation:",
-						VARIABLE_R_STRING));
+				prover.addProofLine(loc.getPlainDefault("ThesisACanBeExpressedAsRationalBecauseALinear",
+						"The thesis (%0) can be expressed as a rational expression of the hypotheses, because %0 is"
+								+ " linear in the following polynomial equation:", VARIABLE_R_STRING));
 				prover.addProofLine(minDegreeA[1] + "=0");
 			}
 			Log.debug("The elimination ideal contains " + minDegreeA[1] + ", it is linear in r_.");
@@ -435,7 +435,9 @@ public class ProverCNIMethod {
 			String divisor = executeGiac(program);
 			if (prover.getShowproof()) {
 				prover.addProofLine(
-						loc.getPlain("Solving for %0 requires a division by %1.", VARIABLE_R_STRING, divisor));
+						loc.getPlainDefault("SolvingForARequiresDivByB",
+								"Solving for %0 requires a division by %1.",
+								new String[]{VARIABLE_R_STRING, divisor}));
 				prover.addProofLine(loc.getMenuDefault("AssumeDivisorZero",
 						"Let us assume that this divisor is 0 and restart the elimination."));
 			}
@@ -497,9 +499,9 @@ public class ProverCNIMethod {
 			if (minDegree2I == 1) {
 				// The secondly computed ideal is linear.
 				if (prover.getShowproof()) {
-					prover.addProofLine(loc.getPlain(
-							"The thesis (%0) can now be isolated as a rational expression of the hypotheses, because %0 is linear in the following polynomial equation:",
-							VARIABLE_R_STRING));
+					prover.addProofLine(loc.getPlainDefault("ThesisACanBeExpressedNowAsRationalBecauseALinear",
+							"The thesis (%0) can now be expressed as a rational expression of the hypotheses, because %0 is"
+									+ " linear in the following polynomial equation:", VARIABLE_R_STRING));
 					prover.addProofLine(minDegree2A[1] + "=0");
 				}
 				Log.debug("The second elimination ideal contains " + minDegree2A[1] + ", it is linear in r_.");
@@ -548,7 +550,7 @@ public class ProverCNIMethod {
 			if (prover.getShowproof()) {
 				prover.addProofLine(CmdShowProof.PROBLEM,
 						loc.getMenuDefault("ThesisCannotBeExpressedDivision",
-								"The thesis cannot be expressed as a division now."));
+								"The thesis cannot be expressed as a division.")); // +now?
 			}
 			Log.debug("The division does not result in an unambiguous case.");
 			return ProofResult.UNKNOWN;
