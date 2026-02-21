@@ -3,8 +3,10 @@ package org.geogebra.desktop.plugin;
 import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +34,7 @@ import org.geogebra.common.util.FileExtensions;
 import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.awt.GBufferedImageD;
+import org.geogebra.desktop.euclidian.EuclidianViewD;
 import org.geogebra.desktop.euclidianND.EuclidianViewInterfaceD;
 import org.geogebra.desktop.export.GraphicExportDialog;
 import org.geogebra.desktop.gui.util.ImageSelection;
@@ -412,6 +415,38 @@ public class GgbAPID extends GgbAPIJre {
 		}
 
 		return null;
+	}
+
+	@Override
+	public String exportEPS(double exportScale, String file0) {
+
+		String filename = file0;
+
+		if (file0 == null) {
+			String tempDir = UtilD.getTempDir();
+			filename = tempDir + "geogebra.eps";
+		}
+
+		File file = new File(filename);
+
+		EuclidianView view = app.getActiveEuclidianView();
+
+		StringBuilder sb = new StringBuilder();
+
+		GraphicExportDialog.exportEPS((AppD) app, (EuclidianViewD) view, sb,
+				true, view.getExportWidth(),
+				view.getExportHeight(),
+				exportScale);
+
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			writer.append(sb);
+			writer.flush();
+		} catch (Exception ex) {
+			Log.error("Unable to write " + filename);
+			}
+
+		return sb.toString();
 	}
 
 }

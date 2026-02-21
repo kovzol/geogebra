@@ -2192,6 +2192,11 @@ public abstract class GgbAPI implements JavaScriptAPI {
 		return null;
 	}
 
+	public String exportEPS(double exportScale, String filename) {
+		// not implemented in Android, iOS
+		return null;
+	}
+
 	/**
 	 * @param sliderLabel
 	 *            animation slider

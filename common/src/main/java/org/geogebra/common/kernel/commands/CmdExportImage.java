@@ -106,6 +106,10 @@ public class CmdExportImage extends CmdScripting {
 				case "webm":
 					type = ExportType.WEBM;
 					break;
+				case "eps":
+					type = ExportType.EPS;
+					exportScale = 1.0; // override computed value -- TODO: why is this required?
+					break;
 				}
 
 				break;
@@ -236,7 +240,9 @@ public class CmdExportImage extends CmdScripting {
 			double pixelWidth = Math.round(dpcm * widthRW * scaleCM);
 			// Log.debug("widthRW= " + widthRW);
 			// Log.debug("pixelWidth= " + pixelWidth);
-			exportScale = pixelWidth / viewWidth;
+			if (type != ExportType.EPS) {
+				exportScale = pixelWidth / viewWidth; // don't do that for EPS
+			}
 		}
 
 		if (exportScale <= 0 || !MyDouble.isFinite(exportScale)) {
@@ -304,6 +310,9 @@ public class CmdExportImage extends CmdScripting {
 		case WEBM:
 			api.exportWebM(sliderName, exportScale, time, loop,
 					filename == null ? "anim.webm" : filename, rotate);
+			break;
+		case EPS:
+			api.exportEPS(exportScale, filename == null ? "geogebra.eps" : filename);
 			break;
 		}
 
