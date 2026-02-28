@@ -532,6 +532,7 @@ public abstract class CommandDispatcher {
 			case Envelope:
 			case Discover:
 			case Compare:
+			case DescribeStatement:
 				return getProverDispatcher().dispatch(command, kernel);
 
 			// basic

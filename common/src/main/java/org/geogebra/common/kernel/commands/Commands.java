@@ -1226,7 +1226,9 @@ public enum Commands implements CommandsConstants,
 
 	CASLoaded(TABLE_GEOGEBRA),
 
-	ShowSteps(TABLE_ALGEBRA), IsVertexForm(TABLE_FUNCTION);
+	ShowSteps(TABLE_ALGEBRA), IsVertexForm(TABLE_FUNCTION),
+
+	DescribeStatement(TABLE_GEOMETRY);
 
 	private static final Commands[] RENAMED = {
 			Commands.Binomial, Commands.BinomialCoefficient, Commands.Mean,

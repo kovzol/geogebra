@@ -9,7 +9,7 @@ import org.geogebra.common.kernel.advanced.CmdAreEqual;
 import org.geogebra.common.kernel.advanced.CmdAreParallel;
 import org.geogebra.common.kernel.advanced.CmdArePerpendicular;
 import org.geogebra.common.kernel.advanced.CmdCompare;
-import org.geogebra.common.kernel.advanced.CmdDiscover;
+import org.geogebra.common.kernel.advanced.CmdDescribeStatement;import org.geogebra.common.kernel.advanced.CmdDiscover;
 import org.geogebra.common.kernel.advanced.CmdEnvelope;
 import org.geogebra.common.kernel.advanced.CmdIsTangent;
 import org.geogebra.common.kernel.advanced.CmdLocusEquation;
@@ -52,6 +52,8 @@ public class CommandDispatcherProver implements CommandDispatcherInterface {
             return new CmdDiscover(kernel);
         case Compare:
             return new CmdCompare(kernel);
+        case DescribeStatement:
+            return new CmdDescribeStatement(kernel);
         default:
             return null;
         }
