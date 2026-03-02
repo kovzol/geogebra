@@ -1,6 +1,7 @@
 package org.geogebra.common.export;
 
 import static org.geogebra.common.main.App.VIEW_CAS;
+import static org.geogebra.common.main.App.getCASVersionString;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -324,58 +325,53 @@ public class CASExport {
 						Command command = ve.getTopLevelCommand();
 						if (command != null) {
 							String name = command.getName();
+							int numOfArguments = command.getArgumentNumber();
 							if (name.equals("Solve")) {
-								int arguments = command.getArgumentNumber();
-								if (arguments == 2) {
-									String eqs = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+								if (numOfArguments == 2) {
+									String eqs = getArgumentOfCommand(command,0);
 									String vars = String.valueOf(command.getArgument(1));
 									vars = vars.replace("{", "[");
 									vars = vars.replace("}", "]");
 									def = "solve(" + eqs + "," + vars + ")";
 								}
 							}
-
+							// need to handle the cases of factor polynom
 							if (name.equals("Factor")) {
-								int arguments = command.getArgumentNumber();
-								if (arguments == 1) { // two arguments are not implemented, TODO
+								if (numOfArguments == 1) { // two numOfArguments are not implemented, TODO
 									// Maple does not have an option to have a second argument
 									String expr = command.getArgument(0).toString();
 									if (expr.startsWith("$")) {
 										// This is something like $1, so we convert it into something like !1:
 										expr = "!" + expr.substring(1);
 									} else {
-										expr = command.getArgument(0)
-												.getCASstring(StringTemplate.casCopyTemplate,
-														false);
+										expr = getArgumentOfCommand(command,0);
 									}
 									def = "ifactor(" + expr + ")";
 								}
 							}
-
+							// need to handle some other parameters cases
 							if (name.equals("Derivative")) {
-								int arguments = command.getArgumentNumber();
 								def = "diff(";
-								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+								String Expression = getArgumentOfCommand(command,0);
 								if (shortNameToFullName.containsValue(Expression)) {
 									def += fullNameToShortName.get(Expression);
 								}
 								else {
 									def += Expression;
 								}
-								if (arguments == 1) { // if there is only one argument, then x is the default variable
+								if (numOfArguments == 1) { // if there is only one argument, then x is the default variable
 									def += ", x)";
 								}
-								if (arguments == 2) {
+								if (numOfArguments == 2) {
 									String v = String.valueOf(command.getArgument(1));
 									def += "," + v + ")";
 								}
 							}
 
 							if (name.equals("Eliminate")) {
-								int arguments = command.getArgumentNumber();
 								String vars = "[";
-								if (arguments == 2) {
-									String eqs = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+								if (numOfArguments == 2) {
+									String eqs = getArgumentOfCommand(command,0);
 									ExpressionNode equationsEN = command.getArgument(0);
 									ExpressionNode variablesEN = command.getArgument(1);
 									HashSet<GeoElement> variables = variablesEN.getVariables(SymbolicMode.SYMBOLIC);
@@ -397,38 +393,67 @@ public class CASExport {
 							}
 
 							if (name.equals("Integral")) {
-
-								int arguments = command.getArgumentNumber();
 								def = "int(";
-								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+								String Expression = getArgumentOfCommand(command,0);
 								if (shortNameToFullName.containsValue(Expression)) {
 									def += fullNameToShortName.get(Expression) + ",";
 								}
 								else {
 									def += Expression + ",";
 								}
-								if (arguments == 1) {
+								if (numOfArguments == 1) {
 									def += "x)";
 								}
-								if (arguments == 2) {
-									String NameVar = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
+								if (numOfArguments == 2) {
+									String NameVar = getArgumentOfCommand(command,1);
 									def += NameVar + ")";
 								}
-								if (arguments == 3) {
-									String StartValue = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
-									String EndValue = command.getArgument(2).getCASstring(StringTemplate.casCopyTemplate, false);
+								if (numOfArguments == 3) {
+									String StartValue = getArgumentOfCommand(command,1);
+									String EndValue = getArgumentOfCommand(command,2);
 									def += "x=" + StartValue + ".." + EndValue + ")";
 								}
-								if (arguments == 4) {
-									String NameVar = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
-									String StartValue = command.getArgument(2).getCASstring(StringTemplate.casCopyTemplate, false);
-									String EndValue = command.getArgument(3).getCASstring(StringTemplate.casCopyTemplate, false);
+								if (numOfArguments == 4) {
+									String NameVar = getArgumentOfCommand(command,1);
+									String StartValue = getArgumentOfCommand(command,2);
+									String EndValue = getArgumentOfCommand(command,3);
 									def += NameVar + "=" + StartValue + ".." + EndValue + ")";
 								}
 							}
+
+							if (name.equals("IntegralBetween")) {
+								String upperFunction = getArgumentOfCommand(command , 0);
+								String lowerFunction = getArgumentOfCommand(command , 1);
+								def = "int(";
+								if (shortNameToFullName.containsValue(upperFunction)) {
+									def += fullNameToShortName.get(upperFunction);
+								}
+								else {
+									def += upperFunction;
+								}
+								def += "-";
+								if (shortNameToFullName.containsValue(lowerFunction)) {
+									def += fullNameToShortName.get(lowerFunction);
+								}
+								else {
+									def += lowerFunction;
+								}
+								def += ",";
+								if (numOfArguments == 4) { // if there are only 4 args the command form is IntegralBetween( <Function>, <Function>, <Number>, <Number> )
+									String StartValue = getArgumentOfCommand(command , 2);
+									String EndValue = getArgumentOfCommand(command , 3);
+									def += "x=" + StartValue + ".." + EndValue + ")";
+								}
+								if (numOfArguments == 5) { // if there are 5 args the command form is IntegralBetween( <Function>, <Function>, <Variable>, <Number>, <Number> )
+									String NameVar = getArgumentOfCommand(command , 2);
+									String StartValue = getArgumentOfCommand(command , 3);
+									String EndValue = getArgumentOfCommand(command , 4);
+									def += NameVar + "=" + StartValue + ".." + EndValue + ")";
+								}
+							}
+
 							if (name.equals("Limit")) {
-								int arguments = command.getArgumentNumber();
-								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+								String Expression = getArgumentOfCommand(command , 0);
 								if (shortNameToFullName.containsValue(Expression)) {
 									String shortAssignment = fullNameToShortName.get(Expression);
 									def = "limit(" + shortAssignment + ",";
@@ -436,44 +461,68 @@ public class CASExport {
 								else {
 									def = "limit(" + Expression + ",";
 								}
-								if (arguments == 2) {
-									String approacheTo = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
-									def += "x=" + approacheTo + ")";
+								if (numOfArguments == 2) { // if there are only 2 args the command form is Limit( <Expression>, <Value> )
+									String approachTo = getArgumentOfCommand(command , 1);
+									def += "x=" + approachTo + ")";
 								}
-								if (arguments == 3) {
-									String NameVar = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
-									String approacheTo = command.getArgument(2).getCASstring(StringTemplate.casCopyTemplate, false);
-									def += NameVar + "=" + approacheTo + ")";
+								if (numOfArguments == 3) { // if there are 3 args the command form is Limit( <Expression>, <Variable>, <Value> )
+									String NameVar = getArgumentOfCommand(command , 1);
+									String approachTo = getArgumentOfCommand(command , 2);
+									def += NameVar + "," + NameVar + "=" + approachTo + ")";
 								}
 							}
+
 							if (name.equals("CurveCartesian")) {
-								String XExpression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+								String XExpression = getArgumentOfCommand(command , 0);
 								def = "plot([";
 								if (shortNameToFullName.containsValue(XExpression)) {
 									def += fullNameToShortName.get(XExpression) + ",";
 								} else {
 									def += XExpression + ",";
 								}
-								String YExpression = command.getArgument(1).getCASstring(StringTemplate.casCopyTemplate, false);
+								String YExpression = getArgumentOfCommand(command , 1);
 								if (shortNameToFullName.containsValue(YExpression)) {
 									def += fullNameToShortName.get(YExpression) + ",";
 								} else {
 									def += YExpression + ",";
 								}
+								String NameVar = getArgumentOfCommand(command , 2);
+								String StartValue = getArgumentOfCommand(command , 3);
+								StartValue = fixPiAppear(StartValue); // Ensures Pi starts with a capital letter (Pi instead of pi)
+								String EndValue = getArgumentOfCommand(command , 4);
+								EndValue = fixPiAppear(EndValue); // Ensures Pi starts with a capital letter (Pi instead of pi)
 
-								String NameVar = command.getArgument(2).getCASstring(StringTemplate.casCopyTemplate, false);
-								String StartValue = command.getArgument(3).getCASstring(StringTemplate.casCopyTemplate, false);
-
-								if (StartValue.contains("pi")) {
-									StartValue.replace("pi" , "Pi");
-								}
-
-								String EndValue = command.getArgument(4).getCASstring(StringTemplate.casCopyTemplate, false);
-								if (EndValue.contains("pi")) {
-									EndValue.replace("pi" , "Pi");
-								}
 								def += NameVar + "= " + StartValue + ".." + EndValue + "])";
 							}
+							if (name.equals("Degree")) {
+								String Expression = getArgumentOfCommand(command , 0);
+								def = "degree(";
+								if (shortNameToFullName.containsValue(Expression)) {
+									def += fullNameToShortName.get(Expression);
+								}
+								else {
+									def += Expression;
+								}
+								if (numOfArguments == 2) { // if there are 2 args the command form is Degree( <Polynomial>, <Variable> )
+									String NameVar = getArgumentOfCommand(command , 1);
+									def += "," + NameVar;
+								}
+								def += ")";
+							}
+							// complete needed
+							/*
+							if (name.equals("Asymptote")) {
+								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
+								def = "Student[Calculus1]:-Asymptotes(";
+								if (shortNameToFullName.containsValue(Expression)) {
+									def += fullNameToShortName.get(Expression);
+								}
+								else {
+									def += Expression;
+								}
+								def += ",x ,y)";
+							}
+							 */
 
 						}
 					}
@@ -488,6 +537,18 @@ public class CASExport {
 		}
 
 		return txt;
+	}
+
+	public String getArgumentOfCommand(Command command,int indexOfCommand) {
+		return command.getArgument(indexOfCommand).getCASstring(StringTemplate.casCopyTemplate, false);
+	}
+
+
+	public String fixPiAppear(String toFix) {
+		if (toFix.contains("pi")) {
+			toFix.replace("pi" , "Pi");
+		}
+		return toFix;
 	}
 
 	public String createGiacTxt() {
