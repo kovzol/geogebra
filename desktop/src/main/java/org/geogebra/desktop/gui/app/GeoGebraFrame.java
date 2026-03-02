@@ -378,7 +378,7 @@ public class GeoGebraFrame extends JFrame
 			// mac menu bar
 			// System.setProperty("com.apple.macos.useScreenMenuBar", "true");
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Log.debug(e + "");
 		}
 	}

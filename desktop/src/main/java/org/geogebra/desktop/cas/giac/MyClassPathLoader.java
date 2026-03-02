@@ -41,7 +41,20 @@ public class MyClassPathLoader {
 		}
 
 		String filename = prefix + libname + extension;
-		InputStream ins = ClassLoader.getSystemResourceAsStream(filename);
+		// On Apple Silicon the native is packaged as lib<name>-arm64.jnilib
+		String resourceName = filename;
+		if (AppD.MAC_OS && isMacArm64()) {
+			resourceName = prefix + libname + "-arm64" + extension;
+		}
+
+		InputStream ins = ClassLoader.getSystemResourceAsStream(resourceName);
+
+		// fallback: if arm64 variant not found, try the generic name
+		if (ins == null && AppD.MAC_OS && isMacArm64()) {
+			resourceName = filename;
+			ins = ClassLoader.getSystemResourceAsStream(resourceName);
+		}
+
 
 		if (ins == null) {
 			Log.error(filename + " not found");
@@ -74,7 +87,7 @@ public class MyClassPathLoader {
 	/**
 	 * Write the content of the inputstream into a tempfile with the given
 	 * filename
-	 * 
+	 *
 	 * @param ins
 	 * @param filename
 	 * @throws FileNotFoundException
@@ -112,4 +125,9 @@ public class MyClassPathLoader {
 		return tmpFile;
 	}
 
+
+	private static boolean isMacArm64() {
+		String arch = System.getProperty("os.arch", "");
+		return "aarch64".equalsIgnoreCase(arch) || "arm64".equalsIgnoreCase(arch);
+	}
 }
