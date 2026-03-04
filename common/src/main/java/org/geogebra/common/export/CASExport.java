@@ -1,7 +1,6 @@
 package org.geogebra.common.export;
 
 import static org.geogebra.common.main.App.VIEW_CAS;
-import static org.geogebra.common.main.App.getCASVersionString;
 
 import java.util.HashMap;
 import java.util.HashSet;
