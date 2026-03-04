@@ -361,9 +361,23 @@ public class CASExport {
 								if (numOfArguments == 1) { // if there is only one argument, then x is the default variable
 									def += ", x)";
 								}
-								if (numOfArguments == 2) {
-									String v = String.valueOf(command.getArgument(1));
-									def += "," + v + ")";
+								if (numOfArguments == 2){
+									// try to convert to number in case the command form is Derivative( <Curve>, <Number> )
+									// we try to convert the second argument from String to Int
+									try {
+										int OrderOfDerivative = Integer.parseInt(getArgumentOfCommand(command,1));
+										def += ",x$" + OrderOfDerivative + ")";
+									}
+									// in case the command form is Derivative( <Expression>, <Variable> )
+									catch (NumberFormatException e) {
+    									String varName = getArgumentOfCommand(command,1);
+										def += "," + varName + ")";
+									}
+								}
+								if (numOfArguments == 3) {
+									String varName = getArgumentOfCommand(command,1);
+									String OrderOfDerivative = getArgumentOfCommand(command,2);
+									def += "," + varName + "$" + OrderOfDerivative + ")";
 								}
 							}
 
@@ -404,8 +418,8 @@ public class CASExport {
 									def += "x)";
 								}
 								if (numOfArguments == 2) {
-									String NameVar = getArgumentOfCommand(command,1);
-									def += NameVar + ")";
+									String varName = getArgumentOfCommand(command,1);
+									def += varName + ")";
 								}
 								if (numOfArguments == 3) {
 									String StartValue = getArgumentOfCommand(command,1);
@@ -413,10 +427,10 @@ public class CASExport {
 									def += "x=" + StartValue + ".." + EndValue + ")";
 								}
 								if (numOfArguments == 4) {
-									String NameVar = getArgumentOfCommand(command,1);
+									String varName = getArgumentOfCommand(command,1);
 									String StartValue = getArgumentOfCommand(command,2);
 									String EndValue = getArgumentOfCommand(command,3);
-									def += NameVar + "=" + StartValue + ".." + EndValue + ")";
+									def += varName + "=" + StartValue + ".." + EndValue + ")";
 								}
 							}
 
@@ -444,10 +458,10 @@ public class CASExport {
 									def += "x=" + StartValue + ".." + EndValue + ")";
 								}
 								if (numOfArguments == 5) { // if there are 5 args the command form is IntegralBetween( <Function>, <Function>, <Variable>, <Number>, <Number> )
-									String NameVar = getArgumentOfCommand(command , 2);
+									String varName = getArgumentOfCommand(command , 2);
 									String StartValue = getArgumentOfCommand(command , 3);
 									String EndValue = getArgumentOfCommand(command , 4);
-									def += NameVar + "=" + StartValue + ".." + EndValue + ")";
+									def += varName + "=" + StartValue + ".." + EndValue + ")";
 								}
 							}
 
@@ -465,9 +479,9 @@ public class CASExport {
 									def += "x=" + approachTo + ")";
 								}
 								if (numOfArguments == 3) { // if there are 3 args the command form is Limit( <Expression>, <Variable>, <Value> )
-									String NameVar = getArgumentOfCommand(command , 1);
+									String varName = getArgumentOfCommand(command , 1);
 									String approachTo = getArgumentOfCommand(command , 2);
-									def += NameVar + "," + NameVar + "=" + approachTo + ")";
+									def += varName + "," + varName + "=" + approachTo + ")";
 								}
 							}
 
@@ -485,13 +499,13 @@ public class CASExport {
 								} else {
 									def += YExpression + ",";
 								}
-								String NameVar = getArgumentOfCommand(command , 2);
+								String varName = getArgumentOfCommand(command , 2);
 								String StartValue = getArgumentOfCommand(command , 3);
 								StartValue = fixPiAppear(StartValue); // Ensures Pi starts with a capital letter (Pi instead of pi)
 								String EndValue = getArgumentOfCommand(command , 4);
 								EndValue = fixPiAppear(EndValue); // Ensures Pi starts with a capital letter (Pi instead of pi)
 
-								def += NameVar + "= " + StartValue + ".." + EndValue + "])";
+								def += varName + "= " + StartValue + ".." + EndValue + "])";
 							}
 							if (name.equals("Degree")) {
 								String Expression = getArgumentOfCommand(command , 0);
@@ -545,7 +559,7 @@ public class CASExport {
 
 	public String fixPiAppear(String toFix) {
 		if (toFix.contains("pi")) {
-			toFix.replace("pi" , "Pi");
+			toFix = toFix.replace("pi" , "Pi");
 		}
 		return toFix;
 	}
