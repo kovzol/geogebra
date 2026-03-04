@@ -348,7 +348,7 @@ public class CASExport {
 									def = "ifactor(" + expr + ")";
 								}
 							}
-							// need to handle some other parameters cases
+
 							if (name.equals("Derivative")) {
 								def = "diff(";
 								String Expression = getArgumentOfCommand(command,0);
@@ -358,7 +358,8 @@ public class CASExport {
 								else {
 									def += Expression;
 								}
-								if (numOfArguments == 1) { // if there is only one argument, then x is the default variable
+								// if there is only one argument, then x is the default variable
+								if (numOfArguments == 1) {
 									def += ", x)";
 								}
 								if (numOfArguments == 2){
@@ -475,12 +476,12 @@ public class CASExport {
 									def = "limit(" + Expression + ",";
 								}
 								if (numOfArguments == 2) { // if there are only 2 args the command form is Limit( <Expression>, <Value> )
-									String approachTo = getArgumentOfCommand(command , 1);
+									String approachTo = fixPiAppear(getArgumentOfCommand(command , 1));
 									def += "x=" + approachTo + ")";
 								}
 								if (numOfArguments == 3) { // if there are 3 args the command form is Limit( <Expression>, <Variable>, <Value> )
 									String varName = getArgumentOfCommand(command , 1);
-									String approachTo = getArgumentOfCommand(command , 2);
+									String approachTo = fixPiAppear(getArgumentOfCommand(command , 2));
 									def += varName + "," + varName + "=" + approachTo + ")";
 								}
 							}
@@ -519,6 +520,18 @@ public class CASExport {
 								if (numOfArguments == 2) { // if there are 2 args the command form is Degree( <Polynomial>, <Variable> )
 									String NameVar = getArgumentOfCommand(command , 1);
 									def += "," + NameVar;
+								}
+								def += ")";
+							}
+
+							if (name.equals("Denominator")) {
+								String Expression = getArgumentOfCommand(command , 0);
+								def = "denom(";
+								if(shortNameToFullName.containsValue(Expression)) {
+									def += fullNameToShortName.get(Expression);
+								}
+								else {
+									def += Expression;
 								}
 								def += ")";
 							}
