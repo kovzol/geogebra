@@ -535,20 +535,20 @@ public class CASExport {
 								}
 								def += ")";
 							}
-							// complete needed
-							/*
-							if (name.equals("Asymptote")) {
-								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
-								def = "Student[Calculus1]:-Asymptotes(";
-								if (shortNameToFullName.containsValue(Expression)) {
-									def += fullNameToShortName.get(Expression);
+
+							if (name.equals("Invert")) {
+								String Expression = getArgumentOfCommand(command , 0).replace(" " , "");
+								// the Invert command have two forms of 1 argument
+								// if it contains the following chars than the command form is Invert( <Matrix> )
+								if (Expression.startsWith("{{") && Expression.endsWith("}}") && Expression.contains("},{")) {
+									Expression = Expression.replace("{" , "[").replace("}" , "]");
+									def = "with(LinearAlgebra):MatrixInverse( Matrix(" + Expression + ") )";
 								}
+								// the other case is the command form is Invert( <Function> )
 								else {
-									def += Expression;
+									def = "subs(y=x, solve(y =" + Expression + ", x))";
 								}
-								def += ",x ,y)";
 							}
-							 */
 
 						}
 					}
