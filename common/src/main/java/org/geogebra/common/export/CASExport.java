@@ -348,7 +348,7 @@ public class CASExport {
 									def = "ifactor(" + expr + ")";
 								}
 							}
-							// need to handle some other parameters cases
+
 							if (name.equals("Derivative")) {
 								def = "diff(";
 								String Expression = getArgumentOfCommand(command,0);
@@ -358,7 +358,8 @@ public class CASExport {
 								else {
 									def += Expression;
 								}
-								if (numOfArguments == 1) { // if there is only one argument, then x is the default variable
+								// if there is only one argument, then x is the default variable
+								if (numOfArguments == 1) {
 									def += ", x)";
 								}
 								if (numOfArguments == 2){
@@ -475,12 +476,12 @@ public class CASExport {
 									def = "limit(" + Expression + ",";
 								}
 								if (numOfArguments == 2) { // if there are only 2 args the command form is Limit( <Expression>, <Value> )
-									String approachTo = getArgumentOfCommand(command , 1);
+									String approachTo = fixPiAppear(getArgumentOfCommand(command , 1));
 									def += "x=" + approachTo + ")";
 								}
 								if (numOfArguments == 3) { // if there are 3 args the command form is Limit( <Expression>, <Variable>, <Value> )
 									String varName = getArgumentOfCommand(command , 1);
-									String approachTo = getArgumentOfCommand(command , 2);
+									String approachTo = fixPiAppear(getArgumentOfCommand(command , 2));
 									def += varName + "," + varName + "=" + approachTo + ")";
 								}
 							}
@@ -522,20 +523,32 @@ public class CASExport {
 								}
 								def += ")";
 							}
-							// complete needed
-							/*
-							if (name.equals("Asymptote")) {
-								String Expression = command.getArgument(0).getCASstring(StringTemplate.casCopyTemplate, false);
-								def = "Student[Calculus1]:-Asymptotes(";
-								if (shortNameToFullName.containsValue(Expression)) {
+
+							if (name.equals("Denominator")) {
+								String Expression = getArgumentOfCommand(command , 0);
+								def = "denom(";
+								if(shortNameToFullName.containsValue(Expression)) {
 									def += fullNameToShortName.get(Expression);
 								}
 								else {
 									def += Expression;
 								}
-								def += ",x ,y)";
+								def += ")";
 							}
-							 */
+
+							if (name.equals("Invert")) {
+								String Expression = getArgumentOfCommand(command , 0).replace(" " , "");
+								// the Invert command have two forms of 1 argument
+								// if it contains the following chars than the command form is Invert( <Matrix> )
+								if (Expression.startsWith("{{") && Expression.endsWith("}}") && Expression.contains("},{")) {
+									Expression = Expression.replace("{" , "[").replace("}" , "]");
+									def = "with(LinearAlgebra):MatrixInverse( Matrix(" + Expression + ") )";
+								}
+								// the other case is the command form is Invert( <Function> )
+								else {
+									def = "subs(y=x, solve(y =" + Expression + ", x))";
+								}
+							}
 
 						}
 					}
