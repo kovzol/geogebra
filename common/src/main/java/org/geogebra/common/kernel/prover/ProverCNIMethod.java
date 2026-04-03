@@ -120,8 +120,8 @@ public class ProverCNIMethod {
 		ArrayList<String> toEliminateLhsPrimed = null;
 		ArrayList<String> toEliminateRhsVars = null;
 		if (prover.getShowproof() && prover.getShowEliminate()) {
-			toEliminateLhsPrimed = new ArrayList<>();  // z.B. ((A'-C')/(A'-O'))/...
-			toEliminateRhsVars = new ArrayList<>();  // z.B. r__1, r__2, r__
+			toEliminateLhsPrimed = new ArrayList<>();  // e.g., ((A'-C')/(A'-O'))/...
+			toEliminateRhsVars = new ArrayList<>();  // e.g., r__1, r__2, r__
 		}
 
 		// Keep only points:
@@ -184,8 +184,10 @@ public class ProverCNIMethod {
 						prover.addProofLine(CmdShowProof.TEXT_EQUATION, def.declaration);
 
 						if (!primedNotationExplained) {
-							prover.addProofLine(loc.getMenuDefault("CNIPrimedSymbols",
-									"We now use symbols like A' and O'. They describe the points in a general symbolic way:"));
+							String exampleLabel = getUniqueLabel(ge);
+							prover.addProofLine(loc.getPlainDefault("CNIPrimedSymbols",
+									"Denote point %0 by %1 in a symbolic manner.",
+									exampleLabel, exampleLabel + PRIME));
 							primedNotationExplained = true;
 						}
 
@@ -222,7 +224,7 @@ public class ProverCNIMethod {
 								algebraicRelationExplained = true;
 							}
 
-							String rk = VARIABLE_R_STRING + realRelationsNo; // z.B. r__1
+							String rk = VARIABLE_R_STRING + realRelationsNo; // e.g., r__1
 							String lhsProgram = executeGiac("lhs(" + expression2 + ")");
 							String lhs2 = addPrimesToLabels(lhsProgram, primeLabels);
 
@@ -301,7 +303,7 @@ public class ProverCNIMethod {
 					prover.addProofLine(CmdShowProof.TEXT_EQUATION, lhs(expression) + "=" + expression2
 							+ Unicode.IS_ELEMENT_OF + "\u211D");
 
-					String rk = VARIABLE_R_STRING + realRelationsNo; // z.B. r__1
+					String rk = VARIABLE_R_STRING + realRelationsNo; // e.g., r__1
 					String lhsProgram = executeGiac("lhs(" + expression2 + ")");
 					String lhs2 = addPrimesToLabels(lhsProgram, primeLabels);
 
@@ -1578,7 +1580,7 @@ public class ProverCNIMethod {
 
 		ArrayList<String> eqs = new ArrayList<>();
 
-		//build polynom in format: ((A'-C')/(A'-O'))/... - r__k
+		//build polynomial in format: ((A'-C')/(A'-O'))/... - r__k
 		for (int i = 0; i < lhsList.size(); i++) {
 			String lhs = lhsList.get(i);
 			String rVar = rhsVars.get(i);
