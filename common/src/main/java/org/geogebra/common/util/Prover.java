@@ -163,6 +163,7 @@ public abstract class Prover {
 	private boolean showproof = false;
 	private boolean captionalgebra = false;
 	private String proof = "";
+	private boolean showEliminate = false;
 
 	public boolean getShowproof() {
 		return showproof;
@@ -170,6 +171,14 @@ public abstract class Prover {
 
 	public void setShowproof(boolean set) {
 		showproof = set;
+	}
+
+	public boolean getShowEliminate() {
+		return showEliminate;
+	}
+
+	public void setShowEliminate(boolean set) {
+		showEliminate = set;
 	}
 
 	public boolean getCaptionalgebra() {
