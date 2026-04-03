@@ -61,14 +61,22 @@ public class CmdShowProof extends CmdScripting {
 		GeoElement[] arg;
 		arg = resArgs(c);
 		boolean captionalgebra = false;
+		boolean showEliminate = false;
 
 		switch (n) {
-		case 2:
-			if (arg[1] instanceof BooleanValue) {
-				if (((BooleanValue) arg[1]).getBoolean()) {
-					captionalgebra = true;
-				}
+		case 3:
+			if (!(arg[2] instanceof BooleanValue)) {
+				throw argErr(c, arg[2]);
 			}
+			captionalgebra = ((BooleanValue) arg[2]).getBoolean();
+			// fall through
+
+		case 2:
+			if (!(arg[1] instanceof BooleanValue)) {
+				throw argErr(c, arg[1]);
+			}
+			showEliminate = ((BooleanValue) arg[1]).getBoolean();
+			// fall through
 		case 1:
 			if (arg[0] instanceof BooleanValue) {
 				CASView cv = (CASView) cons.getApplication().getView(VIEW_CAS);
@@ -90,7 +98,7 @@ public class CmdShowProof extends CmdScripting {
 				updatePercentInfo();
 
 				AlgoProveDetails algo = new AlgoProveDetails(cons, arg[0], false, false, true,
-						captionalgebra);
+						showEliminate, captionalgebra);
 
 				percent = 50;
 				updatePercentInfo();

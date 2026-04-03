@@ -50,6 +50,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	private boolean discovery = false;
 	private boolean showproof = false;
 	private boolean captionalgebra = false;
+	private boolean showEliminate = false;
 	private String inputFingerprint;
 	private Prover p;
 
@@ -68,10 +69,33 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	 *            fancy new objects---they are maintained by Discover)
 	 * @param showproof
 	 *            true if the proof steps must be shown
+	 * @param showEliminate
+	 *            true if elimination commands should be shown in the proof
+	 */
+	public AlgoProveDetails(Construction cons, GeoElement root,
+			boolean relationTool, boolean discovery, boolean showproof, boolean showEliminate) {
+		this(cons, root, relationTool, discovery, showproof, showEliminate, false);
+	}
+
+	/**
+	 * Proves the given statement and gives some details in a list.
+	 *
+	 * @param cons
+	 *            The construction
+	 * @param root
+	 *            Input statement
+	 * @param relationTool
+	 *            true if output should be given for Relation Tool (which is
+	 *            more readable)
+	 * @param discovery
+	 *            true if output should be given for Discover (where we don't need
+	 *            fancy new objects---they are maintained by Discover)
+	 * @param showproof
+	 *            true if the proof steps must be shown
 	 */
 	public AlgoProveDetails(Construction cons, GeoElement root,
 			boolean relationTool, boolean discovery, boolean showproof) {
-		this(cons, root, relationTool, discovery, showproof, false);
+		this(cons, root, relationTool, discovery, showproof, false, false);
 	}
 
 	/**
@@ -93,12 +117,14 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	 *            true if the Graphics View should be updated with algebraic explanations
 	 */
 	public AlgoProveDetails(Construction cons, GeoElement root,
-			boolean relationTool, boolean discovery, boolean showproof, boolean captionalgebra) {
+			boolean relationTool, boolean discovery, boolean showproof,
+			boolean showEliminate, boolean captionalgebra) {
 		super(cons);
 		this.root = root;
 		this.relTool = relationTool;
 		this.discovery = discovery;
 		this.showproof = showproof;
+		this.showEliminate = showEliminate;
 		this.captionalgebra = captionalgebra;
 
 		list = new GeoList(cons);
@@ -109,6 +135,17 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 		compute();
 	}
 
+	/**
+	 * Proves the given statement and gives some details in a list.
+	 *
+	 * @param cons
+	 *            The construction
+	 * @param root
+	 *            Input statement
+	 * @param relTool
+	 *            true if output should be given for Relation Tool (which is
+	 *            more readable)
+	 */
 	public AlgoProveDetails(Construction cons, GeoElement root, boolean relTool) {
 		this(cons, root, relTool, false, false);
 	}
@@ -185,6 +222,7 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 		// Compute extra NDG's:
 		p.setReturnExtraNDGs(true);
 		p.setShowproof(showproof);
+		p.setShowEliminate(showEliminate);
 		p.setCaptionalgebra(captionalgebra);
 
 		// Adding benchmarking:
