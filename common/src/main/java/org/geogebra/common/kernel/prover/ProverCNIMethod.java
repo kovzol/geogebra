@@ -2,7 +2,6 @@ package org.geogebra.common.kernel.prover;
 
 import java.util.ArrayList;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.kernel.Construction;
@@ -1553,21 +1552,69 @@ public class ProverCNIMethod {
 
 	private static String addPrimesToLabels(String s, TreeSet<String> labels) {
 		if (s == null) return null;
-
 		String out = s;
 		for (String lab : labels) {
-			if (lab == null || lab.isEmpty()) {
-				continue;
+			if (lab == null || lab.isEmpty()) continue;
+			StringBuilder sb = new StringBuilder();
+			int i = 0;
+			// find all occurences of label
+			while (i < out.length()) {
+				int idx = out.indexOf(lab, i);
+				// nothing more to find, leave loop
+				if (idx == -1) {
+					sb.append(out.substring(i));
+					break;
+				}
+				// Check word boundary: do not replace if label is part of a longer name
+				boolean beforeOk = idx == 0 || !Character.isLetterOrDigit(out.charAt(idx - 1));
+				boolean afterOk = idx + lab.length() == out.length()
+						|| !Character.isLetterOrDigit(out.charAt(idx + lab.length()));
+				sb.append(out, i, idx);
+				if (beforeOk && afterOk) {
+					sb.append(lab).append(PRIME);
+				} else {
+					sb.append(lab);
+				}
+				i = idx + lab.length();
 			}
-			// replace only full tokens: A -> A', O1 -> O1', ...
-			out = out.replaceAll("\\b" + Pattern.quote(lab) + "\\b", lab + PRIME);
+			out = sb.toString();
 		}
 		return out;
 	}
 
 	private static String addPrimesToRVariables(String s, String variableR) {
 		if (s == null) return null;
-		return s.replaceAll("\\b(" + Pattern.quote(variableR) + "\\d*)(?!')\\b", "$1" + PRIME);
+		StringBuilder sb = new StringBuilder();
+		int i = 0;
+		while (i < s.length()) {
+			int idx = s.indexOf(variableR, i);
+			if (idx == -1) {
+				sb.append(s.substring(i));
+				break;
+			}
+			// ensure r is not part of a longer variable name
+			boolean beforeOk = idx == 0 || !Character.isLetterOrDigit(s.charAt(idx - 1));
+			if (!beforeOk) {
+				sb.append(s, i, idx + 1);
+				i = idx + 1;
+				continue;
+			}
+			// consume optional numbers after variableR
+			int end = idx + variableR.length();
+			while (end < s.length() && Character.isDigit(s.charAt(end))) {
+				end++;
+			}
+			// negative lookahead
+			boolean alreadyPrimed = end < s.length() && s.charAt(end) == '\'';
+			boolean afterOk = end == s.length() || !Character.isLetterOrDigit(s.charAt(end));
+			sb.append(s, i, idx);
+			sb.append(s, idx, end);
+			if (!alreadyPrimed && afterOk) {
+				sb.append(PRIME);
+			}
+			i = end;
+		}
+		return sb.toString();
 	}
 
 	private static String buildGeoGebraEliminateCommand(
@@ -1619,11 +1666,32 @@ public class ProverCNIMethod {
 	}
 
 	private static boolean isNumericConstant(String expr) {
-		if (expr == null) {
-			return false;
-		}
+		if (expr == null) return false;
 		String s = expr.trim();
-		return s.matches("[+-]?\\d+(\\.\\d+)?(/[+-]?\\d+(\\.\\d+)?)?");
+		int slash = s.indexOf('/');
+		if (slash == -1) {
+			return isDecimal(s);
+		}
+		// treat string as fraction
+		return isDecimal(s.substring(0, slash)) && isDecimal(s.substring(slash + 1));
+	}
+
+	private static boolean isDecimal(String s) {
+		if (s.isEmpty()) return false;
+		int start = 0;
+		if (s.charAt(0) == '+' || s.charAt(0) == '-') start = 1;
+		if (start == s.length()) return false; // not a valid number
+		boolean dotSeen = false;
+		for (int i = start; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c == '.') {
+				if (dotSeen) return false; // second dot found -> not a valid number
+				dotSeen = true;
+			} else if (!Character.isDigit(c)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static boolean containsPrimedPointLabel(TreeSet<String> labels) {
