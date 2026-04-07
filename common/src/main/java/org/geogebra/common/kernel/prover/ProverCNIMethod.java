@@ -330,8 +330,11 @@ public class ProverCNIMethod {
 				}
 
 				thesisDefinitionPrimed = lhs2;
-				prover.addProofLine(loc.getMenuDefault("CNIThesisAlgebraicForm",
-						"We now turn the thesis into an algebraic expression. The symbol " + VARIABLE_R_STRING + "' stands for this expression:"));
+				
+				prover.addProofLine(loc.getPlainDefault(
+						"CNIThesisAlgebraicForm",
+						"We now turn the thesis into an algebraic expression. The symbol %0 stands for this expression:",
+						VARIABLE_R_STRING + PRIME));
 				prover.addProofLine(CmdShowProof.EQUATION, VARIABLE_R_STRING + PRIME + ":=" + lhs2);
 
 				if (def.warning == WARNING_PERPENDICULAR_OR_PARALLEL) {
