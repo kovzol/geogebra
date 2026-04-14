@@ -508,6 +508,7 @@ public class CASExport {
 
 								def += varName + "= " + StartValue + ".." + EndValue + "])";
 							}
+
 							if (name.equals("Degree")) {
 								String Expression = getArgumentOfCommand(command , 0);
 								def = "degree(";
@@ -542,12 +543,78 @@ public class CASExport {
 								// if it contains the following chars than the command form is Invert( <Matrix> )
 								if (Expression.startsWith("{{") && Expression.endsWith("}}") && Expression.contains("},{")) {
 									Expression = Expression.replace("{" , "[").replace("}" , "]");
-									def = "with(LinearAlgebra):MatrixInverse( Matrix(" + Expression + ") )";
+									def = !txt.contains("with(LinearAlgebra):") ? "with(LinearAlgebra):" : "";
+									def += "MatrixInverse( Matrix(" + Expression + ") )";
 								}
 								// the other case is the command form is Invert( <Function> )
 								else {
 									def = "subs(y=x, solve(y =" + Expression + ", x))";
 								}
+							}
+
+							if (name.equals("Numeric")) {
+								String Expression = getArgumentOfCommand(command, 0);
+
+								if (numOfArguments == 1) {
+									def = "evalf(" + Expression + ")";
+								}
+								if (numOfArguments == 2) {
+									int numOfDigits = Integer.parseInt(getArgumentOfCommand(command, 1));
+									def = "evalf[" + numOfDigits + "](" + Expression + ")";
+								}
+							}
+
+							if (name.equals("Laplace")) {
+								String Expression = getArgumentOfCommand(command , 0);
+								def = !txt.contains("with(inttrans): ") ? "with(inttrans): " : "";
+								// if there is only one argument than the command form is Laplace( <Function> )
+								if (numOfArguments == 1) {
+									String varName = (String.valueOf(command.getArgument(0).getVariables(SymbolicMode.SYMBOLIC))).replaceAll("[\\[\\]]" , "");
+									 if (varName.contains("t") && varName.contains("*")) {
+										 def = "laplace(" + Expression + ", t, s)";
+									 } else {
+//										varName = varName.replaceAll("[\\[\\]]" , "");
+										def = "subs(s=" + varName + ", laplace(" + Expression + ", " + varName + ", s))";
+									 }
+								}
+								// if there are two arguments than the command form is Laplace( <Function>, <Variable> )
+								if (numOfArguments == 2) {
+									String varName = getArgumentOfCommand(command , 1);
+									if (!varName.equals("s")) {
+										def = "subs(s=" +  varName + ", laplace(" + Expression + ", " + varName + ", s))";
+									} else {
+										def = "subs(t=s ,laplace(" + Expression + ",s,t))";
+									}
+
+								}
+								// if there are three arguments than the command form is Laplace( <Function>, <Variable>, <Variable> )
+								if (numOfArguments == 3) {
+									String varName = getArgumentOfCommand(command , 1);
+									String newVarName = getArgumentOfCommand(command , 2);
+									if (varName.equals(newVarName)) {
+										def = "subs(s=" + newVarName +  ",laplace(" + Expression + "," + varName + ", s))";
+									} else {
+										def = "laplace(" + Expression + ", " + varName + ", " + newVarName + ")";
+									}
+								}
+							}
+
+							if (name.equals("InverseLaplace")) {
+								String Expression = getArgumentOfCommand(command , 0);
+								def = !txt.contains("with(inttrans):") ? "with(inttrans):" : "";
+								def += "InverseLaplace(" + Expression + ",";
+								if (numOfArguments == 1) {
+									def += " s , t)";
+								}
+								String varName = getArgumentOfCommand(command , 1);
+								if (numOfArguments == 2) {
+									def += varName + ", t)";
+								}
+								if (numOfArguments == 3) {
+									String newVarName = getArgumentOfCommand(command , 2);
+									def += varName + ", " +  newVarName + ")";
+								}
+
 							}
 
 						}
