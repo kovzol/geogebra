@@ -555,9 +555,9 @@ public class CASExport {
 							if (name.equals("Numeric")) {
 								String Expression = getArgumentOfCommand(command, 0);
 
-								// if their only one arg so the command form is Numeric( <Expression> )
+								// if there is only one argument than the command form is Numeric( <Expression> )
 								if (numOfArguments == 1) {
-									// the default number after the plotting point is 2
+									// by default, the result is rounded to 2 digits after the decimal point
 									def = "evalf[3](";
 								}
 								if (numOfArguments == 2) {
@@ -587,10 +587,28 @@ public class CASExport {
 							if (name.equals("Substitute")) {
 								String Expression =  getArgumentOfCommand(command , 0);
 								String secondArg = getArgumentOfCommand(command , 1);
+								def = "subs(";
 
+								// in that case the command form is Substitute( <Expression>, <Substitution List> )
+								if (numOfArguments == 2) {
+									if(shortNameToFullName.containsValue(secondArg)) {
+										def += fullNameToShortName.get(secondArg);
+									}
+									else {
+										def += secondArg;
+									}
+									if (shortNameToFullName.containsValue(Expression)) {
+										def += "," + fullNameToShortName.get(Expression) + ")";
+									}
+									else {
+										def += "," + Expression + ")";
+									}
+								}
 
-								if(shortNameToFullName.containsValue(Expression)) {
-									def += fullNameToShortName.get(Expression);
+								// in that case the command form is Substitute( <Expression>, <from>, <to> )
+								if(numOfArguments == 3) {
+									String thirdArg = getArgumentOfCommand(command , 2);
+									def += secondArg + "=" + thirdArg + "," + Expression + ")";
 								}
 							}
 
