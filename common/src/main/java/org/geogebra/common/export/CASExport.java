@@ -555,12 +555,41 @@ public class CASExport {
 							if (name.equals("Numeric")) {
 								String Expression = getArgumentOfCommand(command, 0);
 
+								// if their only one arg so the command form is Numeric( <Expression> )
 								if (numOfArguments == 1) {
-									def = "evalf(" + Expression + ")";
+									// the default number after thr plotting point is 2
+									def = "evalf[3](";
 								}
 								if (numOfArguments == 2) {
-									int numOfDigits = Integer.parseInt(getArgumentOfCommand(command, 1));
-									def = "evalf[" + numOfDigits + "](" + Expression + ")";
+									String numOfDigits = getArgumentOfCommand(command , 1);
+									def = "evalf[";
+									try {
+										int n = Integer.parseInt(numOfDigits);
+										def += n + "](";
+									}  catch (NumberFormatException e) {
+										if(shortNameToFullName.containsValue(numOfDigits)) {
+											def += fullNameToShortName.get(numOfDigits) + ")";
+										}
+										else {
+											def += numOfDigits + "](";
+										}
+									}
+								}
+								if(shortNameToFullName.containsValue(Expression)) {
+									def += fullNameToShortName.get(Expression) + ")";
+								}
+								else {
+									def += Expression + ")";
+								}
+							}
+
+							if (name.equals("Substitute")) {
+								String Expression =  getArgumentOfCommand(command , 0);
+								String secondArg = getArgumentOfCommand(command , 1);
+
+
+								if(shortNameToFullName.containsValue(Expression)) {
+									def += fullNameToShortName.get(Expression);
 								}
 							}
 
