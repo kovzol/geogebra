@@ -557,7 +557,7 @@ public class CASExport {
 
 								// if their only one arg so the command form is Numeric( <Expression> )
 								if (numOfArguments == 1) {
-									// the default number after thr plotting point is 2
+									// the default number after the plotting point is 2
 									def = "evalf[3](";
 								}
 								if (numOfArguments == 2) {
@@ -583,6 +583,7 @@ public class CASExport {
 								}
 							}
 
+							// need to complete
 							if (name.equals("Substitute")) {
 								String Expression =  getArgumentOfCommand(command , 0);
 								String secondArg = getArgumentOfCommand(command , 1);
@@ -593,6 +594,8 @@ public class CASExport {
 								}
 							}
 
+							// need to complete
+							// their many cases to handle
 							if (name.equals("Laplace")) {
 								String Expression = getArgumentOfCommand(command , 0);
 								def = !txt.contains("with(inttrans): ") ? "with(inttrans): " : "";
@@ -628,6 +631,8 @@ public class CASExport {
 								}
 							}
 
+							// need to complete
+							// their many cases to handle
 							if (name.equals("InverseLaplace")) {
 								String Expression = getArgumentOfCommand(command , 0);
 								def = !txt.contains("with(inttrans):") ? "with(inttrans):" : "";
