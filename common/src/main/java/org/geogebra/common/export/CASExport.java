@@ -537,6 +537,18 @@ public class CASExport {
 								def += ")";
 							}
 
+							if (name.equals("Simplify")) {
+								String Expression = getArgumentOfCommand(command , 0);
+								def = "simplify(";
+								if(shortNameToFullName.containsValue(Expression)) {
+									def += fullNameToShortName.get(Expression);
+								}
+								else {
+									def += Expression;
+								}
+								def += ")";
+							}
+
 							if (name.equals("Invert")) {
 								String Expression = getArgumentOfCommand(command , 0).replace(" " , "");
 								// the Invert command have two forms of 1 argument
