@@ -612,6 +612,11 @@ public class CASExport {
 								}
 							}
 
+							if (name.equals("IsPrime")) {
+								String Expression = getArgumentOfCommand(command , 0);
+								def = "isprime(" + Expression + ")";
+							}
+
 							// need to complete
 							// their many cases to handle
 							if (name.equals("Laplace")) {
