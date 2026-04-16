@@ -625,7 +625,7 @@ public class CASExport {
 							}
 
 							// need to complete
-							// their many cases to handle
+							// there are many cases to handle
 							if (name.equals("Laplace")) {
 								String Expression = getArgumentOfCommand(command , 0);
 								def = !txt.contains("with(inttrans): ") ? "with(inttrans): " : "";
@@ -662,7 +662,7 @@ public class CASExport {
 							}
 
 							// need to complete
-							// their many cases to handle
+							// there are many cases to handle
 							if (name.equals("InverseLaplace")) {
 								String Expression = getArgumentOfCommand(command , 0);
 								def = !txt.contains("with(inttrans):") ? "with(inttrans):" : "";
