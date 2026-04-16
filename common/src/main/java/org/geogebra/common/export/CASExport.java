@@ -693,6 +693,9 @@ public class CASExport {
 			}
 		}
 
+		// TODO: Consider putting this to somewhere else
+		txt = txt.replace("'", "_"); // always use _ instead of '
+
 		return txt;
 	}
 
