@@ -373,9 +373,13 @@ public class ProverCNIMethod {
 		int i = 0;
 		TreeSet<GeoElement> specialized = new TreeSet<>();
 		String specCode = "";
+		ArrayList<String> specEqList = new ArrayList<>();
 		for (GeoElement ge : freePoints) {
 			if (i == 0 && maxSpecRestriction < 2) {
 				String spec1 = getUniqueLabel(ge) + ":=0";
+				if (prover.getShowproof() && prover.getShowEliminate()) {
+					specEqList.add(getUniqueLabel(ge) + PRIME + "=0");
+				}
 				specCode += spec1 + "\n";
 				if (prover.getShowproof()) {
 					prover.addProofLine(CmdShowProof.TEXT_EQUATION, spec1);
@@ -384,6 +388,9 @@ public class ProverCNIMethod {
 			}
 			if (i == 1 && maxSpecRestriction < 1) {
 				String spec2 = getUniqueLabel(ge) + ":=1";
+				if (prover.getShowproof() && prover.getShowEliminate()) {
+					specEqList.add(getUniqueLabel(ge) + PRIME + "=1");
+				}
 				specCode += spec2 + "\n";
 				if (prover.getShowproof()) {
 					prover.addProofLine(CmdShowProof.TEXT_EQUATION, spec2);
@@ -439,7 +446,8 @@ public class ProverCNIMethod {
 						toEliminateRhsVars,
 						primeLabels,
 						extraVariables,
-						null
+						null,
+						specEqList
 				);
 
 				prover.addProofLine(CmdShowProof.EQUATION, ggbEliminateCommand);
@@ -596,7 +604,8 @@ public class ProverCNIMethod {
 						toEliminateRhsVars,
 						primeLabels,
 						extraVariables,
-						divisor
+						divisor,
+						specEqList
 				);
 
 				prover.addProofLine(CmdShowProof.EQUATION, ggbEliminateCommand);
@@ -1625,7 +1634,8 @@ public class ProverCNIMethod {
 			ArrayList<String> rhsVars,
 			TreeSet<String> pointLabels,
 			String extraVariables,
-			String extraEq0
+			String extraEq0,
+			ArrayList<String> specEqList
 	) {
 
 		ArrayList<String> eqs = new ArrayList<>();
@@ -1652,6 +1662,10 @@ public class ProverCNIMethod {
 			if (!d.isEmpty() && !"1".equals(d) && !"-1".equals(d) && !"0".equals(d)) {
 				eqs.add(d + " = 0");
 			}
+		}
+		// add specializations
+		if (specEqList != null) {
+			eqs.addAll(specEqList);
 		}
 
 		// handle extraVariables
