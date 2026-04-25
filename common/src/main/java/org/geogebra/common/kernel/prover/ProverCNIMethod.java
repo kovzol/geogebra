@@ -135,7 +135,7 @@ public class ProverCNIMethod {
 		// inform user that variables sucha as A' will cause issues when the proof is displayed
 		if (prover.getShowproof() && containsPrimedPointLabel(primeLabels)) {
 			prover.addProofLine(CmdShowProof.PROBLEM,
-					loc.getMenuDefault("CNIPrimedLabelWarning",
+					loc.getMenuDefault("CNIPrimedLabelsWarning",
 							"Warning: Labels that already contain a prime symbol can cause display problems in later proof steps."));
 		}
 
