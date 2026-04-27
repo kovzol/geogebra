@@ -617,6 +617,14 @@ public class CASExport {
 								def = "isprime(" + Expression + ")";
 							}
 
+							if (name.equals("ModularExponent")) {
+								String base = getArgumentOfCommand(command, 0);
+								String exponent = getArgumentOfCommand(command , 1);
+								String modularExponent = getArgumentOfCommand(command , 2);
+								def =   base + " &^ " +  exponent + " mod " + modularExponent;
+							}
+							//5 &^ 12 mod 13;
+
 							// need to complete
 							// their many cases to handle
 							if (name.equals("Laplace")) {
