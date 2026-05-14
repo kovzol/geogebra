@@ -624,6 +624,23 @@ public class CASExport {
 								}
 							}
 
+							if (name.equals("IsPrime")) {
+								String Expression = getArgumentOfCommand(command , 0);
+								def = "isprime(" + Expression + ")";
+							}
+
+							if (name.equals("ModularExponent")) {
+								String base = getArgumentOfCommand(command, 0);
+								String exponent = getArgumentOfCommand(command , 1);
+								String modularExponent = getArgumentOfCommand(command , 2);
+								def = base + " &^ " +  exponent + " mod " + modularExponent;
+							}
+
+							if (name.equals("PrimeFactors")) {
+								String Expression = getArgumentOfCommand(command , 0);
+								def = "ifactor( " + Expression + " )";
+							}
+
 							// need to complete
 							// there are many cases to handle
 							if (name.equals("Laplace")) {
