@@ -621,9 +621,13 @@ public class CASExport {
 								String base = getArgumentOfCommand(command, 0);
 								String exponent = getArgumentOfCommand(command , 1);
 								String modularExponent = getArgumentOfCommand(command , 2);
-								def =   base + " &^ " +  exponent + " mod " + modularExponent;
+								def = base + " &^ " +  exponent + " mod " + modularExponent;
 							}
-							//5 &^ 12 mod 13;
+
+							if (name.equals("PrimeFactors")) {
+								String Expression = getArgumentOfCommand(command , 0);
+								def = "ifactor( " + Expression + " )";
+							}
 
 							// need to complete
 							// their many cases to handle
