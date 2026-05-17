@@ -18,9 +18,6 @@ import org.geogebra.common.kernel.algos.AlgoIntersectConics;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
 import org.geogebra.common.kernel.algos.AlgoIntersectSingle;
-import org.geogebra.common.kernel.algos.AlgoJoinPoints;
-import org.geogebra.common.kernel.algos.AlgoJoinPointsRay;
-import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
 import org.geogebra.common.kernel.algos.AlgoLineBisector;
 import org.geogebra.common.kernel.algos.AlgoLineBisectorSegment;
 import org.geogebra.common.kernel.algos.AlgoLinePointLine;
@@ -29,11 +26,9 @@ import org.geogebra.common.kernel.algos.AlgoMidpointSegment;
 import org.geogebra.common.kernel.algos.AlgoMirror;
 import org.geogebra.common.kernel.algos.AlgoOrthoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
-import org.geogebra.common.kernel.algos.AlgoPolygon;
 import org.geogebra.common.kernel.algos.AlgoPolygonRegular;
 import org.geogebra.common.kernel.algos.AlgoRotatePoint;
 import org.geogebra.common.kernel.algos.AlgoTranslate;
-import org.geogebra.common.kernel.algos.AlgoVector;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.MySpecialDouble;
 import org.geogebra.common.kernel.geos.GeoAngle;
@@ -44,7 +39,6 @@ import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.geos.GeoVector;
-import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.scripting.CmdShowProof;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.plugin.Operation;
@@ -60,6 +54,8 @@ import com.himamis.retex.editor.share.util.Unicode;
 public class ProverCNIMethod {
 
 	private static Kernel kernel;
+
+	private static final String PRIME = "\u0027";
 
 	public static int WARNING_PERPENDICULAR_OR_PARALLEL = 1;
 	public static int WARNING_EQUALITY_OR_COLLINEAR = 2;
@@ -90,6 +86,10 @@ public class ProverCNIMethod {
 		boolean rMustBeZero = false;
 		int maxSpecRestriction = 0;
 
+		// to avoid that explanations are displayed multiple times
+		boolean primedNotationExplained = false;
+		boolean algebraicRelationExplained = false;
+
 		String VARIABLE_R_STRING = "r__"; // This must be a kind of unique string.
 		String VARIABLE_I_STRING = "I_"; // This must be a kind of unique string.
 
@@ -113,12 +113,30 @@ public class ProverCNIMethod {
 
 		// All predecessors:
 		TreeSet<GeoElement> allPredecessors = statement.getAllPredecessors();
+		// prime labels
+		TreeSet<String> primeLabels = new TreeSet<>();
+		// collect r_k definitions to print them in CAS later
+		ArrayList<String> toEliminateLhsPrimed = null;
+		ArrayList<String> toEliminateRhsVars = null;
+		if (prover.getShowproof() && prover.getShowEliminate()) {
+			toEliminateLhsPrimed = new ArrayList<>();  // e.g., ((A'-C')/(A'-O'))/...
+			toEliminateRhsVars = new ArrayList<>();  // e.g., r__1, r__2, r__
+		}
+
 		// Keep only points:
 		TreeSet<GeoPoint> allPredecessorPoints = new TreeSet<>();
 		for (GeoElement p : allPredecessors) {
 			if (p instanceof GeoPoint) {
 				allPredecessorPoints.add((GeoPoint) p);
+				primeLabels.add(getUniqueLabel(p));
 			}
+		}
+
+		// inform user that variables sucha as A' will cause issues when the proof is displayed
+		if (prover.getShowproof() && containsPrimedPointLabel(primeLabels)) {
+			prover.addProofLine(CmdShowProof.PROBLEM,
+					loc.getMenuDefault("CNIPrimedLabelsWarning",
+							"Warning: Labels that already contain a prime symbol can cause display problems in later proof steps."));
 		}
 
 		// Free points. We need them to eliminate the variables according to them.
@@ -127,6 +145,8 @@ public class ProverCNIMethod {
 		TreeSet<GeoElement> realRelationalPoints = new TreeSet<>();
 
 		String extraVariables = "";
+
+		String thesisDefinitionPrimed = null;
 
 		if (prover.getShowproof()) {
 			prover.addProofLine(loc.getMenuDefault("TheHypotheses", "The hypotheses:"));
@@ -161,10 +181,21 @@ public class ProverCNIMethod {
 					declarations += def.declaration + "\n";
 					if (prover.getShowproof()) {
 						prover.addProofLine(CmdShowProof.TEXT_EQUATION, def.declaration);
+
+						if (!primedNotationExplained) {
+							String exampleLabel = getUniqueLabel(ge);
+							prover.addProofLine(loc.getPlainDefault("CNIPrimedSymbols",
+									"Denote point %0 by %1 in a symbolic manner.",
+									exampleLabel, exampleLabel + PRIME));
+							primedNotationExplained = true;
+						}
+
+						prover.addProofLine(CmdShowProof.EQUATION, addPrimesToLabels(def.declaration, primeLabels));
 					}
 				}
 				if (def.zeroRelation != null) {
 					realRelations += def.zeroRelation + ",";
+
 					if (prover.getShowproof()) {
 						prover.addProofLine(CmdShowProof.TEXT_EQUATION, def.zeroRelation + "=0");
 					}
@@ -183,6 +214,25 @@ public class ProverCNIMethod {
 							String expression2 = executeGiac(rewriteProgram);
 							prover.addProofLine(CmdShowProof.TEXT_EQUATION, lhs(expression) + "=" + expression2
 									+ Unicode.IS_ELEMENT_OF + "\u211D");
+
+							if (!algebraicRelationExplained) {
+								prover.addProofLine(loc.getPlainDefault("CNIAlgebraicRelations",
+										"We now turn geometric relations into algebraic expressions. The symbols %0, %1, ... stand for these expressions:",
+										VARIABLE_R_STRING + "1'",
+										VARIABLE_R_STRING + "2'"));
+								algebraicRelationExplained = true;
+							}
+
+							String rk = VARIABLE_R_STRING + realRelationsNo; // e.g., r__1
+							String lhsProgram = executeGiac("lhs(" + expression2 + ")");
+							String lhs2 = addPrimesToLabels(lhsProgram, primeLabels);
+
+							if (toEliminateLhsPrimed != null) {
+								toEliminateLhsPrimed.add(lhs2);
+								toEliminateRhsVars.add(rk);
+							}
+
+							prover.addProofLine(CmdShowProof.EQUATION, rk + PRIME + ":=" + lhs2);
 						}
 					}
 					if (def.warning == WARNING_PERPENDICULAR_OR_PARALLEL) {
@@ -224,6 +274,7 @@ public class ProverCNIMethod {
 			declarations += def.declaration;
 			if (prover.getShowproof()) {
 				prover.addProofLine(CmdShowProof.TEXT_EQUATION, def.declaration);
+				prover.addProofLine(CmdShowProof.EQUATION, addPrimesToLabels(def.declaration, primeLabels));
 			}
 		}
 
@@ -247,8 +298,20 @@ public class ProverCNIMethod {
 				if (prover.getShowproof()) {
 					String rewriteProgram = "[" + predefs + expression + "][" + predefinitions.length + "]";
 					String expression2 = executeGiac(rewriteProgram);
+
 					prover.addProofLine(CmdShowProof.TEXT_EQUATION, lhs(expression) + "=" + expression2
 							+ Unicode.IS_ELEMENT_OF + "\u211D");
+
+					String rk = VARIABLE_R_STRING + realRelationsNo; // e.g., r__1
+					String lhsProgram = executeGiac("lhs(" + expression2 + ")");
+					String lhs2 = addPrimesToLabels(lhsProgram, primeLabels);
+
+					if (toEliminateLhsPrimed != null) {
+						toEliminateLhsPrimed.add(lhs2);
+						toEliminateRhsVars.add(rk);
+					}
+
+					prover.addProofLine(CmdShowProof.EQUATION, rk + PRIME + ":=" + lhs2);
 				}
 			}
 			String thesis = CASrealRelations[nrRels - 1] + "=" + VARIABLE_R_STRING;
@@ -257,6 +320,23 @@ public class ProverCNIMethod {
 				String rewriteProgram = "[" + predefs + thesis + "][" + predefinitions.length + "]";
 				String thesis2 = executeGiac(rewriteProgram);
 				prover.addProofLine(CmdShowProof.TEXT_EQUATION, lhs(thesis) + "=" + thesis2);
+
+				String lhsProgram = executeGiac("lhs(" + thesis2 + ")");
+				String lhs2 = addPrimesToLabels(lhsProgram, primeLabels);
+
+				if (toEliminateLhsPrimed != null) {
+					toEliminateLhsPrimed.add(lhs2);
+					toEliminateRhsVars.add(VARIABLE_R_STRING);
+				}
+
+				thesisDefinitionPrimed = lhs2;
+				
+				prover.addProofLine(loc.getPlainDefault(
+						"CNIThesisAlgebraicForm",
+						"We now turn the thesis into an algebraic expression. The symbol %0 stands for this expression:",
+						VARIABLE_R_STRING + PRIME));
+				prover.addProofLine(CmdShowProof.EQUATION, VARIABLE_R_STRING + PRIME + ":=" + lhs2);
+
 				if (def.warning == WARNING_PERPENDICULAR_OR_PARALLEL) {
 					prover.addProofLine(CmdShowProof.PROBLEM, loc.getMenuDefault("PerpendicularityParallelism",
 							"Perpendicularity means perpendicularity or parallelism simultaneously"));
@@ -293,9 +373,13 @@ public class ProverCNIMethod {
 		int i = 0;
 		TreeSet<GeoElement> specialized = new TreeSet<>();
 		String specCode = "";
+		ArrayList<String> specEqList = new ArrayList<>();
 		for (GeoElement ge : freePoints) {
 			if (i == 0 && maxSpecRestriction < 2) {
 				String spec1 = getUniqueLabel(ge) + ":=0";
+				if (prover.getShowproof() && prover.getShowEliminate()) {
+					specEqList.add(getUniqueLabel(ge) + PRIME + "=0");
+				}
 				specCode += spec1 + "\n";
 				if (prover.getShowproof()) {
 					prover.addProofLine(CmdShowProof.TEXT_EQUATION, spec1);
@@ -304,6 +388,9 @@ public class ProverCNIMethod {
 			}
 			if (i == 1 && maxSpecRestriction < 1) {
 				String spec2 = getUniqueLabel(ge) + ":=1";
+				if (prover.getShowproof() && prover.getShowEliminate()) {
+					specEqList.add(getUniqueLabel(ge) + PRIME + "=1");
+				}
 				specCode += spec2 + "\n";
 				if (prover.getShowproof()) {
 					prover.addProofLine(CmdShowProof.TEXT_EQUATION, spec2);
@@ -348,7 +435,26 @@ public class ProverCNIMethod {
 		if (prover.getShowproof()) {
 			prover.addProofLine(loc.getMenuDefault("EliminateAllFreeVariables",
 					"We eliminate all variables that correspond to free points."));
+
+			if (prover.getShowEliminate()) {
+
+				prover.addProofLine(loc.getMenuDefault("CNIEliminateCommandInfo",
+						"The next command does this elimination. It removes the free-point coordinates and keeps only the relation between the hypotheses and the thesis:"));
+
+				String ggbEliminateCommand = buildGeoGebraEliminateCommand(
+						toEliminateLhsPrimed,
+						toEliminateRhsVars,
+						primeLabels,
+						extraVariables,
+						null,
+						specEqList
+				);
+
+				prover.addProofLine(CmdShowProof.EQUATION, ggbEliminateCommand);
+			}
+
 		}
+
 
 		if (elimIdeal.equals("{{}}")) {
 			// There is no direct correspondence between r1, r2, ..., and r.
@@ -395,6 +501,50 @@ public class ProverCNIMethod {
 						"The thesis (%0) can be expressed as a rational expression of the hypotheses, because %0 is"
 								+ " linear in the following polynomial equation:", VARIABLE_R_STRING));
 				prover.addProofLine(minDegreeA[1] + "=0");
+
+				// r is linear: a * r + b = 0
+				// rExpr = -b/a, with coeff(poly,r)[0] = a und coeff(poly,r)[1] = b
+				String poly = minDegreeA[1];
+
+				String rExpr = executeGiac(
+						"-(coeff(" + poly + "," + VARIABLE_R_STRING + ")[1])"
+								+ "/(coeff(" + poly + "," + VARIABLE_R_STRING + ")[0])");
+
+				// prime the r expression
+				String rExprPrimed = addPrimesToRVariables(rExpr, VARIABLE_R_STRING);
+
+				String simplifiedRExpr = executeGiac("simplify(" + rExprPrimed + ")");
+				String simplifiedThesis = null;
+				if (thesisDefinitionPrimed != null) {
+					simplifiedThesis = executeGiac("simplify(" + thesisDefinitionPrimed + ")");
+				}
+
+				prover.addProofLine(loc.getMenuDefault("CNISimplifyBoth",
+						"We now simplify both expressions. This makes them easier to compare:"));
+
+				prover.addProofLine(CmdShowProof.EQUATION,
+						VARIABLE_R_STRING + PRIME + PRIME + ":=" + rExprPrimed);
+				prover.addProofLine(CmdShowProof.EQUATION, "Simplify(" + rExprPrimed + ")");
+
+				if (thesisDefinitionPrimed != null) {
+					prover.addProofLine(CmdShowProof.EQUATION,
+							"Simplify(" + thesisDefinitionPrimed + ")");
+				}
+
+				// if it simplifies to a number => inform user that this is not a mistake
+				if (isNumericConstant(simplifiedRExpr)) {
+					if (simplifiedThesis != null && simplifiedRExpr.equals(simplifiedThesis)) {
+						prover.addProofLine(loc.getMenuDefault("CNISimplifiedSameNumber",
+								"Both simplified expressions are the same number. So the result matches the thesis."));
+					} else {
+						prover.addProofLine(loc.getMenuDefault("CNISimplifiedToNumber",
+								"The expression simplifies to a fixed number. This means the hypotheses already determine its value."));
+					}
+				} else if (thesisDefinitionPrimed != null) {
+					prover.addProofLine(loc.getMenuDefault("CNISimplifiedEqualThesis",
+							"If the simplified expressions are the same, then the result matches the thesis."));
+				}
+
 			}
 			Log.debug("The elimination ideal contains " + minDegreeA[1] + ", it is linear in r_.");
 			// Check if r can be expressed without a division:
@@ -444,6 +594,23 @@ public class ProverCNIMethod {
 			// Insert the divisor in the first program and check what happens:
 			program = program1 + "," + divisor + rest;
 			String elimIdeal2 = executeGiac(program);
+
+			if(prover.getShowproof() && prover.getShowEliminate()) {
+				prover.addProofLine(loc.getMenuDefault("CNIEliminateCommandInfoDivisor",
+						"The next command repeats the elimination with the extra assumption divisor = 0. It checks whether this case is possible:"));
+
+				String ggbEliminateCommand = buildGeoGebraEliminateCommand(
+						toEliminateLhsPrimed,
+						toEliminateRhsVars,
+						primeLabels,
+						extraVariables,
+						divisor,
+						specEqList
+				);
+
+				prover.addProofLine(CmdShowProof.EQUATION, ggbEliminateCommand);
+
+			}
 
 			if (elimIdeal2.equals("{{1}}")) {
 				// The case divisor == 0 is contradictory. This means that division by zero
@@ -503,6 +670,43 @@ public class ProverCNIMethod {
 							"The thesis (%0) can now be expressed as a rational expression of the hypotheses, because %0 is"
 									+ " linear in the following polynomial equation:", VARIABLE_R_STRING));
 					prover.addProofLine(minDegree2A[1] + "=0");
+
+					String poly2 = minDegree2A[1];
+					String rExpr2 = executeGiac(
+							"-(coeff(" + poly2 + "," + VARIABLE_R_STRING + ")[1])"
+									+ "/(coeff(" + poly2 + "," + VARIABLE_R_STRING + ")[0])");
+
+					String rExpr2Primed = addPrimesToRVariables(rExpr2, VARIABLE_R_STRING);
+
+					String simplifiedRExpr2 = executeGiac("simplify(" + rExpr2Primed + ")");
+					String simplifiedThesis2 = null;
+					if (thesisDefinitionPrimed != null) {
+						simplifiedThesis2 = executeGiac("simplify(" + thesisDefinitionPrimed + ")");
+					}
+
+					prover.addProofLine(loc.getMenuDefault("CNISimplifyBoth",
+							"We now simplify both expressions. This makes them easier to compare:"));
+
+					prover.addProofLine(CmdShowProof.EQUATION, VARIABLE_R_STRING + PRIME + PRIME + ":=" + rExpr2Primed);
+					prover.addProofLine(CmdShowProof.EQUATION, "Simplify(" + rExpr2Primed + ")");
+
+					if (thesisDefinitionPrimed != null) {
+						prover.addProofLine(CmdShowProof.EQUATION, "Simplify(" + thesisDefinitionPrimed + ")");
+					}
+
+					if (isNumericConstant(simplifiedRExpr2)) {
+						if (simplifiedThesis2 != null && simplifiedRExpr2.equals(simplifiedThesis2)) {
+							prover.addProofLine(loc.getMenuDefault("CNISimplifiedSameNumber",
+									"Both simplified expressions are the same number. So the result matches the thesis."));
+						} else {
+							prover.addProofLine(loc.getMenuDefault("CNISimplifiedToNumber",
+									"The expression simplifies to a fixed number. This means the hypotheses already determine its value."));
+						}
+					} else if (thesisDefinitionPrimed != null) {
+						prover.addProofLine(loc.getMenuDefault("CNISimplifiedEqualThesis",
+								"If the simplified expressions are the same, then the result matches the thesis."));
+					}
+
 				}
 				Log.debug("The second elimination ideal contains " + minDegree2A[1] + ", it is linear in r_.");
 				// Check if r can be expressed without a division:
@@ -1005,7 +1209,7 @@ public class ProverCNIMethod {
 	 * @return the label as String
 	 */
 	static String getUniqueLabel(GeoElement ge) {
-		return ge.getLabelSimple();
+		return ge.getLabelSimple().replace("_{","").replace("}", "");
 	}
 
 	static String removeTail(String input, int length) {
@@ -1357,4 +1561,163 @@ public class ProverCNIMethod {
 		int eqIndex = eq.indexOf("=");
 		return eq.substring(0, eqIndex);
 	}
+
+	private static String addPrimesToLabels(String s, TreeSet<String> labels) {
+		if (s == null) return null;
+		String out = s;
+		for (String lab : labels) {
+			if (lab == null || lab.isEmpty()) continue;
+			StringBuilder sb = new StringBuilder();
+			int i = 0;
+			// find all occurences of label
+			while (i < out.length()) {
+				int idx = out.indexOf(lab, i);
+				// nothing more to find, leave loop
+				if (idx == -1) {
+					sb.append(out.substring(i));
+					break;
+				}
+				// Check word boundary: do not replace if label is part of a longer name
+				boolean beforeOk = idx == 0 || !Character.isLetterOrDigit(out.charAt(idx - 1));
+				boolean afterOk = idx + lab.length() == out.length()
+						|| !Character.isLetterOrDigit(out.charAt(idx + lab.length()));
+				sb.append(out, i, idx);
+				if (beforeOk && afterOk) {
+					sb.append(lab).append(PRIME);
+				} else {
+					sb.append(lab);
+				}
+				i = idx + lab.length();
+			}
+			out = sb.toString();
+		}
+		return out;
+	}
+
+	private static String addPrimesToRVariables(String s, String variableR) {
+		if (s == null) return null;
+		StringBuilder sb = new StringBuilder();
+		int i = 0;
+		while (i < s.length()) {
+			int idx = s.indexOf(variableR, i);
+			if (idx == -1) {
+				sb.append(s.substring(i));
+				break;
+			}
+			// ensure r is not part of a longer variable name
+			boolean beforeOk = idx == 0 || !Character.isLetterOrDigit(s.charAt(idx - 1));
+			if (!beforeOk) {
+				sb.append(s, i, idx + 1);
+				i = idx + 1;
+				continue;
+			}
+			// consume optional numbers after variableR
+			int end = idx + variableR.length();
+			while (end < s.length() && Character.isDigit(s.charAt(end))) {
+				end++;
+			}
+			// negative lookahead
+			boolean alreadyPrimed = end < s.length() && s.charAt(end) == '\'';
+			boolean afterOk = end == s.length() || !Character.isLetterOrDigit(s.charAt(end));
+			sb.append(s, i, idx);
+			sb.append(s, idx, end);
+			if (!alreadyPrimed && afterOk) {
+				sb.append(PRIME);
+			}
+			i = end;
+		}
+		return sb.toString();
+	}
+
+	private static String buildGeoGebraEliminateCommand(
+			ArrayList<String> lhsList,
+			ArrayList<String> rhsVars,
+			TreeSet<String> pointLabels,
+			String extraVariables,
+			String extraEq0,
+			ArrayList<String> specEqList
+	) {
+
+		ArrayList<String> eqs = new ArrayList<>();
+
+		//build polynomial in format: ((A'-C')/(A'-O'))/... - r__k
+		for (int i = 0; i < lhsList.size(); i++) {
+			String lhs = lhsList.get(i);
+			String rVar = rhsVars.get(i);
+			eqs.add(lhs + "-" + rVar);
+		}
+
+		// prime all variables to avoid issues in CAS with defined points
+		StringBuilder vars = new StringBuilder();
+		for (String lab : pointLabels) {
+			if (vars.length() > 0) {
+				vars.append(",");
+			}
+			vars.append(lab).append(PRIME);   // A',B',C',O',...
+		}
+
+		// handle divisor (divisor = 0)
+		if (extraEq0 != null) {
+			String d = extraEq0.trim();
+			if (!d.isEmpty() && !"1".equals(d) && !"-1".equals(d) && !"0".equals(d)) {
+				eqs.add(d + " = 0");
+			}
+		}
+		// add specializations
+		if (specEqList != null) {
+			eqs.addAll(specEqList);
+		}
+
+		// handle extraVariables
+		if (extraVariables != null && !extraVariables.trim().isEmpty()) {
+			String ev = extraVariables.trim();
+			if (ev.endsWith(",")) {
+				ev = ev.substring(0, ev.length() - 1);
+			}
+			if (!ev.isEmpty()) {
+				vars.append(",").append(ev);
+			}
+		}
+
+		return "Eliminate({" + String.join(",", eqs) + "},{" + vars + "})";
+	}
+
+	private static boolean isNumericConstant(String expr) {
+		if (expr == null) return false;
+		String s = expr.trim();
+		int slash = s.indexOf('/');
+		if (slash == -1) {
+			return isDecimal(s);
+		}
+		// treat string as fraction
+		return isDecimal(s.substring(0, slash)) && isDecimal(s.substring(slash + 1));
+	}
+
+	private static boolean isDecimal(String s) {
+		if (s.isEmpty()) return false;
+		int start = 0;
+		if (s.charAt(0) == '+' || s.charAt(0) == '-') start = 1;
+		if (start == s.length()) return false; // not a valid number
+		boolean dotSeen = false;
+		for (int i = start; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c == '.') {
+				if (dotSeen) return false; // second dot found -> not a valid number
+				dotSeen = true;
+			} else if (!Character.isDigit(c)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean containsPrimedPointLabel(TreeSet<String> labels) {
+		for (String lab : labels) {
+			if (lab != null && lab.contains(PRIME)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

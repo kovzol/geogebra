@@ -49,13 +49,14 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	private boolean relTool = false;
 	private boolean discovery = false;
 	private boolean showproof = false;
-	private boolean captionalgebra = false;
+	private boolean verbose = false;
 	private String inputFingerprint;
 	private Prover p;
 
+
 	/**
 	 * Proves the given statement and gives some details in a list.
-	 * 
+	 *
 	 * @param cons
 	 *            The construction
 	 * @param root
@@ -89,17 +90,19 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 	 *            fancy new objects---they are maintained by Discover)
 	 * @param showproof
 	 *            true if the proof steps must be shown
-	 * @param captionalgebra
-	 *            true if the Graphics View should be updated with algebraic explanations
+	 * @param verbose
+	 *            true if the Graphics View should be updated with algebraic explanations (Botana),
+	 *            or if elimination steps should be shown (CNI)
 	 */
 	public AlgoProveDetails(Construction cons, GeoElement root,
-			boolean relationTool, boolean discovery, boolean showproof, boolean captionalgebra) {
+			boolean relationTool, boolean discovery, boolean showproof,
+			boolean verbose) {
 		super(cons);
 		this.root = root;
 		this.relTool = relationTool;
 		this.discovery = discovery;
 		this.showproof = showproof;
-		this.captionalgebra = captionalgebra;
+		this.verbose = verbose;
 
 		list = new GeoList(cons);
 		setInputOutput(); // for AlgoElement
@@ -109,6 +112,17 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 		compute();
 	}
 
+	/**
+	 * Proves the given statement and gives some details in a list.
+	 *
+	 * @param cons
+	 *            The construction
+	 * @param root
+	 *            Input statement
+	 * @param relTool
+	 *            true if output should be given for Relation Tool (which is
+	 *            more readable)
+	 */
 	public AlgoProveDetails(Construction cons, GeoElement root, boolean relTool) {
 		this(cons, root, relTool, false, false);
 	}
@@ -185,7 +199,8 @@ public class AlgoProveDetails extends AlgoElement implements UsesCAS {
 		// Compute extra NDG's:
 		p.setReturnExtraNDGs(true);
 		p.setShowproof(showproof);
-		p.setCaptionalgebra(captionalgebra);
+		p.setShowEliminate(verbose);
+		p.setCaptionalgebra(verbose);
 
 		// Adding benchmarking:
 		double startTime = UtilFactory.getPrototype().getMillisecondTime();

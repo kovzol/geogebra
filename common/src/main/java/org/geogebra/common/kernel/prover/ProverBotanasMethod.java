@@ -2976,7 +2976,7 @@ public class ProverBotanasMethod {
 				ndgproduct = ndgproduct.subtract(new PPolynomial(BigInteger.ONE));
 				prover.addProofLine(CmdShowProof.EQUATION, "endg:" + ndgproduct + "=0");
 				ndgproduct = ndgproduct.substitute(substitutions);
-				prover.addProofLine("After substitutions:");
+				prover.addProofLine(loc.getMenuDefault("AfterSubs", "After substitutions:"));
 				prover.addProofLine(CmdShowProof.EQUATION, "sndg:" + ndgproduct + "=0");
 				addConditions(prover);
 				syzygy(as, ndgproduct, substitutions, statement.getKernel(), proverSettings.transcext, prover);

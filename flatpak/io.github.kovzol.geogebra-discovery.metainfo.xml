@@ -87,6 +87,18 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="5.0.641.0" date="2026-04-18">
+    <url type="details">https://github.com/kovzol/geogebra/commits/7bb1145fa9003bc8202d95f7c918489cf2a9a96f</url>
+      <description>
+        <p>Release description</p>
+          <ul>
+            <li>German, Spanish and Hungarian translation for the complex number identity (CNI) method</li>
+            <li>Extended explanations and Eliminate(...) computations for the CNI method</li>
+            <li>DescribeStatement command (with German, Spanish and Hungarian translations)</li>
+            <li>Improved Maple export of the CAS View</li>
+          </ul>
+      </description>
+    </release>
     <release version="5.0.641.0" date="2026-02-18">
     <url type="details">https://github.com/kovzol/geogebra/commits/e4e75c804ecee5ffd74bd5ac3562fdb074776f1f</url>
       <description>

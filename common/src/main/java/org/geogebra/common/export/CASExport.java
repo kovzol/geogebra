@@ -324,7 +324,8 @@ public class CASExport {
 						Command command = ve.getTopLevelCommand();
 						if (command != null) {
 							String name = command.getName();
-
+						
+		
 							switch (name) {
 							    case "Solve":
 								    def = MapleCommandTranslator.translateSolve(command);
@@ -392,6 +393,9 @@ public class CASExport {
 				}
 			}
 		}
+
+		// TODO: Consider putting this to somewhere else
+		txt = txt.replace("'", "_"); // always use _ instead of '
 
 		return txt;
 	}
