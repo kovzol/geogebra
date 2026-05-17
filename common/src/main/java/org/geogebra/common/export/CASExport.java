@@ -350,31 +350,35 @@ public class CASExport {
 							}
 
 							if (name.equals("Derivative")) {
-								def = "diff(";
-								def += getMapleName(
-										getArgumentOfCommand(command,0),
-										fullNameToShortName);
+								String expression = getMapleName(getArgumentOfCommand(command, 0), fullNameToShortName);
+
 								// if there is only one argument then the command form is Derivative( <Function> )
 								if (numOfArguments == 1) {
-									def += ", x)";
+									def = "diff(" + expression + ",x)";
 								}
-								if (numOfArguments == 2){
+
+								// if there are two arguments then the command form is either
+								// Derivative( <Function>, <Number> ) or Derivative( <Expression>, <Variable> )
+								if (numOfArguments == 2) {
+									String secondArg = getArgumentOfCommand(command, 1);
+
 									// try to convert the second arg to number
-									// in case the command form is Derivative( <Curve>, <Number> )
+									// in case the command form is Derivative( <Function>, <Number> )
 									try {
-										int OrderOfDerivative = Integer.parseInt(getArgumentOfCommand(command,1));
-										def += ",x$" + OrderOfDerivative + ")";
+										int order = Integer.parseInt(secondArg);
+										def = "diff(" + expression + ",x$" + order + ")";
 									}
 									// in case the command form is Derivative( <Expression>, <Variable> )
 									catch (NumberFormatException e) {
-    									String varName = getArgumentOfCommand(command,1);
-										def += "," + varName + ")";
+										def = "diff(" + expression + "," + secondArg + ")";
 									}
 								}
+
+								// if there are three arguments then the command form is Derivative( <Expression>, <Variable>, <Number> )
 								if (numOfArguments == 3) {
-									String varName = getArgumentOfCommand(command,1);
-									String OrderOfDerivative = getArgumentOfCommand(command,2);
-									def += "," + varName + "$" + OrderOfDerivative + ")";
+									String varName = getArgumentOfCommand(command, 1);
+									String order = getArgumentOfCommand(command, 2);
+									def = "diff(" + expression + "," + varName + "$" + order + ")";
 								}
 							}
 
