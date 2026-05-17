@@ -324,340 +324,63 @@ public class CASExport {
 						Command command = ve.getTopLevelCommand();
 						if (command != null) {
 							String name = command.getName();
-							int numOfArguments = command.getArgumentNumber();
-							if (name.equals("Solve")) {
-								if (numOfArguments == 2) {
-									String eqs = getArgumentOfCommand(command,0);
-									String vars = String.valueOf(command.getArgument(1));
-									vars = vars.replace("{", "[");
-									vars = vars.replace("}", "]");
-									def = "solve(" + eqs + "," + vars + ")";
-								}
+
+							switch (name) {
+							    case "Solve":
+								    def = MapleCommandTranslator.translateSolve(command);
+									break;
+							    case "Factor":
+									def = MapleCommandTranslator.translateFactor(command);
+									break;
+							    case "Derivative":
+									def = MapleCommandTranslator.translateDerivative(command, fullNameToShortName);
+									break;
+							    case "Eliminate":
+									def = MapleCommandTranslator.translateEliminate(command);
+									break;
+								case "Integral":
+									def = MapleCommandTranslator.translateIntegral(command,fullNameToShortName);
+									break;
+							    case "IntegralBetween":
+									def = MapleCommandTranslator.translateIntegralBetween(command,fullNameToShortName);
+									break;
+								case "Limit":
+									def = MapleCommandTranslator.translateLimit(command,fullNameToShortName);
+									break;
+								case "CurveCartesian":
+									def = MapleCommandTranslator.translateCurveCartesian(command,fullNameToShortName);
+									break;
+							    case "Degree":
+								    def = MapleCommandTranslator.translateDegree(command,fullNameToShortName);
+									break;
+							    case "Denominator":
+									def = MapleCommandTranslator.translateDenominator(command,fullNameToShortName);
+									break;
+								case "Invert":
+									def = MapleCommandTranslator.translateInvert(command);
+									break;
+								case "Numeric":
+									def = MapleCommandTranslator.translateNumeric(command,fullNameToShortName);
+									break;
+								case "Substitute":
+									def = MapleCommandTranslator.translateSubstitute(command, fullNameToShortName);
+									break;
+								case "IsPrime":
+									def = MapleCommandTranslator.translateIsPrime(command);
+									break;
+								case "ModularExponent":
+									def = MapleCommandTranslator.translateModularExponent(command);
+									break;
+								case "PrimeFactors":
+									def = MapleCommandTranslator.translatePrimeFactors(command);
+									break;
+								case "Laplace":
+									def = MapleCommandTranslator.translateLaplace(command);
+									break;
+								case "InverseLaplace":
+									def = MapleCommandTranslator.translateInverseLaplace(command);
+									break;
 							}
-							// need to handle the cases of factor polynom
-							if (name.equals("Factor")) {
-								if (numOfArguments == 1) { // two numOfArguments are not implemented, TODO
-									// Maple does not have an option to have a second argument
-									String expr = command.getArgument(0).toString();
-									if (expr.startsWith("$")) {
-										// This is something like $1, so we convert it into something like !1:
-										expr = "!" + expr.substring(1);
-									} else {
-										expr = getArgumentOfCommand(command,0);
-									}
-									def = "ifactor(" + expr + ")";
-								}
-							}
-
-							if (name.equals("Derivative")) {
-								String expression = getMapleName(getArgumentOfCommand(command, 0), fullNameToShortName);
-
-								// if there is only one argument then the command form is Derivative( <Function> )
-								if (numOfArguments == 1) {
-									def = "diff(" + expression + ",x)";
-								}
-
-								// if there are two arguments then the command form is either
-								// Derivative( <Function>, <Number> ) or Derivative( <Expression>, <Variable> )
-								if (numOfArguments == 2) {
-									String secondArg = getArgumentOfCommand(command, 1);
-
-									// try to convert the second arg to number
-									// in case the command form is Derivative( <Function>, <Number> )
-									try {
-										int order = Integer.parseInt(secondArg);
-										def = "diff(" + expression + ",x$" + order + ")";
-									}
-									// in case the command form is Derivative( <Expression>, <Variable> )
-									catch (NumberFormatException e) {
-										def = "diff(" + expression + "," + secondArg + ")";
-									}
-								}
-
-								// if there are three arguments then the command form is Derivative( <Expression>, <Variable>, <Number> )
-								if (numOfArguments == 3) {
-									String varName = getArgumentOfCommand(command, 1);
-									String order = getArgumentOfCommand(command, 2);
-									def = "diff(" + expression + "," + varName + "$" + order + ")";
-								}
-							}
-
-							if (name.equals("Eliminate")) {
-								String vars = "[";
-								if (numOfArguments == 2) {
-									String eqs = getArgumentOfCommand(command,0);
-									ExpressionNode equationsEN = command.getArgument(0);
-									ExpressionNode variablesEN = command.getArgument(1);
-									HashSet<GeoElement> variables = variablesEN.getVariables(SymbolicMode.SYMBOLIC);
-									HashSet<String> variablesS = new HashSet<>();
-									for (GeoElement ge : variables) {
-										variablesS.add(ge.toString());
-									}
-									for (GeoElement eqVar : equationsEN.getVariables(SymbolicMode.SYMBOLIC)) {
-										if (!variablesS.contains(eqVar.toString())) {
-											if (vars.length() > 1) {
-												vars += ",";
-											}
-											vars += eqVar;
-										}
-									}
-									vars += "]";
-									def = "eliminate(" + eqs + "," + vars + ")";
-								}
-							}
-
-							if (name.equals("Integral")) {
-								String expression = getMapleName(getArgumentOfCommand(command, 0), fullNameToShortName);
-
-								// if there is only one argument then the command form is Integral( <Function> )
-								if (numOfArguments == 1) {
-									def = "int(" + expression + ",x)";
-								}
-
-								// if there are two arguments then the command form is Integral( <Function>, <Variable> )
-								if (numOfArguments == 2) {
-									String varName = getArgumentOfCommand(command, 1);
-									def = "int(" + expression + "," + varName + ")";
-								}
-
-								// if there are three arguments then the command form is Integral( <Function>, <Start x-Value>, <End x-Value> )
-								if (numOfArguments == 3) {
-									String startValue = getArgumentOfCommand(command, 1);
-									String endValue = getArgumentOfCommand(command, 2);
-									def = "int(" + expression + ",x=" + startValue + ".." + endValue + ")";
-								}
-
-								// if there are four arguments then the command form is Integral( <Function>, <Variable>, <Start Value>, <End Value> )
-								if (numOfArguments == 4) {
-									String varName = getArgumentOfCommand(command, 1);
-									String startValue = getArgumentOfCommand(command, 2);
-									String endValue = getArgumentOfCommand(command, 3);
-									def = "int(" + expression + "," + varName + "=" + startValue + ".." + endValue + ")";
-								}
-							}
-
-							if (name.equals("IntegralBetween")) {
-								String upperFunction = getMapleName(getArgumentOfCommand(command, 0), fullNameToShortName);
-								String lowerFunction = getMapleName(getArgumentOfCommand(command, 1), fullNameToShortName);
-								String expression = "(" + upperFunction + ")-(" + lowerFunction + ")";
-
-								// if there are four arguments then the command form is IntegralBetween( <Function>, <Function>, <Number>, <Number> )
-								if (numOfArguments == 4) {
-									String startValue = getArgumentOfCommand(command, 2);
-									String endValue = getArgumentOfCommand(command, 3);
-									def = "int(" + expression + ",x=" + startValue + ".." + endValue + ")";
-								}
-
-								// if there are five arguments then the command form is IntegralBetween( <Function>, <Function>, <Variable>, <Number>, <Number> )
-								if (numOfArguments == 5) {
-									String varName = getArgumentOfCommand(command, 2);
-									String startValue = getArgumentOfCommand(command, 3);
-									String endValue = getArgumentOfCommand(command, 4);
-									def = "int(" + expression + "," + varName + "=" + startValue + ".." + endValue + ")";
-								}
-							}
-
-							if (name.equals("Limit")) {
-								String expression = getMapleName(getArgumentOfCommand(command, 0), fullNameToShortName);
-
-								// if there are two arguments then the command form is Limit( <Expression>, <Value> )
-								if (numOfArguments == 2) {
-									String approachTo = fixPiAppear(getArgumentOfCommand(command, 1));
-									def = "limit(" + expression + ",x=" + approachTo + ")";
-								}
-
-								// if there are three arguments then the command form is Limit( <Expression>, <Variable>, <Value> )
-								if (numOfArguments == 3) {
-									String varName = getArgumentOfCommand(command, 1);
-									String approachTo = fixPiAppear(getArgumentOfCommand(command, 2));
-									def = "limit(" + expression + "," + varName + "=" + approachTo + ")";
-								}
-							}
-
-							if (name.equals("CurveCartesian")) {
-								String xExpression = getMapleName(getArgumentOfCommand(command, 0), fullNameToShortName);
-								String yExpression = getMapleName(getArgumentOfCommand(command, 1), fullNameToShortName);
-								String varName = getArgumentOfCommand(command, 2);
-								String startValue = fixPiAppear(getArgumentOfCommand(command, 3));
-								String endValue = fixPiAppear(getArgumentOfCommand(command, 4));
-
-								// if there are five arguments then the command form is Curve( <Expression>, <Expression>, <Parameter Variable>, <Start Value>, <End Value> )
-								if (numOfArguments == 5) {
-									def = "plot([" + xExpression + "," + yExpression + ","
-											+ varName + "=" + startValue + ".." + endValue + "])";
-								}
-							}
-
-							if (name.equals("Degree")) {
-								String expression = getMapleName(getArgumentOfCommand(command, 0), fullNameToShortName);
-
-								// if there is only one argument then the command form is Degree( <Polynomial> )
-								if (numOfArguments == 1) {
-									def = "degree(" + expression + ")";
-								}
-
-								// if there are two arguments then the command form is Degree( <Polynomial>, <Variable> )
-								if (numOfArguments == 2) {
-									String varName = getArgumentOfCommand(command, 1);
-									def = "degree(" + expression + "," + varName + ")";
-								}
-							}
-
-							if (name.equals("Denominator")) {
-								String expression = getMapleName(getArgumentOfCommand(command, 0), fullNameToShortName);
-
-								// the command form is Denominator( <Expression> )
-								def = "denom(" + expression + ")";
-							}
-
-							if (name.equals("Invert")) {
-								String expression = getArgumentOfCommand(command, 0).replace(" ", "");
-
-								// the Invert command has two forms with one argument:
-								// Invert( <Matrix> ) and Invert( <Function> )
-
-								// if the expression has matrix syntax then the command form is Invert( <Matrix> )
-								if (expression.startsWith("{{") && expression.endsWith("}}")) {
-									expression = expression.replace("{", "[").replace("}", "]");
-									def = !txt.contains("with(LinearAlgebra):") ? "with(LinearAlgebra):" : "";
-									def += "MatrixInverse(Matrix(" + expression + "))";
-								}
-								// otherwise the command form is Invert( <Function> )
-								else {
-									def = "subs(y=x, solve(y=" + expression + ", x))";
-								}
-							}
-
-							if (name.equals("Numeric")) {
-								String expression = getMapleName(getArgumentOfCommand(command, 0), fullNameToShortName);
-
-								// if there is only one argument then the command form is Numeric( <Expression> )
-								if (numOfArguments == 1) {
-									// use 3 digits of precision as the default approximation
-									def = "evalf[3](" + expression + ")";
-								}
-
-								// if there are two arguments then the command form is Numeric( <Expression>, <Significant Figures> )
-								if (numOfArguments == 2) {
-									String numOfDigits = getArgumentOfCommand(command, 1);
-									def = "evalf[" + numOfDigits + "](" + expression + ")";
-								}
-							}
-
-							if (name.equals("Substitute")) {
-								String expression = getMapleName(getArgumentOfCommand(command, 0), fullNameToShortName);
-
-								// if there are two arguments then the command form is Substitute( <Expression>, <Substitution List> )
-								if (numOfArguments == 2) {
-									String substitutionList = getArgumentOfCommand(command, 1);
-									def = "subs(" + substitutionList + "," + expression + ")";
-								}
-
-								// if there are three arguments and the second argument is not an equation,
-								// then the command form is Substitute( <Expression>, <from>, <to> )
-								if (numOfArguments == 3 && !getArgumentOfCommand(command, 1).contains("=")) {
-									String from = getArgumentOfCommand(command, 1);
-									String to = getArgumentOfCommand(command, 2);
-									def = "subs(" + from + "=" + to + "," + expression + ")";
-								}
-
-								// if there are three or more arguments and the second argument is an equation,
-								// then the command form is Substitute( <Expression>, <Substitution>, <Substitution>, ... )
-								if (numOfArguments >= 3 && getArgumentOfCommand(command, 1).contains("=")) {
-									StringBuilder substitutionList = new StringBuilder("[");
-
-									for (int j = 1; j < numOfArguments; j++) {
-										if (j > 1) {
-											substitutionList.append(",");
-										}
-										substitutionList.append(getArgumentOfCommand(command, j));
-									}
-
-									substitutionList.append("]");
-									def = "subs(" + substitutionList + "," + expression + ")";
-								}
-							}
-
-							if (name.equals("IsPrime")) {
-								String expression = getArgumentOfCommand(command, 0);
-
-								// the command form is IsPrime( <Number> )
-								def = "isprime(" + expression + ")";
-							}
-
-							if (name.equals("ModularExponent")) {
-								String base = getArgumentOfCommand(command, 0);
-								String exponent = getArgumentOfCommand(command, 1);
-								String modulus = getArgumentOfCommand(command, 2);
-
-								// the command form is ModularExponent( <Number>, <Number>, <Number> )
-								def = base + " &^ " + exponent + " mod " + modulus;
-							}
-
-							if (name.equals("PrimeFactors")) {
-								String expression = getArgumentOfCommand(command, 0);
-
-								// the command form is PrimeFactors( <Number> )
-								def = "ifactor(" + expression + ")";
-							}
-
-							// need to complete
-							// their many cases to handle
-							if (name.equals("Laplace")) {
-								String Expression = getArgumentOfCommand(command , 0);
-								def = !txt.contains("with(inttrans): ") ? "with(inttrans): " : "";
-								// if there is only one argument than the command form is Laplace( <Function> )
-								if (numOfArguments == 1) {
-									String varName = (String.valueOf(command.getArgument(0).getVariables(SymbolicMode.SYMBOLIC))).replaceAll("[\\[\\]]" , "");
-									 if (varName.contains("t") && varName.contains("*")) {
-										 def = "laplace(" + Expression + ", t, s)";
-									 } else {
-//										varName = varName.replaceAll("[\\[\\]]" , "");
-										def = "subs(s=" + varName + ", laplace(" + Expression + ", " + varName + ", s))";
-									 }
-								}
-								// if there are two arguments than the command form is Laplace( <Function>, <Variable> )
-								if (numOfArguments == 2) {
-									String varName = getArgumentOfCommand(command , 1);
-									if (!varName.equals("s")) {
-										def = "subs(s=" +  varName + ", laplace(" + Expression + ", " + varName + ", s))";
-									} else {
-										def = "subs(t=s ,laplace(" + Expression + ",s,t))";
-									}
-
-								}
-								// if there are three arguments than the command form is Laplace( <Function>, <Variable>, <Variable> )
-								if (numOfArguments == 3) {
-									String varName = getArgumentOfCommand(command , 1);
-									String newVarName = getArgumentOfCommand(command , 2);
-									if (varName.equals(newVarName)) {
-										def = "subs(s=" + newVarName +  ",laplace(" + Expression + "," + varName + ", s))";
-									} else {
-										def = "laplace(" + Expression + ", " + varName + ", " + newVarName + ")";
-									}
-								}
-							}
-
-							// need to complete
-							// their many cases to handle
-							if (name.equals("InverseLaplace")) {
-								String Expression = getArgumentOfCommand(command , 0);
-								def = !txt.contains("with(inttrans):") ? "with(inttrans):" : "";
-								def += "InverseLaplace(" + Expression + ",";
-								if (numOfArguments == 1) {
-									def += " s , t)";
-								}
-								String varName = getArgumentOfCommand(command , 1);
-								if (numOfArguments == 2) {
-									def += varName + ", t)";
-								}
-								if (numOfArguments == 3) {
-									String newVarName = getArgumentOfCommand(command , 2);
-									def += varName + ", " +  newVarName + ")";
-								}
-
-							}
-
 						}
 					}
 
@@ -671,23 +394,6 @@ public class CASExport {
 		}
 
 		return txt;
-	}
-
-	private String getArgumentOfCommand(Command command,int indexOfCommand) {
-		return command.getArgument(indexOfCommand).getCASstring(StringTemplate.casCopyTemplate, false);
-	}
-
-	private String getMapleName(String expression, Map<String, String> fullNameToShortName) {
-		String shortName = fullNameToShortName.get(expression);
-		return shortName == null ? expression : shortName;
-	}
-
-
-	private String fixPiAppear(String toFix) {
-		if (toFix.contains("pi")) {
-			toFix = toFix.replace("pi" , "Pi");
-		}
-		return toFix;
 	}
 
 	public String createGiacTxt() {
