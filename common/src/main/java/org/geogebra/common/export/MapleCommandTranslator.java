@@ -40,6 +40,26 @@ final class MapleCommandTranslator {
 		return "simplify(" + expression + ")";
 	}
 
+	static String translateCFactor(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		int numOfArguments = command.getArgumentNumber();
+
+		// if there is one argument then the command form is CFactor( <Expression> )
+		if (numOfArguments == 1) {
+			String expression = argumentTranslator.apply(command.getArgument(0));
+			return "factor(" + expression + ", I)";
+		}
+
+		// if there are two arguments then the command form is CFactor( <Expression>, <Variable> )
+		if (numOfArguments == 2) {
+			String expression = argumentTranslator.apply(command.getArgument(0));
+			String varName = argumentTranslator.apply(command.getArgument(1));
+			return "factor(" + expression + ", " + varName + ", I)";
+		}
+
+		return null;
+	}
+
 	static String translateAssume(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 
