@@ -4,14 +4,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.SymbolicMode;
 import org.geogebra.common.kernel.geos.GeoElement;
-
-
-import edu.umd.cs.findbugs.annotations.Nullable;
 
 final class MapleCommandTranslator {
 
@@ -34,6 +30,15 @@ final class MapleCommandTranslator {
 		}
 
 		return null;
+	}
+
+	static String translateAssume(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+
+		// the command form is Assume( <Condition>, <Expression> )
+		String conditions = fixSyntax(argumentTranslator.apply(command.getArgument(0)));
+		String expression = argumentTranslator.apply(command.getArgument(1));
+		return "(" + expression + ") assuming " +  conditions;
 	}
 
 	static String translateSolve(Command command,
@@ -169,16 +174,16 @@ final class MapleCommandTranslator {
 
 		// if there are three arguments then the command form is Integral( <Function>, <Start x-Value>, <End x-Value> )
 		if (numOfArguments == 3) {
-			String startValue = argumentTranslator.apply(command.getArgument(1));
-			String endValue = argumentTranslator.apply(command.getArgument(2));
+			String startValue = fixSyntax(argumentTranslator.apply(command.getArgument(1)));
+			String endValue = fixSyntax(argumentTranslator.apply(command.getArgument(2)));
 			return "int(" + expression + ",x=" + startValue + ".." + endValue + ")";
 		}
 
 		// if there are four arguments then the command form is Integral( <Function>, <Variable>, <Start Value>, <End Value> )
 		if (numOfArguments == 4) {
 			String varName = argumentTranslator.apply(command.getArgument(1));
-			String startValue = argumentTranslator.apply(command.getArgument(2));
-			String endValue = argumentTranslator.apply(command.getArgument(3));
+			String startValue = fixSyntax(argumentTranslator.apply(command.getArgument(2)));
+			String endValue = fixSyntax(argumentTranslator.apply(command.getArgument(3)));
 			return "int(" + expression + "," + varName + "=" + startValue + ".." + endValue + ")";
 		}
 
@@ -195,16 +200,16 @@ final class MapleCommandTranslator {
 
 		// if there are four arguments then the command form is IntegralBetween( <Function>, <Function>, <Number>, <Number> )
 		if (numOfArguments == 4) {
-			String startValue = argumentTranslator.apply(command.getArgument(2));
-			String endValue = argumentTranslator.apply(command.getArgument(3));
+			String startValue = fixSyntax(argumentTranslator.apply(command.getArgument(2)));
+			String endValue = fixSyntax(argumentTranslator.apply(command.getArgument(3)));
 			return "int(" + expression + ",x=" + startValue + ".." + endValue + ")";
 		}
 
 		// if there are five arguments then the command form is IntegralBetween( <Function>, <Function>, <Variable>, <Number>, <Number> )
 		if (numOfArguments == 5) {
 			String varName = argumentTranslator.apply(command.getArgument(2));
-			String startValue = argumentTranslator.apply(command.getArgument(3));
-			String endValue = argumentTranslator.apply(command.getArgument(4));
+			String startValue = fixSyntax(argumentTranslator.apply(command.getArgument(3)));
+			String endValue = fixSyntax(argumentTranslator.apply(command.getArgument(4)));
 			return "int(" + expression + "," + varName + "=" + startValue + ".." + endValue + ")";
 		}
 
@@ -218,14 +223,14 @@ final class MapleCommandTranslator {
 
 		// if there are two arguments then the command form is Limit( <Expression>, <Value> )
 		if (numOfArguments == 2) {
-			String approachTo = fixPiAppear(argumentTranslator.apply(command.getArgument(1)));
+			String approachTo = fixSyntax(argumentTranslator.apply(command.getArgument(1)));
 			return "limit(" + expression + ",x=" + approachTo + ")";
 		}
 
 		// if there are three arguments then the command form is Limit( <Expression>, <Variable>, <Value> )
 		if (numOfArguments == 3) {
 			String varName = argumentTranslator.apply(command.getArgument(1));
-			String approachTo = fixPiAppear(argumentTranslator.apply(command.getArgument(2)));
+			String approachTo = fixSyntax(argumentTranslator.apply(command.getArgument(2)));
 			return "limit(" + expression + "," + varName + "=" + approachTo + ")";
 		}
 
@@ -239,8 +244,8 @@ final class MapleCommandTranslator {
 		String xExpression = argumentTranslator.apply(command.getArgument(0));
 		String yExpression = argumentTranslator.apply(command.getArgument(1));
 		String varName = argumentTranslator.apply(command.getArgument(2));
-		String startValue = fixPiAppear(argumentTranslator.apply(command.getArgument(3)));
-		String endValue = fixPiAppear(argumentTranslator.apply(command.getArgument(4)));
+		String startValue = fixSyntax(argumentTranslator.apply(command.getArgument(3)));
+		String endValue = fixSyntax(argumentTranslator.apply(command.getArgument(4)));
 
 		// if there are five arguments then the command form is Curve( <Expression>, <Expression>, <Parameter Variable>, <Start Value>, <End Value> )
 		if (numOfArguments == 5) {
@@ -301,10 +306,17 @@ final class MapleCommandTranslator {
 		return null;
 	}
 
+	// TODO: Maple may print integer numeric results as 1. after evalf.
+	// Handling this fully would require post-processing Maple output, not only export-time translation.
 	static String translateNumeric(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();
 		String expression = argumentTranslator.apply(command.getArgument(0));
+
+		// avoid evalf for integers, since Maple may print them with a trailing dot
+		if (isIntegerExpression(expression)) {
+			return expression;
+		}
 
 		// if there is only one argument then the command form is Numeric( <Expression> )
 		if (numOfArguments == 1) {
@@ -472,11 +484,32 @@ final class MapleCommandTranslator {
 		return shortName == null ? expression : shortName;
 	}
 
+	static String fixSyntax(String toFix) {
+		String fixedSyntax = fixPiAppear(toFix);
+		fixedSyntax = fixInfinityAppear(fixedSyntax);
+		fixedSyntax = fixAndOperatorAppear(fixedSyntax);
+		fixedSyntax = fixOrOperatorAppear(fixedSyntax);
+		return fixedSyntax;
+	}
+
 	static String fixPiAppear(String toFix) {
-		if (toFix.contains("pi")) {
-			toFix = toFix.replace("pi" , "Pi");
-		}
-		return toFix;
+		return toFix.replace("pi" , "Pi");
+	}
+
+	static String fixInfinityAppear(String toFix) {
+		return toFix.replace("Infinity" , "infinity");
+	}
+
+	static String fixAndOperatorAppear(String toFix) {
+		return toFix.replace("&&", " and ")
+				.replace("∧", " and ")
+				.replace("And", " and ");
+	}
+
+	static String fixOrOperatorAppear(String toFix) {
+		return toFix.replace("||", " or ")
+				.replace("∨", " or ")
+				.replace("Or", " or ");
 	}
 
 	private static boolean isIntegerExpression(String expression) {

@@ -336,6 +336,9 @@ public class CASExport {
 			}
 		}
 
+		// TODO: Consider putting this to somewhere else
+		txt = txt.replace("'", "_"); // always use _ instead of '
+
 		return txt;
 	}
 
@@ -348,6 +351,11 @@ public class CASExport {
 		switch (name) {
 		case "AreEqual":
 			def = MapleCommandTranslator.translateAreEqual(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Assume":
+			def = MapleCommandTranslator.translateAssume(command,
 					argument -> translateMapleArgument(argument, fullNameToShortName));
 			break;
 
