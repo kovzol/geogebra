@@ -323,65 +323,7 @@ public class CASExport {
 					if (ve != null) {
 						Command command = ve.getTopLevelCommand();
 						if (command != null) {
-							String name = command.getName();
-						
-		
-							switch (name) {
-							    case "Solve":
-								    def = MapleCommandTranslator.translateSolve(command);
-									break;
-							    case "Factor":
-									def = MapleCommandTranslator.translateFactor(command);
-									break;
-							    case "Derivative":
-									def = MapleCommandTranslator.translateDerivative(command, fullNameToShortName);
-									break;
-							    case "Eliminate":
-									def = MapleCommandTranslator.translateEliminate(command);
-									break;
-								case "Integral":
-									def = MapleCommandTranslator.translateIntegral(command,fullNameToShortName);
-									break;
-							    case "IntegralBetween":
-									def = MapleCommandTranslator.translateIntegralBetween(command,fullNameToShortName);
-									break;
-								case "Limit":
-									def = MapleCommandTranslator.translateLimit(command,fullNameToShortName);
-									break;
-								case "CurveCartesian":
-									def = MapleCommandTranslator.translateCurveCartesian(command,fullNameToShortName);
-									break;
-							    case "Degree":
-								    def = MapleCommandTranslator.translateDegree(command,fullNameToShortName);
-									break;
-							    case "Denominator":
-									def = MapleCommandTranslator.translateDenominator(command,fullNameToShortName);
-									break;
-								case "Invert":
-									def = MapleCommandTranslator.translateInvert(command);
-									break;
-								case "Numeric":
-									def = MapleCommandTranslator.translateNumeric(command,fullNameToShortName);
-									break;
-								case "Substitute":
-									def = MapleCommandTranslator.translateSubstitute(command, fullNameToShortName);
-									break;
-								case "IsPrime":
-									def = MapleCommandTranslator.translateIsPrime(command);
-									break;
-								case "ModularExponent":
-									def = MapleCommandTranslator.translateModularExponent(command);
-									break;
-								case "PrimeFactors":
-									def = MapleCommandTranslator.translatePrimeFactors(command);
-									break;
-								case "Laplace":
-									def = MapleCommandTranslator.translateLaplace(command);
-									break;
-								case "InverseLaplace":
-									def = MapleCommandTranslator.translateInverseLaplace(command);
-									break;
-							}
+							def = translateMapleCommand(command, fullNameToShortName);
 						}
 					}
 
@@ -394,10 +336,131 @@ public class CASExport {
 			}
 		}
 
-		// TODO: Consider putting this to somewhere else
-		txt = txt.replace("'", "_"); // always use _ instead of '
-
 		return txt;
+	}
+
+	private String translateMapleCommand(Command command,
+			Map<String, String> fullNameToShortName) {
+
+		String def = null;
+		String name = command.getName();
+
+		switch (name) {
+		case "AreEqual":
+			def = MapleCommandTranslator.translateAreEqual(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Solve":
+			def = MapleCommandTranslator.translateSolve(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Factor":
+			def = MapleCommandTranslator.translateFactor(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Derivative":
+			def = MapleCommandTranslator.translateDerivative(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Eliminate":
+			def = MapleCommandTranslator.translateEliminate(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Integral":
+			def = MapleCommandTranslator.translateIntegral(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "IntegralBetween":
+			def = MapleCommandTranslator.translateIntegralBetween(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Limit":
+			def = MapleCommandTranslator.translateLimit(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "CurveCartesian":
+			def = MapleCommandTranslator.translateCurveCartesian(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Degree":
+			def = MapleCommandTranslator.translateDegree(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Denominator":
+			def = MapleCommandTranslator.translateDenominator(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Invert":
+			def = MapleCommandTranslator.translateInvert(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Numeric":
+			def = MapleCommandTranslator.translateNumeric(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Substitute":
+			def = MapleCommandTranslator.translateSubstitute(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "IsPrime":
+			def = MapleCommandTranslator.translateIsPrime(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "ModularExponent":
+			def = MapleCommandTranslator.translateModularExponent(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "PrimeFactors":
+			def = MapleCommandTranslator.translatePrimeFactors(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Laplace":
+			def = MapleCommandTranslator.translateLaplace(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "InverseLaplace":
+			def = MapleCommandTranslator.translateInverseLaplace(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+		}
+
+		return def;
+	}
+
+
+	private String translateMapleArgument(ExpressionNode argument,
+			Map<String, String> fullNameToShortName) {
+
+		Command nestedCommand = argument.getTopLevelCommand();
+
+		if (nestedCommand != null) {
+			return translateMapleCommand(nestedCommand, fullNameToShortName);
+		}
+
+		// TODO: handle equations whose left/right sides may contain nested commands
+		// Example: Solve(Derivative(x^2) = 0, x)
+		// The whole argument is not a command, but the left side is.
+
+		String expression = argument.getCASstring(StringTemplate.casCopyTemplate, false);
+		return MapleCommandTranslator.getMapleName(expression, fullNameToShortName);
 	}
 
 	public String createGiacTxt() {
