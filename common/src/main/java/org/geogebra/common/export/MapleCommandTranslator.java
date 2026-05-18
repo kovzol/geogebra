@@ -32,13 +32,21 @@ final class MapleCommandTranslator {
 		return null;
 	}
 
+	static String translateSimplify(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+
+		// the command form is Simplify( <Function> )
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		return "simplify(" + expression + ")";
+	}
+
 	static String translateAssume(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 
 		// the command form is Assume( <Condition>, <Expression> )
 		String conditions = fixSyntax(argumentTranslator.apply(command.getArgument(0)));
 		String expression = argumentTranslator.apply(command.getArgument(1));
-		return "(" + expression + ") assuming " +  conditions;
+		return "(" + expression + ") assuming  " +  conditions;
 	}
 
 	static String translateSolve(Command command,

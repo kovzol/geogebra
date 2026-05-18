@@ -354,6 +354,11 @@ public class CASExport {
 					argument -> translateMapleArgument(argument, fullNameToShortName));
 			break;
 
+		case "Simplify":
+			def = MapleCommandTranslator.translateSimplify(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
 		case "Assume":
 			def = MapleCommandTranslator.translateAssume(command,
 					argument -> translateMapleArgument(argument, fullNameToShortName));
