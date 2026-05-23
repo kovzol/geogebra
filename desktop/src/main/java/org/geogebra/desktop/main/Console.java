@@ -16,6 +16,8 @@ import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.desktop.euclidian.EuclidianViewD;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.reader.EndOfFileException;
 
@@ -106,6 +108,15 @@ public class Console {
 		System.setErr(originalErr);
 	}
 
+	private static boolean isRealTTY() {
+		try {
+			return System.getenv("TERM") != null
+					&& System.console() != null;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	public static void start(Kernel kernel, boolean texmacs) throws IOException {
 
 		boolean interactive = System.console() != null; // most probably TeXmacs is communicating...
@@ -153,9 +164,36 @@ public class Console {
 			}
 
 			// Interactive operation mode:
+			String line;
+			LineReader reader;
+
+			Terminal terminal;
+
+			try {
+				if (isRealTTY()) {
+					terminal = TerminalBuilder.builder()
+							.system(true)
+							.build();
+				} else {
+					terminal = TerminalBuilder.builder()
+							.system(false)
+							.dumb(true)
+							.streams(System.in, System.out)
+							.build();
+				}
+			} catch (Exception ex) {
+				System.out.println("Error on starting terminal.");
+				return;
+			}
+
+			reader = LineReaderBuilder.builder()
+					.terminal(terminal)
+					.variable(LineReader.HISTORY_FILE, System.getProperty("user.home") + "/.geogebra_history")
+					.option(LineReader.Option.HISTORY_IGNORE_DUPS, true)
+					.option(LineReader.Option.HISTORY_REDUCE_BLANKS, true)
+					.build();
+
 			while (true) {
-				String line;
-				LineReader reader = LineReaderBuilder.builder().build();
 				try {
 					line = reader.readLine("> ");
 					process(kernel, line);
