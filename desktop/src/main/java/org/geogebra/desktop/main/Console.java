@@ -85,15 +85,26 @@ public class Console {
 				return;
 			} else {
 				for (GeoElementND g : newGeos) {
-					output += ">> " + g.getDefinitionForInputBar() + "\n";
+					String input = g.getDefinitionForInputBar();
+					output += ">> " + input + "\n";
 					ExpressionNode en = g.getDefinition();
+
+					String enS = "", geS = "", gccS = "", out = "";
+
 					if (en != null) {
-						output += "<< " + g.getDefinition().toOutputValueString(StringTemplate.defaultTemplate) + "\n";
-					} else if (g instanceof GeoElement) {
-						output += "<< " + ((GeoElement) g).getAlgebraDescriptionDefault() + "\n";
-					} else if (g instanceof org.geogebra.common.kernel.geos.GeoCasCell) {
-						output += "<< " + ((GeoCasCell) g).getAlgebraDescriptionDefault() + "\n";
+						enS = g.getDefinition().toOutputValueString(StringTemplate.defaultTemplate);
+						out = enS;
 					}
+					if ((out.equals("") || input.endsWith(out)) && g instanceof GeoElement) {
+						geS = ((GeoElement) g).getAlgebraDescriptionDefault();
+						out = geS;
+					}
+					if ((out.equals("") || input.endsWith(out)) && g instanceof org.geogebra.common.kernel.geos.GeoCasCell) {
+						gccS = ((GeoCasCell) g).getAlgebraDescriptionDefault();
+						out = gccS;
+					}
+
+					output += "<< " + out + "\n";
 				}
 			}
 			System.out.print(output);
@@ -198,7 +209,8 @@ public class Console {
 			while (true) {
 				try {
 					line = reader.readLine("> ");
-					process(kernel, line);
+					if (!line.equals("")) // attempt to fix Windows bug
+						process(kernel, line);
 				} catch (UserInterruptException | EndOfFileException e) {
 					System.out.println("Console session ended, exiting...");
 					AppD.exit(0); // This is needed to properly quit Tarski.
