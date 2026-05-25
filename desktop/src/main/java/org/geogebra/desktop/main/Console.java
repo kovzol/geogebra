@@ -12,6 +12,7 @@ import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.geos.GeoCasCell;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
+import org.geogebra.common.main.App;
 import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.desktop.euclidian.EuclidianViewD;
 import org.jline.reader.LineReader;
@@ -102,6 +103,20 @@ public class Console {
 					if ((out.equals("") || input.endsWith(out)) && g instanceof org.geogebra.common.kernel.geos.GeoCasCell) {
 						gccS = ((GeoCasCell) g).getAlgebraDescriptionDefault();
 						out = gccS;
+					}
+					if (out.equals("")) {
+						// Maybe we want to obtain the content of a CAS cell that has already been retrieved.
+						// In such cases, for some strange reason, there is no direct way to get its content
+						// as done above. Here is an ugly workaround:
+						if (g.getParentAlgorithm() instanceof org.geogebra.common.kernel.cas.AlgoDependentCasCell) {
+							String numberS = ((org.geogebra.common.kernel.cas.AlgoDependentCasCell) (g.getParentAlgorithm())).
+									getCasCell().toString(StringTemplate.defaultTemplate);
+							if (numberS.startsWith("$")) {
+								int number = Integer.parseInt(numberS.substring(1)) - 1;
+								out = ((org.geogebra.common.cas.view.CASView) g.getKernel().getConstruction().getApplication().
+									getView(App.VIEW_CAS)).getConsoleTable().getGeoCasCell(number).getOutput(StringTemplate.defaultTemplate);
+							}
+						}
 					}
 
 					output += "<< " + out + "\n";
