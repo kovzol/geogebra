@@ -801,7 +801,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 					+ "  --prover=OPTIONS\tset options for the prover subsystem (use --proverhelp for more information)\n"
 					+ "  --singularWS=OPTIONS\tset options for SingularWS (use --singularWShelp for more information)\n"
 					+ "  --realgeomWS=OPTIONS\tset options for RealGeomWS (use --realgeomWShelp for more information)\n"
-					+ "  --console\tstart console mode"
+					+ "  --console\tstart console mode\n"
 					+ "  --texmacs\tstart TeXmacs mode (implies --console)"
 			);
 
