@@ -25,6 +25,7 @@ apps:
       JAVA_OPTS: >
         -Djava.util.prefs.userRoot="$SNAP_USER_DATA"
         -Dnashorn.args=--no-deprecation-warning
+        -Dorg.jline.terminal.dumb=true
       LIBGL_DRIVERS_PATH: $SNAP/usr/lib/x86_64-linux-gnu/dri
       LC_ALL: C.UTF-8
       LANG: C.UTF-8

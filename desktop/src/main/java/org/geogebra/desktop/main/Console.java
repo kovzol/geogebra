@@ -174,24 +174,26 @@ public class Console {
 					terminal = TerminalBuilder.builder()
 							.system(true)
 							.build();
+					reader = LineReaderBuilder.builder()
+							.terminal(terminal)
+							.variable(LineReader.HISTORY_FILE, System.getProperty("user.home") + "/.geogebra_history")
+							.option(LineReader.Option.HISTORY_IGNORE_DUPS, true)
+							.option(LineReader.Option.HISTORY_REDUCE_BLANKS, true)
+							.build();
 				} else {
 					terminal = TerminalBuilder.builder()
 							.system(false)
 							.dumb(true)
 							.streams(System.in, System.out)
 							.build();
+					reader = LineReaderBuilder.builder()
+							.terminal(terminal)
+							.build();
 				}
 			} catch (Exception ex) {
 				System.out.println("Error on starting terminal.");
 				return;
 			}
-
-			reader = LineReaderBuilder.builder()
-					.terminal(terminal)
-					.variable(LineReader.HISTORY_FILE, System.getProperty("user.home") + "/.geogebra_history")
-					.option(LineReader.Option.HISTORY_IGNORE_DUPS, true)
-					.option(LineReader.Option.HISTORY_REDUCE_BLANKS, true)
-					.build();
 
 			while (true) {
 				try {
