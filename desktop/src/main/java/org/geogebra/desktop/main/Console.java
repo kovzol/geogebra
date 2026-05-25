@@ -201,7 +201,7 @@ public class Console {
 					process(kernel, line);
 				} catch (UserInterruptException | EndOfFileException e) {
 					System.out.println("Console session ended, exiting...");
-					System.exit(0); // exit GeoGebra as well
+					AppD.exit(0); // This is needed to properly quit Tarski.
 				}
 			}
 		});
