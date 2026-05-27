@@ -208,7 +208,7 @@ public class Console {
 							.build();
 				} else {
 					terminal = TerminalBuilder.builder()
-							.system(false)
+							.system(true)
 							.dumb(true)
 							.streams(System.in, System.out)
 							.build();
