@@ -107,14 +107,14 @@ public class Console {
 					if (out.equals("")) {
 						// Maybe we want to obtain the content of a CAS cell that has already been retrieved.
 						// In such cases, for some strange reason, there is no direct way to get its content
-						// as done above. Here is an ugly workaround:
+						// as done above. Here is a workaround:
 						if (g.getParentAlgorithm() instanceof org.geogebra.common.kernel.cas.AlgoDependentCasCell) {
 							String numberS = ((org.geogebra.common.kernel.cas.AlgoDependentCasCell) (g.getParentAlgorithm())).
 									getCasCell().toString(StringTemplate.defaultTemplate);
 							if (numberS.startsWith("$")) {
 								int number = Integer.parseInt(numberS.substring(1)) - 1;
-								out = ((org.geogebra.common.cas.view.CASView) g.getKernel().getConstruction().getApplication().
-									getView(App.VIEW_CAS)).getConsoleTable().getGeoCasCell(number).getOutput(StringTemplate.defaultTemplate);
+								out = g.getKernel().getConstruction().getCasCell(number).
+										getOutput(StringTemplate.defaultTemplate);
 							}
 						}
 					}
