@@ -359,8 +359,18 @@ public class CASExport {
 					argument -> translateMapleArgument(argument, fullNameToShortName));
 			break;
 
+		case "CompleteSquare":
+			def = MapleCommandTranslator.translateCompleteSquare(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
 		case "CFactor":
 			def = MapleCommandTranslator.translateCFactor(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "CommonDenominator":
+			def = MapleCommandTranslator.translateCommonDenominator(command,
 					argument -> translateMapleArgument(argument, fullNameToShortName));
 			break;
 
@@ -401,6 +411,11 @@ public class CASExport {
 
 		case "Limit":
 			def = MapleCommandTranslator.translateLimit(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "Div":
+			def = MapleCommandTranslator.translateDiv(command,
 					argument -> translateMapleArgument(argument, fullNameToShortName));
 			break;
 

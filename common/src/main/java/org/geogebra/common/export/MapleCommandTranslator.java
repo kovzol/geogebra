@@ -40,6 +40,15 @@ final class MapleCommandTranslator {
 		return "simplify(" + expression + ")";
 	}
 
+	static String translateCompleteSquare(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+
+		// The command form is CompleteSquare( <Quadratic Function> )
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		String varName = getSingleVariableName(command,0);
+		return "Student:-Precalculus:-CompleteSquare( " +  expression + "," + varName + " )";
+	}
+
 	static String translateCFactor(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();
@@ -58,6 +67,16 @@ final class MapleCommandTranslator {
 		}
 
 		return null;
+	}
+
+	static String translateCommonDenominator(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+
+		// The command form is CommonDenominator( <Expression>, <Expression> )
+		String firstExpression = fixSyntax(argumentTranslator.apply(command.getArgument(0)));
+		String secondExpression = fixSyntax(argumentTranslator.apply(command.getArgument(1)));
+		return "lcm(denom(normal(" + firstExpression + "))"
+				+ ",denom(normal(" + secondExpression + ")))";
 	}
 
 	static String translateAssume(Command command,
@@ -265,6 +284,20 @@ final class MapleCommandTranslator {
 		return null;
 	}
 
+	static String translateDiv(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		// The command form is either Div( <Dividend Number>, <Divisor Number> ) or Div( <Dividend Polynomial>, <Divisor Polynomial> )
+		// we try to convert the second argument to an integer, if it's fail that's mean we are at the Polynomial state
+		String Dividend = argumentTranslator.apply(command.getArgument(0));
+		String Divisor = argumentTranslator.apply(command.getArgument(1));
+		if (isIntegerExpression(Divisor)) {
+			return "iquo(" + Dividend + "," + Divisor + ")";
+		} else {
+			String varName = getSingleVariableName(command, 1);
+			return "quo(" +  Dividend + "," + Divisor + "," + varName +")";
+		}
+	}
+
 	static String translateCurveCartesian(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();
@@ -433,12 +466,17 @@ final class MapleCommandTranslator {
 
 		// if there is only one argument then the command form is Laplace( <Function> )
 		if (numOfArguments == 1) {
-			String varName = getSingleVariableName(command);
+			String varName = getSingleVariableName(command,0);
 
-			// GeoGebra returns the result using the same variable name,
+			if (varName.equals("t")) {
+				return "subs(u=s, inttrans:-laplace("
+						+ expression + ",t,u))";
+			}
+
+			// GeoGebra returns the result using the same variable name (except when the var name is t),
 			// so Maple uses a temporary transform variable and then substitutes it back
-			return "subs(_u=" + varName + ", inttrans:-laplace("
-					+ expression + "," + varName + ",_u))";
+			return "subs(u=" + varName + ", inttrans:-laplace("
+					+ expression + "," + varName + ",u))";
 		}
 
 		// if there are two arguments then the command form is Laplace( <Function>, <Variable> )
@@ -447,14 +485,19 @@ final class MapleCommandTranslator {
 
 			// GeoGebra returns the result using the selected variable name,
 			// so Maple uses a temporary transform variable and then substitutes it back
-			return "subs(_u=" + varName + ", inttrans:-laplace("
-					+ expression + "," + varName + ",_u))";
+			return "subs(u=" + varName + ", inttrans:-laplace("
+					+ expression + "," + varName + ",u))";
 		}
 
 		// if there are three arguments then the command form is Laplace( <Function>, <Variable>, <Variable> )
 		if (numOfArguments == 3) {
 			String varName = argumentTranslator.apply(command.getArgument(1));
 			String newVarName = argumentTranslator.apply(command.getArgument(2));
+
+			if (varName.equals(newVarName)) {
+				return "subs(u=" + varName + ", inttrans:-laplace("
+						+ expression + "," + varName + ",u))";
+			}
 			return "inttrans:-laplace(" + expression + "," + varName + "," + newVarName + ")";
 		}
 
@@ -468,12 +511,17 @@ final class MapleCommandTranslator {
 
 		// if there is only one argument then the command form is InverseLaplace( <Function> )
 		if (numOfArguments == 1) {
-			String varName = getSingleVariableName(command);
+			String varName = getSingleVariableName(command,0);
 
-			// GeoGebra returns the result using the same variable name,
+			if (varName.equals("t")) {
+				return "subs(u=s, inttrans:-invlaplace("
+						+ expression + ",t,u))";
+			}
+
+			// GeoGebra returns the result using the same variable name (except when the var name is t),
 			// so Maple uses a temporary result variable and then substitutes it back
-			return "subs(_u=" + varName + ", inttrans:-invlaplace("
-					+ expression + "," + varName + ",_u))";
+			return "subs(u=" + varName + ", inttrans:-invlaplace("
+					+ expression + "," + varName + ",u))";
 		}
 
 		// if there are two arguments then the command form is InverseLaplace( <Function>, <Variable> )
@@ -482,28 +530,33 @@ final class MapleCommandTranslator {
 
 			// GeoGebra returns the result using the selected variable name,
 			// so Maple uses a temporary result variable and then substitutes it back
-			return "subs(_u=" + varName + ", inttrans:-invlaplace("
-					+ expression + "," + varName + ",_u))";
+			return "subs(u=" + varName + ", inttrans:-invlaplace("
+					+ expression + "," + varName + ",u))";
 		}
 
 		// if there are three arguments then the command form is InverseLaplace( <Function>, <Variable>, <Variable> )
 		if (numOfArguments == 3) {
 			String varName = argumentTranslator.apply(command.getArgument(1));
 			String newVarName = argumentTranslator.apply(command.getArgument(2));
+
+			if (varName.equals(newVarName)) {
+				return "subs(u=" + varName + ", inttrans:-invlaplace("
+						+ expression + "," + varName + ",u))";
+			}
 			return "inttrans:-invlaplace(" + expression + "," + varName + "," + newVarName + ")";
 		}
 
 		return null;
 	}
 
-	private static String getSingleVariableName(Command command) {
-		HashSet<GeoElement> variables = command.getArgument(0).getVariables(SymbolicMode.SYMBOLIC);
+	private static String getSingleVariableName(Command command,int index) {
+		HashSet<GeoElement> variables = command.getArgument(index).getVariables(SymbolicMode.SYMBOLIC);
 
-		if (variables.size() == 1) {
+		if (!variables.isEmpty()) {
 			return variables.iterator().next().toString();
 		}
 
-		return "t";
+		return "x";
 	}
 
 	public static String getMapleName(String expression,
