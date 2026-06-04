@@ -4,14 +4,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.SymbolicMode;
 import org.geogebra.common.kernel.geos.GeoElement;
-
-
-import edu.umd.cs.findbugs.annotations.Nullable;
 
 final class MapleCommandTranslator {
 
@@ -34,6 +30,62 @@ final class MapleCommandTranslator {
 		}
 
 		return null;
+	}
+
+	static String translateSimplify(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+
+		// the command form is Simplify( <Function> )
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		return "simplify(" + expression + ")";
+	}
+
+	static String translateCompleteSquare(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+
+		// The command form is CompleteSquare( <Quadratic Function> )
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		String varName = getSingleVariableName(command,0);
+		return "Student:-Precalculus:-CompleteSquare( " +  expression + "," + varName + " )";
+	}
+
+	static String translateCFactor(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		int numOfArguments = command.getArgumentNumber();
+
+		// if there is one argument then the command form is CFactor( <Expression> )
+		if (numOfArguments == 1) {
+			String expression = argumentTranslator.apply(command.getArgument(0));
+			return "factor(" + expression + ", I)";
+		}
+
+		// if there are two arguments then the command form is CFactor( <Expression>, <Variable> )
+		if (numOfArguments == 2) {
+			String expression = argumentTranslator.apply(command.getArgument(0));
+			String varName = argumentTranslator.apply(command.getArgument(1));
+			return "factor(" + expression + ", " + varName + ", I)";
+		}
+
+		return null;
+	}
+
+	static String translateCommonDenominator(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+
+		// The command form is CommonDenominator( <Expression>, <Expression> )
+		String firstExpression = fixSyntax(argumentTranslator.apply(command.getArgument(0)));
+		String secondExpression = fixSyntax(argumentTranslator.apply(command.getArgument(1)));
+		return "lcm(denom(normal(" + firstExpression + "))"
+				+ ",denom(normal(" + secondExpression + ")))";
+	}
+
+	static String translateAssume(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+
+		// the command form is Assume( <Condition>, <Expression> )
+		String conditions = fixSyntax(argumentTranslator.apply(command.getArgument(0)));
+		String expression = argumentTranslator.apply(command.getArgument(1));
+		return "(" + expression + ") assuming  " +  conditions;
 	}
 
 	static String translateSolve(Command command,
@@ -169,16 +221,16 @@ final class MapleCommandTranslator {
 
 		// if there are three arguments then the command form is Integral( <Function>, <Start x-Value>, <End x-Value> )
 		if (numOfArguments == 3) {
-			String startValue = argumentTranslator.apply(command.getArgument(1));
-			String endValue = argumentTranslator.apply(command.getArgument(2));
+			String startValue = fixSyntax(argumentTranslator.apply(command.getArgument(1)));
+			String endValue = fixSyntax(argumentTranslator.apply(command.getArgument(2)));
 			return "int(" + expression + ",x=" + startValue + ".." + endValue + ")";
 		}
 
 		// if there are four arguments then the command form is Integral( <Function>, <Variable>, <Start Value>, <End Value> )
 		if (numOfArguments == 4) {
 			String varName = argumentTranslator.apply(command.getArgument(1));
-			String startValue = argumentTranslator.apply(command.getArgument(2));
-			String endValue = argumentTranslator.apply(command.getArgument(3));
+			String startValue = fixSyntax(argumentTranslator.apply(command.getArgument(2)));
+			String endValue = fixSyntax(argumentTranslator.apply(command.getArgument(3)));
 			return "int(" + expression + "," + varName + "=" + startValue + ".." + endValue + ")";
 		}
 
@@ -195,16 +247,16 @@ final class MapleCommandTranslator {
 
 		// if there are four arguments then the command form is IntegralBetween( <Function>, <Function>, <Number>, <Number> )
 		if (numOfArguments == 4) {
-			String startValue = argumentTranslator.apply(command.getArgument(2));
-			String endValue = argumentTranslator.apply(command.getArgument(3));
+			String startValue = fixSyntax(argumentTranslator.apply(command.getArgument(2)));
+			String endValue = fixSyntax(argumentTranslator.apply(command.getArgument(3)));
 			return "int(" + expression + ",x=" + startValue + ".." + endValue + ")";
 		}
 
 		// if there are five arguments then the command form is IntegralBetween( <Function>, <Function>, <Variable>, <Number>, <Number> )
 		if (numOfArguments == 5) {
 			String varName = argumentTranslator.apply(command.getArgument(2));
-			String startValue = argumentTranslator.apply(command.getArgument(3));
-			String endValue = argumentTranslator.apply(command.getArgument(4));
+			String startValue = fixSyntax(argumentTranslator.apply(command.getArgument(3)));
+			String endValue = fixSyntax(argumentTranslator.apply(command.getArgument(4)));
 			return "int(" + expression + "," + varName + "=" + startValue + ".." + endValue + ")";
 		}
 
@@ -218,18 +270,32 @@ final class MapleCommandTranslator {
 
 		// if there are two arguments then the command form is Limit( <Expression>, <Value> )
 		if (numOfArguments == 2) {
-			String approachTo = fixPiAppear(argumentTranslator.apply(command.getArgument(1)));
+			String approachTo = fixSyntax(argumentTranslator.apply(command.getArgument(1)));
 			return "limit(" + expression + ",x=" + approachTo + ")";
 		}
 
 		// if there are three arguments then the command form is Limit( <Expression>, <Variable>, <Value> )
 		if (numOfArguments == 3) {
 			String varName = argumentTranslator.apply(command.getArgument(1));
-			String approachTo = fixPiAppear(argumentTranslator.apply(command.getArgument(2)));
+			String approachTo = fixSyntax(argumentTranslator.apply(command.getArgument(2)));
 			return "limit(" + expression + "," + varName + "=" + approachTo + ")";
 		}
 
 		return null;
+	}
+
+	static String translateDiv(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		// The command form is either Div( <Dividend Number>, <Divisor Number> ) or Div( <Dividend Polynomial>, <Divisor Polynomial> )
+		// we try to convert the second argument to an integer, if it's fail that's mean we are at the Polynomial state
+		String Dividend = argumentTranslator.apply(command.getArgument(0));
+		String Divisor = argumentTranslator.apply(command.getArgument(1));
+		if (isIntegerExpression(Divisor)) {
+			return "iquo(" + Dividend + "," + Divisor + ")";
+		} else {
+			String varName = getSingleVariableName(command, 1);
+			return "quo(" +  Dividend + "," + Divisor + "," + varName +")";
+		}
 	}
 
 	static String translateCurveCartesian(Command command,
@@ -239,8 +305,8 @@ final class MapleCommandTranslator {
 		String xExpression = argumentTranslator.apply(command.getArgument(0));
 		String yExpression = argumentTranslator.apply(command.getArgument(1));
 		String varName = argumentTranslator.apply(command.getArgument(2));
-		String startValue = fixPiAppear(argumentTranslator.apply(command.getArgument(3)));
-		String endValue = fixPiAppear(argumentTranslator.apply(command.getArgument(4)));
+		String startValue = fixSyntax(argumentTranslator.apply(command.getArgument(3)));
+		String endValue = fixSyntax(argumentTranslator.apply(command.getArgument(4)));
 
 		// if there are five arguments then the command form is Curve( <Expression>, <Expression>, <Parameter Variable>, <Start Value>, <End Value> )
 		if (numOfArguments == 5) {
@@ -301,10 +367,17 @@ final class MapleCommandTranslator {
 		return null;
 	}
 
+	// TODO: Maple may print integer numeric results as 1. after evalf.
+	// Handling this fully would require post-processing Maple output, not only export-time translation.
 	static String translateNumeric(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();
 		String expression = argumentTranslator.apply(command.getArgument(0));
+
+		// avoid evalf for integers, since Maple may print them with a trailing dot
+		if (isIntegerExpression(expression)) {
+			return expression;
+		}
 
 		// if there is only one argument then the command form is Numeric( <Expression> )
 		if (numOfArguments == 1) {
@@ -393,12 +466,17 @@ final class MapleCommandTranslator {
 
 		// if there is only one argument then the command form is Laplace( <Function> )
 		if (numOfArguments == 1) {
-			String varName = getSingleVariableName(command);
+			String varName = getSingleVariableName(command,0);
 
-			// GeoGebra returns the result using the same variable name,
+			if (varName.equals("t")) {
+				return "subs(u=s, inttrans:-laplace("
+						+ expression + ",t,u))";
+			}
+
+			// GeoGebra returns the result using the same variable name (except when the var name is t),
 			// so Maple uses a temporary transform variable and then substitutes it back
-			return "subs(_u=" + varName + ", inttrans:-laplace("
-					+ expression + "," + varName + ",_u))";
+			return "subs(u=" + varName + ", inttrans:-laplace("
+					+ expression + "," + varName + ",u))";
 		}
 
 		// if there are two arguments then the command form is Laplace( <Function>, <Variable> )
@@ -407,14 +485,19 @@ final class MapleCommandTranslator {
 
 			// GeoGebra returns the result using the selected variable name,
 			// so Maple uses a temporary transform variable and then substitutes it back
-			return "subs(_u=" + varName + ", inttrans:-laplace("
-					+ expression + "," + varName + ",_u))";
+			return "subs(u=" + varName + ", inttrans:-laplace("
+					+ expression + "," + varName + ",u))";
 		}
 
 		// if there are three arguments then the command form is Laplace( <Function>, <Variable>, <Variable> )
 		if (numOfArguments == 3) {
 			String varName = argumentTranslator.apply(command.getArgument(1));
 			String newVarName = argumentTranslator.apply(command.getArgument(2));
+
+			if (varName.equals(newVarName)) {
+				return "subs(u=" + varName + ", inttrans:-laplace("
+						+ expression + "," + varName + ",u))";
+			}
 			return "inttrans:-laplace(" + expression + "," + varName + "," + newVarName + ")";
 		}
 
@@ -428,12 +511,17 @@ final class MapleCommandTranslator {
 
 		// if there is only one argument then the command form is InverseLaplace( <Function> )
 		if (numOfArguments == 1) {
-			String varName = getSingleVariableName(command);
+			String varName = getSingleVariableName(command,0);
 
-			// GeoGebra returns the result using the same variable name,
+			if (varName.equals("t")) {
+				return "subs(u=s, inttrans:-invlaplace("
+						+ expression + ",t,u))";
+			}
+
+			// GeoGebra returns the result using the same variable name (except when the var name is t),
 			// so Maple uses a temporary result variable and then substitutes it back
-			return "subs(_u=" + varName + ", inttrans:-invlaplace("
-					+ expression + "," + varName + ",_u))";
+			return "subs(u=" + varName + ", inttrans:-invlaplace("
+					+ expression + "," + varName + ",u))";
 		}
 
 		// if there are two arguments then the command form is InverseLaplace( <Function>, <Variable> )
@@ -442,28 +530,33 @@ final class MapleCommandTranslator {
 
 			// GeoGebra returns the result using the selected variable name,
 			// so Maple uses a temporary result variable and then substitutes it back
-			return "subs(_u=" + varName + ", inttrans:-invlaplace("
-					+ expression + "," + varName + ",_u))";
+			return "subs(u=" + varName + ", inttrans:-invlaplace("
+					+ expression + "," + varName + ",u))";
 		}
 
 		// if there are three arguments then the command form is InverseLaplace( <Function>, <Variable>, <Variable> )
 		if (numOfArguments == 3) {
 			String varName = argumentTranslator.apply(command.getArgument(1));
 			String newVarName = argumentTranslator.apply(command.getArgument(2));
+
+			if (varName.equals(newVarName)) {
+				return "subs(u=" + varName + ", inttrans:-invlaplace("
+						+ expression + "," + varName + ",u))";
+			}
 			return "inttrans:-invlaplace(" + expression + "," + varName + "," + newVarName + ")";
 		}
 
 		return null;
 	}
 
-	private static String getSingleVariableName(Command command) {
-		HashSet<GeoElement> variables = command.getArgument(0).getVariables(SymbolicMode.SYMBOLIC);
+	private static String getSingleVariableName(Command command,int index) {
+		HashSet<GeoElement> variables = command.getArgument(index).getVariables(SymbolicMode.SYMBOLIC);
 
-		if (variables.size() == 1) {
+		if (!variables.isEmpty()) {
 			return variables.iterator().next().toString();
 		}
 
-		return "t";
+		return "x";
 	}
 
 	public static String getMapleName(String expression,
@@ -472,11 +565,32 @@ final class MapleCommandTranslator {
 		return shortName == null ? expression : shortName;
 	}
 
+	static String fixSyntax(String toFix) {
+		String fixedSyntax = fixPiAppear(toFix);
+		fixedSyntax = fixInfinityAppear(fixedSyntax);
+		fixedSyntax = fixAndOperatorAppear(fixedSyntax);
+		fixedSyntax = fixOrOperatorAppear(fixedSyntax);
+		return fixedSyntax;
+	}
+
 	static String fixPiAppear(String toFix) {
-		if (toFix.contains("pi")) {
-			toFix = toFix.replace("pi" , "Pi");
-		}
-		return toFix;
+		return toFix.replace("pi" , "Pi");
+	}
+
+	static String fixInfinityAppear(String toFix) {
+		return toFix.replace("Infinity" , "infinity");
+	}
+
+	static String fixAndOperatorAppear(String toFix) {
+		return toFix.replace("&&", " and ")
+				.replace("∧", " and ")
+				.replace("And", " and ");
+	}
+
+	static String fixOrOperatorAppear(String toFix) {
+		return toFix.replace("||", " or ")
+				.replace("∨", " or ")
+				.replace("Or", " or ");
 	}
 
 	private static boolean isIntegerExpression(String expression) {
