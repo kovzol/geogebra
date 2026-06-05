@@ -12,10 +12,13 @@ import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.geos.GeoCasCell;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
+import org.geogebra.common.main.App;
 import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.desktop.euclidian.EuclidianViewD;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.reader.EndOfFileException;
 
@@ -83,15 +86,40 @@ public class Console {
 				return;
 			} else {
 				for (GeoElementND g : newGeos) {
-					output += ">> " + g.getDefinitionForInputBar() + "\n";
+					String input = g.getDefinitionForInputBar();
+					output += ">> " + input + "\n";
 					ExpressionNode en = g.getDefinition();
+
+					String enS = "", geS = "", gccS = "", out = "";
+
 					if (en != null) {
-						output += "<< " + g.getDefinition().toOutputValueString(StringTemplate.defaultTemplate) + "\n";
-					} else if (g instanceof GeoElement) {
-						output += "<< " + ((GeoElement) g).getAlgebraDescriptionDefault() + "\n";
-					} else if (g instanceof org.geogebra.common.kernel.geos.GeoCasCell) {
-						output += "<< " + ((GeoCasCell) g).getAlgebraDescriptionDefault() + "\n";
+						enS = g.getDefinition().toOutputValueString(StringTemplate.defaultTemplate);
+						out = enS;
 					}
+					if ((out.equals("") || input.endsWith(out)) && g instanceof GeoElement) {
+						geS = ((GeoElement) g).getAlgebraDescriptionDefault();
+						out = geS;
+					}
+					if ((out.equals("") || input.endsWith(out)) && g instanceof org.geogebra.common.kernel.geos.GeoCasCell) {
+						gccS = ((GeoCasCell) g).getAlgebraDescriptionDefault();
+						out = gccS;
+					}
+					if (out.equals("")) {
+						// Maybe we want to obtain the content of a CAS cell that has already been retrieved.
+						// In such cases, for some strange reason, there is no direct way to get its content
+						// as done above. Here is a workaround:
+						if (g.getParentAlgorithm() instanceof org.geogebra.common.kernel.cas.AlgoDependentCasCell) {
+							String numberS = ((org.geogebra.common.kernel.cas.AlgoDependentCasCell) (g.getParentAlgorithm())).
+									getCasCell().toString(StringTemplate.defaultTemplate);
+							if (numberS.startsWith("$")) {
+								int number = Integer.parseInt(numberS.substring(1)) - 1;
+								out = g.getKernel().getConstruction().getCasCell(number).
+										getOutput(StringTemplate.defaultTemplate);
+							}
+						}
+					}
+
+					output += "<< " + out + "\n";
 				}
 			}
 			System.out.print(output);
@@ -104,6 +132,15 @@ public class Console {
 		kernel.getAlgebraProcessor().processAlgebraCommandConsole(input, callback);
 		System.setOut(originalOut);
 		System.setErr(originalErr);
+	}
+
+	private static boolean isRealTTY() {
+		try {
+			return System.getenv("TERM") != null
+					&& System.console() != null;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	public static void start(Kernel kernel, boolean texmacs) throws IOException {
@@ -153,15 +190,45 @@ public class Console {
 			}
 
 			// Interactive operation mode:
+			String line;
+			LineReader reader;
+
+			Terminal terminal;
+
+			try {
+				if (isRealTTY()) {
+					terminal = TerminalBuilder.builder()
+							.system(true)
+							.build();
+					reader = LineReaderBuilder.builder()
+							.terminal(terminal)
+							.variable(LineReader.HISTORY_FILE, System.getProperty("user.home") + "/.geogebra_history")
+							.option(LineReader.Option.HISTORY_IGNORE_DUPS, true)
+							.option(LineReader.Option.HISTORY_REDUCE_BLANKS, true)
+							.build();
+				} else {
+					terminal = TerminalBuilder.builder()
+							.system(true)
+							.dumb(true)
+							.streams(System.in, System.out)
+							.build();
+					reader = LineReaderBuilder.builder()
+							.terminal(terminal)
+							.build();
+				}
+			} catch (Exception ex) {
+				System.out.println("Error on starting terminal.");
+				return;
+			}
+
 			while (true) {
-				String line;
-				LineReader reader = LineReaderBuilder.builder().build();
 				try {
 					line = reader.readLine("> ");
-					process(kernel, line);
+					if (!line.equals("")) // attempt to fix Windows bug
+						process(kernel, line);
 				} catch (UserInterruptException | EndOfFileException e) {
 					System.out.println("Console session ended, exiting...");
-					System.exit(0); // exit GeoGebra as well
+					AppD.exit(0); // This is needed to properly quit Tarski.
 				}
 			}
 		});

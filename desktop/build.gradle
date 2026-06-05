@@ -156,6 +156,8 @@ run {
     // This should be done in a different way:
     systemProperty "java.library.path", "${project.projectDir}/build"
     // jvmArgs '-Xss1024M'
+    jvmArgs '-Dnashorn.args=--no-deprecation-warning'
+    standardInput = System.in
 }
 test {
     systemProperty "ggb.prerelease", project.findProperty("prerelease") ?: "true";

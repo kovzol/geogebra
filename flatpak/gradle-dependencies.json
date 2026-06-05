@@ -223,26 +223,26 @@
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20260207/javatarski-1.37_20260207-natives-windows-amd64.jar",
-        "sha256": "1323846e1377a14e4f766f777641b465c8e1e193062606693682f09c37a6858b",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.42_20260525/javatarski-1.42_20260525-natives-windows-amd64.jar",
+        "sha256": "f61aa3986ffdd67adfd25a61fe1b9c10362cd8b593c9ea40985a437f7b9a9a3a",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20260207/javatarski-1.37_20260207-natives-macosx-universal.jar",
-        "sha256": "c9863abb52b06654176a21b1f60ee90881fd5b18fa0261041ee690c84fc212a8",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.42_20260525/javatarski-1.42_20260525-natives-macosx-universal.jar",
+        "sha256": "23266827c78e4b9d65a15559d50857381350d9587ddad81a0545258e121c404c",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20260207/javatarski-1.37_20260207-natives-linux-aarch64.jar",
-        "sha256": "e881bb2fb0071a6dd207f131c17dbe306cebabf40821f8ad640d7b89c5342a4a",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.42_20260525/javatarski-1.42_20260525-natives-linux-aarch64.jar",
+        "sha256": "dca66946154ae1da2bdd5ddbc6819f4ecea6ca220469ed248022c9e7377357d3",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.37_20260207/javatarski-1.37_20260207-natives-linux-amd64.jar",
-        "sha256": "a672e1772b80ce7c0c0af86ae8ae2d4ca08d046787ebb0d1374b8522ecb4b1ff",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javatarski/1.42_20260525/javatarski-1.42_20260525-natives-linux-amd64.jar",
+        "sha256": "13f2420974ff1a3a01810ffab259e57e199aabccdc4338c6c68f1f687674371c",
         "dest": "dependencies"
     },
     {
@@ -259,14 +259,14 @@
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20250926/javagiac-20250926-natives-linux-amd64.jar",
-        "sha256": "2445e199c6441add796a648f7e2261a75f100c17fe24043848098116fd6e7cc7",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20260527/javagiac-20260527-natives-linux-amd64.jar",
+        "sha256": "dba1f1e9d3a43dfe335a2b39fe655cc9983540c1b872090858bd722dfd8f6e05",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20250926/javagiac-20250926-natives-linux-aarch64.jar",
-        "sha256": "3d97318d2634fe72deff5016b71a78fc8135f1e38a44815ed13c9013a348d12e",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20260527/javagiac-20260527-natives-linux-aarch64.jar",
+        "sha256": "390acde9cc7a71ae79cf2a6d28414d04072109fc1fa6409b59f212703d574e92",
         "dest": "dependencies"
     },
     {
@@ -277,14 +277,14 @@
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20250926/javagiac-20250926-natives-windows-amd64.jar",
-        "sha256": "97766e94740ceda5b03687b354a6935a7d5de8e191da1d8981c1a32507ed315e",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20260527/javagiac-20260527-natives-windows-amd64.jar",
+        "sha256": "f9fbd3b59112f535c05e79bc51484e1331b010516732dc37c091b32e3d3e6a89",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20250926/javagiac-20250926-natives-macosx-universal.jar",
-        "sha256": "03a4d278d20af65a0eef794ee457002dc594d9bdf8029516de856618361af490",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/javagiac/20260527/javagiac-20260527-natives-macosx-universal.jar",
+        "sha256": "d180320ca3804ce81039b0e7247b7b1c1ddb95856c75dbb676f53abee86ebca4",
         "dest": "dependencies"
     },
     {
@@ -727,14 +727,14 @@
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/giac-gwt/20250926/giac-gwt-20250926-sources.jar",
-        "sha256": "694b565ee354ac0a67bc60c66a6f6e4110d7efa560e06298d43242e6b52c0e4f",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/giac-gwt/20260527/giac-gwt-20260527-sources.jar",
+        "sha256": "8ac5048fc60b3d3a9b07601cb9d509fad16e7d4581b4c0720e0a3d4aa9112a03",
         "dest": "dependencies"
     },
     {
         "type": "file",
-        "url": "https://dev.geogebra.org/maven2/tk/tarski/giac-gwt/20250926/giac-gwt-20250926.jar",
-        "sha256": "6dcd1d3aee807f1532a8329c9bc35e35d8008095dc13993367eb0e1c4710b4bb",
+        "url": "https://dev.geogebra.org/maven2/tk/tarski/giac-gwt/20260527/giac-gwt-20260527.jar",
+        "sha256": "c8e8924b8b5837b73b9d135be66868b47db1c80284f7d69766d82c06d7680822",
         "dest": "dependencies"
     },
     {
