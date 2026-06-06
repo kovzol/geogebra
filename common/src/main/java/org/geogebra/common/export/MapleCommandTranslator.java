@@ -130,6 +130,18 @@ final class MapleCommandTranslator {
 		return null;
 	}
 
+	static String translateSolveCubic(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		return "solve(" + expression + ")";
+	}
+
+	static String translateSolveQuartic(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		return "solve(" + expression + ")";
+	}
+
 	static String translateFactor(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();

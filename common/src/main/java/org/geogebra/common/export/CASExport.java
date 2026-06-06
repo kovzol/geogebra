@@ -404,6 +404,16 @@ public class CASExport {
 					argument -> translateMapleArgument(argument, fullNameToShortName));
 			break;
 
+		case "SolveCubic":
+			def = MapleCommandTranslator.translateSolveCubic(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "SolveQuartic":
+			def = MapleCommandTranslator.translateSolveQuartic(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
 		case "Factor":
 			def = MapleCommandTranslator.translateFactor(command,
 					argument -> translateMapleArgument(argument, fullNameToShortName));
