@@ -79,6 +79,33 @@ final class MapleCommandTranslator {
 				+ ",denom(normal(" + secondExpression + ")))";
 	}
 
+	static String translateDivisors(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		// The command form is Divisors( <Number> )
+		String argNum = argumentTranslator.apply(command.getArgument(0));
+		return "NumberTheory:-tau(" + argNum + ")";
+	}
+
+	static String translateDivisorsList(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		// The command form is DivisorsList( <Number> )
+		String argNum = argumentTranslator.apply(command.getArgument(0));
+		return "NumberTheory:-Divisors(" + argNum + ")";
+	}
+
+	static String translateDivisorsSum(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		// The command form is DivisorsSum( <Number> )
+		String argNum = argumentTranslator.apply(command.getArgument(0));
+		return "NumberTheory:-SumOfDivisors(" + argNum + ")";
+	}
+
+	static String translateExpand(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		return "expand(" +  expression + ")";
+	}
+
 	static String translateAssume(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 
@@ -101,6 +128,18 @@ final class MapleCommandTranslator {
 		}
 
 		return null;
+	}
+
+	static String translateSolveCubic(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		return "solve(" + expression + ")";
+	}
+
+	static String translateSolveQuartic(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		return "solve(" + expression + ")";
 	}
 
 	static String translateFactor(Command command,
@@ -287,7 +326,6 @@ final class MapleCommandTranslator {
 	static String translateDiv(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		// The command form is either Div( <Dividend Number>, <Divisor Number> ) or Div( <Dividend Polynomial>, <Divisor Polynomial> )
-		// we try to convert the second argument to an integer, if it's fail that's mean we are at the Polynomial state
 		String Dividend = argumentTranslator.apply(command.getArgument(0));
 		String Divisor = argumentTranslator.apply(command.getArgument(1));
 		if (isIntegerExpression(Divisor)) {
@@ -369,6 +407,7 @@ final class MapleCommandTranslator {
 
 	// TODO: Maple may print integer numeric results as 1. after evalf.
 	// Handling this fully would require post-processing Maple output, not only export-time translation.
+	// maybe we can handle it with wrapping the whole with the maple's command round()
 	static String translateNumeric(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();
@@ -376,7 +415,7 @@ final class MapleCommandTranslator {
 
 		// avoid evalf for integers, since Maple may print them with a trailing dot
 		if (isIntegerExpression(expression)) {
-			return expression;
+			return "round(evalf[3](" + expression + "))";
 		}
 
 		// if there is only one argument then the command form is Numeric( <Expression> )
@@ -387,8 +426,8 @@ final class MapleCommandTranslator {
 
 		// if there are two arguments then the command form is Numeric( <Expression>, <Significant Figures> )
 		if (numOfArguments == 2) {
-			String numOfDigits = argumentTranslator.apply(command.getArgument(1));
-			return "evalf[" + numOfDigits + "](" + expression + ")";
+			String significantFigures = argumentTranslator.apply(command.getArgument(1));
+			return "evalf[" + significantFigures + "](" + expression + ")";
 		}
 
 		return null;

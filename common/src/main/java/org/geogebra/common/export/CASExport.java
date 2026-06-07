@@ -374,6 +374,26 @@ public class CASExport {
 					argument -> translateMapleArgument(argument, fullNameToShortName));
 			break;
 
+		case "Divisors":
+			def = MapleCommandTranslator.translateDivisors(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "DivisorsList":
+			def = MapleCommandTranslator.translateDivisorsList(command,
+					arguments -> translateMapleArgument(arguments, fullNameToShortName));
+			break;
+
+		case "DivisorsSum":
+			def = MapleCommandTranslator.translateDivisorsSum(command,
+					arguments -> translateMapleArgument(arguments, fullNameToShortName));
+			break;
+
+		case "Expand":
+			def = MapleCommandTranslator.translateExpand(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
 		case "Assume":
 			def = MapleCommandTranslator.translateAssume(command,
 					argument -> translateMapleArgument(argument, fullNameToShortName));
@@ -381,6 +401,16 @@ public class CASExport {
 
 		case "Solve":
 			def = MapleCommandTranslator.translateSolve(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "SolveCubic":
+			def = MapleCommandTranslator.translateSolveCubic(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
+		case "SolveQuartic":
+			def = MapleCommandTranslator.translateSolveQuartic(command,
 					argument -> translateMapleArgument(argument, fullNameToShortName));
 			break;
 
