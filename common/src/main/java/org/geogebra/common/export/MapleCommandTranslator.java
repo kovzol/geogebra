@@ -171,6 +171,35 @@ final class MapleCommandTranslator {
 
 	}
 
+	static String translateLCM(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		int numOfArguments = command.getArgumentNumber();
+
+		// in case of one argument, the command form is LCM( <List of Polynomials> )
+		if (numOfArguments == 1) {
+			String expression = argumentTranslator.apply(command.getArgument(0));
+			return "lcm(op(" +  expression + "))";
+		}
+
+		// in case of two arguments, the command form is LCM( <Number>, <Number> ) or LCM( <Polynomial>, <Polynomial> )
+		if (numOfArguments == 2) {
+			String firstArg = argumentTranslator.apply(command.getArgument(0));
+			String secondArg = argumentTranslator.apply(command.getArgument(1));
+
+			// if both of the arguments are integers then the command form is LCM( <Number>, <Number> )
+			if (isIntegerExpression(firstArg) && isIntegerExpression(secondArg)) {
+				return "ilcm(" + firstArg + "," + secondArg + ")";
+			}
+			// otherwise, treat the arguments as polynomials and use Maple's polynomial LCM
+			else {
+				return "lcm(" + firstArg + "," + secondArg + ")";
+			}
+
+		}
+
+		return null;
+	}
+
 	static String translateDerivative(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();

@@ -419,6 +419,11 @@ public class CASExport {
 					argument -> translateMapleArgument(argument, fullNameToShortName));
 			break;
 
+		case "LCM":
+			def = MapleCommandTranslator.translateLCM(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
 		case "Derivative":
 			def = MapleCommandTranslator.translateDerivative(command,
 					argument -> translateMapleArgument(argument, fullNameToShortName));
