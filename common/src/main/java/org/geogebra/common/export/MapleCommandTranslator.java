@@ -175,7 +175,7 @@ final class MapleCommandTranslator {
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();
 
-		// in case of one argument, the command form is LCM( <List of Polynomials> )
+		// in case of one argument, the command form is LCM( <List of Polynomials> ) or LCM( <List of Numbers> )
 		if (numOfArguments == 1) {
 			String expression = argumentTranslator.apply(command.getArgument(0));
 			return "lcm(op(" +  expression + "))";
@@ -193,6 +193,35 @@ final class MapleCommandTranslator {
 			// otherwise, treat the arguments as polynomials and use Maple's polynomial LCM
 			else {
 				return "lcm(" + firstArg + "," + secondArg + ")";
+			}
+
+		}
+
+		return null;
+	}
+
+	static String translateGCD(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		int numOfArguments = command.getArgumentNumber();
+
+		// in case of one argument, the command form is GCD( <List of Polynomials> ) or GCD( <List of Numbers> )
+		if (numOfArguments == 1) {
+			String expression = argumentTranslator.apply(command.getArgument(0));
+			return "foldl(gcd,op(" + expression + "))";
+		}
+
+		// in case of two arguments, the command form is GCD( <Number>, <Number> ) or GCD( <Polynomial>, <Polynomial> )
+		if (numOfArguments == 2) {
+			String firstArg = argumentTranslator.apply(command.getArgument(0));
+			String secondArg = argumentTranslator.apply(command.getArgument(1));
+
+			// if both of the arguments are integers then the command form is GCD( <Number>, <Number> )
+			if (isIntegerExpression(firstArg) && isIntegerExpression(secondArg)) {
+				return "igcd(" + firstArg + "," + secondArg + ")";
+			}
+			// otherwise, treat the arguments as polynomials and use Maple's polynomial GCD
+			else {
+				return "gcd(" + firstArg + "," + secondArg + ")";
 			}
 
 		}
