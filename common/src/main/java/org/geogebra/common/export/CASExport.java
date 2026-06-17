@@ -434,6 +434,11 @@ public class CASExport {
 					argument -> translateMapleArgument(argument, fullNameToShortName));
 		break;
 
+		case "HarmonicMean":
+			def = MapleCommandTranslator.translateHarmonicMean(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+			break;
+
 		case "Derivative":
 			def = MapleCommandTranslator.translateDerivative(command,
 					argument -> translateMapleArgument(argument, fullNameToShortName));
