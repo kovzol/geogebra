@@ -429,6 +429,11 @@ public class CASExport {
 					argument -> translateMapleArgument(argument, fullNameToShortName));
 			break;
 
+		case "GeometricMean":
+			def = MapleCommandTranslator.translateGeometricMean(command,
+					argument -> translateMapleArgument(argument, fullNameToShortName));
+		break;
+
 		case "Derivative":
 			def = MapleCommandTranslator.translateDerivative(command,
 					argument -> translateMapleArgument(argument, fullNameToShortName));

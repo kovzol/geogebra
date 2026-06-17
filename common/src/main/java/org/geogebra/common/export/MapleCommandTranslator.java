@@ -229,6 +229,13 @@ final class MapleCommandTranslator {
 		return null;
 	}
 
+	static String translateGeometricMean(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		expression = expression.replace("{", "[").replace("}", "]");
+		return "evalf(mul(x, x in " + expression + ")^(1/nops(" + expression + ")))";
+	}
+
 	static String translateDerivative(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();
