@@ -229,6 +229,21 @@ final class MapleCommandTranslator {
 		return null;
 	}
 
+	static String translateGeometricMean(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		expression = expression.replace("{", "[").replace("}", "]");
+		return "evalf(mul(x, x in " + expression + ")^(1/nops(" + expression + ")))";
+	}
+
+	static String translateHarmonicMean(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		String expression = argumentTranslator.apply(command.getArgument(0));
+		expression = expression.replace("{", "[").replace("}", "]");
+		return "evalf(nops(" + expression + ") / add(1/x, x in " + expression + "))";
+	}
+			//evalf(nops([13, 7, 26, 5, 19]) / add(1/x, x in [13, 7, 26, 5, 19]));
+
 	static String translateDerivative(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();
