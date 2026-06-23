@@ -257,6 +257,27 @@ final class MapleCommandTranslator {
 		return firstArg + "!/((" + firstArg + " - " + secondArg + ")! * " + secondArg + "!)";
 	}
 
+	static String translateCoefficients(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		int numOfArguments = command.getArgumentNumber();
+		String  expression = argumentTranslator.apply(command.getArgument(0));
+
+		// in case of one argument, the command form is Coefficients( <Polynomial> )
+		if (numOfArguments == 1) {
+			String var = getSingleVariableName(command,0);
+			return "ListTools:-Reverse(PolynomialTools:-CoefficientList(" + expression + "," + var + "))";
+		}
+
+		// in case of two argument, the command form is Coefficients( <Polynomial>, <Variable> )
+		if (numOfArguments == 2) {
+			String secondArg = argumentTranslator.apply(command.getArgument(1));
+			return "ListTools:-Reverse(PolynomialTools:-CoefficientList(" + expression + "," + secondArg + "))";
+		}
+
+		return null;
+
+	}
+
 	static String translateDerivative(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();
