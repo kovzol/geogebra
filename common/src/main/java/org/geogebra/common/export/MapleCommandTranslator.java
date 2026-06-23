@@ -242,7 +242,20 @@ final class MapleCommandTranslator {
 		expression = expression.replace("{", "[").replace("}", "]");
 		return "evalf(nops(" + expression + ") / add(1/x, x in " + expression + "))";
 	}
-			//evalf(nops([13, 7, 26, 5, 19]) / add(1/x, x in [13, 7, 26, 5, 19]));
+
+//	static String translatenPr(Command command,
+//			Function<ExpressionNode, String> argumentTranslator) {
+//		String firstArg = argumentTranslator.apply(command.getArgument(0));
+//		String secondArg = argumentTranslator.apply(command.getArgument(1));
+//		return firstArg + "!/(" + firstArg + "! - " + secondArg + "!)";
+//	}
+
+	static String translatenCr(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		String firstArg = argumentTranslator.apply(command.getArgument(0));
+		String secondArg = argumentTranslator.apply(command.getArgument(1));
+		return firstArg + "!/((" + firstArg + " - " + secondArg + ")! * " + secondArg + "!)";
+	}
 
 	static String translateDerivative(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
