@@ -29,6 +29,8 @@ apps:
       LIBGL_DRIVERS_PATH: $SNAP/usr/lib/x86_64-linux-gnu/dri
       LC_ALL: C.UTF-8
       LANG: C.UTF-8
+      # Avoid sticky dead-key state in Java/Swing when IBus provides XIM.
+      XMODIFIERS: ""
     plugs:
       - home
       - network
