@@ -62,6 +62,9 @@ public class ProverCNIMethod {
 	public static int WARNING_ANGLE = 3;
 	public static String VARIABLE_CYCLOTOMIC = "CT__";
 
+	// prime labels
+	public static TreeSet<String> primeLabels = new TreeSet<>();
+
 	public static class CNIDefinition {
 		// TODO: Consider adding more refinements here, add extra infos related to the Strings.
 		String declaration; // declaration in Giac format
@@ -113,8 +116,6 @@ public class ProverCNIMethod {
 
 		// All predecessors:
 		TreeSet<GeoElement> allPredecessors = statement.getAllPredecessors();
-		// prime labels
-		TreeSet<String> primeLabels = new TreeSet<>();
 		// collect r_k definitions to print them in CAS later
 		ArrayList<String> toEliminateLhsPrimed = null;
 		ArrayList<String> toEliminateRhsVars = null;
@@ -704,15 +705,8 @@ public class ProverCNIMethod {
 						simplifiedThesis2 = executeGiac("simplify(" + thesisDefinitionPrimed + ")");
 					}
 
-					prover.addProofLine(loc.getMenuDefault("CNISimplifyBoth",
-							"We now simplify both expressions. This makes them easier to compare:"));
-
-					prover.addProofLine(CmdShowProof.EQUATION, VARIABLE_R_STRING + PRIME + PRIME + ":=" + rExpr2Primed);
+					prover.addProofLine(CmdShowProof.EQUATION, VARIABLE_R_STRING + PRIME + PRIME + PRIME + ":=" + rExpr2Primed);
 					prover.addProofLine(CmdShowProof.EQUATION, "Simplify(" + rExpr2Primed + ")");
-
-					if (thesisDefinitionPrimed != null) {
-						prover.addProofLine(CmdShowProof.EQUATION, "Simplify(" + thesisDefinitionPrimed + ")");
-					}
 
 					if (isNumericConstant(simplifiedRExpr2)) {
 						if (simplifiedThesis2 != null && simplifiedRExpr2.equals(simplifiedThesis2)) {
@@ -1117,7 +1111,10 @@ public class ProverCNIMethod {
 				AlgoIntersectLines ail = new AlgoIntersectLines(cons, null, l1, l2);
 				X = ail.getPoint();
 				X.setLabel("X");
-			}
+				primeLabels.add("X");
+			} else {
+				primeLabels.add(X.getLabelSimple());
+			} // TODO: Inform the user on this in the CAS protocol.
 
 			String h1 = online(X, l1);
 			String h2 = online(X, l2);
