@@ -2,9 +2,11 @@ package org.geogebra.common.kernel.prover.adapters;
 
 import org.geogebra.common.kernel.algos.SymbolicParametersBotanaAlgo;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 
 public class BotanaCircleThreePoints extends ProverAdapter {
 
@@ -20,12 +22,12 @@ public class BotanaCircleThreePoints extends ProverAdapter {
 
 		if (botanaVars == null) {
 			botanaVars = new PVariable[4];
-			botanaVarsDescr = new String[4];
+			// botanaVarsDescr = new String[4];
 			// Virtual center:
 			botanaVars[0] = new PVariable(input[0].getKernel());
 			botanaVars[1] = new PVariable(input[0].getKernel());
-			botanaVarsDescr[0] = "x value of circle's center"; // TODO: find out which circle...
-			botanaVarsDescr[1] = "y value of circle's center";
+			// botanaVarsDescr[0] = "x value of circle's center"; // TODO: find out which circle...
+			// botanaVarsDescr[1] = "y value of circle's center";
 			// Point on the circle:
 			botanaVars[2] = circle1vars[0];
 			botanaVars[3] = circle1vars[1];
@@ -47,6 +49,23 @@ public class BotanaCircleThreePoints extends ProverAdapter {
 				circle3vars[1]);
 
 		return botanaPolynomials;
+	}
+
+	public void setBotanaVarsDescr(int pos, String coord, GeoElementND geo) {
+		Localization loc = geo.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfCenterOfB",
+				"%0 value of center of %1",
+				coord, geo.getLabelSimple());
+	}
+
+	public String[] getBotanaVarsDescr(GeoElementND geo) {
+		if (botanaVarsDescr != null) {
+			return botanaVarsDescr;
+		}
+		botanaVarsDescr = new String[4];
+		setBotanaVarsDescr(0, "x", geo);
+		setBotanaVarsDescr(1, "y", geo);
+		return botanaVarsDescr;
 	}
 
 	public void reset() {

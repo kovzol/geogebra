@@ -343,7 +343,7 @@ public class AlgoCircleThreePoints extends AlgoElement
 	}
 	@Override
 	public String[] getBotanaVarsDescr(GeoElementND geo) {
-		return botanaParams.getBotanaVarsDescr();
+		return botanaParams.getBotanaVarsDescr(geo);
 	}
 	@Override
 	public PPolynomial[] getBotanaPolynomials(GeoElementND geo)
