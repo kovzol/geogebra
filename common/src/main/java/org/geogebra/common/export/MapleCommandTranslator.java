@@ -344,6 +344,57 @@ final class MapleCommandTranslator {
 		return "nextprime(" + num + ")";
 	}
 
+
+	static String translateProduct(Command command,
+			Function<ExpressionNode, String> argumentTranslator) {
+		int  numOfArguments = command.getArgumentNumber();
+		String  firstArg = argumentTranslator.apply(command.getArgument(0));
+
+		// if the num of args is one then the command form is Product( <List of Raw Data> )
+		if (numOfArguments == 1) {
+			firstArg = firstArg.replace("{", "[").replace("}", "]");
+			return "mul(" +  firstArg + ")";
+		}
+
+		if (numOfArguments == 2) {
+			firstArg = firstArg.replace("{", "[").replace("}", "]");
+			String secondArg = argumentTranslator.apply(command.getArgument(1)).replace("{", "[").replace("}", "]");
+
+			// if the second arg is a number then the command form is Product( <List of Numbers>, <Number of Elements> )
+			// otherwise the command form is Product( <List of Numbers>, <List of Frequencies> )
+			if (isIntegerExpression(secondArg)) {
+				return "mul(" + firstArg + "[i], i = 1.." + secondArg + ")";
+			} else {
+				return "mul(" + firstArg + "[i]^" + secondArg + "[i], i = 1..numelems(" + firstArg + "))";
+
+				// TODO: handle the case when lists arent the same size like Product({1, 2, 3}, {4, 5})
+				// return "(proc(V, F)\n"
+				//		+ "    local nv, nf, i;\n"
+				//		+ "\n"
+				//		+ "    nv := numelems(V);\n"
+				//		+ "    nf := numelems(F);\n"
+				//		+ "\n"
+				//		+ "    if nv = nf then\n"
+				//		+ "        return mul(V[i]^F[i], i=1..nf);\n"
+				//		+ "    elif nv = nf + 1 then\n"
+				//		+ "        return mul(((V[i]+V[i+1])/2)^F[i], i=1..nf);\n"
+				//		+ "    else\n"
+				//		+ "        return undefined;\n"
+				//		+ "    end if;\n"
+				//		+ "end proc)(" + firstArg + "," + secondArg + ")";
+			}
+		}
+		// if the num of args is four then the command form is Product( <Expression>, <Variable>, <Start Value>, <End Value> )
+		if (numOfArguments == 4) {
+			String secondArg = argumentTranslator.apply(command.getArgument(1));
+			String thirdArg = argumentTranslator.apply(command.getArgument(2));
+			String fourthArg = argumentTranslator.apply(command.getArgument(3));
+			return "mul(" + firstArg + ", " + secondArg + "=" + thirdArg + ".." + fourthArg + ")";
+		}
+
+		return "";
+	}
+
 	static String translateDerivative(Command command,
 			Function<ExpressionNode, String> argumentTranslator) {
 		int numOfArguments = command.getArgumentNumber();
