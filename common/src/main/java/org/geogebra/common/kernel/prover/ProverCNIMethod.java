@@ -1685,6 +1685,7 @@ public class ProverCNIMethod {
 			eqs.addAll(specEqList);
 		}
 
+		/*
 		// handle extraVariables
 		if (extraVariables != null && !extraVariables.trim().isEmpty()) {
 			String ev = extraVariables.trim();
@@ -1695,6 +1696,7 @@ public class ProverCNIMethod {
 				vars.append(",").append(ev);
 			}
 		}
+		 */
 
 		return "Eliminate({" + String.join(",", eqs) + "},{" + vars + "})";
 	}
