@@ -21,3 +21,6 @@ web/war
 /web/gradle.properties
 /uitests/cypress/snapshots
 /uitests/cypress/videos
+
+dist
+.build-cache
