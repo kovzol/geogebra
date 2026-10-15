@@ -13,12 +13,13 @@ _GIT_RAW := $(shell git -C $(REPO_ROOT) describe --tags --always --dirty 2>/dev/
 # Strip leading 'v'
 _GIT_STRIPPED := $(patsubst v%,%,$(_GIT_RAW))
 # Ensure leading digit if no tag exists (e.g., '9e2f1a' -> '0.0.0.git.9e2f1a')
-_SAFE_BASE := $(shell echo "$(_GIT_STRIPPED)" | sed -E 's/^([^0-9])/0.0.0.git.\1/')
+_SAFE_BASE := $(shell echo "$(_GIT_STRIPPED)" | sed -E 's/^([0-9a-f]{7,})(-dirty)?$$/0.0.0.git.\1\2/')
 # Replace hyphens with dots:
 #    - Turn "-4-g9e2f1a" into ".post4.g9e2f1a"
 #    - Turn "-dirty" into ".dirty"
 #    - Replace any remaining forbidden characters
-VERSION ?= $(shell echo "$(_SAFE_BASE)" | sed -E 's/-([0-9]+)-g([a-f0-9]+)/.post\1.g\2/' | sed 's/-dirty/.dirty/' | tr '-' '.')
+_COMPUTED_VERSION := $(shell echo "$(_SAFE_BASE)" | sed -E 's/-([0-9]+)-g([a-f0-9]+)/.post\1.g\2/' | sed 's/-dirty/.dirty/' | tr '-' '.')
+VERSION ?= $(_COMPUTED_VERSION)
 
 ifeq ($(shell echo "$(VERSION)" | grep -Eq '^[0-9]' && echo yes),)
     $(error Invalid VERSION '$(VERSION)': must start with a digit)
@@ -28,7 +29,6 @@ endif
 ###########################################
 # Env vars
 ###########################################
-CACHE_DIR    ?= $(REPO_ROOT)/.build-cache
 OUT_DIR      ?= $(REPO_ROOT)/dist
 
 DOCKER_UBUNTU ?= ubuntu:22.04
@@ -76,6 +76,3 @@ deb:
 
 clean-dist:
 	rm -rf "$(OUT_DIR)"
-
-clean-cache:
-	rm -rf "$(CACHE_DIR)"
