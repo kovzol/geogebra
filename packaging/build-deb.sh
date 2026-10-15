@@ -72,9 +72,9 @@ chmod +x "$PACKAGE_DIR/opt/geogebra-discovery/bin/desktop"
 
 ln -s "/opt/geogebra-discovery/bin/desktop" "$PACKAGE_DIR/usr/bin/geogebra-discovery"
 
-cat << 'EOF' > "$PACKAGE_DIR/DEBIAN/control"
+cat > "$PACKAGE_DIR/DEBIAN/control" <<EOF
 Package: geogebra-discovery
-Version: 6.0.0
+Version: ${VERSION}
 Section: math
 Priority: optional
 Architecture: all
