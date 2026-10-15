@@ -3,20 +3,23 @@ set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 # Detect machine architecture
-_RAW_ARCH="$(uname -m)"
-case "${_RAW_ARCH}" in
-  x86_64)
-    ARCH="x86_64"
+_HOST_ARCH="$(uname -m)"
+
+case "$_HOST_ARCH" in
+  x86_64|amd64)
+    ARCH="amd64"
+    KEEP_NATIVE="linux-amd64"
     ;;
   aarch64|arm64)
-    ARCH="aarch64"
+    ARCH="arm64"
+    KEEP_NATIVE="linux-aarch64"
     ;;
   *)
-    echo "Unsupported architecture: ${_RAW_ARCH}" && exit 1
+    echo "Unsupported architecture: $_HOST_ARCH" >&2
+    exit 1
     ;;
 esac
-export ARCH
-echo ">>> Detected target architecture: ${ARCH}"
+echo ">>> Targeting architecture: Debian ($ARCH), Java native string ($KEEP_NATIVE)"
 
 # Expects a clean and valid version string
 VERSION="${APP_VERSION:-dev}"
@@ -83,6 +86,21 @@ cp -r "${GGD_SRC_SHADOW}/desktop/build/install/desktop"/* "$PACKAGE_DIR/opt/geog
 # Remove the Windows batch script from the Linux package
 rm -f "$PACKAGE_DIR/opt/geogebra-discovery/bin/desktop.bat"
 
+# remove unneeded jars
+LIB_DIR="$PACKAGE_DIR/opt/geogebra-discovery/lib"
+rm -f "$LIB_DIR"/*-macosx-* \
+      "$LIB_DIR"/*-windows-* \
+      "$LIB_DIR"/mac_extensions* \
+      "$LIB_DIR"/zspace* \
+      "$LIB_DIR"/libpxcclr*
+
+for arch in linux-amd64 linux-aarch64 linux-arm linux-i586; do
+  if [ "$arch" != "$KEEP_NATIVE" ]; then
+    rm -f "$LIB_DIR"/*-"$arch"*
+  fi
+done
+
+
 # Ensure execution permissions for the main runner script
 chmod +x "$PACKAGE_DIR/opt/geogebra-discovery/bin/desktop"
 
@@ -93,7 +111,7 @@ Package: geogebra-discovery
 Version: ${VERSION}
 Section: math
 Priority: optional
-Architecture: all
+Architecture: $ARCH
 Depends: default-jre | openjdk-11-jre | openjdk-8-jre
 Maintainer: Your Name <you@example.com>
 Description: GeoGebra Dynamic Mathematics Software
