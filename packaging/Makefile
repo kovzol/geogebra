@@ -1,6 +1,13 @@
+###########################################
+# Root path
+###########################################
 MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 REPO_ROOT    := $(abspath $(MAKEFILE_DIR)/..)
 
+
+###########################################
+# Version number
+###########################################
 # Fetch raw describe (e.g., "v1.2.0-4-g9e2f1a-dirty" or "9e2f1a")
 _GIT_RAW := $(shell git -C $(REPO_ROOT) describe --tags --always --dirty 2>/dev/null || echo "0.0.0")
 # Strip leading 'v'
@@ -17,6 +24,10 @@ ifeq ($(shell echo "$(VERSION)" | grep -Eq '^[0-9]' && echo yes),)
     $(error Invalid VERSION '$(VERSION)': must start with a digit)
 endif
 
+
+###########################################
+# Env vars
+###########################################
 CACHE_DIR    ?= $(REPO_ROOT)/.build-cache
 OUT_DIR      ?= $(REPO_ROOT)/dist
 
@@ -27,8 +38,11 @@ DOCKER_ARCH ?= archlinux:latest
 HOST_UID := $(shell id -u)
 HOST_GID := $(shell id -g)
 
-# Architecture handling (defaults to current host machine)
-ARCH ?= $(shell uname -m)
+
+###########################################
+# Architecture handling
+###########################################
+ARCH ?= $(shell uname -m) # defaults to current host machine
 
 ifeq ($(ARCH),aarch64)
   DOCKER_PLATFORM := linux/arm64
@@ -38,6 +52,10 @@ else
   DOCKER_PLATFORM := linux/amd64
 endif
 
+
+###########################################
+# Targets
+###########################################
 .PHONY: help man appimage deb rpm pacman windows clean-cache clean-dist
 
 help:
