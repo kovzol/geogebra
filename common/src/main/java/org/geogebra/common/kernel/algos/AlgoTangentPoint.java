@@ -33,6 +33,7 @@ import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 
 /**
  * Two tangents through point P to conic section c
@@ -230,6 +231,7 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 
 			PVariable[] botanaVarsThis = new PVariable[6];
 			String[] botanaVarsDescrThis = new String[6];
+			botanaVarsDescr.put(geo, botanaVarsDescrThis);
 
 			if (getBotanaVars(geo) == null) {
 
@@ -242,12 +244,15 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 				// M - midpoint of OE
 				botanaVarsThis[4] = new PVariable(kernel);
 				botanaVarsThis[5] = new PVariable(kernel);
-				botanaVarsDescrThis[4] = "The x value of midpoint of (" + vcircle[0] + ","
-					+ vcircle[1] + ") and (" + vPoint[0] + "," + vPoint[1] + ")";
-				botanaVarsDescrThis[5] = "The y value of midpoint of (" + vcircle[0] + ","
-						+ vcircle[1] + ") and (" + vPoint[0] + "," + vPoint[1] + ")";
+				// botanaVarsDescrThis[4] = "The x value of midpoint of (" + vcircle[0] + ","
+				// 	+ vcircle[1] + ") and (" + vPoint[0] + "," + vPoint[1] + ")";
+				// botanaVarsDescrThis[5] = "The y value of midpoint of (" + vcircle[0] + ","
+				// 		+ vcircle[1] + ") and (" + vPoint[0] + "," + vPoint[1] + ")";
+				setBotanaVarsDescr(4, "x", geo, vcircle[0].toString(), vcircle[1].toString(),
+						vPoint[0].toString(), vPoint[1].toString());
+				setBotanaVarsDescr(5, "y", geo, vcircle[0].toString(), vcircle[1].toString(),
+						vPoint[0].toString(), vPoint[1].toString());
 				botanaVars.put(geo, botanaVarsThis);
-				botanaVarsDescr.put(geo, botanaVarsDescrThis);
 			} else {
 				botanaVarsThis = getBotanaVars(geo);
 			}
@@ -551,6 +556,19 @@ public class AlgoTangentPoint extends AlgoTangentPointND
 		throw new NoSymbolicParametersException();
 
 		// TODO: implement the remaining cases
+	}
+
+	public void setBotanaVarsDescr(int pos, String coord, GeoElementND geo, String coord11, String coord12,
+			String coord21, String coord22) {
+		Localization loc = geo.getKernel().getLocalization();
+		String point1 = "(" + coord11 + "," + coord12 + ")";
+		String point2 = "(" + coord21 + "," + coord22 + ")";
+		String segment = point1 + " " + loc.getMenu("Symbol.And").toLowerCase() + " " + point2;
+		String[] botanaVarsDescrThis = botanaVarsDescr.get(geo);
+		botanaVarsDescrThis[pos] = loc.getPlainDefault("AValueOfMidpointOfB",
+				"%0 value of midpoint of %1",
+				coord, segment);
+		botanaVarsDescr.put(geo, botanaVarsDescrThis);
 	}
 
 	@Override
