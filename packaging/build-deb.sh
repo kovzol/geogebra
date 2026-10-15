@@ -2,6 +2,22 @@
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
+# Detect machine architecture
+_RAW_ARCH="$(uname -m)"
+case "${_RAW_ARCH}" in
+  x86_64)
+    ARCH="x86_64"
+    ;;
+  aarch64|arm64)
+    ARCH="aarch64"
+    ;;
+  *)
+    echo "Unsupported architecture: ${_RAW_ARCH}" && exit 1
+    ;;
+esac
+export ARCH
+echo ">>> Detected target architecture: ${ARCH}"
+
 # Expects a clean and valid version string
 VERSION="${APP_VERSION:-dev}"
 SRC_DIR="/app-src"
@@ -103,7 +119,7 @@ chown -R root:root "$PACKAGE_DIR"
 chmod 755 "$PACKAGE_DIR"/DEBIAN
 chmod 644 "$PACKAGE_DIR"/DEBIAN/control
 
-OUT_DEB_PATH="${OUT_DIR}/Geogebra-Discovery-$VERSION.deb"
+OUT_DEB_PATH="${OUT_DIR}/Geogebra-Discovery-${VERSION}-${ARCH}.deb"
 dpkg-deb --build --root-owner-group "$PACKAGE_DIR" "$OUT_DEB_PATH"
 
 if [ -n "${HOST_UID:-}" ] && [ -n "${HOST_GID:-}" ]; then
