@@ -1,0 +1,40 @@
+name: Build Debian Package for Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-deb:
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-22.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+      fail-fast: false
+
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Build .deb via Docker
+        run: make -C packaging deb VERSION=${{ github.ref_name }}
+
+      - name: Verify generated Debian packaging
+        run: ls -lh dist/*.deb
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.ref_name }}" dist/*.deb --clobber
