@@ -19,7 +19,7 @@ case "$_HOST_ARCH" in
     exit 1
     ;;
 esac
-echo ">>> Targeting architecture: Debian ($ARCH), Java native string ($KEEP_NATIVE)"
+echo ">>> Targeting architecture: $ARCH, Java native string ($KEEP_NATIVE)"
 
 VERSION="${APP_VERSION//_/-}"
 SRC_DIR="/app-src"

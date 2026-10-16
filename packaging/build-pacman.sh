@@ -6,15 +6,13 @@ _HOST_ARCH="$(uname -m)"
 
 case "$_HOST_ARCH" in
   x86_64)
-    ARCH="x86_64"
-    KEEP_NATIVE="linux-amd64"
     ;;
   *)
     echo "Error: Only x86_64 is supported. Detected: $_HOST_ARCH" >&2
     exit 1
     ;;
 esac
-echo ">>> Targeting architecture: RPM ($ARCH)"
+echo ">>> Targeting architecture: x86_64"
 
 # Variable setup
 VERSION="${APP_VERSION//-/.}"
@@ -93,7 +91,7 @@ rm -f "$LIB_DIR"/*-macosx-* \
       "$LIB_DIR"/libpxcclr*
 
 for arch in linux-amd64 linux-aarch64 linux-arm linux-i586; do
-  if [ "$arch" != "$KEEP_NATIVE" ]; then
+  if [ "$arch" != "linux-amd64" ]; then
     rm -f "$LIB_DIR"/*-"$arch"*
   fi
 done

@@ -18,7 +18,7 @@ case "$_HOST_ARCH" in
     exit 1
     ;;
 esac
-echo ">>> Targeting architecture: RPM ($ARCH), Java native string ($KEEP_NATIVE)"
+echo ">>> Targeting architecture: $ARCH, Java native string ($KEEP_NATIVE)"
 
 # Variable setup
 VERSION="${APP_VERSION//-/_}"
