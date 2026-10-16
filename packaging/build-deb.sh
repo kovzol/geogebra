@@ -136,7 +136,7 @@ chown -R root:root "$PACKAGE_DIR"
 chmod 755 "$PACKAGE_DIR"/DEBIAN
 chmod 644 "$PACKAGE_DIR"/DEBIAN/control
 
-OUT_DEB_PATH="${OUT_DIR}/Geogebra-Discovery-${VERSION}-${ARCH}.deb"
+OUT_DEB_PATH="${OUT_DIR}/geogebra-discovery-${VERSION}-${ARCH}.deb"
 dpkg-deb --build --root-owner-group "$PACKAGE_DIR" "$OUT_DEB_PATH"
 
 if [ -n "${HOST_UID:-}" ] && [ -n "${HOST_GID:-}" ]; then
