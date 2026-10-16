@@ -32,7 +32,7 @@ endif
 OUT_DIR      ?= $(REPO_ROOT)/dist
 
 DOCKER_UBUNTU ?= ubuntu:22.04
-DOCKER_FEDORA ?= fedora:latest
+DOCKER_FEDORA ?= fedora:40
 DOCKER_ARCH ?= archlinux:latest
 
 HOST_UID := $(shell id -u)
@@ -73,6 +73,18 @@ deb:
 	  -e HOST_UID="$(HOST_UID)" \
 	  -e HOST_GID="$(HOST_GID)" \
 	  $(DOCKER_UBUNTU) /build-deb.sh
+
+rpm:
+	@mkdir -p "$(OUT_DIR)"
+	docker run --rm \
+	  --platform $(DOCKER_PLATFORM) \
+	  -v "$(REPO_ROOT):/app-src:ro" \
+	  -v "$(MAKEFILE_DIR)/build-rpm.sh:/build-rpm.sh:ro" \
+	  -v "$(OUT_DIR):/out" \
+	  -e APP_VERSION="$(VERSION)" \
+	  -e HOST_UID="$(HOST_UID)" \
+	  -e HOST_GID="$(HOST_GID)" \
+	  $(DOCKER_FEDORA) /build-rpm.sh
 
 clean-dist:
 	rm -rf "$(OUT_DIR)"
