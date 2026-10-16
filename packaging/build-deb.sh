@@ -22,7 +22,7 @@ esac
 echo ">>> Targeting architecture: Debian ($ARCH), Java native string ($KEEP_NATIVE)"
 
 # Expects a clean and valid version string
-VERSION="${APP_VERSION:-dev}"
+VERSION="${APP_VERSION}"
 SRC_DIR="/app-src"
 OUT_DIR="/out"
 GGD_SRC_SHADOW="/tmp/ggd-src"
@@ -83,6 +83,8 @@ mkdir -p "$PACKAGE_DIR/usr/share/pixmaps"
 # Copy application files (bin and lib)
 cp -r "${GGD_SRC_SHADOW}/desktop/build/install/desktop"/* "$PACKAGE_DIR/opt/geogebra-discovery/"
 
+cp "$SRC_DIR/flatpak/gd-512.png" "$PACKAGE_DIR/usr/share/pixmaps/geogebra-discovery.png" 2>/dev/null || true
+
 # Remove the Windows batch script from the Linux package
 rm -f "$PACKAGE_DIR/opt/geogebra-discovery/bin/desktop.bat"
 
@@ -119,19 +121,17 @@ Description: GeoGebra Dynamic Mathematics Software
  algebra, statistics and calculus.
 EOF
 
-cat << 'EOF' > "$PACKAGE_DIR/usr/share/applications/geogebra.desktop"
+cat << 'EOF' > "$PACKAGE_DIR/usr/share/applications/geogebra-discovery.desktop"
 [Desktop Entry]
 Version=1.0
 Name=GeoGebra Discovery
 Comment=Dynamic mathematics software
-Exec=/usr/bin/geogebra %F
-Icon=geogebra
+Exec=/usr/bin/geogebra-discovery %F
+Icon=geogebra-discovery
 Terminal=false
 Type=Application
 Categories=Education;Math;
 EOF
-
-cp "$SRC_DIR/flatpak/gd-512.png" "$PACKAGE_DIR/usr/share/pixmaps/geogebra.png" 2>/dev/null || true
 
 chown -R root:root "$PACKAGE_DIR"
 chmod 755 "$PACKAGE_DIR"/DEBIAN
