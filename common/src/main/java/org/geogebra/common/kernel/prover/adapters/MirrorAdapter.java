@@ -1198,7 +1198,7 @@ public class MirrorAdapter extends ProverAdapter {
 
 	public void setBotanaVarsDescr2(int pos, String coord, String label1, GeoElementND geo2) {
 		Localization loc = geo2.getKernel().getLocalization();
-		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfOrthogonalProjectionOfBAboutC",
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfOrthogonalProjectionOfBOnC",
 				"%0 value of orthogonal projection of %1 about %2",
 				coord, label1, geo2.getLabelSimple());
 	}
@@ -1226,15 +1226,15 @@ public class MirrorAdapter extends ProverAdapter {
 
 	public void setBotanaVarsDescr6(int pos, String coord, GeoElementND geo1, GeoElementND geo2) {
 		Localization loc = geo2.getKernel().getLocalization();
-		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfOrthogonalProjectionOfCenterOfBAboutC",
-				"%0 value of orthogonal projection of center of %1 about %2",
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfOrthogonalProjectionOfCenterOfBOnC",
+				"%0 value of orthogonal projection of center of %1 on %2",
 				coord, geo1.getLabelSimple(), geo2.getLabelSimple());
 	}
 
 	public void setBotanaVarsDescr7(int pos, String coord, GeoElementND geo1, GeoElementND geo2) {
 		Localization loc = geo2.getKernel().getLocalization();
-		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfOrthogonalProjectionOfCenterOfBAboutC",
-				"%0 value of orthogonal projection of center of %1 about %2",
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfOrthogonalProjectionOfPointOfBOnC",
+				"%0 value of orthogonal projection of a point of %1 on %2",
 				coord, geo1.getLabelSimple(), geo2.getLabelSimple());
 	}
 
