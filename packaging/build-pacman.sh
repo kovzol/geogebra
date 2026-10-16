@@ -17,8 +17,7 @@ esac
 echo ">>> Targeting architecture: RPM ($ARCH)"
 
 # Variable setup
-# VERSION expects a clean and valid version string
-VERSION="${APP_VERSION}"
+VERSION="${APP_VERSION//-/.}"
 SRC_DIR="/app-src"
 OUT_DIR="/out"
 GGD_SRC_SHADOW="/tmp/ggd-src"

@@ -21,8 +21,7 @@ esac
 echo ">>> Targeting architecture: RPM ($ARCH), Java native string ($KEEP_NATIVE)"
 
 # Variable setup
-# VERSION expects a clean and valid version string
-VERSION="${APP_VERSION}"
+VERSION="${APP_VERSION//-/_}"
 SRC_DIR="/app-src"
 OUT_DIR="/out"
 GGD_SRC_SHADOW="/tmp/ggd-src"

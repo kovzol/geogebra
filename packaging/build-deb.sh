@@ -21,8 +21,7 @@ case "$_HOST_ARCH" in
 esac
 echo ">>> Targeting architecture: Debian ($ARCH), Java native string ($KEEP_NATIVE)"
 
-# Expects a clean and valid version string
-VERSION="${APP_VERSION}"
+VERSION="${APP_VERSION//_/-}"
 SRC_DIR="/app-src"
 OUT_DIR="/out"
 GGD_SRC_SHADOW="/tmp/ggd-src"
