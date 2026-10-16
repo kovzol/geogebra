@@ -148,7 +148,7 @@ EOF
 
 rpmbuild -bb \
   --define "staging_dir ${PACKAGE_DIR}" \
-  --define "rpm_version 6.1.0" \
+  --define "rpm_version ${VERSION}" \
   ~/rpmbuild/SPECS/geogebra.spec
 
 if [ -n "${HOST_UID:-}" ] && [ -n "${HOST_GID:-}" ]; then
