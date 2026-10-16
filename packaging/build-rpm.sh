@@ -80,7 +80,7 @@ mkdir -p "$PACKAGE_DIR/usr/share/pixmaps"
 # Copy application files (bin and lib)
 cp -r "${GGD_SRC_SHADOW}/desktop/build/install/desktop"/* "$PACKAGE_DIR/opt/geogebra-discovery/"
 
-cp "$SRC_DIR/flatpak/gd-512.png" "$PACKAGE_DIR/usr/share/pixmaps/geogebra.png" 2>/dev/null || true
+cp "$SRC_DIR/flatpak/gd-512.png" "$PACKAGE_DIR/usr/share/pixmaps/geogebra-discovery.png" 2>/dev/null || true
 
 # Remove the Windows batch script from the Linux package
 rm -f "$PACKAGE_DIR/opt/geogebra-discovery/bin/desktop.bat"
@@ -109,8 +109,8 @@ cat << 'EOF' > "$PACKAGE_DIR/usr/share/applications/geogebra-discovery.desktop"
 Version=1.0
 Name=GeoGebra Discovery
 Comment=Dynamic mathematics software
-Exec=/usr/bin/geogebra %F
-Icon=geogebra
+Exec=/usr/bin/geogebra-discovery %F
+Icon=geogebra-discovery
 Terminal=false
 Type=Application
 Categories=Education;Math;
@@ -119,7 +119,7 @@ EOF
 
 mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 
-cat << 'EOF' > ~/rpmbuild/SPECS/geogebra.spec
+cat << 'EOF' > ~/rpmbuild/SPECS/geogebra-discovery.spec
 Name:           geogebra-discovery
 Version:        %{rpm_version}
 Release:        1%{?dist}
@@ -142,13 +142,13 @@ cp -a %{staging_dir}/. %{buildroot}/
 /opt/geogebra-discovery
 /usr/bin/geogebra-discovery
 /usr/share/applications/geogebra-discovery.desktop
-/usr/share/pixmaps/geogebra.png
+/usr/share/pixmaps/geogebra-discovery.png
 EOF
 
 rpmbuild -bb \
   --define "staging_dir ${PACKAGE_DIR}" \
   --define "rpm_version ${VERSION}" \
-  ~/rpmbuild/SPECS/geogebra.spec
+  ~/rpmbuild/SPECS/geogebra-discovery.spec
 
 if [ -n "${HOST_UID:-}" ] && [ -n "${HOST_GID:-}" ]; then
   chown -hR "${HOST_UID}:${HOST_GID}" "$HOME"/rpmbuild/RPMS/*/*.rpm || true
