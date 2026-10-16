@@ -11,6 +11,7 @@ import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.prover.NoSymbolicParametersException;
 import org.geogebra.common.kernel.prover.polynomial.PPolynomial;
 import org.geogebra.common.kernel.prover.polynomial.PVariable;
+import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.debug.Log;
 
 public class MirrorAdapter extends ProverAdapter {
@@ -26,7 +27,7 @@ public class MirrorAdapter extends ProverAdapter {
 		if (mirrorLine instanceof GeoLine) {
 
 			GeoPoint P;
-			// if we want to mirror a line to a line
+			// if we want to mirror a line about a line
 			if (inGeo.isGeoLine()) {
 
 				/* It's possible that inGeo already has Botana vars. */
@@ -41,37 +42,53 @@ public class MirrorAdapter extends ProverAdapter {
 						// P' - mirror of P
 						botanaVars[0] = new PVariable(geo.getKernel());
 						botanaVars[1] = new PVariable(geo.getKernel());
-						botanaVarsDescr[0] = "x value of mirror image of (" + inGeoVars[0] +
-								"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
-						botanaVarsDescr[1] = "y value of mirror image of (" + inGeoVars[0] +
-								"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[0] = "x value of mirror image of (" + inGeoVars[0] +
+						// 		"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[1] = "y value of mirror image of (" + inGeoVars[0] +
+						// 		"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
+						setBotanaVarsDescr1(0, "x", "(" + inGeoVars[0] + "," +
+								inGeoVars[1] + ")",	mirrorLine);
+						setBotanaVarsDescr1(1, "y", "(" + inGeoVars[0] + "," +
+								inGeoVars[1] + ")",	mirrorLine);
 						// Q' - mirror of Q
 						botanaVars[2] = new PVariable(geo.getKernel());
 						botanaVars[3] = new PVariable(geo.getKernel());
-						botanaVarsDescr[2] = "x value of mirror image of (" + inGeoVars[2] +
-								"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
-						botanaVarsDescr[3] = "y value of mirror image of (" + inGeoVars[2] +
-								"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[2] = "x value of mirror image of (" + inGeoVars[2] +
+						//		"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[3] = "y value of mirror image of (" + inGeoVars[2] +
+						//		"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
+						setBotanaVarsDescr1(2, "x", "(" + inGeoVars[2] + "," +
+								inGeoVars[3] + ")",	mirrorLine);
+						setBotanaVarsDescr1(3, "y", "(" + inGeoVars[2] + "," +
+								inGeoVars[3] + ")",	mirrorLine);
 						// V1 - auxiliary point
 						botanaVars[4] = new PVariable(geo.getKernel());
 						botanaVars[5] = new PVariable(geo.getKernel());
-						botanaVarsDescr[4] = "x value of orthogonal projection of (" + inGeoVars[0] +
-								"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
-						botanaVarsDescr[5] = "y value of orthogonal projection of (" + inGeoVars[0] +
-								"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[4] = "x value of orthogonal projection of (" + inGeoVars[0] +
+						// 		"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[5] = "y value of orthogonal projection of (" + inGeoVars[0] +
+						// 		"," + inGeoVars[1] + ") about " + mirrorLine.getLabelSimple();
+						setBotanaVarsDescr2(4, "x", "(" + inGeoVars[0] + "," +
+								inGeoVars[1] + ")",	mirrorLine);
+						setBotanaVarsDescr2(5, "y", "(" + inGeoVars[0] + "," +
+								inGeoVars[1] + ")",	mirrorLine);
 
 						// V2 - auxiliary point
 						botanaVars[6] = new PVariable(geo.getKernel());
 						botanaVars[7] = new PVariable(geo.getKernel());
-						botanaVarsDescr[6] = "x value of orthogonal projection of (" + inGeoVars[2] +
-								"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
-						botanaVarsDescr[7] = "y value of orthogonal projection of (" + inGeoVars[2] +
-								"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[6] = "x value of orthogonal projection of (" + inGeoVars[2] +
+						// 		"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[7] = "y value of orthogonal projection of (" + inGeoVars[2] +
+						// 		"," + inGeoVars[3] + ") about " + mirrorLine.getLabelSimple();
+						setBotanaVarsDescr2(6, "x", "(" + inGeoVars[2] + "," +
+								inGeoVars[3] + ")",	mirrorLine);
+						setBotanaVarsDescr2(7, "y", "(" + inGeoVars[2] + "," +
+								inGeoVars[3] + ")",	mirrorLine);
 					}
 
 					botanaPolynomials = new PPolynomial[8];
 
-					// first we want to mirror P to line l
+					// first we want to mirror P about line l
 
 					PPolynomial p1 = new PPolynomial(inGeoVars[0]);
 					PPolynomial p2 = new PPolynomial(inGeoVars[1]);
@@ -132,7 +149,7 @@ public class MirrorAdapter extends ProverAdapter {
 				}
 				throw new NoSymbolicParametersException();
 			}
-			// we want to mirror a point to a line
+			// we want to mirror a point about a line
 			else if (inGeo.isGeoPoint()) {
 				P = (GeoPoint) inGeo;
 				GeoLine l = (GeoLine) mirrorLine;
@@ -149,13 +166,17 @@ public class MirrorAdapter extends ProverAdapter {
 						// V (intersection of CC' and AB)
 						botanaVars[2] = new PVariable(geo.getKernel());
 						botanaVars[3] = new PVariable(geo.getKernel());
-						botanaVarsDescr[2] = "x value of orthogonal projection of " + P.getLabelSimple() + " on " + l.getLabelSimple();
-						botanaVarsDescr[3] = "y value of orthogonal projection of " + P.getLabelSimple() + " on " + l.getLabelSimple();
+						// botanaVarsDescr[2] = "x value of orthogonal projection of " + P.getLabelSimple() + " on " + l.getLabelSimple();
+						// botanaVarsDescr[3] = "y value of orthogonal projection of " + P.getLabelSimple() + " on " + l.getLabelSimple();
+						setBotanaVarsDescr2(2, "x", P.getLabelSimple(), l);
+						setBotanaVarsDescr2(3, "y", P.getLabelSimple(), l);
 						// N (another point on CC' to describe orthogonality by rotation)
 						botanaVars[4] = new PVariable(geo.getKernel());
 						botanaVars[5] = new PVariable(geo.getKernel());
-						botanaVarsDescr[4] = "x value of rotation of a vector on " + l.getLabelSimple() + " by 90 degrees about " + P.getLabelSimple();
-						botanaVarsDescr[5] = "y value of rotation of a vector on " + l.getLabelSimple() + " by 90 degrees about " + P.getLabelSimple();
+						// botanaVarsDescr[4] = "x value of rotation of a vector on " + l.getLabelSimple() + " by 90 degrees about " + P.getLabelSimple();
+						// botanaVarsDescr[5] = "y value of rotation of a vector on " + l.getLabelSimple() + " by 90 degrees about " + P.getLabelSimple();
+						setBotanaVarsDescr3(4, "x", l, "90", P);
+						setBotanaVarsDescr3(5, "y", l, "90", P);
 					}
 
 					botanaPolynomials = new PPolynomial[6];
@@ -203,7 +224,7 @@ public class MirrorAdapter extends ProverAdapter {
 
 					return botanaPolynomials;
 			}
-			// mirror circle to line
+			// mirror circle about line
 			else if (inGeo.isGeoConic() && ((GeoConic) inGeo).isCircle()) {
 				GeoConic circle = (GeoConic) inGeo;
 				GeoLine l = (GeoLine) mirrorLine;
@@ -217,50 +238,62 @@ public class MirrorAdapter extends ProverAdapter {
 						// A' - mirror of center
 						botanaVars[0] = new PVariable(geo.getKernel());
 						botanaVars[1] = new PVariable(geo.getKernel());
-						botanaVarsDescr[0] = "x value of mirror image of center of "
-								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
-						botanaVarsDescr[1] = "y value of mirror image of center of "
-								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[0] = "x value of mirror image of center of "
+						// 		+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[1] = "y value of mirror image of center of "
+						// 		+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
+						setBotanaVarsDescr4(0, "x", inGeo, mirrorLine);
+						setBotanaVarsDescr4(1, "y", inGeo, mirrorLine);
 						// B' - mirror of point on circle
 						botanaVars[2] = new PVariable(geo.getKernel());
 						botanaVars[3] = new PVariable(geo.getKernel());
-						botanaVarsDescr[2] = "x value of mirror image of a point of "
-								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
-						botanaVarsDescr[3] = "y value of mirror image of a point of "
-								+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[2] = "x value of mirror image of a point of "
+						// 		+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[3] = "y value of mirror image of a point of "
+						// 		+ inGeo.getLabelSimple() + " about " + mirrorLine.getLabelSimple();
+						setBotanaVarsDescr5(2, "x", inGeo, mirrorLine);
+						setBotanaVarsDescr5(3, "y", inGeo, mirrorLine);
 						// V - midpoint of center and mirror of center
 						botanaVars[4] = new PVariable(geo.getKernel());
 						botanaVars[5] = new PVariable(geo.getKernel());
-						botanaVarsDescr[4] = "x value of orthogonal projection of center of "
-								+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
-						botanaVarsDescr[5] = "y value of orthogonal projection of center of "
-								+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[4] = "x value of orthogonal projection of center of "
+						// 		+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[5] = "y value of orthogonal projection of center of "
+						// 		+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
+						setBotanaVarsDescr6(4, "x", inGeo, mirrorLine);
+						setBotanaVarsDescr6(5, "y", inGeo, mirrorLine);
 						// T - midpoint of point on circle and mirror of point
 						// on circle
 						botanaVars[6] = new PVariable(geo.getKernel());
 						botanaVars[7] = new PVariable(geo.getKernel());
-						botanaVarsDescr[6] = "x value of orthogonal projection of a point of "
-								+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
-						botanaVarsDescr[7] = "y value of orthogonal projection of a point of "
-								+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[6] = "x value of orthogonal projection of a point of "
+						// 		+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
+						// botanaVarsDescr[7] = "y value of orthogonal projection of a point of "
+						// 		+ inGeo.getLabelSimple() + " on " + mirrorLine.getLabelSimple();
+						setBotanaVarsDescr7(6, "x", inGeo, mirrorLine);
+						setBotanaVarsDescr7(7, "y", inGeo, mirrorLine);
 						// N1 - AN1 orthogonal CD
 						botanaVars[8] = new PVariable(geo.getKernel());
 						botanaVars[9] = new PVariable(geo.getKernel());
-						botanaVarsDescr[8] = "x value of rotation of a vector on "
-								+ mirrorLine.getLabelSimple() + " by 90 degrees about center of "
-								+ inGeo.getLabelSimple();
-						botanaVarsDescr[9] = "y value of rotation of a vector on "
-								+ mirrorLine.getLabelSimple() + " by 90 degrees about center of "
-								+ inGeo.getLabelSimple();
+						// botanaVarsDescr[8] = "x value of rotation of a vector on "
+						// 		+ mirrorLine.getLabelSimple() + " by 90 degrees about center of "
+						//		+ inGeo.getLabelSimple();
+						// botanaVarsDescr[9] = "y value of rotation of a vector on "
+						// 		+ mirrorLine.getLabelSimple() + " by 90 degrees about center of "
+						//		+ inGeo.getLabelSimple();
+						setBotanaVarsDescr8(8, "x", mirrorLine, "90", inGeo);
+						setBotanaVarsDescr8(9, "y", mirrorLine, "90", inGeo);
 						// N2 - BN2 orthogonal CD
 						botanaVars[10] = new PVariable(geo.getKernel());
 						botanaVars[11] = new PVariable(geo.getKernel());
-						botanaVarsDescr[10] = "x value of rotation of a vector on "
-								+ mirrorLine.getLabelSimple() + " by 90 degrees about a point of "
-								+ inGeo.getLabelSimple();
-						botanaVarsDescr[11] = "x value of rotation of a vector on "
-								+ mirrorLine.getLabelSimple() + " by 90 degrees about a point of "
-								+ inGeo.getLabelSimple();
+						// botanaVarsDescr[10] = "x value of rotation of a vector on "
+						//		+ mirrorLine.getLabelSimple() + " by 90 degrees about a point of "
+						//		+ inGeo.getLabelSimple();
+						//botanaVarsDescr[11] = "x value of rotation of a vector on "
+						//		+ mirrorLine.getLabelSimple() + " by 90 degrees about a point of "
+						//		+ inGeo.getLabelSimple();
+						setBotanaVarsDescr9(10, "x", mirrorLine, "90", inGeo);
+						setBotanaVarsDescr9(11, "y", mirrorLine, "90", inGeo);
 					}
 
 					botanaPolynomials = new PPolynomial[12];
@@ -1154,6 +1187,69 @@ public class MirrorAdapter extends ProverAdapter {
 			// invalid object to mirror about
 			throw new NoSymbolicParametersException();
 		}
+	}
+
+	public void setBotanaVarsDescr1(int pos, String coord, String label1, GeoElementND geo2) {
+		Localization loc = geo2.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfMirrorOfBAboutC",
+				"%0 value of mirror image of %1 about %2",
+				coord, label1, geo2.getLabelSimple());
+	}
+
+	public void setBotanaVarsDescr2(int pos, String coord, String label1, GeoElementND geo2) {
+		Localization loc = geo2.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfOrthogonalProjectionOfBAboutC",
+				"%0 value of orthogonal projection of %1 about %2",
+				coord, label1, geo2.getLabelSimple());
+	}
+
+	public void setBotanaVarsDescr3(int pos, String coord, GeoElementND geo1, String degree, GeoElementND geo2) {
+		Localization loc = geo2.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfRotationVectorOnBByCDegreesAboutD",
+				"%0 value of a vector on %1 by %2 degrees about %3",
+				coord, geo1.getLabelSimple(), degree, geo2.getLabelSimple());
+	}
+
+	public void setBotanaVarsDescr4(int pos, String coord, GeoElementND geo1, GeoElementND geo2) {
+		Localization loc = geo2.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfMirrorOfCenterOfBAboutC",
+				"%0 value of mirror image of center of %1 about %2",
+				coord, geo1.getLabelSimple(), geo2.getLabelSimple());
+	}
+
+	public void setBotanaVarsDescr5(int pos, String coord, GeoElementND geo1, GeoElementND geo2) {
+		Localization loc = geo2.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfMirrorOfPointOfBAboutC",
+				"%0 value of mirror image of a point of %1 about %2",
+				coord, geo1.getLabelSimple(), geo2.getLabelSimple());
+	}
+
+	public void setBotanaVarsDescr6(int pos, String coord, GeoElementND geo1, GeoElementND geo2) {
+		Localization loc = geo2.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfOrthogonalProjectionOfCenterOfBAboutC",
+				"%0 value of orthogonal projection of center of %1 about %2",
+				coord, geo1.getLabelSimple(), geo2.getLabelSimple());
+	}
+
+	public void setBotanaVarsDescr7(int pos, String coord, GeoElementND geo1, GeoElementND geo2) {
+		Localization loc = geo2.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfOrthogonalProjectionOfCenterOfBAboutC",
+				"%0 value of orthogonal projection of center of %1 about %2",
+				coord, geo1.getLabelSimple(), geo2.getLabelSimple());
+	}
+
+	public void setBotanaVarsDescr8(int pos, String coord, GeoElementND geo1, String degree, GeoElementND geo2) {
+		Localization loc = geo2.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfRotationVectorOnBByCDegreesAboutCenterOfD",
+				"%0 value of a vector on %1 by %2 degrees about the center of %3",
+				coord, geo1.getLabelSimple(), degree, geo2.getLabelSimple());
+	}
+
+	public void setBotanaVarsDescr9(int pos, String coord, GeoElementND geo1, String degree, GeoElementND geo2) {
+		Localization loc = geo2.getKernel().getLocalization();
+		botanaVarsDescr[pos] = loc.getPlainDefault("AValueOfRotationVectorOnBByCDegreesAboutPointOfD",
+				"%0 value of a vector on %1 by %2 degrees about a point of %3",
+				coord, geo1.getLabelSimple(), degree, geo2.getLabelSimple());
 	}
 
 	public void reset() {
