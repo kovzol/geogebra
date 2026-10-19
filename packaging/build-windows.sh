@@ -210,7 +210,7 @@ Section "Uninstall"
 SectionEnd
 EOF
 
-OUTPUT_FILE_PATH="${OUT_DIR}/GeoGebra-Discovery-Setup-x86_64-${VERSION}.exe"
+OUTPUT_FILE_PATH="${OUT_DIR}/GeoGebra-Discovery-Setup-${VERSION}-x86_64.exe"
 
 sed -e "s|@PKGVER@|${VERSION}|g" \
     -e "s|@BUILD_DIR@|${BUILD_DIR}|g" \
