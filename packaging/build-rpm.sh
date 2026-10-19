@@ -130,6 +130,11 @@ AutoReqProv:    no
 
 Requires:       java >= 1:1.8.0
 
+%description
+GeoGebra Discovery is an experimental version of GeoGebra.
+It contains some bleeding edge features of GeoGebra that are under heavy development and therefore not intended for every day use yet, so they are not included in the official GeoGebra version.
+
+
 %install
 mkdir -p %{buildroot}
 cp -a %{staging_dir}/. %{buildroot}/
