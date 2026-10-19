@@ -108,7 +108,7 @@ cat << 'EOF' > "$PACKAGE_DIR/usr/share/applications/geogebra-discovery.desktop"
 [Desktop Entry]
 Version=1.0
 Name=GeoGebra Discovery
-Comment=Dynamic mathematics software
+Comment=An experimental version of GeoGebra
 Exec=/usr/bin/geogebra-discovery %F
 Icon=geogebra-discovery
 Terminal=false
@@ -123,16 +123,12 @@ cat << 'EOF' > ~/rpmbuild/SPECS/geogebra-discovery.spec
 Name:           geogebra-discovery
 Version:        %{rpm_version}
 Release:        1%{?dist}
-Summary:        Dynamic mathematics software for education
+Summary:        An experimental version of GeoGebra
 License:        GPL3, EUPL 1.2, Creative Commons BY-NC-SA 4.0
 URL:            https://www.geogebra.org
 AutoReqProv:    no
 
 Requires:       java >= 1:1.8.0
-
-%description
-GeoGebra desktop application for interactive geometry,
-algebra, statistics and calculus.
 
 %install
 mkdir -p %{buildroot}

@@ -105,7 +105,7 @@ cat << 'EOF' > "$BUILD_DIR/usr/share/applications/geogebra-discovery.desktop"
 [Desktop Entry]
 Version=1.0
 Name=GeoGebra Discovery
-Comment=Dynamic mathematics software
+Comment=An experimental version of GeoGebra
 Exec=/usr/bin/geogebra-discovery %F
 Icon=geogebra-discovery
 Terminal=false
@@ -122,7 +122,7 @@ cat << 'EOF' > "${PACKAGE_DIR}/PKGBUILD.in"
 pkgname=geogebra-discovery
 pkgver=@PKGVER@
 pkgrel=1
-pkgdesc="GeoGebra desktop application for interactive geometry, algebra, statistics and calculus."
+pkgdesc="An experimental version of GeoGebra."
 arch=('x86_64')
 url="https://github.com/kovzol/geogebra"
 license=('GPL3, EUPL 1.2, Creative Commons BY-NC-SA 4.0')

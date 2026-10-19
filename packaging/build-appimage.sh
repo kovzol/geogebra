@@ -113,7 +113,7 @@ cat << 'EOF' > "$PACKAGE_DIR/usr/share/applications/geogebra-discovery.desktop"
 [Desktop Entry]
 Version=1.0
 Name=GeoGebra Discovery
-Comment=Dynamic mathematics software
+Comment=An experimental version of GeoGebra
 Exec=/usr/bin/geogebra-discovery %F
 Icon=geogebra-discovery
 Terminal=false

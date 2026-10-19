@@ -115,16 +115,14 @@ Priority: optional
 Architecture: $ARCH
 Depends: default-jre | openjdk-11-jre | openjdk-8-jre
 Maintainer: Your Name <you@example.com>
-Description: GeoGebra Dynamic Mathematics Software
- GeoGebra desktop application for interactive geometry,
- algebra, statistics and calculus.
+Description: An experimental version of GeoGebra
 EOF
 
 cat << 'EOF' > "$PACKAGE_DIR/usr/share/applications/geogebra-discovery.desktop"
 [Desktop Entry]
 Version=1.0
 Name=GeoGebra Discovery
-Comment=Dynamic mathematics software
+Comment=An experimental version of GeoGebra
 Exec=/usr/bin/geogebra-discovery %F
 Icon=geogebra-discovery
 Terminal=false
