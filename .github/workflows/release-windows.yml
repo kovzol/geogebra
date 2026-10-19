@@ -1,0 +1,31 @@
+name: Build Windows Installer
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Build Windows Installer via Docker
+        run: make -C packaging windows VERSION=${{ github.ref_name }}
+
+      - name: Verify generated installer
+        run: ls -lh dist/*.exe
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.ref_name }}" dist/*.exe --clobber
