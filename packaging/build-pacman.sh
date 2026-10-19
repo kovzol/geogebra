@@ -125,7 +125,7 @@ pkgrel=1
 pkgdesc="GeoGebra desktop application for interactive geometry, algebra, statistics and calculus."
 arch=('x86_64')
 url="https://github.com/kovzol/geogebra"
-license=('TODO')
+license=('GPL3, EUPL 1.2, Creative Commons BY-NC-SA 4.0')
 depends=('java-runtime>=11' 'java-runtime<21')
 options=('!debug')
 

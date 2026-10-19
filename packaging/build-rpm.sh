@@ -124,7 +124,7 @@ Name:           geogebra-discovery
 Version:        %{rpm_version}
 Release:        1%{?dist}
 Summary:        Dynamic mathematics software for education
-License:        GPLv3+
+License:        GPL3, EUPL 1.2, Creative Commons BY-NC-SA 4.0
 URL:            https://www.geogebra.org
 AutoReqProv:    no
 
