@@ -28,7 +28,7 @@ VERSION="${APP_VERSION//_/-}"
 SRC_DIR="/app-src"
 OUT_DIR="/out"
 GGD_SRC_SHADOW="/tmp/ggd-src"
-PACKAGE_DIR="/tmp/ggd-deb-package"
+PACKAGE_DIR="/tmp/ggd-appimage-package"
 
 echo ">>> Target version: ${VERSION}"
 

@@ -110,5 +110,17 @@ appimage:
 	  -e HOST_GID="$(HOST_GID)" \
 	  $(DOCKER_UBUNTU) /build-appimage.sh
 
+windows:
+	@mkdir -p "$(OUT_DIR)"
+	docker run --rm \
+	  --platform $(DOCKER_PLATFORM) \
+	  -v "$(REPO_ROOT):/app-src:ro" \
+	  -v "$(MAKEFILE_DIR)/build-windows.sh:/build-windows.sh:ro" \
+	  -v "$(OUT_DIR):/out" \
+	  -e APP_VERSION="$(VERSION)" \
+	  -e HOST_UID="$(HOST_UID)" \
+	  -e HOST_GID="$(HOST_GID)" \
+	  $(DOCKER_UBUNTU) /build-windows.sh
+
 clean-dist:
 	rm -rf "$(OUT_DIR)"
