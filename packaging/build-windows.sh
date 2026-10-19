@@ -146,7 +146,7 @@ FunctionEnd
 
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
-  File /r "${BUILD_DIR}\*.*"
+  File /r "${BUILD_DIR}/*"
 
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
@@ -188,7 +188,7 @@ Section "MainSection" SEC01
   WriteRegStr HKLM "${UNINST_KEY}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
   WriteRegDWORD HKLM "${UNINST_KEY}" "NoModify" 1
   WriteRegDWORD HKLM "${UNINST_KEY}" "NoRepair" 1
-  WriteRegDWORD HKLM "${UNINST_KEY}" "EstimatedSize" 280000
+  WriteRegDWORD HKLM "${UNINST_KEY}" "EstimatedSize" 166000
 SectionEnd
 
 Section "Uninstall"
