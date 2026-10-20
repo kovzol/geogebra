@@ -127,6 +127,12 @@ RequestExecutionLevel admin
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
+
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_FUNCTION "LaunchApp"
+!define MUI_FINISHPAGE_RUN_TEXT "Start GeoGebra Discovery now"
+!define MUI_FINISHPAGE_RUN_CHECKED
+
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_CONFIRM
@@ -142,6 +148,11 @@ FunctionEnd
 Function un.onInit
   SetRegView 64
   SetShellVarContext all
+FunctionEnd
+
+Function LaunchApp
+  SetOutPath "$INSTDIR"
+  Exec '"$INSTDIR\jre\bin\javaw.exe" -cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D'
 FunctionEnd
 
 Section "MainSection" SEC01
