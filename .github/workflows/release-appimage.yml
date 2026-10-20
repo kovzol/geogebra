@@ -1,0 +1,40 @@
+name: Build AppImage for Release
+
+on:
+  release:
+    types: [ published ]
+  workflow_dispatch:
+
+jobs:
+  build-appimage:
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-22.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+      fail-fast: false
+
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # needed so git describe finds release tags
+
+      - name: Build AppImage via Docker
+        run: make -C packaging appimage VERSION=${{ github.ref_name }}
+
+      - name: Verify generated AppImage
+        run: ls -lh dist/*.AppImage
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.ref_name }}" dist/*.AppImage --clobber

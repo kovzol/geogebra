@@ -1,0 +1,31 @@
+name: Build Pacman Package
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-pacman:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Build .pkg.tar.zst via Docker (Arch Linux)
+        run: make -C packaging pacman VERSION=${{ github.ref_name }}
+
+      - name: Verify generated Pacman packaging
+        run: ls -lh dist/*.pkg.tar.zst
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.ref_name }}" dist/*.pkg.tar.zst --clobber
