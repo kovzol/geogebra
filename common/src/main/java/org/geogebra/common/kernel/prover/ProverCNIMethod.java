@@ -84,6 +84,8 @@ public class ProverCNIMethod {
 
 		String declarations = "";
 		String realRelations = "";
+		// Maybe there are multiple and store only one of them. TODO.
+		// TreeSet<String> zeroRelations = new TreeSet<>();
 		int realRelationsNo = 0;
 		boolean declarative = true;
 		boolean rMustBeZero = false;
@@ -145,7 +147,7 @@ public class ProverCNIMethod {
 		// Real-relational points. We need them to eliminate the variables according to them too.
 		TreeSet<GeoElement> realRelationalPoints = new TreeSet<>();
 
-		String extraVariables = "";
+		TreeSet<String> extraVariables = new TreeSet<>();
 
 		String thesisDefinitionPrimed = null;
 
@@ -196,13 +198,21 @@ public class ProverCNIMethod {
 				}
 				if (def.zeroRelation != null) {
 					realRelations += def.zeroRelation + ",";
+					// Maybe there are multiple, so it's better to use a TreeSet:
+					// zeroRelations.add(def.zeroRelation); // we use it later in simplify
 
 					if (prover.getShowproof()) {
 						prover.addProofLine(CmdShowProof.TEXT_EQUATION, def.zeroRelation + "=0");
+						String primedEquation = addPrimesToLabels(def.zeroRelation, primeLabels);
+						if (toEliminateLhsPrimed != null) {
+							toEliminateLhsPrimed.add(primedEquation);
+							toEliminateRhsVars.add("0");
+						}
+
 					}
 				}
 				if (def.extraVariable != null) {
-					extraVariables = def.extraVariable + ",";
+					extraVariables.add(def.extraVariable);
 				}
 				if (def.realRelation != null) {
 					String[] CASrealRelations = def.realRelation.split("\n");
@@ -280,7 +290,7 @@ public class ProverCNIMethod {
 		}
 
 		if (def.extraVariable != null) {
-			extraVariables = def.extraVariable + ",";
+			extraVariables.add(def.extraVariable);
 		}
 
 		if (def.realRelation != null) {
@@ -423,8 +433,7 @@ public class ProverCNIMethod {
 		for (GeoElement ge : realRelationalPoints) {
 			toEliminate += getUniqueLabel(ge) + ",";
 		}
-		toEliminate += extraVariables;
-		toEliminate = removeTail(toEliminate, 1);
+		toEliminate += String.join(",", extraVariables);
 		rest += "[" + toEliminate + "]";
 
 		// Add third parameter for the eliminate command.
@@ -1650,7 +1659,7 @@ public class ProverCNIMethod {
 			ArrayList<String> lhsList,
 			ArrayList<String> rhsVars,
 			TreeSet<String> pointLabels,
-			String extraVariables,
+			TreeSet<String> extraVariables,
 			String extraEq0,
 			ArrayList<String> specEqList
 	) {
@@ -1685,8 +1694,13 @@ public class ProverCNIMethod {
 			eqs.addAll(specEqList);
 		}
 
-		/*
 		// handle extraVariables
+		for (String ev : extraVariables) {
+			if (!pointLabels.contains(ev)) {
+				vars.append(",").append(ev);
+			}
+		}
+		/*
 		if (extraVariables != null && !extraVariables.trim().isEmpty()) {
 			String ev = extraVariables.trim();
 			if (ev.endsWith(",")) {
