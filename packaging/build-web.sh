@@ -60,7 +60,7 @@ cp -r "${SRC_DIR}/xr-base" "${GGD_SRC_SHADOW}/"
 
 
 echo ">>> Building..."
-GGD_NAME=GeoGebra-Discovery-${VERSION}
+GGD_NAME="GeoGebra-Discovery-${VERSION}-web"
 
 cd "${GGD_SRC_SHADOW}/"
 ./gradlew :web:deployIntoWar -Pgdraft
