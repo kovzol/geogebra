@@ -20,7 +20,7 @@ jobs:
       - name: Build Web version
         run: make -C packaging web VERSION=${{ github.ref_name }}
 
-      - name: Verify generated installer
+      - name: Verify generated zip
         run: ls -lh dist/*.zip
 
       - name: Upload to Release
