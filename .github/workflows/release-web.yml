@@ -1,4 +1,4 @@
-name: Build Windows Installer
+name: Build Web Version
 
 on:
   release:
