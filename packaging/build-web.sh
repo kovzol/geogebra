@@ -21,8 +21,6 @@ VERSION="${APP_VERSION//_/-}"
 SRC_DIR="/app-src"
 OUT_DIR="/out"
 GGD_SRC_SHADOW="/tmp/ggd-src"
-BUILD_DIR="/tmp/ggd-windows-package"
-SETUP_DIR="/tmp/setup"
 
 echo ">>> Target version: ${VERSION}"
 
@@ -62,20 +60,24 @@ cp -r "${SRC_DIR}/xr-base" "${GGD_SRC_SHADOW}/"
 
 
 echo ">>> Building..."
+GGD_NAME=GeoGebra-Discovery-${VERSION}
+
 cd "${GGD_SRC_SHADOW}/"
 ./gradlew :web:deployIntoWar -Pgdraft
 
-WAR_DIR=${GGD_SRC_SHADOW}/web/war
+WAR_DIR="${GGD_SRC_SHADOW}/web/war"
 test -r $WAR_DIR/web3d/web3d.nocache.js
 
-STAGE_DIR=/tmp/ggdwebzip
+STAGE_DIR="/tmp/${GGD_NAME}"
 mkdir -p "${STAGE_DIR}"
 cp $WAR_DIR/classic.html "${STAGE_DIR}/index.html"
 cp -ur $WAR_DIR/web3d "${STAGE_DIR}"
 
-ZIP_PATH="${OUT_DIR}/GeoGebra-Discovery-Setup-${VERSION}-web.zip"
-cd "${STAGE_DIR}"
-zip -9r "${ZIP_PATH}" *
+ZIP_PATH="${OUT_DIR}/${GGD_NAME}.zip"
+
+cd "$(dirname "${STAGE_DIR}")"
+zip -9r "${ZIP_PATH}" "$(basename "${STAGE_DIR}")"
+
 
 if [ -n "${HOST_UID:-}" ] && [ -n "${HOST_GID:-}" ]; then
   chown -hR "${HOST_UID}:${HOST_GID}" "${ZIP_PATH}"
