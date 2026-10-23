@@ -1,4 +1,4 @@
-name: Build RPM Package for Release
+name: Build RPM Package
 
 on:
   release:
@@ -26,10 +26,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build .rpm via Docker
+      - name: Build .rpm
         run: make -C packaging rpm VERSION=${{ github.ref_name }}
 
-      - name: Verify generated RPM packaging
+      - name: Verify generated RPM package
         run: ls -lh dist/*.rpm
 
       - name: Upload to Release

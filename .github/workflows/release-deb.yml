@@ -1,4 +1,4 @@
-name: Build Debian Package for Release
+name: Build Debian Package
 
 on:
   release:
@@ -26,10 +26,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build .deb via Docker
+      - name: Build .deb
         run: make -C packaging deb VERSION=${{ github.ref_name }}
 
-      - name: Verify generated Debian packaging
+      - name: Verify generated Debian package
         run: ls -lh dist/*.deb
 
       - name: Upload to Release

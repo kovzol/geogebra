@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build Windows Installer via Docker
+      - name: Build Windows Installer
         run: make -C packaging windows VERSION=${{ github.ref_name }}
 
       - name: Verify generated installer
