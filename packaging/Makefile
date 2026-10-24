@@ -21,6 +21,9 @@ _SAFE_BASE := $(shell echo "$(_GIT_STRIPPED)" | sed -E 's/^([0-9a-f]{7,})(-dirty
 _COMPUTED_VERSION := $(shell echo "$(_SAFE_BASE)" | sed -E 's/-([0-9]+)-g([a-f0-9]+)/.post\1.g\2/' | sed 's/-dirty/.dirty/' | tr '-' '.')
 VERSION ?= $(_COMPUTED_VERSION)
 
+# Strip leading 'v' if supplied from environment or CLI
+override VERSION := $(patsubst v%,%,$(VERSION))
+
 ifeq ($(shell echo "$(VERSION)" | grep -Eq '^[0-9]' && echo yes),)
     $(error Invalid VERSION '$(VERSION)': must start with a digit)
 endif
