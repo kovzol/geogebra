@@ -17,6 +17,7 @@ RequestExecutionLevel admin
 !define MUI_UNICON "${ICON_FILE}"
 
 !insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 
@@ -47,7 +48,9 @@ Function LaunchApp
   Exec '"$INSTDIR\bin\GeoGebra-Discovery.bat"'
 FunctionEnd
 
-Section "MainSection" SEC01
+Section "MainSection" SEC_APP
+  SectionIn RO ; Marks this section as Read-Only so users cannot uncheck it
+
   SetOutPath "$INSTDIR"
   File /r "${BUILD_DIR}/*"
 
@@ -82,11 +85,6 @@ Section "MainSection" SEC01
   CreateShortcut "$SMPROGRAMS\${APPNAME}\Uninstall ${APPNAME}.lnk" \
     "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 
-  ; Add bin folder to system PATH
-  EnVar::SetHKLM
-    EnVar::AddValue "Path" "$INSTDIR\bin"
-    Pop $0
-
   ; Windows Add/Remove Programs Registration
   !define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 
@@ -103,10 +101,27 @@ Section "MainSection" SEC01
   WriteRegDWORD HKLM "${UNINST_KEY}" "EstimatedSize" 166000
 SectionEnd
 
-Section "Uninstall"
+Section "Add to PATH environment variable" SEC_PATH
   EnVar::SetHKLM
-  EnVar::DeleteValue "Path" "$INSTDIR\bin"
+  EnVar::AddValue "Path" "$INSTDIR\bin"
   Pop $0
+
+  ; Record that PATH was modified so the uninstaller knows to remove it
+  WriteRegDWORD HKLM "Software\${APPNAME}" "AddedToPath" 1
+SectionEnd
+
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_APP} "Installs the core GeoGebra Discovery binaries and desktop shortcuts."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_PATH} "Adds GeoGebra Discovery's bin directory to the system PATH so you can invoke it from any Command Prompt or PowerShell."
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
+
+Section "Uninstall"
+  ReadRegDWORD $0 HKLM "Software\${APPNAME}" "AddedToPath"
+  ${If} $0 == 1
+    EnVar::SetHKLM
+    EnVar::DeleteValue "Path" "$INSTDIR\bin"
+    Pop $1
+  ${EndIf}
 
   Delete "$DESKTOP\${APPNAME}.lnk"
   Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
