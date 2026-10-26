@@ -16,7 +16,6 @@ case "$_HOST_ARCH" in
     ;;
 esac
 
-
 VERSION="${APP_VERSION//_/-}"
 SRC_DIR="/app-src"
 OUT_DIR="/out"
@@ -28,9 +27,8 @@ echo ">>> Target version: ${VERSION}"
 
 echo ">>> Installing build tools and dependencies"
 apt-get update
-apt-get install -y --no-install-recommends\
-  openjdk-11-jdk wget curl libarchive-tools imagemagick nsis
-
+apt-get install -y --no-install-recommends \
+  openjdk-11-jdk wget curl libarchive-tools imagemagick nsis nsis-pluginapi
 
 echo ">>> Copying project source files..."
 rm -rf "${GGD_SRC_SHADOW}"
@@ -60,11 +58,9 @@ cp -r "${SRC_DIR}/keyboard-web" "${GGD_SRC_SHADOW}/"
 cp -r "${SRC_DIR}/test" "${GGD_SRC_SHADOW}/"
 cp -r "${SRC_DIR}/xr-base" "${GGD_SRC_SHADOW}/"
 
-
 echo ">>> Building..."
 cd "${GGD_SRC_SHADOW}/"
 ./gradlew :desktop:installDist
-
 
 echo ">>> Prepare packaging..."
 rm -rf "$BUILD_DIR"
@@ -75,22 +71,39 @@ cp -r "${GGD_SRC_SHADOW}/desktop/build/install/desktop"/* "$BUILD_DIR/"
 
 convert "$SRC_DIR/flatpak/gd-512.png" "-define" "icon:auto-resize=16,32,48,256" "$BUILD_DIR/geogebra-discovery.ico"
 
-# Remove the Linux executable
+# Remove the default Linux and Windows generated entry scripts
 rm -f "$BUILD_DIR/bin/desktop"
+rm -f "$BUILD_DIR/bin/desktop.bat"
 
-# inject jdk path setup to desktop.bat
-mv "${BUILD_DIR}/bin/desktop.bat" "${BUILD_DIR}/bin/desktop_old.bat"
-cat << 'EOF' > "${BUILD_DIR}/bin/desktop.bat"
+# Standard Launcher
+cat << 'EOF' > "${BUILD_DIR}/bin/GeoGebra-Discovery.bat"
 @echo off
-set DIRNAME=%~dp0
-if "%DIRNAME%" == "" set DIRNAME=.
-set "JAVA_HOME=%DIRNAME%..\jre"
-set "JAVACMD=%JAVA_HOME%\bin\java.exe"
-EOF
-cat "${BUILD_DIR}/bin/desktop_old.bat" >> "${BUILD_DIR}/bin/desktop.bat"
-rm "${BUILD_DIR}/bin/desktop_old.bat"
+setlocal
+set "DIRNAME=%~dp0"
+if "%DIRNAME%" == "" set "DIRNAME=.\"
+set "APP_HOME=%DIRNAME%.."
+set "JAVA_HOME=%APP_HOME%\jre"
+set "JAVACMD=%JAVA_HOME%\bin\javaw.exe"
 
-# remove unneeded jars
+start "" "%JAVACMD%" -cp "%APP_HOME%\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D %*
+endlocal
+EOF
+
+# Debug Launcher
+cat << 'EOF' > "${BUILD_DIR}/bin/GeoGebra-Discovery-Debug.bat"
+@echo off
+setlocal
+set "DIRNAME=%~dp0"
+if "%DIRNAME%" == "" set "DIRNAME=.\"
+set "APP_HOME=%DIRNAME%.."
+set "JAVA_HOME=%APP_HOME%\jre"
+set "JAVACMD=%JAVA_HOME%\bin\java.exe"
+
+"%JAVACMD%" -cp "%APP_HOME%\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D %*
+endlocal
+EOF
+
+# Remove unneeded native binaries/jars
 LIB_DIR="$BUILD_DIR/lib"
 rm -f "$LIB_DIR"/*-linux-* \
       "$LIB_DIR"/*-macosx-* \
@@ -99,10 +112,20 @@ rm -f "$LIB_DIR"/*-linux-* \
       "$LIB_DIR"/libpxcclr*-i586* \
       "$LIB_DIR"/*linux.jar
 
-# Download windows jre
+echo ">>> Download Windows JRE..."
 mkdir -p "$BUILD_DIR/jre"
 JRE_URL="https://api.adoptium.net/v3/binary/latest/11/ga/windows/x64/jre/hotspot/normal/eclipse"
 curl -sSL "${JRE_URL}" | bsdtar -xvf - -C "$BUILD_DIR/jre" --strip-components 1
+
+echo ">>>Download and install NSIS EnVar plugin..."
+ENVAR_TMP="/tmp/envar"
+mkdir -p "${ENVAR_TMP}"
+curl -sSL "https://github.com/GsNSIS/EnVar/releases/download/v0.3.1/EnVar-Plugin.zip" | \
+  bsdtar -xvf - -C "${ENVAR_TMP}"
+
+cp -rf "${ENVAR_TMP}/Plugins/"* /usr/share/nsis/Plugins/
+
+rm -rf "${ENVAR_TMP}"
 
 rm -rf "${SETUP_DIR}"
 mkdir -p "${SETUP_DIR}"
@@ -154,7 +177,7 @@ FunctionEnd
 
 Function LaunchApp
   SetOutPath "$INSTDIR"
-  Exec '"$INSTDIR\jre\bin\javaw.exe" -cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D'
+  Exec '"$INSTDIR\bin\GeoGebra-Discovery.bat"'
 FunctionEnd
 
 Section "MainSection" SEC01
@@ -165,23 +188,26 @@ Section "MainSection" SEC01
 
   CreateDirectory "$SMPROGRAMS\${APPNAME}"
 
-  ; 1. Standard Shortcut (Windowless via javaw.exe)
+  ; Windows doesn's thread .bat the same as .exes
+  ; The "$SYSDIR\cmd.exe" is needed as a workaround to link points to an .exe instead of a .bat file
+
+  ; 1. Standard Shortcuts
   CreateShortcut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" \
-    "$INSTDIR\jre\bin\javaw.exe" \
-    '-cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D' \
+    "$SYSDIR\cmd.exe" \
+    '/c "$\"$INSTDIR\bin\GeoGebra-Discovery.bat$\""' \
     "$INSTDIR\geogebra-discovery.ico" 0 \
-    SW_SHOWNORMAL "" "${APPNAME}"
+    SW_SHOWMINIMIZED "" "${APPNAME}"
 
   CreateShortcut "$DESKTOP\${APPNAME}.lnk" \
-    "$INSTDIR\jre\bin\javaw.exe" \
-    '-cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D' \
+    "$SYSDIR\cmd.exe" \
+    '/c "$\"$INSTDIR\bin\GeoGebra-Discovery.bat$\""' \
     "$INSTDIR\geogebra-discovery.ico" 0 \
-    SW_SHOWNORMAL "" "${APPNAME}"
+    SW_SHOWMINIMIZED "" "${APPNAME}"
 
-  ; 2. Debug Shortcut (Launches via java.exe inside a visible console)
+  ; 2. Debug Shortcut
   CreateShortcut "$SMPROGRAMS\${APPNAME}\${APPNAME} (Debug Mode).lnk" \
-    "$INSTDIR\jre\bin\java.exe" \
-    '-cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D' \
+    "$SYSDIR\cmd.exe" \
+    '/k "$\"$INSTDIR\bin\GeoGebra-Discovery-Debug.bat$\""' \
     "$INSTDIR\geogebra-discovery.ico" 0 \
     SW_SHOWNORMAL "" "${APPNAME} with Console Output"
 
@@ -189,7 +215,12 @@ Section "MainSection" SEC01
   CreateShortcut "$SMPROGRAMS\${APPNAME}\Uninstall ${APPNAME}.lnk" \
     "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 
-  ; --- Windows Add/Remove Programs Registration ---
+  ; Add bin folder to system PATH
+  EnVar::SetHKLM
+    EnVar::AddValue "Path" "$INSTDIR\bin"
+    Pop $0
+
+  ; Windows Add/Remove Programs Registration
   !define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 
   WriteRegStr HKLM "${UNINST_KEY}" "DisplayName" "${APPNAME}"
@@ -201,10 +232,15 @@ Section "MainSection" SEC01
   WriteRegStr HKLM "${UNINST_KEY}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
   WriteRegDWORD HKLM "${UNINST_KEY}" "NoModify" 1
   WriteRegDWORD HKLM "${UNINST_KEY}" "NoRepair" 1
+  WriteRegDWORD HKLM "${UNINST_KEY}" "WindowsInstaller" 0
   WriteRegDWORD HKLM "${UNINST_KEY}" "EstimatedSize" 166000
 SectionEnd
 
 Section "Uninstall"
+  EnVar::SetHKLM
+  EnVar::DeleteValue "Path" "$INSTDIR\bin"
+  Pop $0
+
   Delete "$DESKTOP\${APPNAME}.lnk"
   Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
   Delete "$SMPROGRAMS\${APPNAME}\${APPNAME} (Debug Mode).lnk"
