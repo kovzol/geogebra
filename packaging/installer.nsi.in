@@ -1,6 +1,7 @@
-Unicode true ;
+Unicode true
 
 !include "MUI2.nsh"
+!include "LogicLib.nsh"
 
 !define APPNAME "GeoGebra Discovery"
 !define APPVER "@PKGVER@"
@@ -19,9 +20,12 @@ RequestExecutionLevel admin
 !define MUI_UNICON "${ICON_FILE}"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "${BUILD_DIR}\app_preview.bmp"
 
+; ---- PAGES ----
 !insertmacro MUI_PAGE_WELCOME
+
 !define MUI_PAGE_CUSTOMFUNCTION_SHOW ComponentsShow
 !insertmacro MUI_PAGE_COMPONENTS
+
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 
@@ -29,12 +33,12 @@ RequestExecutionLevel admin
 !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchApp"
 !define MUI_FINISHPAGE_RUN_TEXT "$(TEXT_StartApp)"
 !define MUI_FINISHPAGE_RUN_CHECKED
-
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 
+; ---- LANGUAGES ----
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_LANGUAGE "German"
 !insertmacro MUI_LANGUAGE "Spanish"
@@ -44,6 +48,7 @@ RequestExecutionLevel admin
 !insertmacro MUI_LANGUAGE "Italian"
 !insertmacro MUI_LANGUAGE "Hungarian"
 
+; ---- CUSTOM STRINGS (LangString) ----
 ; Desktop shortcut
 LangString DESC_DesktopShortcut ${LANG_ENGLISH} "Create a desktop shortcut"
 LangString DESC_DesktopShortcut ${LANG_GERMAN} "Desktop-Verknüpfung erstellen"
@@ -74,28 +79,24 @@ LangString TEXT_StartApp ${LANG_ARABIC} "تشغيل GeoGebra Discovery الآن"
 LangString TEXT_StartApp ${LANG_ITALIAN} "Avvia GeoGebra Discovery adesso"
 LangString TEXT_StartApp ${LANG_HUNGARIAN} "A GeoGebra Discovery indítása most"
 
+; ---- FUNCTIONS & LOGIC ----
 Function ComponentsShow
-  ; Find the inner page dialog (child of $HWNDPARENT)
   FindWindow $1 "#32770" "" $HWNDPARENT
 
-  ; 1. Hide the Description groupbox (1042) and text (1043)
+  ; Hide description panel
   GetDlgItem $0 $1 1042
   ShowWindow $0 0
   GetDlgItem $0 $1 1043
   ShowWindow $0 0
 
-  ; 2. Expand the components treeview (1032) across the dialog
-  ; Width ~340 pixels spans across to the right margin
+  ; Expand components treeview
   GetDlgItem $0 $1 1032
-  ; SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags)
-  ; 0x6 = SWP_NOMOVE (0x2) | SWP_NOZORDER (0x4)
   System::Call "user32::SetWindowPos(p $0, p 0, i 0, i 0, i 340, i 140, i 0x6)"
 FunctionEnd
 
 Function .onInit
   SetRegView 64
   SetShellVarContext all
-
   !insertmacro MUI_LANGDLL_DISPLAY
 FunctionEnd
 
@@ -114,6 +115,7 @@ Function LaunchApp
   Exec '"$INSTDIR\jre\bin\javaw.exe" -cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D'
 FunctionEnd
 
+; ---- SECTIONS ----
 Section "GeoGebra Discovery" SEC_APP
   SectionIn RO
 
@@ -121,13 +123,11 @@ Section "GeoGebra Discovery" SEC_APP
   File /r "${BUILD_DIR}/*"
 
   WriteUninstaller "$INSTDIR\uninstall.exe"
-
-  ; Saving the selected language for the uninstaller
   WriteRegStr HKLM "Software\${APPNAME}" "InstallerLanguage" "$LANGUAGE"
 
   CreateDirectory "$SMPROGRAMS\${APPNAME}"
 
-  ; Standard Shortcuts
+  ; Standard Shortcut
   CreateShortcut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" \
     "$INSTDIR\jre\bin\javaw.exe" \
     '-cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D' \
@@ -172,8 +172,6 @@ Section "$(DESC_PathOption)" SEC_PATH
   EnVar::SetHKLM
   EnVar::AddValue "Path" "$INSTDIR\bin"
   Pop $0
-
-  ; Record that PATH was modified so the uninstaller knows to remove it
   WriteRegDWORD HKLM "Software\${APPNAME}" "AddedToPath" 1
 SectionEnd
 
