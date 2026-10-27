@@ -68,12 +68,6 @@ Section "MainSection" SEC_APP
     "$INSTDIR\geogebra-discovery.ico" 0 \
     SW_SHOWMINIMIZED "" "${APPNAME}"
 
-  CreateShortcut "$DESKTOP\${APPNAME}.lnk" \
-    "$SYSDIR\cmd.exe" \
-    '/c "$\"$INSTDIR\bin\GeoGebra-Discovery.bat$\""' \
-    "$INSTDIR\geogebra-discovery.ico" 0 \
-    SW_SHOWMINIMIZED "" "${APPNAME}"
-
   ; 2. Debug Shortcut
   CreateShortcut "$SMPROGRAMS\${APPNAME}\${APPNAME} (Debug Mode).lnk" \
     "$SYSDIR\cmd.exe" \
@@ -101,6 +95,14 @@ Section "MainSection" SEC_APP
   WriteRegDWORD HKLM "${UNINST_KEY}" "EstimatedSize" 166000
 SectionEnd
 
+Section "Create a desktop shortcut" SEC_DESKTOP_SHORTCUT
+  CreateShortcut "$DESKTOP\${APPNAME}.lnk" \
+    "$SYSDIR\cmd.exe" \
+    '/c "$\"$INSTDIR\bin\GeoGebra-Discovery.bat$\""' \
+    "$INSTDIR\geogebra-discovery.ico" 0 \
+    SW_SHOWMINIMIZED "" "${APPNAME}"
+SectionEnd
+
 Section "Add to PATH environment variable" SEC_PATH
   EnVar::SetHKLM
   EnVar::AddValue "Path" "$INSTDIR\bin"
@@ -111,7 +113,8 @@ Section "Add to PATH environment variable" SEC_PATH
 SectionEnd
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_APP} "Installs the core GeoGebra Discovery binaries and desktop shortcuts."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_APP} "Installs the core GeoGebra Discovery binaries."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_DESKTOP_SHORTCUT} "Creates a desktop shortcuts."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC_PATH} "Adds GeoGebra Discovery's bin directory to the system PATH so you can invoke it from any Command Prompt or PowerShell."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
