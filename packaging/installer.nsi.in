@@ -48,7 +48,7 @@ Function LaunchApp
   Exec '"$INSTDIR\bin\GeoGebra-Discovery.bat"'
 FunctionEnd
 
-Section "MainSection" SEC_APP
+Section "Geogebra Discovery" SEC_APP
   SectionIn RO ; Marks this section as Read-Only so users cannot uncheck it
 
   SetOutPath "$INSTDIR"
