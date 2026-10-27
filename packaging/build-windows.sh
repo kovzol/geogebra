@@ -71,38 +71,6 @@ cp -r "${GGD_SRC_SHADOW}/desktop/build/install/desktop"/* "$BUILD_DIR/"
 
 convert "$SRC_DIR/flatpak/gd-512.png" "-define" "icon:auto-resize=16,32,48,256" "$BUILD_DIR/geogebra-discovery.ico"
 
-# Remove the default Linux and Windows generated entry scripts
-rm -f "$BUILD_DIR/bin/desktop"
-rm -f "$BUILD_DIR/bin/desktop.bat"
-
-# Standard Launcher
-cat << 'EOF' > "${BUILD_DIR}/bin/GeoGebra-Discovery.bat"
-@echo off
-setlocal
-set "DIRNAME=%~dp0"
-if "%DIRNAME%" == "" set "DIRNAME=.\"
-set "APP_HOME=%DIRNAME%.."
-set "JAVA_HOME=%APP_HOME%\jre"
-set "JAVACMD=%JAVA_HOME%\bin\javaw.exe"
-
-start "" "%JAVACMD%" -cp "%APP_HOME%\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D %*
-endlocal
-EOF
-
-# Debug Launcher
-cat << 'EOF' > "${BUILD_DIR}/bin/GeoGebra-Discovery-Debug.bat"
-@echo off
-setlocal
-set "DIRNAME=%~dp0"
-if "%DIRNAME%" == "" set "DIRNAME=.\"
-set "APP_HOME=%DIRNAME%.."
-set "JAVA_HOME=%APP_HOME%\jre"
-set "JAVACMD=%JAVA_HOME%\bin\java.exe"
-
-"%JAVACMD%" -cp "%APP_HOME%\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D %*
-endlocal
-EOF
-
 # Remove unneeded native binaries/jars
 LIB_DIR="$BUILD_DIR/lib"
 rm -f "$LIB_DIR"/*-linux-* \
@@ -111,6 +79,34 @@ rm -f "$LIB_DIR"/*-linux-* \
       "$LIB_DIR"/zspace*-i586* \
       "$LIB_DIR"/libpxcclr*-i586* \
       "$LIB_DIR"/*linux.jar
+
+# Remove the default entry scripts
+rm -f "$BUILD_DIR/bin/desktop"
+rm -f "$BUILD_DIR/bin/desktop.bat"
+
+cat << 'EOF' > "${BUILD_DIR}/bin/GeoGebra-Discovery.bat"
+@echo off
+setlocal
+set "DIRNAME=%~dp0"
+if "%DIRNAME%" == "" set "DIRNAME=.\"
+set "APP_HOME=%DIRNAME%.."
+set "JAVA_HOME=%APP_HOME%\jre"
+
+set "CP=%APP_HOME%\lib\*"
+set "MAIN=org.geogebra.desktop.GeoGebra3D"
+set "VM_ARGS=-Dnashorn.args=--no-deprecation-warning"
+
+"%JAVA_HOME%\bin\java.exe" -cp "%CP%" %VM_ARGS% %MAIN% %*
+
+:: If exit code was non-zero (crash/error), pause so the user can read the console
+if %ERRORLEVEL% neq 0 (
+    echo.
+    echo Application exited with error code %ERRORLEVEL%.
+    pause
+)
+
+endlocal
+EOF
 
 echo ">>> Download Windows JRE..."
 mkdir -p "$BUILD_DIR/jre"

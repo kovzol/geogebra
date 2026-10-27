@@ -45,7 +45,7 @@ FunctionEnd
 
 Function LaunchApp
   SetOutPath "$INSTDIR"
-  ExecShell "open" "$INSTDIR\bin\GeoGebra-Discovery.bat" "" SW_HIDE
+  Exec '"$INSTDIR\jre\bin\javaw.exe" -cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D'
 FunctionEnd
 
 Section "Geogebra Discovery" SEC_APP
@@ -63,15 +63,15 @@ Section "Geogebra Discovery" SEC_APP
 
   ; 1. Standard Shortcuts
   CreateShortcut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" \
-    "$SYSDIR\cmd.exe" \
-    '/c "$\"$INSTDIR\bin\GeoGebra-Discovery.bat$\""' \
+    "$INSTDIR\jre\bin\javaw.exe" \
+    '-cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D' \
     "$INSTDIR\geogebra-discovery.ico" 0 \
-    SW_SHOWMINIMIZED "" "${APPNAME}"
+    SW_SHOWNORMAL "" "${APPNAME}"
 
   ; 2. Debug Shortcut
   CreateShortcut "$SMPROGRAMS\${APPNAME}\${APPNAME} (Debug Mode).lnk" \
     "$SYSDIR\cmd.exe" \
-    '/k "$\"$INSTDIR\bin\GeoGebra-Discovery-Debug.bat$\""' \
+    '/c "$\"$INSTDIR\bin\GeoGebra-Discovery.bat$\""' \
     "$INSTDIR\geogebra-discovery.ico" 0 \
     SW_SHOWNORMAL "" "${APPNAME} with Console Output"
 
@@ -97,10 +97,10 @@ SectionEnd
 
 Section "Create a desktop shortcut" SEC_DESKTOP_SHORTCUT
   CreateShortcut "$DESKTOP\${APPNAME}.lnk" \
-    "$SYSDIR\cmd.exe" \
-    '/c "$\"$INSTDIR\bin\GeoGebra-Discovery.bat$\""' \
+    "$INSTDIR\jre\bin\javaw.exe" \
+    '-cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D' \
     "$INSTDIR\geogebra-discovery.ico" 0 \
-    SW_SHOWMINIMIZED "" "${APPNAME}"
+    SW_SHOWNORMAL "" "${APPNAME}"
 SectionEnd
 
 Section "Add to PATH environment variable" SEC_PATH
