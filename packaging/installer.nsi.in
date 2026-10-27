@@ -1,3 +1,5 @@
+Unicode true ;
+
 !include "MUI2.nsh"
 
 !define APPNAME "GeoGebra Discovery"
@@ -25,7 +27,7 @@ RequestExecutionLevel admin
 
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchApp"
-!define MUI_FINISHPAGE_RUN_TEXT "Start GeoGebra Discovery now"
+!define MUI_FINISHPAGE_RUN_TEXT "$(TEXT_StartApp)"
 !define MUI_FINISHPAGE_RUN_CHECKED
 
 !insertmacro MUI_PAGE_FINISH
@@ -34,6 +36,43 @@ RequestExecutionLevel admin
 !insertmacro MUI_UNPAGE_INSTFILES
 
 !insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "German"
+!insertmacro MUI_LANGUAGE "Spanish"
+!insertmacro MUI_LANGUAGE "SimpChinese"
+!insertmacro MUI_LANGUAGE "Hebrew"
+!insertmacro MUI_LANGUAGE "Arabic"
+!insertmacro MUI_LANGUAGE "Italian"
+!insertmacro MUI_LANGUAGE "Hungarian"
+
+; Desktop shortcut
+LangString DESC_DesktopShortcut ${LANG_ENGLISH} "Create a desktop shortcut"
+LangString DESC_DesktopShortcut ${LANG_GERMAN} "Desktop-Verknüpfung erstellen"
+LangString DESC_DesktopShortcut ${LANG_SPANISH} "Crear acceso directo en el escritorio"
+LangString DESC_DesktopShortcut ${LANG_SIMPCHINESE} "创建桌面快捷方式"
+LangString DESC_DesktopShortcut ${LANG_HEBREW} "צור קיצור דרך בשולחן העבודה"
+LangString DESC_DesktopShortcut ${LANG_ARABIC} "إنشاء اختصار على سطح المكتب"
+LangString DESC_DesktopShortcut ${LANG_ITALIAN} "Crea un collegamento sul desktop"
+LangString DESC_DesktopShortcut ${LANG_HUNGARIAN} "Asztali parancsikon létrehozása"
+
+; PATH env var
+LangString DESC_PathOption ${LANG_ENGLISH} "Add to PATH environment variable"
+LangString DESC_PathOption ${LANG_GERMAN} "Zur PATH-Umgebungsvariable hinzufügen"
+LangString DESC_PathOption ${LANG_SPANISH} "Añadir a la variable de entorno PATH"
+LangString DESC_PathOption ${LANG_SIMPCHINESE} "添加到 PATH 环境变量"
+LangString DESC_PathOption ${LANG_HEBREW} "הוסף למשתנה הסביבה PATH"
+LangString DESC_PathOption ${LANG_ARABIC} "إضافة إلى متغير البيئة PATH"
+LangString DESC_PathOption ${LANG_ITALIAN} "Aggiungi alla variabile di ambiente PATH"
+LangString DESC_PathOption ${LANG_HUNGARIAN} "Hozzáadás a PATH környezeti változóhoz"
+
+; Start GeoGebra Discovery
+LangString TEXT_StartApp ${LANG_ENGLISH} "Start GeoGebra Discovery now"
+LangString TEXT_StartApp ${LANG_GERMAN} "GeoGebra Discovery jetzt starten"
+LangString TEXT_StartApp ${LANG_SPANISH} "Iniciar GeoGebra Discovery ahora"
+LangString TEXT_StartApp ${LANG_SIMPCHINESE} "立即启动 GeoGebra Discovery"
+LangString TEXT_StartApp ${LANG_HEBREW} "הפעל את GeoGebra Discovery כעת"
+LangString TEXT_StartApp ${LANG_ARABIC} "تشغيل GeoGebra Discovery الآن"
+LangString TEXT_StartApp ${LANG_ITALIAN} "Avvia GeoGebra Discovery adesso"
+LangString TEXT_StartApp ${LANG_HUNGARIAN} "A GeoGebra Discovery indítása most"
 
 Function ComponentsShow
   ; Find the inner page dialog (child of $HWNDPARENT)
@@ -56,11 +95,18 @@ FunctionEnd
 Function .onInit
   SetRegView 64
   SetShellVarContext all
+
+  !insertmacro MUI_LANGDLL_DISPLAY
 FunctionEnd
 
 Function un.onInit
   SetRegView 64
   SetShellVarContext all
+
+  ReadRegStr $0 HKLM "Software\${APPNAME}" "InstallerLanguage"
+  ${If} $0 != ""
+    StrCpy $LANGUAGE $0
+  ${EndIf}
 FunctionEnd
 
 Function LaunchApp
@@ -69,36 +115,38 @@ Function LaunchApp
 FunctionEnd
 
 Section "GeoGebra Discovery" SEC_APP
-  SectionIn RO ; Marks this section as Read-Only so users cannot uncheck it
+  SectionIn RO
 
   SetOutPath "$INSTDIR"
   File /r "${BUILD_DIR}/*"
 
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
+  ; Saving the selected language for the uninstaller
+  WriteRegStr HKLM "Software\${APPNAME}" "InstallerLanguage" "$LANGUAGE"
+
   CreateDirectory "$SMPROGRAMS\${APPNAME}"
 
-  ; 1. Standard Shortcuts
+  ; Standard Shortcuts
   CreateShortcut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" \
     "$INSTDIR\jre\bin\javaw.exe" \
     '-cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D' \
     "$INSTDIR\geogebra-discovery.ico" 0 \
     SW_SHOWNORMAL "" "${APPNAME}"
 
-  ; 2. Debug Shortcut
+  ; Debug Shortcut
   CreateShortcut "$SMPROGRAMS\${APPNAME}\${APPNAME} (Debug Mode).lnk" \
     "$SYSDIR\cmd.exe" \
     '/c "$\"$INSTDIR\bin\GeoGebra-Discovery.bat$\""' \
     "$INSTDIR\geogebra-discovery.ico" 0 \
     SW_SHOWNORMAL "" "${APPNAME} with Console Output"
 
-  ; 3. Uninstaller Shortcut
+  ; Uninstaller Shortcut
   CreateShortcut "$SMPROGRAMS\${APPNAME}\Uninstall ${APPNAME}.lnk" \
     "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 
   ; Windows Add/Remove Programs Registration
   !define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
-
   WriteRegStr HKLM "${UNINST_KEY}" "DisplayName" "${APPNAME}"
   WriteRegStr HKLM "${UNINST_KEY}" "DisplayVersion" "${APPVER}"
   WriteRegStr HKLM "${UNINST_KEY}" "Publisher" "${COMPANY}"
@@ -112,7 +160,7 @@ Section "GeoGebra Discovery" SEC_APP
   WriteRegDWORD HKLM "${UNINST_KEY}" "EstimatedSize" 166000
 SectionEnd
 
-Section "Create a desktop shortcut" SEC_DESKTOP_SHORTCUT
+Section "$(DESC_DesktopShortcut)" SEC_DESKTOP_SHORTCUT
   CreateShortcut "$DESKTOP\${APPNAME}.lnk" \
     "$INSTDIR\jre\bin\javaw.exe" \
     '-cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D' \
@@ -120,7 +168,7 @@ Section "Create a desktop shortcut" SEC_DESKTOP_SHORTCUT
     SW_SHOWNORMAL "" "${APPNAME}"
 SectionEnd
 
-Section "Add to PATH environment variable" SEC_PATH
+Section "$(DESC_PathOption)" SEC_PATH
   EnVar::SetHKLM
   EnVar::AddValue "Path" "$INSTDIR\bin"
   Pop $0
