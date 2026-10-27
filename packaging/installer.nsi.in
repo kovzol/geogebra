@@ -15,6 +15,7 @@ RequestExecutionLevel admin
 
 !define MUI_ICON "${ICON_FILE}"
 !define MUI_UNICON "${ICON_FILE}"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${BUILD_DIR}\app_preview.bmp"
 
 !insertmacro MUI_PAGE_WELCOME
 !define MUI_PAGE_CUSTOMFUNCTION_SHOW ComponentsShow

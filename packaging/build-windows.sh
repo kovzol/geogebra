@@ -69,7 +69,8 @@ mkdir -p "$BUILD_DIR"
 # Copy application files (bin and lib)
 cp -r "${GGD_SRC_SHADOW}/desktop/build/install/desktop"/* "$BUILD_DIR/"
 
-convert "$SRC_DIR/flatpak/gd-512.png" "-define" "icon:auto-resize=16,32,48,256" "$BUILD_DIR/geogebra-discovery.ico"
+convert "${SRC_DIR}/flatpak/gd-512.png" "-define" "icon:auto-resize=16,32,48,256" "${BUILD_DIR}/geogebra-discovery.ico"
+cp "${SRC_DIR}/packaging/app_preview.bmp" "${BUILD_DIR}/app_preview.bmp"
 
 # Remove unneeded native binaries/jars
 LIB_DIR="$BUILD_DIR/lib"
