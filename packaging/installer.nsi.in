@@ -17,6 +17,7 @@ RequestExecutionLevel admin
 !define MUI_UNICON "${ICON_FILE}"
 
 !insertmacro MUI_PAGE_WELCOME
+!define MUI_PAGE_CUSTOMFUNCTION_SHOW ComponentsShow
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -33,6 +34,24 @@ RequestExecutionLevel admin
 
 !insertmacro MUI_LANGUAGE "English"
 
+Function ComponentsShow
+  ; Find the inner page dialog (child of $HWNDPARENT)
+  FindWindow $1 "#32770" "" $HWNDPARENT
+
+  ; 1. Hide the Description groupbox (1042) and text (1043)
+  GetDlgItem $0 $1 1042
+  ShowWindow $0 0
+  GetDlgItem $0 $1 1043
+  ShowWindow $0 0
+
+  ; 2. Expand the components treeview (1032) across the dialog
+  ; Width ~340 pixels spans across to the right margin
+  GetDlgItem $0 $1 1032
+  ; SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags)
+  ; 0x6 = SWP_NOMOVE (0x2) | SWP_NOZORDER (0x4)
+  System::Call "user32::SetWindowPos(p $0, p 0, i 0, i 0, i 340, i 140, i 0x6)"
+FunctionEnd
+
 Function .onInit
   SetRegView 64
   SetShellVarContext all
@@ -48,7 +67,7 @@ Function LaunchApp
   Exec '"$INSTDIR\jre\bin\javaw.exe" -cp "$INSTDIR\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D'
 FunctionEnd
 
-Section "Geogebra Discovery" SEC_APP
+Section "GeoGebra Discovery" SEC_APP
   SectionIn RO ; Marks this section as Read-Only so users cannot uncheck it
 
   SetOutPath "$INSTDIR"
@@ -57,9 +76,6 @@ Section "Geogebra Discovery" SEC_APP
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
   CreateDirectory "$SMPROGRAMS\${APPNAME}"
-
-  ; Windows doesn's thread .bat the same as .exes
-  ; The "$SYSDIR\cmd.exe" is needed as a workaround to link points to an .exe instead of a .bat file
 
   ; 1. Standard Shortcuts
   CreateShortcut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" \
@@ -111,12 +127,6 @@ Section "Add to PATH environment variable" SEC_PATH
   ; Record that PATH was modified so the uninstaller knows to remove it
   WriteRegDWORD HKLM "Software\${APPNAME}" "AddedToPath" 1
 SectionEnd
-
-!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_APP} "Installs the core GeoGebra Discovery binaries."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_DESKTOP_SHORTCUT} "Creates a desktop shortcuts."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_PATH} "Adds GeoGebra Discovery's bin directory to the system PATH so you can invoke it from any Command Prompt or PowerShell."
-!insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Section "Uninstall"
   ReadRegDWORD $0 HKLM "Software\${APPNAME}" "AddedToPath"
