@@ -45,7 +45,7 @@ FunctionEnd
 
 Function LaunchApp
   SetOutPath "$INSTDIR"
-  Exec '"$INSTDIR\bin\GeoGebra-Discovery.bat"'
+  ExecShell "open" "$INSTDIR\bin\GeoGebra-Discovery.bat" "" SW_HIDE
 FunctionEnd
 
 Section "Geogebra Discovery" SEC_APP
