@@ -69,39 +69,8 @@ mkdir -p "$BUILD_DIR"
 # Copy application files (bin and lib)
 cp -r "${GGD_SRC_SHADOW}/desktop/build/install/desktop"/* "$BUILD_DIR/"
 
-convert "$SRC_DIR/flatpak/gd-512.png" "-define" "icon:auto-resize=16,32,48,256" "$BUILD_DIR/geogebra-discovery.ico"
-
-# Remove the default Linux and Windows generated entry scripts
-rm -f "$BUILD_DIR/bin/desktop"
-rm -f "$BUILD_DIR/bin/desktop.bat"
-
-# Standard Launcher
-cat << 'EOF' > "${BUILD_DIR}/bin/GeoGebra-Discovery.bat"
-@echo off
-setlocal
-set "DIRNAME=%~dp0"
-if "%DIRNAME%" == "" set "DIRNAME=.\"
-set "APP_HOME=%DIRNAME%.."
-set "JAVA_HOME=%APP_HOME%\jre"
-set "JAVACMD=%JAVA_HOME%\bin\javaw.exe"
-
-start "" "%JAVACMD%" -cp "%APP_HOME%\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D %*
-endlocal
-EOF
-
-# Debug Launcher
-cat << 'EOF' > "${BUILD_DIR}/bin/GeoGebra-Discovery-Debug.bat"
-@echo off
-setlocal
-set "DIRNAME=%~dp0"
-if "%DIRNAME%" == "" set "DIRNAME=.\"
-set "APP_HOME=%DIRNAME%.."
-set "JAVA_HOME=%APP_HOME%\jre"
-set "JAVACMD=%JAVA_HOME%\bin\java.exe"
-
-"%JAVACMD%" -cp "%APP_HOME%\lib\*" -Dnashorn.args=--no-deprecation-warning org.geogebra.desktop.GeoGebra3D %*
-endlocal
-EOF
+convert "${SRC_DIR}/flatpak/gd-512.png" "-define" "icon:auto-resize=16,32,48,256" "${BUILD_DIR}/geogebra-discovery.ico"
+cp "${SRC_DIR}/packaging/app_preview.bmp" "${BUILD_DIR}/app_preview.bmp"
 
 # Remove unneeded native binaries/jars
 LIB_DIR="$BUILD_DIR/lib"
@@ -111,6 +80,12 @@ rm -f "$LIB_DIR"/*-linux-* \
       "$LIB_DIR"/zspace*-i586* \
       "$LIB_DIR"/libpxcclr*-i586* \
       "$LIB_DIR"/*linux.jar
+
+# Remove the default entry scripts
+rm -f "$BUILD_DIR/bin/desktop"
+rm -f "$BUILD_DIR/bin/desktop.bat"
+
+cp "${SRC_DIR}/packaging/GeoGebra-Discovery.bat" "${BUILD_DIR}/bin/GeoGebra-Discovery.bat"
 
 echo ">>> Download Windows JRE..."
 mkdir -p "$BUILD_DIR/jre"
