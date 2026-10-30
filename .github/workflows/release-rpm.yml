@@ -1,4 +1,4 @@
-name: Build RPM Package
+name: Build and Release RPM Package
 
 on:
   release:

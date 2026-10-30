@@ -1,4 +1,4 @@
-name: Build Web Version
+name: Build and Release Web Version
 
 on:
   release:
