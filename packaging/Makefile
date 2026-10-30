@@ -59,7 +59,7 @@ endif
 ###########################################
 # Targets
 ###########################################
-.PHONY: help man appimage deb rpm pacman windows clean-cache clean-dist
+.PHONY: help deb rpm pacman appimage windows web clean-dist
 
 help:
 	@echo "Available packaging targets:"
