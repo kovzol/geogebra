@@ -1,8 +1,8 @@
-name: Build Pacman Package
+name: Build and Release Pacman Package
 
 on:
   release:
-    types: [published]
+    types: [ published ]
   workflow_dispatch:
 
 jobs:
