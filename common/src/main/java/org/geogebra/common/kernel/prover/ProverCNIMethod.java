@@ -909,6 +909,9 @@ public class ProverCNIMethod {
 				GeoPoint gS = ((GeoLine) p).getStartPoint();
 				GeoPoint gE = ((GeoLine) p).getEndPoint();
 				c.realRelation = online((GeoPoint) ge, (GeoLine) p);
+				if (c.realRelation == null) {
+					return null; // Not implemented.
+				}
 				if (c.realRelation.startsWith("perppar")) {
 					c.warning = WARNING_PERPENDICULAR_OR_PARALLEL;
 				}
@@ -921,6 +924,9 @@ public class ProverCNIMethod {
 				AlgoElement pAe = p.getParentAlgorithm();
 				if (((GeoConic) p).isCircle()) {
 					c.realRelation = oncircle((GeoPoint) ge, (GeoConic) p);
+					if (c.realRelation == null) {
+						return null;
+					}
 					return c;
 				}
 				return null; // Not implemented.
@@ -1065,6 +1071,9 @@ public class ProverCNIMethod {
 			GeoLine g = (GeoLine) input[0];
 			GeoLine h = (GeoLine) input[1];
 			c.realRelation = parallel(g, h);
+			if (c.realRelation == null) {
+				return null;
+			}
 			return c;
 		}
 		if (ae instanceof AlgoArePerpendicular) { // in fact, perpendicular or parallel
@@ -1074,6 +1083,9 @@ public class ProverCNIMethod {
 			GeoLine g = (GeoLine) input[0];
 			GeoLine h = (GeoLine) input[1];
 			c.realRelation = perppar(g, h);
+			if (c.realRelation == null) {
+				return null;
+			}
 			c.warning = WARNING_PERPENDICULAR_OR_PARALLEL;
 			return c;
 		}
@@ -1128,6 +1140,9 @@ public class ProverCNIMethod {
 			String h1 = online(X, l1);
 			String h2 = online(X, l2);
 			String t = online(X, l3);
+			if (h1 == null || h2 == null || t == null) {
+				return null; // Not implemented.
+			}
 			c.realRelation = h1 + "\n" + h2 + "\n" + t;
 			c.extraVariable = getUniqueLabel(X);
 			return c;
@@ -1205,19 +1220,31 @@ public class ProverCNIMethod {
 			Operation o = en.getOperation();
 			if (o == Operation.PARALLEL) {
 				c.realRelation = parallel((GeoLine) ge1, (GeoLine) ge2);
+				if (c.realRelation == null) {
+					return null;
+				}
 				return c;
 			} else if (o == Operation.PERPENDICULAR) {
 				Log.debug("Warning: Testing perpendicularity AND parallelism simultaneously");
 				c.realRelation = perppar((GeoLine) ge1, (GeoLine) ge2);
+				if (c.realRelation == null) {
+					return null;
+				}
 				c.warning = WARNING_PERPENDICULAR_OR_PARALLEL;
 				return c;
 			} else if (o == Operation.IS_ELEMENT_OF) {
 				if (ge1 instanceof GeoPoint && ge2 instanceof GeoLine) {
 					c.realRelation = online((GeoPoint) ge1, (GeoLine) ge2);
+					if (c.realRelation == null) {
+						return null; // Not implemented.
+					}
 					return c;
 				}
 				if (ge1 instanceof GeoPoint && ge2 instanceof GeoConic && ((GeoConic) ge2).isCircle()) {
 					c.realRelation = oncircle((GeoPoint) ge1, (GeoConic) ge2);
+					if (c.realRelation == null) {
+						return null;
+					}
 					return c;
 				}
 				return null; // unimplemented
@@ -1554,6 +1581,9 @@ public class ProverCNIMethod {
 			}
 			// General method (but we do not use it in general, to keep readability):
 			c.realRelation = equal(A,B,C,D);
+			if (c.realRelation == null) {
+				return null;
+			}
 			c.warning = WARNING_EQUALITY_OR_COLLINEAR;
 			return c;
 		}
