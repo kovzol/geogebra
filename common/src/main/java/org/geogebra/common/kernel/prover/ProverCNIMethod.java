@@ -8,6 +8,7 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoAnglePoints;
+import org.geogebra.common.kernel.algos.AlgoAngularBisectorLines;
 import org.geogebra.common.kernel.algos.AlgoAngularBisectorPoints;
 import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
 import org.geogebra.common.kernel.algos.AlgoCircleTwoPoints;
@@ -1477,6 +1478,26 @@ public class ProverCNIMethod {
 					GeoPoint B = ((AlgoAngularBisectorPoints) gAe).getB();
 					GeoPoint C = ((AlgoAngularBisectorPoints) gAe).getC();
 					return eqangle(A, B, ge, ge, B, C);
+				} else if (gAe instanceof AlgoAngularBisectorLines) {
+					GeoLine l1 = ((AlgoAngularBisectorLines) gAe).getg();
+					GeoLine l2 = ((AlgoAngularBisectorLines) gAe).geth();
+					GeoPoint l1s = l1.getStartPoint();
+					GeoPoint l1e = l1.getEndPoint();
+					GeoPoint l2s = l2.getStartPoint();
+					GeoPoint l2e = l2.getEndPoint();
+					if (l1s.equals(l2s)) {
+						return eqangle(l1e, l1s, ge, ge, l1s, l2e);
+					}
+					if (l1e.equals(l2e)) {
+						return eqangle(l1s, l1e, ge, ge, l1e, l2s);
+					}
+					if (l1s.equals(l2e)) {
+						return eqangle(l1e, l1s, ge, ge, l1s, l2s);
+					}
+					if (l1e.equals(l2s)) {
+						return eqangle(l1s, l1e, ge, ge, l1e, l2e);
+					}
+					return null; // not implemented
 				} else if (gAe instanceof AlgoLineBisector) {
 					GeoPoint A = ((AlgoLineBisector) gAe).getA();
 					GeoPoint B = ((AlgoLineBisector) gAe).getB();
