@@ -1,8 +1,8 @@
-name: Build Windows Installer
+name: Build and Release Windows Installer
 
 on:
   release:
-    types: [published]
+    types: [ published ]
   workflow_dispatch:
 
 jobs:
