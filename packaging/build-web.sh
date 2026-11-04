@@ -18,6 +18,7 @@ esac
 
 
 VERSION="${APP_VERSION//_/-}"
+VERSION="${APP_VERSION//5.0/6.0}"
 SRC_DIR="/app-src"
 OUT_DIR="/out"
 GGD_SRC_SHADOW="/tmp/ggd-src"
