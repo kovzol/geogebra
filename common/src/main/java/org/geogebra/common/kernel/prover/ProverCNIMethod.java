@@ -993,6 +993,13 @@ public class ProverCNIMethod {
 				c.declaration = gel + ":=" + Ml + "-(" + Pl + "-" + Ml + ")";
 				return c;
 			}
+			if (P instanceof GeoPoint && M instanceof GeoLine) {
+				GeoElement M1 =((GeoLine) M).getStartPoint();
+				GeoElement M2 =((GeoLine) M).getEndPoint();
+				c.realRelation = eqangle(P,M1,M2,M2,M1,ge) + "\n" + perppar((GeoPoint) P, (GeoPoint) ge,
+						(GeoPoint) M1, (GeoPoint) M2);
+				return c;
+			}
 			return null; // Not implemented.
 		}
 		if (ae instanceof AlgoPolygonRegular) {
